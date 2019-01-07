@@ -7,25 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C9DBDC5821D6D8F20001779C /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
-		C9DBDC5C21D6D96B0001779C /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
-		C9DBDC5F21D6E03A0001779C /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5E21D6E03A0001779C /* HCNumber.c */; };
+		C9CD282F21E3DD11005B566A /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
+		C9CD283021E3DD13005B566A /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
+		C9CD283121E3DD16005B566A /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5E21D6E03A0001779C /* HCNumber.c */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		C9DBDC4A21D6D8B70001779C /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		C9DBDC4C21D6D8B70001779C /* HollowCore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HollowCore; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		C9B705E421E3DCC600B63F05 /* libHollowCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHollowCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9DBDC5621D6D8F20001779C /* HCObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCObject.h; sourceTree = "<group>"; };
 		C9DBDC5721D6D8F20001779C /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
 		C9DBDC5921D6D93B0001779C /* HCObject_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCObject_Internal.h; sourceTree = "<group>"; };
@@ -37,7 +26,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C9DBDC4921D6D8B70001779C /* Frameworks */ = {
+		C9B705E221E3DCC600B63F05 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,6 +39,7 @@
 		C9DBDC4321D6D8B70001779C = {
 			isa = PBXGroup;
 			children = (
+				C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */,
 				C9DBDC5A21D6D96B0001779C /* HCCore.h */,
 				C9DBDC5B21D6D96B0001779C /* HCCore.c */,
 				C9DBDC5621D6D8F20001779C /* HCObject.h */,
@@ -65,21 +55,31 @@
 		C9DBDC4D21D6D8B70001779C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C9DBDC4C21D6D8B70001779C /* HollowCore */,
+				C9B705E421E3DCC600B63F05 /* libHollowCore.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		C9B705E021E3DCC600B63F05 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		C9DBDC4B21D6D8B70001779C /* HollowCore */ = {
+		C9B705E321E3DCC600B63F05 /* HollowCore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C9DBDC5321D6D8B70001779C /* Build configuration list for PBXNativeTarget "HollowCore" */;
+			buildConfigurationList = C9B705E521E3DCC600B63F05 /* Build configuration list for PBXNativeTarget "HollowCore" */;
 			buildPhases = (
-				C9DBDC4821D6D8B70001779C /* Sources */,
-				C9DBDC4921D6D8B70001779C /* Frameworks */,
-				C9DBDC4A21D6D8B70001779C /* CopyFiles */,
+				C9B705E021E3DCC600B63F05 /* Headers */,
+				C9B705E121E3DCC600B63F05 /* Sources */,
+				C9B705E221E3DCC600B63F05 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -87,8 +87,8 @@
 			);
 			name = HollowCore;
 			productName = HollowCore;
-			productReference = C9DBDC4C21D6D8B70001779C /* HollowCore */;
-			productType = "com.apple.product-type.tool";
+			productReference = C9B705E421E3DCC600B63F05 /* libHollowCore.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -99,7 +99,7 @@
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = HollowCore;
 				TargetAttributes = {
-					C9DBDC4B21D6D8B70001779C = {
+					C9B705E321E3DCC600B63F05 = {
 						CreatedOnToolsVersion = 10.1;
 					};
 				};
@@ -116,25 +116,45 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C9DBDC4B21D6D8B70001779C /* HollowCore */,
+				C9B705E321E3DCC600B63F05 /* HollowCore */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C9DBDC4821D6D8B70001779C /* Sources */ = {
+		C9B705E121E3DCC600B63F05 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9DBDC5821D6D8F20001779C /* HCObject.c in Sources */,
-				C9DBDC5C21D6D96B0001779C /* HCCore.c in Sources */,
-				C9DBDC5F21D6E03A0001779C /* HCNumber.c in Sources */,
+				C9CD282F21E3DD11005B566A /* HCCore.c in Sources */,
+				C9CD283021E3DD13005B566A /* HCObject.c in Sources */,
+				C9CD283121E3DD16005B566A /* HCNumber.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		C9B705E621E3DCC600B63F05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		C9B705E721E3DCC600B63F05 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		C9DBDC5121D6D8B70001779C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -246,39 +266,23 @@
 			};
 			name = Release;
 		};
-		C9DBDC5421D6D8B70001779C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		C9DBDC5521D6D8B70001779C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C9B705E521E3DCC600B63F05 /* Build configuration list for PBXNativeTarget "HollowCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9B705E621E3DCC600B63F05 /* Debug */,
+				C9B705E721E3DCC600B63F05 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C9DBDC4721D6D8B70001779C /* Build configuration list for PBXProject "HollowCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9DBDC5121D6D8B70001779C /* Debug */,
 				C9DBDC5221D6D8B70001779C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C9DBDC5321D6D8B70001779C /* Build configuration list for PBXNativeTarget "HollowCore" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C9DBDC5421D6D8B70001779C /* Debug */,
-				C9DBDC5521D6D8B70001779C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

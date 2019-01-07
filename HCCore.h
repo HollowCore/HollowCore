@@ -12,6 +12,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Foundation

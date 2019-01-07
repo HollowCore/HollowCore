@@ -42,9 +42,29 @@ void HCPrint(HCRef self, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Object Type
+//----------------------------------------------------------------------------------------------------------------------------------
+const struct HCType HCObjectTypeStatic = {
+    .ancestor = NULL,
+    .name = HCObjectTypeName,
+    .isEqual = HCObjectIsEqual,
+    .hashValue = HCObjectHashValue,
+    .print = HCObjectPrint,
+    .destroy = HCObjectDestroy,
+};
+const struct HCType* HCObjectType = &HCObjectTypeStatic;
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-// NOTE: Instances of HCObject should be created using sub-types
+void HCObjectInit(void* memory) {
+    HCObjectRef self = memory;
+    self->type = HCObjectType;
+}
+
+void HCObjectDestroy(HCObjectRef self) {
+    free(self);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions

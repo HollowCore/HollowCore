@@ -34,5 +34,6 @@ struct HCNumber {
         HCReal real;
     } value;
 };
+typedef struct HCNumber HCNumber;
 
 #endif /* HCNumber_Internal_h */

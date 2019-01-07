@@ -16,9 +16,15 @@
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 struct HCObject {
-    HCType* type;
+    const HCType* type;
     HCAtomicInteger referenceCount;
 };
 typedef struct HCObject HCObject;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Construction
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCObjectInit(void* memory);
+void HCObjectDestroy(HCObjectRef self);
 
 #endif /* HCObject_Internal_h */

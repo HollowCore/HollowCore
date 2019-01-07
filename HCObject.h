@@ -16,7 +16,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 #define HCObjectTypeName "HCObject"
 typedef struct HCObject* HCObjectRef;
-extern const struct HCType HCObjectType;
+extern const struct HCType* HCObjectType;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Type System
