@@ -22,6 +22,7 @@ HCNumberRef HCNumberCreate(void) {
 HCNumberRef HCNumberCreateWithBoolean(HCBoolean value) {
     HCNumberRef self = calloc(sizeof(HCNumber), 1);
     HCObjectInit(self);
+    self->type = HCNumberValueBoolean;
     self->value.boolean = !(!(value));
     return self;
 }
@@ -29,6 +30,7 @@ HCNumberRef HCNumberCreateWithBoolean(HCBoolean value) {
 HCNumberRef HCNumberCreateWithInteger(HCInteger value) {
     HCNumberRef self = calloc(sizeof(HCNumber), 1);
     HCObjectInit(self);
+    self->type = HCNumberValueInteger;
     self->value.integer = value;
     return self;
 }
@@ -36,6 +38,7 @@ HCNumberRef HCNumberCreateWithInteger(HCInteger value) {
 HCNumberRef HCNumberCreateWithReal(HCReal value) {
     HCNumberRef self = calloc(sizeof(HCNumber), 1);
     HCObjectInit(self);
+    self->type = HCNumberValueReal;
     self->value.real = value;
     return self;
 }
@@ -47,21 +50,21 @@ HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other) {
     switch (self->type) {
         case HCNumberValueBoolean:
             switch (other->type) {
-                case HCNumberValueBoolean: return !self->value.boolean == !other->value.boolean;
+                case HCNumberValueBoolean: return HCBooleanIsEqual(self->value.boolean, other->value.boolean);
                 case HCNumberValueInteger: return !self->value.boolean ? (other->value.integer == 0) : (other->value.integer == 1);
                 case HCNumberValueReal: return !self->value.boolean ? (other->value.real == 0.0) : (other->value.real == 1.0); // TODO: Hash matches for this?
             }
         case HCNumberValueInteger:
             switch (other->type) {
                 case HCNumberValueBoolean: return !other->value.boolean ? (self->value.integer == 0) : (self->value.integer == 1);
-                case HCNumberValueInteger: return self->value.integer == other->value.integer;
+                case HCNumberValueInteger: return HCIntegerIsEqual(self->value.integer, other->value.integer);
                 case HCNumberValueReal: return self->value.real == (HCInteger)floor(other->value.real); // TODO: Hash matches for this?
             }
         case HCNumberValueReal:
             switch (other->type) {
                 case HCNumberValueBoolean: return !other->value.boolean ? (self->value.real == 0.0) : (self->value.real == 1.0); // TODO: Hash matches for this?
                 case HCNumberValueInteger: return other->value.integer == (HCInteger)floor(self->value.real); // TODO: Hash matches for this?
-                case HCNumberValueReal: return self->value.real == other->value.real; // TODO: NAN?
+                case HCNumberValueReal: HCRealIsEqual(self->value.real, other->value.real); // TODO: Hash matches for this?
             }
     }
     
