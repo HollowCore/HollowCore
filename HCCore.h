@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Foundation
