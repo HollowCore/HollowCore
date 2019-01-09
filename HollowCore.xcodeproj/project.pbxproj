@@ -23,6 +23,7 @@
 		C9DBDC5D21D6E03A0001779C /* HCNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCNumber.h; sourceTree = "<group>"; };
 		C9DBDC5E21D6E03A0001779C /* HCNumber.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCNumber.c; sourceTree = "<group>"; };
 		C9DBDC6021D6E04A0001779C /* HCNumber_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCNumber_Internal.h; sourceTree = "<group>"; };
+		F8CBB8E421E5B97800DB022F /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +40,7 @@
 		C9DBDC4321D6D8B70001779C = {
 			isa = PBXGroup;
 			children = (
+				F8CBB8E421E5B97800DB022F /* .travis.yml */,
 				C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */,
 				C9DBDC5A21D6D96B0001779C /* HCCore.h */,
 				C9DBDC5B21D6D96B0001779C /* HCCore.c */,
