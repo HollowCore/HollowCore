@@ -1,5 +1,5 @@
 language: c
-
+dist: xenial
 script:
     - mkdir build
     - cd build
