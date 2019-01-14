@@ -16,7 +16,10 @@ HCBoolean HCBooleanIsEqual(HCBoolean self, HCBoolean other) {
     return !self == !other;
 }
 
-HCInteger HCBooleanHashValue(HCBoolean self);
+HCInteger HCBooleanHashValue(HCBoolean self) {
+    return self ? 1 : 0;
+}
+
 void HCBooleanPrint(HCBoolean self, FILE* stream) {
     fprintf(stream, "%s", self ? "true" : "false");
 }
@@ -28,7 +31,10 @@ HCBoolean HCIntegerIsEqual(HCInteger self, HCInteger other) {
     return self == other;
 }
 
-HCInteger HCIntegerHashValue(HCInteger self);
+HCInteger HCIntegerHashValue(HCInteger self) {
+    return self;
+}
+
 void HCIntegerPrint(HCInteger self, FILE* stream) {
     fprintf(stream, "%" PRIi64, self);
 }
@@ -40,7 +46,15 @@ HCBoolean HCRealIsEqual(HCReal self, HCReal other) {
     return self == other; // TODO: NAN?
 }
 
-HCInteger HCRealHashValue(HCReal self);
+HCInteger HCRealHashValue(HCReal self) {
+    union {
+        HCInteger integer;
+        HCReal real;
+    } value;
+    value.real = self;
+    return value.integer;
+}
+
 void HCRealPrint(HCReal self, FILE* stream) {
     fprintf(stream, "%f", self);
 }
