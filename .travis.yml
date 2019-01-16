@@ -1,7 +1,4 @@
 language: c
 dist: xenial
 script:
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make
+    - Tools/test.sh
