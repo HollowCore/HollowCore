@@ -1,6 +1,4 @@
 language: c
 dist: xenial
 script:
-    - Tools/build.sh
-    - ls build
     - Tools/test.sh
