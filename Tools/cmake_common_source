@@ -1,0 +1,8 @@
+# This makes us exit if a command fails which should only happen when we fail to find a required tool
+set -e
+
+BUILD_DIR="build"
+CMAKE=$(which cmake)
+MAKE=$(which make)
+
+set +e # Continue normal execution

@@ -6,6 +6,32 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		F803D38E21EEC303001E2DE6 /* CMake Build */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F803D38F21EEC303001E2DE6 /* Build configuration list for PBXAggregateTarget "CMake Build" */;
+			buildPhases = (
+				F803D39221EEC30A001E2DE6 /* CMake Build */,
+			);
+			dependencies = (
+			);
+			name = "CMake Build";
+			productName = "CMake Build";
+		};
+		F803D39321EEC361001E2DE6 /* CMake Test */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F803D39421EEC361001E2DE6 /* Build configuration list for PBXAggregateTarget "CMake Test" */;
+			buildPhases = (
+				F803D39721EEC36A001E2DE6 /* CMake Test */,
+			);
+			dependencies = (
+				F803D39921EEC387001E2DE6 /* PBXTargetDependency */,
+			);
+			name = "CMake Test";
+			productName = "CMake Test";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		C9CD282F21E3DD11005B566A /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
 		C9CD283021E3DD13005B566A /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
@@ -15,6 +41,16 @@
 		C9E2F58C21ED3A2700856F21 /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E2F57B21ED387700856F21 /* HCNumber.c */; };
 		C9E2F58E21ED3A4E00856F21 /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E2F58D21ED3A4E00856F21 /* HCCore.c */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F803D39821EEC387001E2DE6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9DBDC4421D6D8B70001779C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F803D38E21EEC303001E2DE6;
+			remoteInfo = "CMake Build";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C9E2F58021ED38FD00856F21 /* CopyFiles */ = {
@@ -44,6 +80,9 @@
 		C9E2F57B21ED387700856F21 /* HCNumber.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCNumber.c; sourceTree = "<group>"; };
 		C9E2F58221ED38FD00856F21 /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9E2F58D21ED3A4E00856F21 /* HCCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HCCore.c; sourceTree = "<group>"; };
+		F803D38321EE60FD001E2DE6 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		F803D38421EE60FD001E2DE6 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
+		F803D38521EEBD27001E2DE6 /* cmake_common_source */ = {isa = PBXFileReference; lastKnownFileType = text; path = cmake_common_source; sourceTree = "<group>"; };
 		F8CBB8E421E5B97800DB022F /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		F8CBB8E521E5BCE300DB022F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F8CBB8E621E5BCE300DB022F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -77,6 +116,7 @@
 				C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */,
 				F8CBB8E721E5BD0B00DB022F /* Source */,
 				C9E2F57721ED37DF00856F21 /* Test */,
+				F803D38221EE60FD001E2DE6 /* Tools */,
 				C9DBDC4D21D6D8B70001779C /* Products */,
 				C9E2F58A21ED396800856F21 /* Frameworks */,
 			);
@@ -107,6 +147,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F803D38221EE60FD001E2DE6 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				F803D38521EEBD27001E2DE6 /* cmake_common_source */,
+				F803D38321EE60FD001E2DE6 /* build.sh */,
+				F803D38421EE60FD001E2DE6 /* test.sh */,
+			);
+			path = Tools;
 			sourceTree = "<group>";
 		};
 		F8CBB8E721E5BD0B00DB022F /* Source */ = {
@@ -186,6 +236,12 @@
 					C9E2F58121ED38FD00856F21 = {
 						CreatedOnToolsVersion = 10.1;
 					};
+					F803D38E21EEC303001E2DE6 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					F803D39321EEC361001E2DE6 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 				};
 			};
 			buildConfigurationList = C9DBDC4721D6D8B70001779C /* Build configuration list for PBXProject "HollowCore" */;
@@ -202,9 +258,50 @@
 			targets = (
 				C9B705E321E3DCC600B63F05 /* HollowCore */,
 				C9E2F58121ED38FD00856F21 /* Test */,
+				F803D38E21EEC303001E2DE6 /* CMake Build */,
+				F803D39321EEC361001E2DE6 /* CMake Test */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F803D39221EEC30A001E2DE6 /* CMake Build */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "CMake Build";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/Tools/build.sh\n";
+		};
+		F803D39721EEC36A001E2DE6 /* CMake Test */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "CMake Test";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/Tools/test.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9B705E121E3DCC600B63F05 /* Sources */ = {
@@ -228,6 +325,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F803D39921EEC387001E2DE6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F803D38E21EEC303001E2DE6 /* CMake Build */;
+			targetProxy = F803D39821EEC387001E2DE6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C9B705E621E3DCC600B63F05 /* Debug */ = {
@@ -377,6 +482,38 @@
 			};
 			name = Release;
 		};
+		F803D39021EEC303001E2DE6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F803D39121EEC303001E2DE6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F803D39521EEC361001E2DE6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F803D39621EEC361001E2DE6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -403,6 +540,24 @@
 			buildConfigurations = (
 				C9E2F58721ED38FD00856F21 /* Debug */,
 				C9E2F58821ED38FD00856F21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F803D38F21EEC303001E2DE6 /* Build configuration list for PBXAggregateTarget "CMake Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F803D39021EEC303001E2DE6 /* Debug */,
+				F803D39121EEC303001E2DE6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F803D39421EEC361001E2DE6 /* Build configuration list for PBXAggregateTarget "CMake Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F803D39521EEC361001E2DE6 /* Debug */,
+				F803D39621EEC361001E2DE6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
