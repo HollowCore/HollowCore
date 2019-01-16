@@ -7,6 +7,9 @@ set(SOURCES ${SOURCES} Source/HCObject.c)
 set(SOURCES ${SOURCES} Source/HCNumber.c)
 add_library(hollowcore ${SOURCES})
 
+# HollowCore Links
+target_link_libraries(hollowcore m)
+
 # Test Suite
 set(TESTS ${TESTS} Test/HCCore.c)
 set(TESTS ${TESTS} Test/HCNumber.c)
