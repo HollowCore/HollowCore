@@ -14,27 +14,21 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCObjectTypeName "HCObject"
-typedef struct HCObject* HCObjectRef;
-extern const struct HCType* HCObjectType;
+typedef HCBoolean (*HCObjectIsEqualFunction)(HCRef self, HCRef other);
+typedef HCInteger (*HCObjectHashValueFunction)(HCRef self);
+typedef void (*HCObjectPrintFunction)(HCRef self, FILE* stream);
+typedef void (*HCObjectDestoryFunction)(HCRef self);
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Type System
-//----------------------------------------------------------------------------------------------------------------------------------
-typedef HCBoolean (*HCObjectIsEqualFunction)(HCObjectRef self, HCObjectRef other);
-typedef HCInteger (*HCObjectHashValueFunction)(HCObjectRef self);
-typedef void (*HCObjectPrintFunction)(HCObjectRef self, FILE* stream);
-typedef void (*HCObjectDestoryFunction)(HCObjectRef self);
-
-struct HCType {
-    struct HCType* ancestor;
-    HCTypeName name;
+typedef const struct {
+    HCTypeData base;
     HCObjectIsEqualFunction isEqual;
     HCObjectHashValueFunction hashValue;
     HCObjectPrintFunction print;
     HCObjectDestoryFunction destroy;
-};
-typedef struct HCType HCType;
+} HCObjectTypeData;
+extern HCType HCObjectType;
+
+typedef struct HCObject* HCObjectRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Management
