@@ -19,11 +19,10 @@ extern HCObjectTypeData HCObjectTypeDataInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Instance Data
 //----------------------------------------------------------------------------------------------------------------------------------
-struct HCObject {
+typedef struct HCObject {
     HCType type;
     HCAtomicInteger referenceCount;
-};
-typedef struct HCObject HCObject;
+} HCObject;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction

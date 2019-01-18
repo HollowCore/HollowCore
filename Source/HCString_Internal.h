@@ -29,7 +29,6 @@ struct HCString {
     HCObject base;
     HCInteger count;
     HCStringCodeUnit* data;
-};
-typedef struct HCString HCString;
+} HCString;
 
 #endif /* HCString_Internal_h */
