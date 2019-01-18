@@ -39,6 +39,7 @@ target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m)
 set(HOLLOWCORE_TEST_NAME hollowcoretest)
 set(TEST_SOURCES ${TEST_SOURCES} Test/main.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCCore.c)
+set(TEST_SOURCES ${TEST_SOURCES} Test/HCObject.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCNumber.c)
 add_executable(${HOLLOWCORE_TEST_NAME} ${TEST_SOURCES})
 target_link_libraries(${HOLLOWCORE_TEST_NAME} hollowcore)
@@ -69,6 +70,7 @@ if (COVERAGE)
         COMMAND ${GCOV_PATH} ${SOURCES} -o ${OBJECT_DIR} > summary.txt
         COMMAND cat summary.txt
         COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
+        COMMAND open ${CMAKE_BINARY_DIR}/coverage/html/index.html
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
     )
     add_dependencies(coverage ${HOLLOWCORE_TEST_NAME})

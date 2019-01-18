@@ -8,6 +8,7 @@
 
 #include "HCCore.h"
 #include <inttypes.h>
+#include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Boolean Operations
@@ -47,6 +48,13 @@ HCBoolean HCRealIsEqual(HCReal self, HCReal other) {
 }
 
 HCInteger HCRealHashValue(HCReal self) {
+    // TODO: Does this cause all HCReal values that are exactly equal to HCInteger values to hash to the same value?
+    HCReal truncated = floor(self);
+    if (truncated - self == 0.0) {
+        return (HCInteger)truncated;
+    }
+    
+    // Use the unconverted bits of the real value as the hash
     union {
         HCInteger integer;
         HCReal real;

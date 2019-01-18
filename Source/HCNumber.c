@@ -58,13 +58,13 @@ HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other) {
             switch (other->type) {
                 case HCNumberValueBoolean: return !other->value.boolean ? (self->value.integer == 0) : (self->value.integer == 1);
                 case HCNumberValueInteger: return HCIntegerIsEqual(self->value.integer, other->value.integer);
-                case HCNumberValueReal: return self->value.real == (HCInteger)floor(other->value.real); // TODO: Hash matches for this?
+                case HCNumberValueReal: return self->value.integer == (HCInteger)floor(other->value.real); // TODO: Hash matches for this?
             }
         case HCNumberValueReal:
             switch (other->type) {
                 case HCNumberValueBoolean: return !other->value.boolean ? (self->value.real == 0.0) : (self->value.real == 1.0); // TODO: Hash matches for this?
                 case HCNumberValueInteger: return other->value.integer == (HCInteger)floor(self->value.real); // TODO: Hash matches for this?
-                case HCNumberValueReal: HCRealIsEqual(self->value.real, other->value.real); // TODO: Hash matches for this?
+                case HCNumberValueReal: return HCRealIsEqual(self->value.real, other->value.real); // TODO: Hash matches for this?
             }
     }
     
@@ -72,6 +72,11 @@ HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other) {
 }
 
 HCInteger HCNumberHashValue(HCNumberRef self) {
+    switch (self->type) {
+        case HCNumberValueBoolean: return HCBooleanHashValue(self->value.boolean);
+        case HCNumberValueInteger: return HCIntegerHashValue(self->value.integer);
+        case HCNumberValueReal: return HCRealHashValue(self->value.real);
+    }
     return self->value.integer;
 }
 
@@ -95,7 +100,7 @@ HCInteger HCNumberGetInteger(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueBoolean: return self->value.boolean == false ? 0 : 1;
         case HCNumberValueInteger: return self->value.integer;
-        case HCNumberValueReal: return floor(self->value.real);
+        case HCNumberValueReal: return (HCInteger)floor(self->value.real);
     }
     return self->value.integer;
 }
@@ -103,7 +108,7 @@ HCInteger HCNumberGetInteger(HCNumberRef self) {
 HCReal HCNumberGetReal(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueBoolean: return self->value.boolean == false ? 0.0 : 1.0;
-        case HCNumberValueInteger: return self->value.integer;
+        case HCNumberValueInteger: return (HCReal)self->value.integer;
         case HCNumberValueReal: return self->value.real;
     }
     return self->value.real;

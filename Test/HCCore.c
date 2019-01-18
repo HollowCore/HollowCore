@@ -7,7 +7,7 @@
 //
 
 #include "ctest.h"
-#include "../Source/HCCore.h"
+#include "../Source/HollowCore.h"
 
 CTEST(HCCore, Boolean) {
     ASSERT_TRUE(HCBooleanIsEqual(true, !(false)));
