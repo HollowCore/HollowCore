@@ -22,7 +22,7 @@ void HCRelease(HCRef self) {
     ((HCObjectRef)self)->referenceCount--;
     if (((HCObjectRef)self)->referenceCount <= 0) {
         for (HCType type = ((HCObjectRef)self)->type; type != NULL; type = type->ancestor) {
-            ((HCObjectTypeData*)((HCObjectRef)self)->type)->destroy(self);
+            ((HCObjectTypeData*)type)->destroy(self);
         }
         free(self);
     }

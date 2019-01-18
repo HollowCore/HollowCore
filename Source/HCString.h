@@ -30,6 +30,7 @@ HCStringRef HCStringCreate(void);
 HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
+HCStringRef HCStringCreateWithCString(char* value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -41,14 +42,24 @@ void HCStringPrint(HCStringRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCStringIsEmpty(HCStringRef self);
 HCInteger HCStringGetCodeUnitCount(HCStringRef self);
-HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger index);
+HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex);
 HCInteger HCStringGetCodePointCount(HCStringRef self);
-HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger index);
+HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 HCStringCodePoint HCStringConvertCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger* nextCodeUnitIndex);
+HCBoolean HCStringAsBoolean(HCStringRef self);
+HCInteger HCStringAsInteger(HCStringRef self);
+HCReal HCStringAsReal(HCStringRef self);
+const char* HCStringAsCString(HCStringRef self);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Comparison
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCStringIsEqualToCString(HCStringRef self, const char* string);
 
 #endif /* HCString_h */

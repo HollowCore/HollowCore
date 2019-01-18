@@ -13,22 +13,19 @@
 #include "HCString.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Definitions
-//----------------------------------------------------------------------------------------------------------------------------------
-enum HCStringValue {
-    HCStringValueBoolean = 0,
-    HCStringValueInteger,
-    HCStringValueReal
-};
-typedef enum HCStringValue HCStringValue;
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 struct HCString {
     HCObject base;
-    HCInteger count;
-    HCStringCodeUnit* data;
+    HCInteger codeUnitCount;
+    HCStringCodeUnit* codeUnits;
 } HCString;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Construction
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCStringInit(void* memory, HCInteger codeUnitCount, HCStringCodeUnit* codeUnits);
+void HCStringInitWithoutCopying(void* memory, HCInteger codeUnitCount, HCStringCodeUnit* codeUnits);
+void HCStringDestroy(HCStringRef self);
 
 #endif /* HCString_Internal_h */
