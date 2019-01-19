@@ -28,4 +28,11 @@ void HCStringInit(void* memory, HCInteger codeUnitCount, HCStringCodeUnit* codeU
 void HCStringInitWithoutCopying(void* memory, HCInteger codeUnitCount, HCStringCodeUnit* codeUnits);
 void HCStringDestroy(HCStringRef self);
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Conversion
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, const HCStringCodeUnit* sourceEnd);
+HCBoolean HCStringCodeUnitIsLegalUTF8(const HCStringCodeUnit* source, HCInteger count);
+void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, HCStringCodeUnit* sourceEnd, HCStringCodePoint** targetStart, HCStringCodePoint* targetEnd);
+
 #endif /* HCString_Internal_h */

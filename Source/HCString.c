@@ -12,6 +12,28 @@
 #include <float.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Definitions
+//----------------------------------------------------------------------------------------------------------------------------------
+static const char HCStringCodePointCodeUnitCount[256] = {
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+    3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,6
+};
+
+static const HCStringCodePoint HCStringCodePointOffsets[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL };
+static const HCStringCodePoint HCStringCodePointMax = 0x0010FFFFUL;
+static const HCStringCodePoint HCStringSurrogateHighStart = 0x0000D800UL;
+//static const HCStringCodePoint HCStringSurrogateHighEnd = 0x0000DBFFUL;
+//static const HCStringCodePoint HCStringSurrogateLowStart = 0x0000DC00UL;
+static const HCStringCodePoint HCStringSurrogateLowEnd = 0x0000DFFFUL;
+static const HCStringCodePoint HCStringCodePointReplacement = 0x0000FFFDUL;
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 const HCObjectTypeData HCStringTypeDataInstance = {
@@ -67,7 +89,7 @@ HCStringRef HCStringCreateWithReal(HCReal value) {
     return self;
 }
 
-HCStringRef HCStringCreateWithCString(char* value) {
+HCStringRef HCStringCreateWithCString(const char* value) {
     // Determine the length of the null-terminated string
     size_t length = strlen(value);
     
@@ -138,21 +160,120 @@ HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex) 
 }
 
 HCInteger HCStringGetCodePointCount(HCStringRef self) {
-    // TODO: This
-    return 0;
+    HCInteger size = 0;
+    HCStringCodePoint* end = (HCStringCodePoint*)(-1);
+    HCStringConvertCodeUnits(self, NULL, NULL, (HCStringCodePoint**)&size, end);
+    return (HCInteger)(size) / sizeof(HCStringCodePoint);
 }
 
 HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex) {
-    // TODO: This
-    return 0;
+    HCInteger start = 0;
+    HCInteger end = sizeof(HCStringCodePoint) * codePointIndex;
+    HCStringCodeUnit* codeUnitIndex = self->codeUnits;
+    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, (HCStringCodePoint**)&start, (HCStringCodePoint*)end);
+    if (codeUnitIndex >= self->codeUnits + self->codeUnitCount) {
+        return HCStringCodePointReplacement;
+    }
+    
+    HCStringCodePoint result[1] = {0};
+    HCStringCodePoint* resultStart = result;
+    HCStringCodePoint* resultEnd = result + 1;
+    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, &resultStart, resultEnd);
+    return *result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCStringCodePoint HCStringConvertCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger* nextCodeUnitIndex) {
-    // TODO: This
-    return 0;
+HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, const HCStringCodeUnit* sourceEnd) {
+    HCInteger count = HCStringCodePointCodeUnitCount[*source];
+    if (source + count > sourceEnd) {
+        return false;
+    }
+    return HCStringCodeUnitIsLegalUTF8(source, count);
+}
+
+HCBoolean HCStringCodeUnitIsLegalUTF8(const HCStringCodeUnit* source, HCInteger count) {
+    HCStringCodePoint a;
+    const HCStringCodeUnit* c = source + count;
+    switch (count) {
+        default: return false;
+        case 4: if ((a = (*--c)) < 0x80 || a > 0xBF) return false; // Fallthrough on true
+        case 3: if ((a = (*--c)) < 0x80 || a > 0xBF) return false; // Fallthrough on true
+        case 2: if ((a = (*--c)) > 0xBF) return false; // Fallthrough on true
+        switch (*source) {
+            case 0xE0: if (a < 0xA0) return false;
+            case 0xED: if (a > 0x9F) return false;
+            case 0xF0: if (a < 0x90) return false;
+            case 0xF4: if (a > 0x8F) return false;
+            default:   if (a < 0x80) return false;
+        }
+        case 1: if (*source >= 0x80 && *source < 0xC2) return false;
+    }
+    if (*source > 0xF4) return false;
+    return true;
+}
+
+void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, HCStringCodeUnit* sourceEnd, HCStringCodePoint** targetStart, HCStringCodePoint* targetEnd) {
+    HCStringCodeUnit* source = sourceStart == NULL ? self->codeUnits : *sourceStart;
+    if (sourceEnd == NULL) {
+        sourceEnd = self->codeUnits + self->codeUnitCount;
+    }
+    
+    HCBoolean writeTarget = (targetStart == NULL || *targetStart == NULL || targetEnd == NULL) ? false : true;
+    HCStringCodePoint* target = targetStart == NULL ? NULL : *targetStart;
+    
+    while (source < sourceEnd) {
+        HCStringCodePoint codePoint = 0;
+        unsigned short extraBytesToRead = HCStringCodePointCodeUnitCount[*source]-1;
+        if (source + extraBytesToRead >= sourceEnd) {
+            if (writeTarget) {
+                *target = HCStringCodePointReplacement;
+            }
+            target++;
+            break;
+        }
+        if (!HCStringCodeUnitIsLegalUTF8(source, extraBytesToRead+1)) {
+            source++;
+            if (writeTarget) {
+                *target = HCStringCodePointReplacement;
+            }
+            target++;
+            continue;
+        }
+        switch (extraBytesToRead) {
+            case 5: codePoint += *source++; codePoint <<= 6; // Fallthrough
+            case 4: codePoint += *source++; codePoint <<= 6; // Fallthrough
+            case 3: codePoint += *source++; codePoint <<= 6; // Fallthrough
+            case 2: codePoint += *source++; codePoint <<= 6; // Fallthrough
+            case 1: codePoint += *source++; codePoint <<= 6; // Fallthrough
+            case 0: codePoint += *source++;
+        }
+        codePoint -= HCStringCodePointOffsets[extraBytesToRead];
+        if (target >= targetEnd) {
+            source -= (extraBytesToRead+1);
+            break;
+        }
+        if (writeTarget) {
+            if (codePoint <= HCStringCodePointMax) {
+                if (codePoint >= HCStringSurrogateHighStart && codePoint <= HCStringSurrogateLowEnd) {
+                    *target = HCStringCodePointReplacement;
+                } else {
+                    *target = codePoint;
+                }
+            } else {
+                *target = HCStringCodePointReplacement;
+            }
+        }
+        target++;
+    }
+    
+    if (sourceStart != NULL) {
+        *sourceStart = source;
+    }
+    if (targetStart != NULL) {
+        *targetStart = target;
+    }
 }
 
 HCBoolean HCStringAsBoolean(HCStringRef self) {

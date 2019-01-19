@@ -30,7 +30,7 @@ HCStringRef HCStringCreate(void);
 HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
-HCStringRef HCStringCreateWithCString(char* value);
+HCStringRef HCStringCreateWithCString(const char* value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -51,7 +51,6 @@ HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointInde
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCStringCodePoint HCStringConvertCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger* nextCodeUnitIndex);
 HCBoolean HCStringAsBoolean(HCStringRef self);
 HCInteger HCStringAsInteger(HCStringRef self);
 HCReal HCStringAsReal(HCStringRef self);
