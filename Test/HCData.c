@@ -11,9 +11,25 @@
 #include <math.h>
 
 CTEST(HCData, Creation) {
-    HCDataRef number = HCDataCreate();
-    ASSERT_FALSE(HCDataAsBoolean(number));
-    HCRelease(number);
+    HCDataRef empty = HCDataCreate();
+    ASSERT_TRUE(HCDataIsEmpty(empty));
+    HCRelease(empty);
+}
+
+CTEST(HCData, Size) {
+    HCDataRef data = HCDataCreateWithSize(10);
+    ASSERT_EQUAL(HCDataGetSize(data), 10);
+    HCRelease(data);
+}
+
+CTEST(HCData, Bytes) {
+    HCByte bytes[] = { 5, 4, 3, 2, 1 };
+    HCDataRef data = HCDataCreateWithBytes(sizeof(bytes), bytes);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(bytes));
+    for (HCInteger byteIndex = 0; byteIndex < sizeof(bytes) * sizeof(HCByte); byteIndex++) {
+        ASSERT_EQUAL(HCDataGetBytes(data)[byteIndex], bytes[byteIndex]);
+    }
+    HCRelease(data);
 }
 
 CTEST(HCData, Boolean) {
@@ -90,4 +106,72 @@ CTEST(HCData, EqualHash) {
     HCRelease(a);
     HCRelease(b);
     HCRelease(c);
+}
+
+CTEST(HCData, Clear) {
+    HCDataRef data = HCDataCreateWithBoolean(true);
+    ASSERT_FALSE(HCDataIsEmpty(data));
+    HCDataClear(data);
+    ASSERT_TRUE(HCDataIsEmpty(data));
+    HCRelease(data);
+}
+
+CTEST(HCData, Resize) {
+    HCDataRef data = HCDataCreateWithSize(10);
+    ASSERT_EQUAL(HCDataGetSize(data), 10);
+    HCDataResize(data, 100);
+    ASSERT_EQUAL(HCDataGetSize(data), 100);
+    HCDataResize(data, 1);
+    ASSERT_EQUAL(HCDataGetSize(data), 1);
+    HCDataResize(data, 0);
+    ASSERT_TRUE(HCDataIsEmpty(data));
+    HCRelease(data);
+}
+
+CTEST(HCData, AppendBoolean) {
+    HCDataRef data = HCDataCreateWithBoolean(true);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCBoolean) * 1);
+    ASSERT_TRUE(((HCBoolean*)HCDataGetBytes(data))[0]);
+    HCDataAppendBoolean(data, false);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCBoolean) * 2);
+    ASSERT_TRUE(((HCBoolean*)HCDataGetBytes(data))[0]);
+    ASSERT_FALSE(((HCBoolean*)HCDataGetBytes(data))[1]);
+    HCDataAppendBoolean(data, true);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCBoolean) * 3);
+    ASSERT_TRUE(((HCBoolean*)HCDataGetBytes(data))[0]);
+    ASSERT_FALSE(((HCBoolean*)HCDataGetBytes(data))[1]);
+    ASSERT_TRUE(((HCBoolean*)HCDataGetBytes(data))[2]);
+    HCRelease(data);
+}
+
+CTEST(HCData, AppendInteger) {
+    HCDataRef data = HCDataCreateWithInteger(5);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCInteger) * 1);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[0], 5);
+    HCDataAppendInteger(data, 4);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCInteger) * 2);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[0], 5);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[1], 4);
+    HCDataAppendInteger(data, 3);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCInteger) * 3);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[0], 5);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[1], 4);
+    ASSERT_EQUAL(((HCInteger*)HCDataGetBytes(data))[2], 3);
+    HCRelease(data);
+}
+
+CTEST(HCData, AppendReal) {
+    HCDataRef data = HCDataCreateWithReal(5.0);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCReal) * 1);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[0], 5.0);
+    HCDataAppendReal(data, 4.0);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCReal) * 2);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[0], 5.0);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[1], 4.0);
+    HCDataAppendReal(data, 3.0);
+    ASSERT_EQUAL(HCDataGetSize(data), sizeof(HCReal) * 3);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[0], 5.0);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[1], 4.0);
+    ASSERT_EQUAL(((HCReal*)HCDataGetBytes(data))[2], 3.0);
+    HCRelease(data);
 }

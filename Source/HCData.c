@@ -28,31 +28,37 @@ HCType HCDataType = (HCType)&HCDataTypeDataInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCDataRef HCDataCreate(void) {
-    return HCDataCreateWithBoolean(false);
+HCDataRef HCDataCreate() {
+    return HCDataCreateWithBytes(0, NULL);
+}
+
+HCDataRef HCDataCreateWithSize(HCInteger size) {
+    return HCDataCreateWithBytes(size, NULL);
+}
+
+HCDataRef HCDataCreateWithBytes(HCInteger size, HCByte* bytes) {
+    HCDataRef self = calloc(sizeof(HCData), 1);
+    HCDataInit(self, size, bytes);
+    return self;
 }
 
 HCDataRef HCDataCreateWithBoolean(HCBoolean value) {
-    HCDataRef self = calloc(sizeof(HCData), 1);
-    HCDataInit(self, sizeof(value), (HCByte*)&value);
-    return self;
+    return HCDataCreateWithBytes(sizeof(value), (HCByte*)&value);
 }
 
 HCDataRef HCDataCreateWithInteger(HCInteger value) {
-    HCDataRef self = calloc(sizeof(HCData), 1);
-    HCDataInit(self, sizeof(value), (HCByte*)&value);
-    return self;
+    return HCDataCreateWithBytes(sizeof(value), (HCByte*)&value);
 }
 
 HCDataRef HCDataCreateWithReal(HCReal value) {
-    HCDataRef self = calloc(sizeof(HCData), 1);
-    HCDataInit(self, sizeof(value), (HCByte*)&value);
-    return self;
+    return HCDataCreateWithBytes(sizeof(value), (HCByte*)&value);
 }
 
 void HCDataInit(void* memory, HCInteger size, HCByte* data) {
     HCByte* dataCopy = malloc(size);
-    memcpy(dataCopy, data, size);
+    if (data != NULL) {
+        memcpy(dataCopy, data, size);
+    }
     // TODO: Check that the allocation and copy proceed successfully, determine how to pass the error otherwise
     
     HCObjectInit(memory);
@@ -90,6 +96,21 @@ void HCDataPrint(HCDataRef self, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Attributes
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCDataIsEmpty(HCDataRef self) {
+    return HCDataGetSize(self) == 0;
+}
+
+HCInteger HCDataGetSize(HCDataRef self) {
+    return self->size;
+}
+
+const HCByte* HCDataGetBytes(HCDataRef self) {
+    return self->data;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCDataAsBoolean(HCDataRef self) {
@@ -102,4 +123,36 @@ HCInteger HCDataAsInteger(HCDataRef self) {
 
 HCReal HCDataAsReal(HCDataRef self) {
     return self->size > sizeof(HCReal) ? NAN : *(HCReal*)self->data;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCDataClear(HCDataRef self) {
+    HCDataResize(self, 0);
+}
+
+void HCDataResize(HCDataRef self, HCInteger size) {
+    self->data = realloc(self->data, size);
+    self->size = size;
+    // TODO: Failable
+}
+
+void HCDataAppendBytes(HCDataRef self, HCInteger size, HCByte* bytes) {
+    self->data = realloc(self->data, size);
+    memcpy(self->data + self->size, bytes, size);
+    self->size += size;
+    // TODO: Failable
+}
+
+void HCDataAppendBoolean(HCDataRef self, HCBoolean value) {
+    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
+}
+
+void HCDataAppendInteger(HCDataRef self, HCInteger value) {
+    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
+}
+
+void HCDataAppendReal(HCDataRef self, HCReal value) {
+    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
 }
