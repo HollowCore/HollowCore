@@ -105,9 +105,9 @@ void HCNumberPrint(HCNumberRef self, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Attributes
+// MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCNumberGetBoolean(HCNumberRef self) {
+HCBoolean HCNumberAsBoolean(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean;
         case HCNumberValueTypeInteger: return self->value.integer != 0;
@@ -116,7 +116,7 @@ HCBoolean HCNumberGetBoolean(HCNumberRef self) {
     return self->value.boolean;
 }
 
-HCInteger HCNumberGetInteger(HCNumberRef self) {
+HCInteger HCNumberAsInteger(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean == false ? 0 : 1;
         case HCNumberValueTypeInteger: return self->value.integer;
@@ -125,7 +125,7 @@ HCInteger HCNumberGetInteger(HCNumberRef self) {
     return self->value.integer;
 }
 
-HCReal HCNumberGetReal(HCNumberRef self) {
+HCReal HCNumberAsReal(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean == false ? 0.0 : 1.0;
         case HCNumberValueTypeInteger: return (HCReal)self->value.integer;

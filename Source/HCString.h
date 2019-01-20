@@ -31,6 +31,7 @@ HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
 HCStringRef HCStringCreateWithCString(const char* value);
+HCStringRef HCStringCreateWithBytesUTF8(const char* value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions

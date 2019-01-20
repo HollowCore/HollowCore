@@ -1,42 +1,42 @@
 //
-//  HCNumber.h
-//  HollowCore
+//  HCData.h
+//  Test
 //
-//  Created by Matt Stoker on 12/28/18.
-//  Copyright © 2018 HollowCore. All rights reserved.
+//  Created by Matt Stoker on 1/19/19.
+//  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCNumber_h
-#define HCNumber_h
+#ifndef HCData_h
+#define HCData_h
 
 #include "HCObject.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-extern HCType HCNumberType;
-typedef struct HCNumber* HCNumberRef;
+extern HCType HCDataType;
+typedef struct HCData* HCDataRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCNumberRef HCNumberCreate(void);
-HCNumberRef HCNumberCreateWithBoolean(HCBoolean value);
-HCNumberRef HCNumberCreateWithInteger(HCInteger value);
-HCNumberRef HCNumberCreateWithReal(HCReal value);
+HCDataRef HCDataCreate(void);
+HCDataRef HCDataCreateWithBoolean(HCBoolean value);
+HCDataRef HCDataCreateWithInteger(HCInteger value);
+HCDataRef HCDataCreateWithReal(HCReal value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other);
-HCInteger HCNumberHashValue(HCNumberRef self);
-void HCNumberPrint(HCNumberRef self, FILE* stream);
+HCBoolean HCDataIsEqual(HCDataRef self, HCDataRef other);
+HCInteger HCDataHashValue(HCDataRef self);
+void HCDataPrint(HCDataRef self, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCNumberAsBoolean(HCNumberRef self);
-HCInteger HCNumberAsInteger(HCNumberRef self);
-HCReal HCNumberAsReal(HCNumberRef self);
+HCBoolean HCDataAsBoolean(HCDataRef self);
+HCInteger HCDataAsInteger(HCDataRef self);
+HCReal HCDataAsReal(HCDataRef self);
 
-#endif /* HCNumber_h */
+#endif /* HCData_h */

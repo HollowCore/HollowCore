@@ -13,5 +13,6 @@
 #include "HCObject.h"
 #include "HCNumber.h"
 #include "HCString.h"
+#include "HCData.h"
 
 #endif /* HollowCore_h */

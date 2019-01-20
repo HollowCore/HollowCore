@@ -11,6 +11,6 @@
 
 CTEST(HCNumber, Creation) {
     HCNumberRef number = HCNumberCreate();
-    ASSERT_FALSE(HCNumberGetBoolean(number));
+    ASSERT_FALSE(HCNumberAsBoolean(number));
     HCRelease(number);
 }
