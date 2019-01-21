@@ -32,11 +32,11 @@ typedef enum HCStringEncoding {
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCStringRef HCStringCreate(void);
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes);
+HCStringRef HCStringCreateWithCString(const char* value);
 HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
-HCStringRef HCStringCreateWithCString(const char* value);
-HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -57,10 +57,10 @@ HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointInde
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
+const char* HCStringAsCString(HCStringRef self);
 HCBoolean HCStringAsBoolean(HCStringRef self);
 HCInteger HCStringAsInteger(HCStringRef self);
 HCReal HCStringAsReal(HCStringRef self);
-const char* HCStringAsCString(HCStringRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Comparison

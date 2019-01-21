@@ -57,6 +57,27 @@ HCStringRef HCStringCreate(void) {
     return self;
 }
 
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes) {
+    // Convert passed bytes to UTF-8 code units
+    HCStringCodeUnit* codeUnits;
+    switch (encoding) {
+        case HCStringEncodingUTF8: codeUnits = (HCStringCodeUnit*)bytes; break;
+        case HCStringEncodingUTF16: return NULL; // TODO: Support for UTF-16
+        case HCStringEncodingUTF32: return NULL; // TODO: Support for UTF-32
+    }
+    
+    // Initialize the string object with the code unit data
+    HCStringRef self = calloc(sizeof(HCString), 1);
+    HCStringInit(self, size, codeUnits);
+    return self;
+}
+
+HCStringRef HCStringCreateWithCString(const char* value) {
+    // Determine the length of the null-terminated string
+    size_t length = strlen(value);
+    return HCStringCreateWithBytes(HCStringEncodingUTF8, length * sizeof(char), (const HCByte*)value);
+}
+
 HCStringRef HCStringCreateWithBoolean(HCBoolean value) {
     HCStringRef self = calloc(sizeof(HCString), 1);
     // TODO: What string values should be used to represent true and false? "true" & "false"? "1" & "0"? "t" & "f"? "⊨" & "⊭"?
@@ -86,31 +107,6 @@ HCStringRef HCStringCreateWithReal(HCReal value) {
     // Initialize the string object with the real value string
     HCStringRef self = calloc(sizeof(HCString), 1);
     HCStringInitWithoutCopying(self, length, (HCStringCodeUnit*)string);
-    return self;
-}
-
-HCStringRef HCStringCreateWithCString(const char* value) {
-    // Determine the length of the null-terminated string
-    size_t length = strlen(value);
-    
-    // Initialize the string object with the null-terminated string value
-    HCStringRef self = calloc(sizeof(HCString), 1);
-    HCStringInit(self, length * sizeof(char), (HCStringCodeUnit*)value);
-    return self;
-}
-
-HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes) {
-    // Convert passed bytes to UTF-8 code units
-    HCStringCodeUnit* codeUnits;
-    switch (encoding) {
-        case HCStringEncodingUTF8: codeUnits = (HCStringCodeUnit*)bytes; break;
-        case HCStringEncodingUTF16: return NULL; // TODO: Support for UTF-16
-        case HCStringEncodingUTF32: return NULL; // TODO: Support for UTF-32
-    }
-    
-    // Initialize the string object with the code unit data
-    HCStringRef self = calloc(sizeof(HCString), 1);
-    HCStringInit(self, size, codeUnits);
     return self;
 }
 

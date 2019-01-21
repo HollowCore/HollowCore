@@ -16,6 +16,13 @@ CTEST(HCString, Creation) {
     HCRelease(empty);
 }
 
+CTEST(HCString, CString) {
+    HCStringRef generalString = HCStringCreateWithCString("I am the very model of a modern Major General.");
+    ASSERT_FALSE(HCStringIsEmpty(generalString));
+    ASSERT_STR(HCStringAsCString(generalString), "I am the very model of a modern Major General.");
+    HCRelease(generalString);
+}
+
 CTEST(HCString, Boolean) {
     HCStringRef falseString = HCStringCreateWithBoolean(false);
     ASSERT_FALSE(HCStringIsEmpty(falseString));
@@ -35,13 +42,6 @@ CTEST(HCString, Real) {
     ASSERT_FALSE(HCStringIsEmpty(halfString));
     ASSERT_STR(HCStringAsCString(halfString), "0.5");
     HCRelease(halfString);
-}
-
-CTEST(HCString, CString) {
-    HCStringRef generalString = HCStringCreateWithCString("I am the very model of a modern Major General.");
-    ASSERT_FALSE(HCStringIsEmpty(generalString));
-    ASSERT_STR(HCStringAsCString(generalString), "I am the very model of a modern Major General.");
-    HCRelease(generalString);
 }
 
 CTEST(HCString, CodeUnits) {

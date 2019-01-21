@@ -14,3 +14,10 @@ CTEST(HCNumber, Creation) {
     ASSERT_FALSE(HCNumberAsBoolean(number));
     HCRelease(number);
 }
+
+CTEST(HCNumber, RetainRelease) {
+    HCNumberRef number = HCNumberCreate();
+    HCRetain(number);
+    HCRelease(number);
+    HCRelease(number);
+}
