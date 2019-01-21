@@ -43,8 +43,11 @@ const HCByte* HCDataGetBytes(HCDataRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCDataIsBoolean(HCDataRef self);
 HCBoolean HCDataAsBoolean(HCDataRef self);
+HCBoolean HCDataIsInteger(HCDataRef self);
 HCInteger HCDataAsInteger(HCDataRef self);
+HCBoolean HCDataIsReal(HCDataRef self);
 HCReal HCDataAsReal(HCDataRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------

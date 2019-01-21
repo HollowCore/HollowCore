@@ -20,7 +20,7 @@ CTEST(HCData, Bytes) {
     HCByte bytes[] = { 5, 4, 3, 2, 1 };
     HCDataRef data = HCDataCreateWithBytes(sizeof(bytes), bytes);
     ASSERT_EQUAL(HCDataGetSize(data), sizeof(bytes));
-    for (HCInteger byteIndex = 0; byteIndex < sizeof(bytes) * sizeof(HCByte); byteIndex++) {
+    for (HCInteger byteIndex = 0; byteIndex < (HCInteger)(sizeof(bytes) * sizeof(HCByte)); byteIndex++) {
         ASSERT_EQUAL(HCDataGetBytes(data)[byteIndex], bytes[byteIndex]);
     }
     HCRelease(data);
@@ -28,59 +28,72 @@ CTEST(HCData, Bytes) {
 
 CTEST(HCData, Boolean) {
     HCDataRef falseData = HCDataCreateWithBoolean(false);
+    ASSERT_TRUE(HCDataIsBoolean(falseData));
     ASSERT_FALSE(HCDataAsBoolean(falseData));
     HCRelease(falseData);
     
     HCDataRef trueData = HCDataCreateWithBoolean(true);
+    ASSERT_TRUE(HCDataIsBoolean(trueData));
     ASSERT_TRUE(HCDataAsBoolean(trueData));
     HCRelease(trueData);
 }
 
 CTEST(HCData, Integer) {
     HCDataRef zeroData = HCDataCreateWithInteger(0);
+    ASSERT_TRUE(HCDataIsInteger(zeroData));
     ASSERT_EQUAL(HCDataAsInteger(zeroData), 0);
     HCRelease(zeroData);
     
     HCDataRef oneData = HCDataCreateWithInteger(1);
+    ASSERT_TRUE(HCDataIsInteger(oneData));
     ASSERT_EQUAL(HCDataAsInteger(oneData), 1);
     HCRelease(oneData);
     
     HCDataRef negativeData = HCDataCreateWithInteger(-1);
+    ASSERT_TRUE(HCDataIsInteger(negativeData));
     ASSERT_EQUAL(HCDataAsInteger(negativeData), -1);
     HCRelease(negativeData);
     
     HCDataRef smallData = HCDataCreateWithInteger(0xFF);
+    ASSERT_TRUE(HCDataIsInteger(smallData));
     ASSERT_EQUAL(HCDataAsInteger(smallData), 0xFF);
     HCRelease(smallData);
     
     HCDataRef bigData = HCDataCreateWithInteger(0x6FFFFFFFFFFFFFFF);
+    ASSERT_TRUE(HCDataIsInteger(bigData));
     ASSERT_EQUAL(HCDataAsInteger(bigData), 0x6FFFFFFFFFFFFFFF);
     HCRelease(bigData);
 }
 
 CTEST(HCData, Real) {
     HCDataRef zeroData = HCDataCreateWithReal(0.0);
-    ASSERT_EQUAL(HCDataAsReal(zeroData), 0.0);
+    ASSERT_TRUE(HCDataIsReal(zeroData));
+    ASSERT_DBL_NEAR(HCDataAsReal(zeroData), 0.0);
     HCRelease(zeroData);
     
     HCDataRef oneData = HCDataCreateWithReal(1.0);
-    ASSERT_EQUAL(HCDataAsReal(oneData), 1.0);
+    ASSERT_TRUE(HCDataIsReal(oneData));
+    ASSERT_DBL_NEAR(HCDataAsReal(oneData), 1.0);
     HCRelease(oneData);
     
     HCDataRef negativeData = HCDataCreateWithReal(-1.0);
-    ASSERT_EQUAL(HCDataAsReal(negativeData), -1.0);
+    ASSERT_TRUE(HCDataIsReal(negativeData));
+    ASSERT_DBL_NEAR(HCDataAsReal(negativeData), -1.0);
     HCRelease(negativeData);
     
     HCDataRef smallData = HCDataCreateWithReal(100.0);
-    ASSERT_EQUAL(HCDataAsReal(smallData), 100.0);
+    ASSERT_TRUE(HCDataIsReal(smallData));
+    ASSERT_DBL_NEAR(HCDataAsReal(smallData), 100.0);
     HCRelease(smallData);
     
     HCDataRef bigData = HCDataCreateWithReal(3.14159e18);
-    ASSERT_EQUAL(HCDataAsReal(bigData), (HCReal)3.14159e18);
+    ASSERT_TRUE(HCDataIsReal(bigData));
+    ASSERT_DBL_NEAR(HCDataAsReal(bigData), (HCReal)3.14159e18);
     HCRelease(bigData);
     
     HCDataRef piData = HCDataCreateWithReal(M_PI);
-    ASSERT_EQUAL(HCDataAsReal(piData), M_PI);
+    ASSERT_TRUE(HCDataIsReal(piData));
+    ASSERT_DBL_NEAR(HCDataAsReal(piData), M_PI);
     HCRelease(piData);
 }
 
@@ -100,6 +113,12 @@ CTEST(HCData, EqualHash) {
     HCRelease(a);
     HCRelease(b);
     HCRelease(c);
+}
+
+CTEST(HCData, Print) {
+    HCDataRef a = HCDataCreateWithInteger(0xBADF00D);
+    HCDataPrint(a, stdout); // TODO: Not to stdout
+    HCPrint(a, stdout); // TODO: Not to stdout
 }
 
 CTEST(HCData, Clear) {

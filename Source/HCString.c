@@ -154,7 +154,7 @@ void HCStringDestroy(HCStringRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEqual(HCStringRef self, HCStringRef other) {
-    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit));
+    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit)) == 0;
 }
 
 HCInteger HCStringHashValue(HCStringRef self) {
@@ -226,15 +226,7 @@ void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInt
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, const HCStringCodeUnit* sourceEnd) {
-    HCInteger count = HCStringCodePointCodeUnitCount[*source];
-    if (source + count > sourceEnd) {
-        return false;
-    }
-    return HCStringCodeUnitIsLegalUTF8(source, count);
-}
-
-HCBoolean HCStringCodeUnitIsLegalUTF8(const HCStringCodeUnit* source, HCInteger count) {
+HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, HCInteger count) {
     HCStringCodePoint a;
     const HCStringCodeUnit* c = source + count;
     switch (count) {
@@ -274,7 +266,7 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
             target++;
             break;
         }
-        if (!HCStringCodeUnitIsLegalUTF8(source, extraBytesToRead+1)) {
+        if (!HCStringCodeUnitSequeceIsValid(source, extraBytesToRead+1)) {
             source++;
             if (writeTarget) {
                 *target = HCStringCodePointReplacement;
@@ -319,6 +311,7 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
 
 HCBoolean HCStringIsCString(HCStringRef self) {
     // NOTE: Direct conversion is guaranteed by HCStringInit()
+    // TODO: Should check if string is valid UTF-8 as well?
     return self->codeUnitCount == (HCInteger)strlen(HCStringAsCString(self));
 }
 

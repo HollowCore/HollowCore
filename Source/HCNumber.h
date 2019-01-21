@@ -35,8 +35,11 @@ void HCNumberPrint(HCNumberRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCNumberIsBoolean(HCNumberRef self);
 HCBoolean HCNumberAsBoolean(HCNumberRef self);
+HCBoolean HCNumberIsInteger(HCNumberRef self);
 HCInteger HCNumberAsInteger(HCNumberRef self);
+HCBoolean HCNumberIsReal(HCNumberRef self);
 HCReal HCNumberAsReal(HCNumberRef self);
 
 #endif /* HCNumber_h */

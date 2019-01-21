@@ -31,8 +31,7 @@ void HCStringDestroy(HCStringRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, const HCStringCodeUnit* sourceEnd);
-HCBoolean HCStringCodeUnitIsLegalUTF8(const HCStringCodeUnit* source, HCInteger count);
+HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, HCInteger count);
 void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, HCStringCodeUnit* sourceEnd, HCStringCodePoint** targetStart, HCStringCodePoint* targetEnd);
 
 #endif /* HCString_Internal_h */

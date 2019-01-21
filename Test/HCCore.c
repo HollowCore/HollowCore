@@ -11,21 +11,30 @@
 
 CTEST(HCCore, Boolean) {
     ASSERT_TRUE(HCBooleanIsEqual(true, !(false)));
-    
     ASSERT_EQUAL(HCBooleanHashValue(false), 0);
     ASSERT_EQUAL(HCBooleanHashValue(true), 1);
 }
 
+CTEST(HCData, BooleanPrint) {
+    HCBooleanPrint(true, stdout); // TODO: Not to stdout
+}
+
 CTEST(HCCore, Integer) {
     ASSERT_TRUE(HCIntegerIsEqual(4, 2 + 2));
-    
     ASSERT_NOT_EQUAL(HCBooleanHashValue(42), 0);
+}
+
+CTEST(HCData, IntegerPrint) {
+    HCIntegerPrint(42, stdout); // TODO: Not to stdout
 }
 
 CTEST(HCCore, Real) {
     ASSERT_TRUE(HCRealIsEqual(1.0, 0.5 + 0.5));
-    
     ASSERT_NOT_EQUAL(HCRealHashValue(3.14159), 0);
+}
+
+CTEST(HCData, RealPrint) {
+    HCRealPrint(3.14159, stdout); // TODO: Not to stdout
 }
 
 /*

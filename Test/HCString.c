@@ -44,6 +44,30 @@ CTEST(HCString, Real) {
     HCRelease(halfString);
 }
 
+CTEST(HCString, EqualHash) {
+    HCStringRef a = HCStringCreateWithInteger(0xBADF00D);
+    HCStringRef b = HCStringCreateWithInteger(0xBADF00D);
+    HCStringRef c = HCStringCreateWithCString("Good food");
+    ASSERT_TRUE(HCStringIsEqual(a, a));
+    ASSERT_TRUE(HCStringIsEqual(b, b));
+    ASSERT_TRUE(HCStringIsEqual(c, c));
+    ASSERT_TRUE(HCStringIsEqual(a, b));
+    ASSERT_TRUE(HCStringIsEqual(b, a));
+    ASSERT_FALSE(HCStringIsEqual(a, c));
+    ASSERT_FALSE(HCStringIsEqual(c, a));
+    ASSERT_EQUAL(HCStringHashValue(a), HCStringHashValue(a));
+    ASSERT_EQUAL(HCStringHashValue(a), HCStringHashValue(b));
+    HCRelease(a);
+    HCRelease(b);
+    HCRelease(c);
+}
+
+CTEST(HCString, Print) {
+    HCStringRef string = HCStringCreateWithCString("Four score and seven years ago");
+    HCStringPrint(string, stdout); // TODO: Not to stdout
+    HCPrint(string, stdout); // TODO: Not to stdout
+}
+
 CTEST(HCString, CodeUnits) {
     const char* simple = "ABCD";
     HCStringRef simpleString = HCStringCreateWithCString(simple);
@@ -57,7 +81,7 @@ CTEST(HCString, CodeUnits) {
     const char* complex = "A⊭B⊨C⊭D";
     HCStringRef complexString = HCStringCreateWithCString(complex);
     ASSERT_EQUAL(HCStringGetCodeUnitCount(complexString), 13);
-    for (HCInteger codeUnitIndex = 0; codeUnitIndex < strlen(complex); codeUnitIndex++) {
+    for (HCInteger codeUnitIndex = 0; codeUnitIndex < (HCInteger)strlen(complex); codeUnitIndex++) {
         ASSERT_EQUAL(HCStringGetCodeUnit(complexString, codeUnitIndex), (HCStringCodeUnit)complex[codeUnitIndex]);
     }
     HCRelease(complexString);
@@ -100,6 +124,20 @@ CTEST(HCString, ExtractCodePoints) {
     ASSERT_EQUAL(extracted[0], 'B');
     ASSERT_EQUAL(extracted[1], 0x22A8); // ⊨
     HCRelease(complexString);
+}
+
+CTEST(HCString, CStringConversion) {
+    const char* string = "I am the very model of a modern Major General.";
+    HCStringRef generalString = HCStringCreateWithCString(string);
+    ASSERT_TRUE(HCStringIsCString(generalString));
+    ASSERT_STR(HCStringAsCString(generalString), string);
+    HCRelease(generalString);
+    
+    const char* brokenString = "I am the very model of a\0 modern Major General.";
+    HCStringRef okString = HCStringCreateWithBytes(HCStringEncodingUTF8, strlen(string) + 1, (HCByte*)brokenString);
+    ASSERT_FALSE(HCStringIsCString(okString));
+    ASSERT_STR(HCStringAsCString(okString), brokenString);
+    HCRelease(okString);
 }
 
 CTEST(HCString, BooleanConversion) {
@@ -178,6 +216,6 @@ CTEST(HCString, RealConversion) {
     
     HCStringRef pie = HCStringCreateWithCString("3.14159 is just about as good as pi");
     ASSERT_FALSE(HCStringIsReal(pie));
-    ASSERT_EQUAL(HCStringAsReal(pie), 3.14159);
+    ASSERT_DBL_NEAR(HCStringAsReal(pie), 3.14159);
     HCRelease(pie);
 }

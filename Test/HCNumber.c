@@ -18,6 +18,9 @@ CTEST(HCNumber, Creation) {
 
 CTEST(HCNumber, Boolean) {
     HCNumberRef falseNumber = HCNumberCreateWithBoolean(false);
+    ASSERT_TRUE(HCNumberIsBoolean(falseNumber));
+    ASSERT_FALSE(HCNumberIsInteger(falseNumber));
+    ASSERT_FALSE(HCNumberIsReal(falseNumber));
     ASSERT_FALSE(HCNumberAsBoolean(falseNumber));
     ASSERT_EQUAL(HCNumberAsInteger(falseNumber), 0);
     ASSERT_EQUAL(HCNumberAsReal(falseNumber), 0.0);
@@ -32,6 +35,9 @@ CTEST(HCNumber, Boolean) {
 
 CTEST(HCNumber, Integer) {
     HCNumberRef zeroNumber = HCNumberCreateWithInteger(0);
+    ASSERT_FALSE(HCNumberIsBoolean(zeroNumber));
+    ASSERT_TRUE(HCNumberIsInteger(zeroNumber));
+    ASSERT_FALSE(HCNumberIsReal(zeroNumber));
     ASSERT_FALSE(HCNumberAsBoolean(zeroNumber));
     ASSERT_EQUAL(HCNumberAsInteger(zeroNumber), 0);
     ASSERT_EQUAL(HCNumberAsReal(zeroNumber), 0.0);
@@ -64,6 +70,9 @@ CTEST(HCNumber, Integer) {
 
 CTEST(HCNumber, Real) {
     HCNumberRef zeroNumber = HCNumberCreateWithReal(0.0);
+    ASSERT_FALSE(HCNumberIsBoolean(zeroNumber));
+    ASSERT_FALSE(HCNumberIsInteger(zeroNumber));
+    ASSERT_TRUE(HCNumberIsReal(zeroNumber));
     ASSERT_FALSE(HCNumberAsBoolean(zeroNumber));
     ASSERT_EQUAL(HCNumberAsInteger(zeroNumber), 0);
     ASSERT_EQUAL(HCNumberAsReal(zeroNumber), 0.0);
@@ -96,7 +105,7 @@ CTEST(HCNumber, Real) {
     HCNumberRef piNumber = HCNumberCreateWithReal(M_PI);
     ASSERT_TRUE(HCNumberAsBoolean(piNumber));
     ASSERT_EQUAL(HCNumberAsInteger(piNumber), 3);
-    ASSERT_EQUAL(HCNumberAsReal(piNumber), M_PI);
+    ASSERT_DBL_NEAR(HCNumberAsReal(piNumber), M_PI);
     HCRelease(piNumber);
 }
 
@@ -154,4 +163,10 @@ CTEST(HCNumber, EqualHash) {
     HCRelease(trueNumber);
     HCRelease(oneNumber);
     HCRelease(oneRealNumber);
+}
+
+CTEST(HCNumber, Print) {
+    HCNumberRef a = HCNumberCreateWithReal(M_PI);
+    HCNumberPrint(a, stdout); // TODO: Not to stdout
+    HCPrint(a, stdout); // TODO: Not to stdout
 }
