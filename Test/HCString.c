@@ -54,7 +54,7 @@ CTEST(HCString, CodeUnits) {
     ASSERT_EQUAL(HCStringGetCodeUnit(simpleString, 3), (HCStringCodeUnit)simple[3]);
     HCRelease(simpleString);
     
-    const char* complex = "A⊭B⊭C⊭D";
+    const char* complex = "A⊭B⊨C⊭D";
     HCStringRef complexString = HCStringCreateWithCString(complex);
     ASSERT_EQUAL(HCStringGetCodeUnitCount(complexString), 13);
     for (HCInteger codeUnitIndex = 0; codeUnitIndex < strlen(complex); codeUnitIndex++) {
@@ -72,14 +72,32 @@ CTEST(HCString, CodePoints) {
     ASSERT_EQUAL(HCStringGetCodePoint(simpleString, 3), 'D');
     HCRelease(simpleString);
     
-    HCStringRef complexString = HCStringCreateWithCString("A⊭B⊭C⊭D");
+    HCStringRef complexString = HCStringCreateWithCString("A⊭B⊨C⊭D");
     ASSERT_EQUAL(HCStringGetCodePointCount(complexString), 7);
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 0), 'A');
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 1), 0x22AD); // ⊭
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 2), 'B');
-    ASSERT_EQUAL(HCStringGetCodePoint(complexString, 3), 0x22AD); // ⊭
+    ASSERT_EQUAL(HCStringGetCodePoint(complexString, 3), 0x22A8); // ⊨
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 4), 'C');
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 5), 0x22AD); // ⊭
     ASSERT_EQUAL(HCStringGetCodePoint(complexString, 6), 'D');
+    HCRelease(complexString);
+}
+
+CTEST(HCString, ExtractCodeUnits) {
+    HCStringRef simpleString = HCStringCreateWithCString("ABCD");
+    HCStringCodeUnit extracted[2];
+    HCStringExtractCodeUnits(simpleString, 1, 2, extracted);
+    ASSERT_EQUAL(extracted[0], 'B');
+    ASSERT_EQUAL(extracted[1], 'C');
+    HCRelease(simpleString);
+}
+
+CTEST(HCString, ExtractCodePoints) {
+    HCStringRef complexString = HCStringCreateWithCString("A⊭B⊨C⊭D");
+    HCStringCodePoint extracted[2];
+    HCStringExtractCodePoints(complexString, 2, 2, extracted);
+    ASSERT_EQUAL(extracted[0], 'B');
+    ASSERT_EQUAL(extracted[1], 0x22A8); // ⊨
     HCRelease(complexString);
 }

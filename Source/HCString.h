@@ -51,8 +51,10 @@ void HCStringPrint(HCStringRef self, FILE* stream);
 HCBoolean HCStringIsEmpty(HCStringRef self);
 HCInteger HCStringGetCodeUnitCount(HCStringRef self);
 HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex);
+void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger count, HCStringCodeUnit* destination);
 HCInteger HCStringGetCodePointCount(HCStringRef self);
 HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex);
+void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInteger count, HCStringCodePoint* destination);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion

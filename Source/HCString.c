@@ -170,6 +170,10 @@ HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex) 
     return self->codeUnits[codeUnitIndex];
 }
 
+void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger count, HCStringCodeUnit* destination) {
+    memcpy(destination, self->codeUnits + codeUnitIndex, count * sizeof(HCStringCodeUnit));
+}
+
 HCInteger HCStringGetCodePointCount(HCStringRef self) {
     HCInteger size = 0;
     HCStringCodePoint* end = (HCStringCodePoint*)(-1);
@@ -178,19 +182,30 @@ HCInteger HCStringGetCodePointCount(HCStringRef self) {
 }
 
 HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex) {
+    // Convert the requested code point
+    HCStringCodePoint result[1] = {0};
+    HCStringExtractCodePoints(self, codePointIndex, 1, result);
+    return *result;
+}
+
+void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInteger count, HCStringCodePoint* destination) {
+    // Walk to the requested code point index
     HCInteger start = 0;
     HCInteger end = sizeof(HCStringCodePoint) * codePointIndex;
     HCStringCodeUnit* codeUnitIndex = self->codeUnits;
     HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, (HCStringCodePoint**)&start, (HCStringCodePoint*)end);
     if (codeUnitIndex >= self->codeUnits + self->codeUnitCount) {
-        return HCStringCodePointReplacement;
+        return;
     }
     
-    HCStringCodePoint result[1] = {0};
-    HCStringCodePoint* resultStart = result;
-    HCStringCodePoint* resultEnd = result + 1;
-    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, &resultStart, resultEnd);
-    return *result;
+    // Convert code points until the count is reached, or the source is exausted
+    HCStringCodePoint* codePoints = destination;
+    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, &codePoints, codePoints + count);
+    
+    // Fill any remaining memory in the destination
+    for (; codePoints < destination; codePoints++) {
+        *codePoints = HCStringCodePointReplacement;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
