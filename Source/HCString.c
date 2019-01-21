@@ -95,7 +95,22 @@ HCStringRef HCStringCreateWithCString(const char* value) {
     
     // Initialize the string object with the null-terminated string value
     HCStringRef self = calloc(sizeof(HCString), 1);
-    HCStringInit(self, length, (HCStringCodeUnit*)value);
+    HCStringInit(self, length * sizeof(char), (HCStringCodeUnit*)value);
+    return self;
+}
+
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes) {
+    // Convert passed bytes to UTF-8 code units
+    HCStringCodeUnit* codeUnits;
+    switch (encoding) {
+        case HCStringEncodingUTF8: codeUnits = (HCStringCodeUnit*)bytes; break;
+        case HCStringEncodingUTF16: return NULL; // TODO: Support for UTF-16
+        case HCStringEncodingUTF32: return NULL; // TODO: Support for UTF-32
+    }
+    
+    // Initialize the string object with the code unit data
+    HCStringRef self = calloc(sizeof(HCString), 1);
+    HCStringInit(self, size, codeUnits);
     return self;
 }
 

@@ -32,10 +32,6 @@ HCDataRef HCDataCreate() {
     return HCDataCreateWithBytes(0, NULL);
 }
 
-HCDataRef HCDataCreateWithSize(HCInteger size) {
-    return HCDataCreateWithBytes(size, NULL);
-}
-
 HCDataRef HCDataCreateWithBytes(HCInteger size, HCByte* bytes) {
     HCDataRef self = calloc(sizeof(HCData), 1);
     HCDataInit(self, size, bytes);
@@ -61,11 +57,15 @@ void HCDataInit(void* memory, HCInteger size, HCByte* data) {
     }
     // TODO: Check that the allocation and copy proceed successfully, determine how to pass the error otherwise
     
+    HCDataInitWithoutCopying(memory, size, dataCopy);
+}
+
+void HCDataInitWithoutCopying(void* memory, HCInteger size, HCByte* data) {
     HCObjectInit(memory);
     HCDataRef self = memory;
     self->base.type = HCDataType;
     self->size = size;
-    self->data = dataCopy;
+    self->data = data;
 }
 
 void HCDataDestroy(HCDataRef self) {
@@ -129,30 +129,48 @@ HCReal HCDataAsReal(HCDataRef self) {
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCDataClear(HCDataRef self) {
-    HCDataResize(self, 0);
+    HCDataRemoveBytes(self, self->size);
 }
 
-void HCDataResize(HCDataRef self, HCInteger size) {
+void HCDataAddBytes(HCDataRef self, HCInteger size, HCByte* bytes) {
+    self->data = realloc(self->data, size);
+    if (bytes != NULL) {
+        memcpy(self->data + self->size, bytes, size);
+    }
+    self->size += size;
+    // TODO: Failable
+}
+
+void HCDataRemoveBytes(HCDataRef self, HCInteger size) {
+    if (size <= 0) {
+        return;
+    }
+    size = size > self->size ? 0 : self->size - size;
     self->data = realloc(self->data, size);
     self->size = size;
     // TODO: Failable
 }
 
-void HCDataAppendBytes(HCDataRef self, HCInteger size, HCByte* bytes) {
-    self->data = realloc(self->data, size);
-    memcpy(self->data + self->size, bytes, size);
-    self->size += size;
-    // TODO: Failable
+void HCDataAddBoolean(HCDataRef self, HCBoolean value) {
+    HCDataAddBytes(self, sizeof(HCBoolean), (HCByte*)&value);
 }
 
-void HCDataAppendBoolean(HCDataRef self, HCBoolean value) {
-    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
+void HCDataRemoveBoolean(HCDataRef self) {
+    HCDataRemoveBytes(self, sizeof(HCBoolean));
 }
 
-void HCDataAppendInteger(HCDataRef self, HCInteger value) {
-    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
+void HCDataAddInteger(HCDataRef self, HCInteger value) {
+    HCDataAddBytes(self, sizeof(HCInteger), (HCByte*)&value);
 }
 
-void HCDataAppendReal(HCDataRef self, HCReal value) {
-    HCDataAppendBytes(self, sizeof(value), (HCByte*)&value);
+void HCDataRemoveInteger(HCDataRef self) {
+    HCDataRemoveBytes(self, sizeof(HCInteger));
+}
+
+void HCDataAddReal(HCDataRef self, HCReal value) {
+    HCDataAddBytes(self, sizeof(HCReal), (HCByte*)&value);
+}
+
+void HCDataRemoveReal(HCDataRef self) {
+    HCDataRemoveBytes(self, sizeof(HCReal));
 }

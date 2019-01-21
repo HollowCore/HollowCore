@@ -22,6 +22,11 @@ typedef struct HCString* HCStringRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef uint8_t HCStringCodeUnit;
 typedef uint32_t HCStringCodePoint;
+typedef enum HCStringEncoding {
+    HCStringEncodingUTF8,
+    HCStringEncodingUTF16,
+    HCStringEncodingUTF32
+} HCStringEncoding;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -31,7 +36,7 @@ HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
 HCStringRef HCStringCreateWithCString(const char* value);
-HCStringRef HCStringCreateWithBytesUTF8(const char* value);
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
