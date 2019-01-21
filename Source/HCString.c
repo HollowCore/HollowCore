@@ -12,7 +12,22 @@
 #include <float.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Definitions
+// MARK: - Object Type
+//----------------------------------------------------------------------------------------------------------------------------------
+const HCObjectTypeData HCStringTypeDataInstance = {
+    .base = {
+        .ancestor = &HCObjectTypeDataInstance.base,
+        .name = "HCString",
+    },
+    .isEqual = (void*)HCStringIsEqual,
+    .hashValue = (void*)HCStringHashValue,
+    .print = (void*)HCStringPrint,
+    .destroy = (void*)HCStringDestroy,
+};
+HCType HCStringType = (HCType)&HCStringTypeDataInstance;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 static const char HCStringCodePointCodeUnitCount[256] = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -32,21 +47,6 @@ static const HCStringCodePoint HCStringSurrogateHighStart = 0x0000D800UL;
 //static const HCStringCodePoint HCStringSurrogateLowStart = 0x0000DC00UL;
 static const HCStringCodePoint HCStringSurrogateLowEnd = 0x0000DFFFUL;
 static const HCStringCodePoint HCStringCodePointReplacement = 0x0000FFFDUL;
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Type
-//----------------------------------------------------------------------------------------------------------------------------------
-const HCObjectTypeData HCStringTypeDataInstance = {
-    .base = {
-        .ancestor = &HCObjectTypeDataInstance.base,
-        .name = "HCString",
-    },
-    .isEqual = (void*)HCStringIsEqual,
-    .hashValue = (void*)HCStringHashValue,
-    .print = (void*)HCStringPrint,
-    .destroy = (void*)HCStringDestroy,
-};
-HCType HCStringType = (HCType)&HCStringTypeDataInstance;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction

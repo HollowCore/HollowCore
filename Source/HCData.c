@@ -133,7 +133,7 @@ void HCDataClear(HCDataRef self) {
 }
 
 void HCDataAddBytes(HCDataRef self, HCInteger size, HCByte* bytes) {
-    self->data = realloc(self->data, size);
+    self->data = realloc(self->data, self->size + size);
     if (bytes != NULL) {
         memcpy(self->data + self->size, bytes, size);
     }
