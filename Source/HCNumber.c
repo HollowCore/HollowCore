@@ -61,6 +61,7 @@ void HCNumberInit(void* memory, HCNumberValueType type, HCNumberValue value) {
 }
 
 void HCNumberDestroy(HCNumberRef self) {
+    (void)self; // Unused
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

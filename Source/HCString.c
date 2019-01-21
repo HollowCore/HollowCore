@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <float.h>
+#include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -47,6 +48,20 @@ static const HCStringCodePoint HCStringSurrogateHighStart = 0x0000D800UL;
 //static const HCStringCodePoint HCStringSurrogateLowStart = 0x0000DC00UL;
 static const HCStringCodePoint HCStringSurrogateLowEnd = 0x0000DFFFUL;
 static const HCStringCodePoint HCStringCodePointReplacement = 0x0000FFFDUL;
+
+static const char* HCStringFalseBooleans[] = {
+    "⊭",
+    "0",
+    "f",
+    "false",
+};
+
+static const char* HCStringTrueBooleans[] = {
+    "⊨",
+    "1",
+    "t",
+    "true",
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -302,24 +317,84 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
     }
 }
 
-HCBoolean HCStringAsBoolean(HCStringRef self) {
-    // TODO: This
-    return false;
-}
-
-HCInteger HCStringAsInteger(HCStringRef self) {
-    // TODO: This
-    return 0;
-}
-
-HCReal HCStringAsReal(HCStringRef self) {
-    // TODO: This
-    return 0.0;
+HCBoolean HCStringIsCString(HCStringRef self) {
+    // NOTE: Direct conversion is guaranteed by HCStringInit()
+    return self->codeUnitCount == (HCInteger)strlen(HCStringAsCString(self));
 }
 
 const char* HCStringAsCString(HCStringRef self) {
     // NOTE: Direct conversion is guaranteed by HCStringInit()
     return (char*)self->codeUnits;
+}
+
+HCBoolean HCStringIsBoolean(HCStringRef self) {
+    // TODO: Use HCStringIsEqual() with literal string booleans
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringFalseBooleans) / sizeof(const char*)); booleanIndex++) {
+        if (HCStringIsEqualToCString(self, HCStringFalseBooleans[booleanIndex])) {
+            return true;
+        }
+    }
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringTrueBooleans) / sizeof(const char*)); booleanIndex++) {
+        if (HCStringIsEqualToCString(self, HCStringTrueBooleans[booleanIndex])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+HCBoolean HCStringAsBoolean(HCStringRef self) {
+    // TODO: Use HCStringHasPrefix() with literal string booleans
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringTrueBooleans) / sizeof(const char*)); booleanIndex++) {
+        const char* boolean = HCStringTrueBooleans[booleanIndex];
+        size_t booleanLength = strlen(boolean);
+        if (self->codeUnitCount >= (HCInteger)booleanLength && strncmp(HCStringAsCString(self), boolean, booleanLength) == 0) {
+            if (self->codeUnits[booleanLength] == '\0' || self->codeUnits[booleanLength] == ' ') {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+HCBoolean HCStringIsInteger(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    char* end = (char*)string;
+    long long integer = strtoll(string, &end, 10);
+    if (sizeof(long long) != sizeof(HCInteger)) {
+        if (integer > HCIntegerMax) {
+            return false;
+        }
+        if (integer < HCIntegerMin) {
+            return false;
+        }
+    }
+    return end == string + self->codeUnitCount;
+}
+
+HCInteger HCStringAsInteger(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    long long integer = strtoll(string, NULL, 10);
+    if (sizeof(long long) == sizeof(HCInteger)) {
+        return integer;
+    }
+    if (integer > HCIntegerMax) {
+        return HCIntegerMax;
+    }
+    if (integer < HCIntegerMin) {
+        return HCIntegerMin;
+    }
+    return integer;
+}
+
+HCBoolean HCStringIsReal(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    char* end = (char*)string;
+    HCReal real = strtod(string, &end);
+    return !isnan(real) && end == string + self->codeUnitCount;
+}
+
+HCReal HCStringAsReal(HCStringRef self) {
+    return strtod(HCStringAsCString(self), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

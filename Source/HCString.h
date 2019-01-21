@@ -59,9 +59,13 @@ void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInt
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCStringIsCString(HCStringRef self);
 const char* HCStringAsCString(HCStringRef self);
+HCBoolean HCStringIsBoolean(HCStringRef self);
 HCBoolean HCStringAsBoolean(HCStringRef self);
+HCBoolean HCStringIsInteger(HCStringRef self);
 HCInteger HCStringAsInteger(HCStringRef self);
+HCBoolean HCStringIsReal(HCStringRef self);
 HCReal HCStringAsReal(HCStringRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------

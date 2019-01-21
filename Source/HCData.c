@@ -114,15 +114,15 @@ const HCByte* HCDataGetBytes(HCDataRef self) {
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCDataAsBoolean(HCDataRef self) {
-    return self->size > sizeof(HCBoolean) ? false : *(HCBoolean*)self->data;
+    return self->size > (HCInteger)sizeof(HCBoolean) ? false : *(HCBoolean*)self->data;
 }
 
 HCInteger HCDataAsInteger(HCDataRef self) {
-    return self->size > sizeof(HCInteger) ? 0 : *(HCInteger*)self->data;
+    return self->size > (HCInteger)sizeof(HCInteger) ? 0 : *(HCInteger*)self->data;
 }
 
 HCReal HCDataAsReal(HCDataRef self) {
-    return self->size > sizeof(HCReal) ? NAN : *(HCReal*)self->data;
+    return self->size > (HCInteger)sizeof(HCReal) ? NAN : *(HCReal*)self->data;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
