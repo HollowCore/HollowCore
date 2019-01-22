@@ -167,7 +167,7 @@ HCInteger HCStringHashValue(HCStringRef self) {
 }
 
 void HCStringPrint(HCStringRef self, FILE* stream) {
-    fprintf(stream, "%s", HCStringAsCString(self));
+    fprintf(stream, "\"%s\"", HCStringAsCString(self));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

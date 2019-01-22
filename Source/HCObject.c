@@ -83,5 +83,5 @@ HCInteger HCObjectHashValue(HCObjectRef self) {
 }
 
 void HCObjectPrint(HCObjectRef self, FILE* stream) {
-    fprintf(stream, "<%s> %p", self->type->name, self);
+    fprintf(stream, "<%s@%p>", self->type->name, self);
 }

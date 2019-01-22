@@ -102,7 +102,11 @@ HCInteger HCNumberHashValue(HCNumberRef self) {
 }
 
 void HCNumberPrint(HCNumberRef self, FILE* stream) {
-    HCObjectPrint((HCObjectRef)self, stream);
+    switch (self->type) {
+        case HCNumberValueTypeBoolean: HCBooleanPrint(self->value.boolean, stream); break;
+        case HCNumberValueTypeInteger: HCIntegerPrint(self->value.integer, stream); break;
+        case HCNumberValueTypeReal: HCRealPrint(self->value.real, stream); break;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

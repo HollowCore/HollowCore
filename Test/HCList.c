@@ -231,3 +231,49 @@ CTEST(HCList, CompoundRemove) {
     HCRelease(three);
     HCRelease(four);
 }
+
+CTEST(HCList, MemoryConvenience) {
+    HCNumberRef zero = HCNumberCreateWithInteger(0);
+    HCNumberRef one = HCNumberCreateWithInteger(1);
+    HCNumberRef two = HCNumberCreateWithInteger(2);
+    HCNumberRef three = HCNumberCreateWithInteger(3);
+    HCNumberRef four = HCNumberCreateWithInteger(4);
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCRetain(zero));
+    HCListAddObjectReleased(list, HCRetain(one));
+    HCListAddObjectReleased(list, HCRetain(three));
+    HCListAddObjectReleased(list, HCRetain(four));
+    HCListAddObjectReleasedAtIndex(list, 2, HCRetain(two));
+    ASSERT_TRUE(HCIsEqual(HCListObjectAtIndex(list, 0), zero));
+    ASSERT_TRUE(HCIsEqual(HCListObjectAtIndex(list, 1), one));
+    ASSERT_TRUE(HCIsEqual(HCListObjectAtIndex(list, 2), two));
+    ASSERT_TRUE(HCIsEqual(HCListObjectAtIndex(list, 3), three));
+    ASSERT_TRUE(HCIsEqual(HCListObjectAtIndex(list, 4), four));
+    
+    HCNumberRef a = HCListRemoveObjectRetainedAtIndex(list, 2);
+    ASSERT_TRUE(HCIsEqual(a, two));
+    HCRelease(a);
+    
+    HCNumberRef b = HCListRemoveObjectRetained(list);
+    ASSERT_TRUE(HCIsEqual(b, four));
+    HCRelease(b);
+    
+    HCNumberRef c = HCListRemoveFirstObjectRetainedEqualToObject(list, one);
+    ASSERT_TRUE(HCIsEqual(c, one));
+    HCRelease(c);
+    
+    HCNumberRef d = HCListRemoveLastObjectRetainedEqualToObject(list, three);
+    ASSERT_TRUE(HCIsEqual(d, three));
+    HCRelease(d);
+    
+    HCNumberRef e = HCListRemoveObjectRetainedEqualToObject(list, HCListCount(list), true, zero);
+    ASSERT_TRUE(HCIsEqual(e, zero));
+    HCRelease(e);
+    
+    HCRelease(list);
+    HCRelease(zero);
+    HCRelease(one);
+    HCRelease(two);
+    HCRelease(three);
+    HCRelease(four);
+}

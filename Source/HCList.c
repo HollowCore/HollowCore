@@ -86,7 +86,15 @@ HCInteger HCListHashValue(HCListRef self) {
 }
 
 void HCListPrint(HCListRef self, FILE* stream) {
-    HCObjectPrint((HCObjectRef)self, stream);
+    fprintf(stream, "[");
+    for (HCInteger index = 0; index < self->count; index++) {
+        HCRef object = HCListObjectAtIndex(self, index);
+        HCPrint(object, stream);
+        if (index != self->count - 1) {
+            fprintf(stream, ",");
+        }
+    }
+    fprintf(stream, "]");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -185,11 +193,11 @@ void HCListAddObjectAtIndex(HCListRef self, HCInteger index, HCRef object) {
     }
     
     // Shift objects to make a slot available for the object
-    for (HCInteger moveIndex = index; moveIndex < self->count; moveIndex++) {
-        self->objects[moveIndex + 1] = self->objects[moveIndex];
-    }
     self->count++;
-
+    for (HCInteger moveIndex = self->count - 1; moveIndex > index; moveIndex--) {
+        self->objects[moveIndex] = self->objects[moveIndex - 1];
+    }
+    
     // Add the object
     self->objects[index] = HCRetain(object);
 }

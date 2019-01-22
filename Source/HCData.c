@@ -92,7 +92,7 @@ HCInteger HCDataHashValue(HCDataRef self) {
 }
 
 void HCDataPrint(HCDataRef self, FILE* stream) {
-    HCObjectPrint((HCObjectRef)self, stream);
+    fprintf(stream, "<%s@%p,size:%li>", self->base.type->name, self, (long)self->size);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
