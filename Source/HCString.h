@@ -49,11 +49,11 @@ void HCStringPrint(HCStringRef self, FILE* stream);
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEmpty(HCStringRef self);
-HCInteger HCStringGetCodeUnitCount(HCStringRef self);
-HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex);
+HCInteger HCStringCodeUnitCount(HCStringRef self);
+HCStringCodeUnit HCStringCodeUnitAtIndex(HCStringRef self, HCInteger codeUnitIndex);
 void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger count, HCStringCodeUnit* destination);
-HCInteger HCStringGetCodePointCount(HCStringRef self);
-HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex);
+HCInteger HCStringCodePointCount(HCStringRef self);
+HCStringCodePoint HCStringCodePointAtIndex(HCStringRef self, HCInteger codePointIndex);
 void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInteger count, HCStringCodePoint* destination);
 
 //----------------------------------------------------------------------------------------------------------------------------------

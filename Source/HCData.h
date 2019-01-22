@@ -37,8 +37,8 @@ void HCDataPrint(HCDataRef self, FILE* stream);
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCDataIsEmpty(HCDataRef self);
-HCInteger HCDataGetSize(HCDataRef self);
-const HCByte* HCDataGetBytes(HCDataRef self);
+HCInteger HCDataSize(HCDataRef self);
+const HCByte* HCDataBytes(HCDataRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion

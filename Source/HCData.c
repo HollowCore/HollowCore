@@ -99,14 +99,14 @@ void HCDataPrint(HCDataRef self, FILE* stream) {
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCDataIsEmpty(HCDataRef self) {
-    return HCDataGetSize(self) == 0;
+    return HCDataSize(self) == 0;
 }
 
-HCInteger HCDataGetSize(HCDataRef self) {
+HCInteger HCDataSize(HCDataRef self) {
     return self->size;
 }
 
-const HCByte* HCDataGetBytes(HCDataRef self) {
+const HCByte* HCDataBytes(HCDataRef self) {
     return self->data;
 }
 

@@ -177,11 +177,11 @@ HCBoolean HCStringIsEmpty(HCStringRef self) {
     return self->codeUnitCount == 0;
 }
 
-HCInteger HCStringGetCodeUnitCount(HCStringRef self) {
+HCInteger HCStringCodeUnitCount(HCStringRef self) {
     return self->codeUnitCount;
 }
 
-HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex) {
+HCStringCodeUnit HCStringCodeUnitAtIndex(HCStringRef self, HCInteger codeUnitIndex) {
     return self->codeUnits[codeUnitIndex];
 }
 
@@ -189,14 +189,14 @@ void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteg
     memcpy(destination, self->codeUnits + codeUnitIndex, count * sizeof(HCStringCodeUnit));
 }
 
-HCInteger HCStringGetCodePointCount(HCStringRef self) {
+HCInteger HCStringCodePointCount(HCStringRef self) {
     HCInteger size = 0;
     HCStringCodePoint* end = (HCStringCodePoint*)(-1);
     HCStringConvertCodeUnits(self, NULL, NULL, (HCStringCodePoint**)&size, end);
     return (HCInteger)(size) / sizeof(HCStringCodePoint);
 }
 
-HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex) {
+HCStringCodePoint HCStringCodePointAtIndex(HCStringRef self, HCInteger codePointIndex) {
     // Convert the requested code point
     HCStringCodePoint result[1] = {0};
     HCStringExtractCodePoints(self, codePointIndex, 1, result);
