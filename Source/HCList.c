@@ -29,6 +29,7 @@ HCType HCListType = (HCType)&HCListTypeListInstance;
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 const HCInteger HCListNotFound = -1;
+const HCListIterator HCListIteratorInvalid = { .list = NULL, .index = HCListNotFound, .object = NULL, .state = (void*)HCListNotFound };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -291,4 +292,54 @@ HCRef HCListRemoveLastObjectRetainedEqualToObject(HCListRef self, HCRef object) 
 HCRef HCListRemoveObjectRetainedEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object) {
     HCInteger index = HCListIndexOfObject(self, searchIndex, reverseSearch, object);
     return HCListRemoveObjectRetainedAtIndex(self, index);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Iteration
+//----------------------------------------------------------------------------------------------------------------------------------
+HCListIterator HCListIterationBegin(HCListRef self) {
+    return HCListIterationBeginAtIndex(self, 0);
+}
+
+HCListIterator HCListIterationBeginAtLast(HCListRef self) {
+    return HCListIterationBeginAtIndex(self, self->count - 1);
+}
+
+HCListIterator HCListIterationBeginAtIndex(HCListRef self, HCInteger index) {
+    HCListIterator iterator = {
+        .list = self,
+        .index = HCListContainsIndex(self, index) ? index : HCListNotFound,
+        .object = HCListObjectAtIndex(self, index),
+        .state = (void*)0x1
+    };
+    return iterator;
+}
+
+void HCListIterationPrevious(HCListIterator* iterator) {
+    iterator->index--;
+    if (iterator->index < -1) {
+        iterator->index = -1;
+    }
+    iterator->object = HCListObjectAtIndex(iterator->list, iterator->index);
+}
+
+void HCListIterationNext(HCListIterator* iterator) {
+    iterator->index++;
+    if (iterator->index > iterator->list->count) {
+        iterator->index = iterator->list->count;
+    }
+    iterator->object = HCListObjectAtIndex(iterator->list, iterator->index);
+}
+
+void HCListIterationEnd(HCListIterator* iterator) {
+    iterator->index = HCListNotFound;
+    iterator->object = NULL;
+}
+
+HCBoolean HCListIterationHasBegun(HCListIterator* iterator) {
+    return iterator->state == (void*)0x1;
+}
+
+HCBoolean HCListIterationHasEnded(HCListIterator* iterator) {
+    return HCListIterationHasBegun(iterator) && iterator->list != NULL && (iterator->object == NULL || !HCListContainsIndex(iterator->list, iterator->index));
 }

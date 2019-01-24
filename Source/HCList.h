@@ -22,6 +22,14 @@ typedef struct HCList* HCListRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 extern const HCInteger HCListNotFound;
 
+typedef struct HCListIterator {
+    HCListRef list;
+    HCInteger index;
+    HCRef object;
+    void* state;
+} HCListIterator;
+extern const HCListIterator HCListIteratorInvalid;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -79,5 +87,17 @@ HCRef HCListRemoveObjectRetainedAtIndex(HCListRef self, HCInteger index);
 HCRef HCListRemoveFirstObjectRetainedEqualToObject(HCListRef self, HCRef object);
 HCRef HCListRemoveLastObjectRetainedEqualToObject(HCListRef self, HCRef object);
 HCRef HCListRemoveObjectRetainedEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Iteration
+//----------------------------------------------------------------------------------------------------------------------------------
+HCListIterator HCListIterationBegin(HCListRef self);
+HCListIterator HCListIterationBeginAtLast(HCListRef self);
+HCListIterator HCListIterationBeginAtIndex(HCListRef self, HCInteger index);
+void HCListIterationPrevious(HCListIterator* iterator);
+void HCListIterationNext(HCListIterator* iterator);
+void HCListIterationEnd(HCListIterator* iterator);
+HCBoolean HCListIterationHasBegun(HCListIterator* iterator);
+HCBoolean HCListIterationHasEnded(HCListIterator* iterator);
 
 #endif /* HCList_h */
