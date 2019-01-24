@@ -33,6 +33,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9CD282F21E3DD11005B566A /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
 		C9CD283021E3DD13005B566A /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
 		C9CD283121E3DD16005B566A /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5E21D6E03A0001779C /* HCNumber.c */; };
@@ -65,6 +66,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C9AA9A2321F1743A001AA9E7 /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
+		C9AA9A2521F174B8001AA9E7 /* HollowCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HollowCore.h; sourceTree = "<group>"; };
 		C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		C9B705E421E3DCC600B63F05 /* libHollowCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHollowCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9DBDC5621D6D8F20001779C /* HCObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCObject.h; sourceTree = "<group>"; };
@@ -137,6 +140,7 @@
 				C9E2F57821ED37DF00856F21 /* main.c */,
 				C9E2F57921ED37DF00856F21 /* ctest.h */,
 				C9E2F58D21ED3A4E00856F21 /* HCCore.c */,
+				C9AA9A2321F1743A001AA9E7 /* HCObject.c */,
 				C9E2F57B21ED387700856F21 /* HCNumber.c */,
 			);
 			path = Test;
@@ -162,6 +166,7 @@
 		F8CBB8E721E5BD0B00DB022F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C9AA9A2521F174B8001AA9E7 /* HollowCore.h */,
 				C9DBDC5A21D6D96B0001779C /* HCCore.h */,
 				C9DBDC5B21D6D96B0001779C /* HCCore.c */,
 				C9DBDC5621D6D8F20001779C /* HCObject.h */,
@@ -319,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9E2F58921ED395D00856F21 /* main.c in Sources */,
+				C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */,
 				C9E2F58E21ED3A4E00856F21 /* HCCore.c in Sources */,
 				C9E2F58C21ED3A2700856F21 /* HCNumber.c in Sources */,
 			);
