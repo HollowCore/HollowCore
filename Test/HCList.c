@@ -20,6 +20,7 @@ CTEST(HCList, Access) {
     HCNumberRef number = HCNumberCreateWithInteger(42);
     HCListRef list = HCListCreate();
     ASSERT_TRUE(HCListIsEmpty(list));
+    ASSERT_FALSE(HCListContainsObject(list, number));
     HCListAddObject(list, number);
     ASSERT_FALSE(HCListIsEmpty(list));
     ASSERT_TRUE(HCIsEqual(HCListFirstObject(list), number));
