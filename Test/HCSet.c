@@ -99,6 +99,27 @@ CTEST(HCSet, AddRemove) {
     HCRelease(three);
 }
 
+CTEST(HCSet, AddRemoveMany) {
+    HCInteger count = 1000;
+    HCSetRef set = HCSetCreate();
+    for (HCInteger index = 0; index < count; index++) {
+        HCSetAddObjectReleased(set, HCNumberCreateWithInteger(index));
+        ASSERT_EQUAL(HCSetCount(set), index + 1);
+        for (HCInteger checkIndex = 0; checkIndex <= index; checkIndex++) {
+            HCNumberRef number = HCNumberCreateWithInteger(checkIndex);
+            ASSERT_TRUE(HCSetContainsObject(set, number));
+            HCRelease(number);
+        }
+    }
+    for (HCInteger index = 0; index < count; index++) {
+        HCNumberRef number = HCNumberCreateWithInteger(index);
+        HCSetRemoveObject(set, number);
+        ASSERT_FALSE(HCSetContainsObject(set, number));
+        HCRelease(number);
+    }
+    HCRelease(set);
+}
+
 CTEST(HCSet, EqualHash) {
     HCSetRef a = HCSetCreate();
     HCSetAddObjectReleased(a, HCNumberCreateWithInteger(0));
