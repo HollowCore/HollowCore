@@ -203,6 +203,8 @@ void HCSetClear(HCSetRef self) {
 }
 
 void HCSetAddObject(HCSetRef self, HCRef object) {
+    // TODO: Check capacity, if it is greater than expand threshold, expand and rehash
+    
     // Find the slot index the object should occupy, as well as the end slot at that index
     HCSetSlot* slot = NULL;
     HCBoolean found = false;
@@ -244,6 +246,8 @@ void HCSetRemoveObject(HCSetRef self, HCRef object) {
             free(nextSlot);
         }
     }
+    
+    // TODO: Check capacity, if it is smaller than contract threshold, contract and rehash
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
