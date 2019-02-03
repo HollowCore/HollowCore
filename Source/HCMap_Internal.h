@@ -50,6 +50,5 @@ void HCMapPairDestroy(HCMapPairRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCMapPairIsEqual(HCMapPairRef self, HCMapPairRef other);
 HCInteger HCMapPairHashValue(HCMapPairRef self);
-void HCMapPairPrint(HCMapPairRef self, FILE* stream);
 
 #endif /* HCMap_Internal_h */

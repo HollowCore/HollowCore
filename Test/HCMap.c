@@ -331,17 +331,26 @@ CTEST(HCMap, MemoryConvenience) {
     HCNumberRef three = HCNumberCreateWithInteger(3);
     HCNumberRef four = HCNumberCreateWithInteger(4);
     HCMapRef map = HCMapCreate();
-    HCMapAddObjectReleasedForCStringKey(map, "0", HCRetain(zero));
-    HCMapAddObjectReleasedForCStringKey(map, "1", HCRetain(one));
+    HCMapAddObjectForCStringKey(map, "0", HCRetain(zero));
+    HCMapAddObjectForCStringKey(map, "1", HCRetain(one));
     HCMapAddObjectReleasedForCStringKey(map, "2", HCRetain(two));
     HCMapAddObjectReleasedForCStringKey(map, "3", HCRetain(three));
     HCMapAddObjectReleasedForCStringKey(map, "4", HCRetain(four));
+    
+    ASSERT_TRUE(HCMapContainsCStringKey(map, "2"));
+    ASSERT_FALSE(HCMapContainsCStringKey(map, "two"));
+    
+    ASSERT_TRUE(HCIsEqual(HCMapObjectForCStringKey(map, "2"), two));
+    
+    ASSERT_TRUE(HCMapContainsCStringKey(map, "1"));
+    HCMapRemoveObjectForCStringKey(map, "1");
+    ASSERT_FALSE(HCMapContainsCStringKey(map, "1"));
     
     HCNumberRef a = HCMapRemoveObjectRetainedForCStringKey(map, "2");
     ASSERT_TRUE(HCIsEqual(a, two));
     HCRelease(a);
     
-    HCNumberRef b = HCMapRemoveObjectRetainedForCStringKey(map, "4");
+    HCNumberRef b = HCMapRemoveObjectRetainedForKeyReleased(map, HCStringCreateWithInteger(4));
     ASSERT_TRUE(HCIsEqual(b, four));
     HCRelease(b);
     
@@ -377,6 +386,7 @@ CTEST(HCMap, Iteration) {
     i = HCMapIterationBegin(map);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_TRUE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_EQUAL(i.index, 0);
     ASSERT_TRUE(HCIsEqual(i.key, zeroKey) || HCIsEqual(i.key, oneKey) || HCIsEqual(i.key, twoKey) || HCIsEqual(i.key, threeKey) || HCIsEqual(i.key, fourKey));
@@ -384,6 +394,7 @@ CTEST(HCMap, Iteration) {
     HCMapIterationNext(&i);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_TRUE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_EQUAL(i.index, 1);
     ASSERT_TRUE(HCIsEqual(i.key, zeroKey) || HCIsEqual(i.key, oneKey) || HCIsEqual(i.key, twoKey) || HCIsEqual(i.key, threeKey) || HCIsEqual(i.key, fourKey));
@@ -391,6 +402,7 @@ CTEST(HCMap, Iteration) {
     HCMapIterationNext(&i);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_TRUE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_EQUAL(i.index, 2);
     ASSERT_TRUE(HCIsEqual(i.key, zeroKey) || HCIsEqual(i.key, oneKey) || HCIsEqual(i.key, twoKey) || HCIsEqual(i.key, threeKey) || HCIsEqual(i.key, fourKey));
@@ -398,6 +410,7 @@ CTEST(HCMap, Iteration) {
     HCMapIterationNext(&i);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_TRUE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_EQUAL(i.index, 3);
     ASSERT_TRUE(HCIsEqual(i.key, zeroKey) || HCIsEqual(i.key, oneKey) || HCIsEqual(i.key, twoKey) || HCIsEqual(i.key, threeKey) || HCIsEqual(i.key, fourKey));
@@ -405,6 +418,7 @@ CTEST(HCMap, Iteration) {
     HCMapIterationNext(&i);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_FALSE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_EQUAL(i.index, 4);
     ASSERT_TRUE(HCIsEqual(i.key, zeroKey) || HCIsEqual(i.key, oneKey) || HCIsEqual(i.key, twoKey) || HCIsEqual(i.key, threeKey) || HCIsEqual(i.key, fourKey));
@@ -412,6 +426,7 @@ CTEST(HCMap, Iteration) {
     HCMapIterationNext(&i);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_TRUE(HCMapIterationHasEnded(&i));
+    ASSERT_FALSE(HCMapIterationHasNext(&i));
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_NULL(i.object);
     ASSERT_NULL(i.key);

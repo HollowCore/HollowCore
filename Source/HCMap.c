@@ -117,11 +117,11 @@ HCBoolean HCMapContainsKey(HCMapRef self, HCRef key) {
 }
 
 HCRef HCMapFirstKey(HCMapRef self) {
-    return HCSetFirstObject(self->keys);
+    return HCMapKeyAtIterationIndex(self, 0);
 }
 
 HCRef HCMapLastKey(HCMapRef self) {
-    return HCSetLastObject(self->keys);
+    return HCMapKeyAtIterationIndex(self, HCMapCount(self) - 1);
 }
 
 HCRef HCMapKeyAtIterationIndex(HCMapRef self, HCInteger index) {
@@ -139,11 +139,11 @@ HCBoolean HCMapContainsObject(HCMapRef self, HCRef object) {
 }
 
 HCRef HCMapFirstObject(HCMapRef self) {
-    return HCMapObjectForKey(self, HCMapFirstKey(self));
+    return HCMapObjectAtIterationIndex(self, 0);
 }
 
 HCRef HCMapLastObject(HCMapRef self) {
-    return HCMapObjectForKey(self, HCMapLastKey(self));
+    return HCMapObjectAtIterationIndex(self, HCMapCount(self) - 1);
 }
 
 HCRef HCMapObjectAtIterationIndex(HCMapRef self, HCInteger index) {
@@ -311,7 +311,7 @@ const HCObjectTypeData HCMapPairTypeDataInstance = {
     },
     .isEqual = (void*)HCMapPairIsEqual,
     .hashValue = (void*)HCMapPairHashValue,
-    .print = (void*)HCMapPairPrint,
+    .print = (void*)HCObjectPrint,
     .destroy = (void*)HCMapPairDestroy,
 };
 HCType HCMapPairType = (HCType)&HCMapPairTypeDataInstance;
@@ -347,12 +347,4 @@ HCBoolean HCMapPairIsEqual(HCMapPairRef self, HCMapPairRef other) {
 
 HCInteger HCMapPairHashValue(HCMapPairRef self) {
     return HCHashValue(self->key);
-}
-
-void HCMapPairPrint(HCMapPairRef self, FILE* stream) {
-    fprintf(stream, "(");
-    HCPrint(self->key, stream);
-    fprintf(stream, ",");
-    HCPrint(self->object, stream);
-    fprintf(stream, ")");
 }
