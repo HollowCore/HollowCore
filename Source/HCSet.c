@@ -28,8 +28,9 @@ HCType HCSetType = (HCType)&HCSetTypeSetInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-const HCInteger HCSetNotFound = -1;
-const HCSetIterator HCSetIteratorInvalid = { .set = NULL, .index = HCSetNotFound, .object = NULL, .state = NULL };
+#define HCSetNotFoundStatic (-1)
+const HCInteger HCSetNotFound = HCSetNotFoundStatic;
+const HCSetIterator HCSetIteratorInvalid = { .set = NULL, .index = HCSetNotFoundStatic, .object = NULL, .state = NULL };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
