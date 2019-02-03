@@ -66,7 +66,7 @@ CTEST(HCList, AddRemove) {
 }
 
 CTEST(HCList, AddRemoveMany) {
-    HCInteger count = 1000;
+    HCInteger count = 100;
     HCListRef list = HCListCreate();
     for (HCInteger index = 0; index < count; index++) {
         HCListAddObjectReleased(list, HCNumberCreateWithInteger(index));

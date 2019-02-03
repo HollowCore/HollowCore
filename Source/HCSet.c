@@ -13,7 +13,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-const HCObjectTypeData HCSetTypeSetInstance = {
+const HCObjectTypeData HCSetTypeDataInstance = {
     .base = {
         .ancestor = &HCObjectTypeDataInstance.base,
         .name = "HCSet",
@@ -23,7 +23,7 @@ const HCObjectTypeData HCSetTypeSetInstance = {
     .print = (void*)HCSetPrint,
     .destroy = (void*)HCSetDestroy,
 };
-HCType HCSetType = (HCType)&HCSetTypeSetInstance;
+HCType HCSetType = (HCType)&HCSetTypeDataInstance;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions
@@ -112,6 +112,20 @@ HCInteger HCSetCount(HCSetRef self) {
 // MARK: - Searching
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCSetFindSlotContainingObject(HCSetRef self, HCRef object, HCInteger* objectSlotIndex, HCBoolean* found, HCSetSlot** resultSlot) {
+    // Report failure on requests to find the null object
+    if (object == NULL) {
+        if (objectSlotIndex != NULL) {
+            *objectSlotIndex = HCSetNotFound;
+        }
+        if (found != NULL) {
+            *found = false;
+        }
+        if (resultSlot != NULL) {
+            *resultSlot = NULL;
+        }
+        return;
+    }
+    
     // Find the slot index the object should occupy
     HCInteger objectHash = HCHashValue(object);
     HCInteger slotIndex = objectHash % self->capacity;
@@ -123,7 +137,7 @@ void HCSetFindSlotContainingObject(HCSetRef self, HCRef object, HCInteger* objec
     // Find an empty slot in the linked list at the slot index, checking for equal objects along the way
     if (found != NULL || resultSlot != NULL) {
         while (true) {
-            if (slot->object != NULL && HCIsEqual(object, slot->object)) {
+            if (slot->object != NULL && HCIsEqual(slot->object, object)) {
                 if (found != NULL) {
                     *found = true;
                 }
@@ -186,6 +200,16 @@ HCRef HCSetObjectAtIterationIndex(HCSetRef self, HCInteger index) {
     return object;
 }
 
+HCRef HCSetObjectEqualToObject(HCSetRef self, HCRef object) {
+    HCBoolean found = false;
+    HCSetSlot* slot = NULL;
+    HCSetFindSlotContainingObject(self, object, NULL, &found, &slot);
+    if (!found) {
+        return NULL;
+    }
+    return slot->object;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -211,9 +235,14 @@ void HCSetAddObject(HCSetRef self, HCRef object) {
     HCBoolean found = false;
     HCSetFindSlotContainingObject(self, object, NULL, &found, &slot);
     
-    // Given that the object was already in the set, link it to the end slot returned by the search
+    // Where an equal object was already found in the set, replace it, otherwise add it to the set
     // NOTE: Slots at the head of the list at the slot index are treated differently than linked slots
-    if (!found) {
+    if (found) {
+        HCRef previousObject = slot->object;
+        slot->object = HCRetain(object);
+        HCRelease(previousObject);
+    }
+    else {
         if (slot->object != NULL) {
             HCSetSlot* next = slot->next;
             slot->next = malloc(sizeof(HCSetSlot));

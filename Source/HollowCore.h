@@ -16,5 +16,6 @@
 #include "HCData.h"
 #include "HCList.h"
 #include "HCSet.h"
+#include "HCMap.h"
 
 #endif /* HollowCore_h */

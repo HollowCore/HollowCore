@@ -42,11 +42,12 @@ void HCRelease(HCRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCIsEqual(HCRef self, HCRef other) {
+//    TODO: Find the highest common ancestor to perform the equality check
     return self != NULL && other != NULL && ((HCObjectTypeData*)((HCObjectRef)self)->type)->isEqual(self, other);
 }
 
 HCInteger HCHashValue(HCRef self) {
-    return ((HCObjectTypeData*)((HCObjectRef)self)->type)->hashValue(self);
+    return self == NULL ? 0 : ((HCObjectTypeData*)((HCObjectRef)self)->type)->hashValue(self);
 }
 
 void HCPrint(HCRef self, FILE* stream) {
