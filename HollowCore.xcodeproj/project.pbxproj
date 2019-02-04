@@ -149,6 +149,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C97FDB2B2207BEC7002B17FB /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C9DBDC5A21D6D96B0001779C /* HCCore.h */,
+				C9DBDC5B21D6D96B0001779C /* HCCore.c */,
+				C9DBDC5621D6D8F20001779C /* HCObject.h */,
+				C9DBDC5921D6D93B0001779C /* HCObject_Internal.h */,
+				C9DBDC5721D6D8F20001779C /* HCObject.c */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		C97FDB2C2207BEDA002B17FB /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				C9AA9A3421F69109001AA9E7 /* HCList.h */,
+				C9AA9A3721F69116001AA9E7 /* HCList_Internal.h */,
+				C9AA9A3521F69109001AA9E7 /* HCList.c */,
+				C929AEC521F97F5200E44898 /* HCSet.h */,
+				C929AEC921F97F6400E44898 /* HCSet_Internal.h */,
+				C929AEC621F97F5200E44898 /* HCSet.c */,
+				C97FDB1D22069AD9002B17FB /* HCMap.h */,
+				C97FDB2122069AEB002B17FB /* HCMap_Internal.h */,
+				C97FDB1E22069AD9002B17FB /* HCMap.c */,
+			);
+			path = Container;
+			sourceTree = "<group>";
+		};
+		C97FDB2D2207BF26002B17FB /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C9DBDC5D21D6E03A0001779C /* HCNumber.h */,
+				C9DBDC6021D6E04A0001779C /* HCNumber_Internal.h */,
+				C9DBDC5E21D6E03A0001779C /* HCNumber.c */,
+				C9AA9A2621F18AE8001AA9E7 /* HCString.h */,
+				C9AA9A2921F18AFB001AA9E7 /* HCString_Internal.h */,
+				C9AA9A2721F18AE8001AA9E7 /* HCString.c */,
+				C9AA9A2D21F4379C001AA9E7 /* HCData.h */,
+				C9AA9A3021F437B0001AA9E7 /* HCData_Internal.h */,
+				C9AA9A2E21F4379C001AA9E7 /* HCData.c */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		C9DBDC4321D6D8B70001779C = {
 			isa = PBXGroup;
 			children = (
@@ -210,30 +254,10 @@
 		F8CBB8E721E5BD0B00DB022F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C97FDB2B2207BEC7002B17FB /* Core */,
+				C97FDB2D2207BF26002B17FB /* Data */,
+				C97FDB2C2207BEDA002B17FB /* Container */,
 				C9AA9A2521F174B8001AA9E7 /* HollowCore.h */,
-				C9DBDC5A21D6D96B0001779C /* HCCore.h */,
-				C9DBDC5B21D6D96B0001779C /* HCCore.c */,
-				C9DBDC5621D6D8F20001779C /* HCObject.h */,
-				C9DBDC5921D6D93B0001779C /* HCObject_Internal.h */,
-				C9DBDC5721D6D8F20001779C /* HCObject.c */,
-				C9DBDC5D21D6E03A0001779C /* HCNumber.h */,
-				C9DBDC6021D6E04A0001779C /* HCNumber_Internal.h */,
-				C9DBDC5E21D6E03A0001779C /* HCNumber.c */,
-				C9AA9A2621F18AE8001AA9E7 /* HCString.h */,
-				C9AA9A2921F18AFB001AA9E7 /* HCString_Internal.h */,
-				C9AA9A2721F18AE8001AA9E7 /* HCString.c */,
-				C9AA9A2D21F4379C001AA9E7 /* HCData.h */,
-				C9AA9A3021F437B0001AA9E7 /* HCData_Internal.h */,
-				C9AA9A2E21F4379C001AA9E7 /* HCData.c */,
-				C9AA9A3421F69109001AA9E7 /* HCList.h */,
-				C9AA9A3721F69116001AA9E7 /* HCList_Internal.h */,
-				C9AA9A3521F69109001AA9E7 /* HCList.c */,
-				C929AEC521F97F5200E44898 /* HCSet.h */,
-				C929AEC921F97F6400E44898 /* HCSet_Internal.h */,
-				C929AEC621F97F5200E44898 /* HCSet.c */,
-				C97FDB1D22069AD9002B17FB /* HCMap.h */,
-				C97FDB2122069AEB002B17FB /* HCMap_Internal.h */,
-				C97FDB1E22069AD9002B17FB /* HCMap.c */,
 			);
 			path = Source;
 			sourceTree = "<group>";

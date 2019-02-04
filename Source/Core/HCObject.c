@@ -6,7 +6,7 @@
 //  Copyright © 2018 HollowCore. All rights reserved.
 //
 
-#include "HCObject_Internal.h"
+#include "../Core/HCObject_Internal.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Management

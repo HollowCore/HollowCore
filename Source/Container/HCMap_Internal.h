@@ -9,7 +9,7 @@
 #ifndef HCMap_Internal_h
 #define HCMap_Internal_h
 
-#include "HCObject_Internal.h"
+#include "../Core/HCObject_Internal.h"
 #include "HCMap.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------

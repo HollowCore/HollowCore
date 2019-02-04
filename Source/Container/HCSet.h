@@ -9,7 +9,7 @@
 #ifndef HCSet_h
 #define HCSet_h
 
-#include "HCObject.h"
+#include "../Core/HCObject.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type

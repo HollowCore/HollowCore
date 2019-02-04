@@ -9,7 +9,7 @@
 #include "HCMap_Internal.h"
 #include <string.h>
 #include <math.h>
-#include "HCString.h"
+#include "../Data/HCString.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type

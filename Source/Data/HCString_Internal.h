@@ -9,7 +9,7 @@
 #ifndef HCString_Internal_h
 #define HCString_Internal_h
 
-#include "HCObject_Internal.h"
+#include "../Core/HCObject_Internal.h"
 #include "HCString.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------

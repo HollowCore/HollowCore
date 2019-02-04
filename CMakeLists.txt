@@ -27,14 +27,14 @@ endif ()
 
 # HollowCore Library
 set(HOLLOWCORE_LIBRARY_NAME hollowcore)
-set(SOURCES ${SOURCES} Source/HCCore.c)
-set(SOURCES ${SOURCES} Source/HCObject.c)
-set(SOURCES ${SOURCES} Source/HCNumber.c)
-set(SOURCES ${SOURCES} Source/HCString.c)
-set(SOURCES ${SOURCES} Source/HCData.c)
-set(SOURCES ${SOURCES} Source/HCList.c)
-set(SOURCES ${SOURCES} Source/HCSet.c)
-set(SOURCES ${SOURCES} Source/HCMap.c)
+set(SOURCES ${SOURCES} Source/Core/HCCore.c)
+set(SOURCES ${SOURCES} Source/Core/HCObject.c)
+set(SOURCES ${SOURCES} Source/Data/HCNumber.c)
+set(SOURCES ${SOURCES} Source/Data/HCString.c)
+set(SOURCES ${SOURCES} Source/Data/HCData.c)
+set(SOURCES ${SOURCES} Source/Container/HCList.c)
+set(SOURCES ${SOURCES} Source/Container/HCSet.c)
+set(SOURCES ${SOURCES} Source/Container/HCMap.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES})
 
 # HollowCore Links
