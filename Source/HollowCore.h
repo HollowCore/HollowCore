@@ -17,5 +17,6 @@
 #include "Container/HCList.h"
 #include "Container/HCSet.h"
 #include "Container/HCMap.h"
+#include "Graphic/HCRaster.h"
 
 #endif /* HollowCore_h */
