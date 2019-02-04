@@ -64,6 +64,26 @@ if (COVERAGE)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
     add_custom_command(TARGET coverage
+        COMMAND echo "-- LCOV running tests..."
+        COMMAND ${CMAKE_BINARY_DIR}/${HOLLOWCORE_TEST_NAME}
+        COMMAND echo "-- LCOV tests complete"
+        COMMAND echo "-- LCOV generating coverage..."
+        COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -c -o coverage.info
+        COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -a coverage.info -o coverage.total
+        COMMAND ${GENHTML_PATH} coverage.total --output-directory html
+        COMMAND echo "-- LCOV coverage generation complete"
+        COMMAND echo "-- GCOV analysis"
+        COMMAND ${GCOV_PATH} ${SOURCES} -o ${OBJECT_DIR} > summary.txt
+        COMMAND cat summary.txt
+        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
+        COMMAND open ${CMAKE_BINARY_DIR}/coverage/html/index.html
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
+    )
+    add_custom_target(cumulative_coverage
+        COMMAND mkdir -p coverage
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+    add_custom_command(TARGET cumulative_coverage
         COMMAND echo "-- LCOV establishing baseline..."
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -z
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -c -i -o coverage.base
