@@ -119,18 +119,57 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger x, HCInteger y, HCRasterColo
 void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color) {
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
-        HCReal sx0 = x0 * tc + cx0 * t;
-        HCReal sy0 = y0 * tc + cy0 * t;
-        HCReal scx = cx0 * tc + cx1 * t;
-        HCReal scy = cy0 * tc + cy1 * t;
-        HCReal sx1 = cx1 * tc + x1 * t;
-        HCReal sy1 = cy1 * tc + y1 * t;
-        HCReal ssx0 = sx0 * tc + scx * t;
-        HCReal ssy0 = sy0 * tc + scy * t;
-        HCReal ssx1 = scx * tc + sx1 * t;
-        HCReal ssy1 = scy * tc + sy1 * t;
-        HCReal x = ssx0 * tc + ssx1 * t;
-        HCReal y = ssy0 * tc + ssy1 * t;
+        
+//        HCReal sx0 = x0 * tc + cx0 * t;
+//        HCReal sy0 = y0 * tc + cy0 * t;
+//        HCReal scx = cx0 * tc + cx1 * t;
+//        HCReal scy = cy0 * tc + cy1 * t;
+//        HCReal sx1 = cx1 * tc + x1 * t;
+//        HCReal sy1 = cy1 * tc + y1 * t;
+//        HCReal ssx0 = sx0 * tc + scx * t;
+//        HCReal ssy0 = sy0 * tc + scy * t;
+//        HCReal ssx1 = scx * tc + sx1 * t;
+//        HCReal ssy1 = scy * tc + sy1 * t;
+//        HCReal x = ssx0 * tc + ssx1 * t;
+//        HCReal y = ssy0 * tc + ssy1 * t;
+        
+//        HCReal ssx0 = (x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t;
+//        HCReal ssy0 = (y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t;
+//        HCReal ssx1 = (cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t;
+//        HCReal ssy1 = (cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t;
+//        HCReal x = ssx0 * tc + ssx1 * t;
+//        HCReal y = ssy0 * tc + ssy1 * t;
+        
+//        HCReal x = ((x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t) * tc + ((cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t) * t;
+//        HCReal y = ((y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t) * tc + ((cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t) * t;
+        
+//        HCReal x = (x0 * tc + cx0 * t) * tc * tc + (cx0 * tc + cx1 * t) * t * tc + (cx0 * tc + cx1 * t) * t * tc + (cx1 * tc + x1 * t) * t * t;
+//        HCReal y = (y0 * tc + cy0 * t) * tc * tc + (cy0 * tc + cy1 * t) * t * tc + (cy0 * tc + cy1 * t) * t * tc + (cy1 * tc + y1 * t) * t * t;
+        
+//        HCReal x = x0 * tc * tc * tc + cx0 * tc * tc * t + cx0 * t * tc * tc + cx1 * t * t * tc + cx0 * t * tc * tc + cx1 * t * t * tc + cx1 * t * t * tc + x1 * t * t * t;
+//        HCReal y = y0 * tc * tc * tc + cy0 * tc * tc * t + cy0 * t * tc * tc + cy1 * t * t * tc + cy0 * t * tc * tc + cy1 * t * t * tc + cy1 * t * t * tc + y1 * t * t * t;
+        
+//        HCReal t2 = t * t;
+//        HCReal t3 = t * t * t;
+//        HCReal tc2 = tc * tc;
+//        HCReal tc3 = tc * tc * tc;
+//        HCReal x = x0 * tc3 + cx0 * t * tc2 + cx0 * t * tc2 + cx1 * t2 * tc + cx0 * t * tc2 + cx1 * t2 * tc + cx1 * t2 * tc + x1 * t3;
+//        HCReal y = y0 * tc3 + cy0 * t * tc2 + cy0 * t * tc2 + cy1 * t2 * tc + cy0 * t * tc2 + cy1 * t2 * tc + cy1 * t2 * tc + y1 * t3;
+        
+//        HCReal t2 = t * t;
+//        HCReal t3 = t * t * t;
+//        HCReal tc2 = tc * tc;
+//        HCReal tc3 = tc * tc * tc;
+//        HCReal x = x0 * tc3 + (3.0 * cx0) * t * tc2 + (3.0 * cx1) * t2 * tc + x1 * t3;
+//        HCReal y = y0 * tc3 + (3.0 * cy0) * t * tc2 + (3.0 * cy1) * t2 * tc + y1 * t3;
+        
+        HCReal a = tc * tc * tc;
+        HCReal b = 3.0 * t * tc * tc;
+        HCReal c = 3.0 * t * t * tc;
+        HCReal d = t * t * t;
+        HCReal x = a * x0 + b * cx0 + c * cx1 + d * x1;
+        HCReal y = a * y0 + b * cy0 + c * cy1 + d * y1;
+        
         HCRasterSetPixelAt(self, round(x), round(y), color);
     }
 }
@@ -167,24 +206,25 @@ void HCRasterSavePPM(HCRasterRef self, const char* path) {
 }
 
 void HCRasterSaveBMP(HCRasterRef self, const char* path) {
-    //BMP (Windows V3)
-    //Offset    Size    Description
-    //0         2       the magic number used to identify the BMP file: 0x42 0x4D (Hex code points for B and M in big-endian order)
-    //2         4       the size of the BMP file in bytes
-    //6         2       reserved; actual value depends on the application that creates the image
-    //8         2       reserved; actual value depends on the application that creates the image
-    //10        4       the offset, i.e. starting address, of the byte where the bitmap data can be found.
-    //14        4       the size of this header (40 bytes)
-    //18        4       the bitmap width in pixels (signed integer).
-    //22        4       the bitmap height in pixels (signed integer).
-    //26        2       the number of color planes being used. Must be set to 1.
-    //28        2       the number of bits per pixel, which is the color samplesPerPixel of the image. Typical values are 1, 4, 8, 16, 24 and 32.
-    //30        4       the compression method being used. See the next table for a list of possible values.
-    //34        4       the image size. This is the size of the raw bitmap data (see below), and should not be confused with the file size.
-    //38        4       the horizontal resolution of the image. (pixel per meter, signed integer)
-    //42        4       the vertical resolution of the image. (pixel per meter, signed integer)
-    //46        4       the number of colors in the color palette, or 0 to default to 2n.
-    //50        4       the number of important colors used, or 0 when every color is important; generally ignored.
+    // BMP (Windows V3)
+    // Offset    Size    Description
+    // 0         2       the magic number used to identify the BMP file: 0x42 0x4D (Hex code points for B and M in big-endian order)
+    // 2         4       the size of the BMP file in bytes
+    // 6         2       reserved; actual value depends on the application that creates the image
+    // 8         2       reserved; actual value depends on the application that creates the image
+    // 10        4       the offset, i.e. starting address, of the byte where the bitmap data can be found.
+    // 14        4       the size of this header (40 bytes)
+    // 18        4       the bitmap width in pixels (signed integer).
+    // 22        4       the bitmap height in pixels (signed integer).
+    // 26        2       the number of color planes being used. Must be set to 1.
+    // 28        2       the number of bits per pixel, which is the color samplesPerPixel of the image. Typical values are 1, 4, 8, 16, 24 and 32.
+    // 30        4       the compression method being used. See the next table for a list of possible values.
+    // 34        4       the image size. This is the size of the raw bitmap data (see below), and should not be confused with the file size.
+    // 38        4       the horizontal resolution of the image. (pixel per meter, signed integer)
+    // 42        4       the vertical resolution of the image. (pixel per meter, signed integer)
+    // 46        4       the number of colors in the color palette, or 0 to default to 2n.
+    // 50        4       the number of important colors used, or 0 when every color is important; generally ignored.
+    // 51        4*w*h   pixel data in XXRRGGBB uint32 format
     
     // Open file for writing
     FILE* file = fopen(path, "w");
