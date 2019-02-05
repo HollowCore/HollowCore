@@ -127,8 +127,8 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
-        //        HCReal x = x0 * tc + x1 * t;
-        //        HCReal y = y0 * tc + y1 * t;
+//        HCReal x = x0 * tc + x1 * t;
+//        HCReal y = y0 * tc + y1 * t;
         
         HCReal a = tc;
         HCReal b = t;
@@ -180,48 +180,48 @@ void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCRea
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
-        //        HCReal sx0 = x0 * tc + cx0 * t;
-        //        HCReal sy0 = y0 * tc + cy0 * t;
-        //        HCReal scx = cx0 * tc + cx1 * t;
-        //        HCReal scy = cy0 * tc + cy1 * t;
-        //        HCReal sx1 = cx1 * tc + x1 * t;
-        //        HCReal sy1 = cy1 * tc + y1 * t;
-        //        HCReal ssx0 = sx0 * tc + scx * t;
-        //        HCReal ssy0 = sy0 * tc + scy * t;
-        //        HCReal ssx1 = scx * tc + sx1 * t;
-        //        HCReal ssy1 = scy * tc + sy1 * t;
-        //        HCReal x = ssx0 * tc + ssx1 * t;
-        //        HCReal y = ssy0 * tc + ssy1 * t;
-        
-        //        HCReal ssx0 = (x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t;
-        //        HCReal ssy0 = (y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t;
-        //        HCReal ssx1 = (cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t;
-        //        HCReal ssy1 = (cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t;
-        //        HCReal x = ssx0 * tc + ssx1 * t;
-        //        HCReal y = ssy0 * tc + ssy1 * t;
-        
-        //        HCReal x = ((x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t) * tc + ((cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t) * t;
-        //        HCReal y = ((y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t) * tc + ((cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t) * t;
-        
-        //        HCReal x = (x0 * tc + cx0 * t) * tc * tc + (cx0 * tc + cx1 * t) * t * tc + (cx0 * tc + cx1 * t) * t * tc + (cx1 * tc + x1 * t) * t * t;
-        //        HCReal y = (y0 * tc + cy0 * t) * tc * tc + (cy0 * tc + cy1 * t) * t * tc + (cy0 * tc + cy1 * t) * t * tc + (cy1 * tc + y1 * t) * t * t;
-        
-        //        HCReal x = x0 * tc * tc * tc + cx0 * tc * tc * t + cx0 * t * tc * tc + cx1 * t * t * tc + cx0 * t * tc * tc + cx1 * t * t * tc + cx1 * t * t * tc + x1 * t * t * t;
-        //        HCReal y = y0 * tc * tc * tc + cy0 * tc * tc * t + cy0 * t * tc * tc + cy1 * t * t * tc + cy0 * t * tc * tc + cy1 * t * t * tc + cy1 * t * t * tc + y1 * t * t * t;
-        
-        //        HCReal t2 = t * t;
-        //        HCReal t3 = t * t * t;
-        //        HCReal tc2 = tc * tc;
-        //        HCReal tc3 = tc * tc * tc;
-        //        HCReal x = x0 * tc3 + cx0 * t * tc2 + cx0 * t * tc2 + cx1 * t2 * tc + cx0 * t * tc2 + cx1 * t2 * tc + cx1 * t2 * tc + x1 * t3;
-        //        HCReal y = y0 * tc3 + cy0 * t * tc2 + cy0 * t * tc2 + cy1 * t2 * tc + cy0 * t * tc2 + cy1 * t2 * tc + cy1 * t2 * tc + y1 * t3;
-        
-        //        HCReal t2 = t * t;
-        //        HCReal t3 = t * t * t;
-        //        HCReal tc2 = tc * tc;
-        //        HCReal tc3 = tc * tc * tc;
-        //        HCReal x = x0 * tc3 + (3.0 * cx0) * t * tc2 + (3.0 * cx1) * t2 * tc + x1 * t3;
-        //        HCReal y = y0 * tc3 + (3.0 * cy0) * t * tc2 + (3.0 * cy1) * t2 * tc + y1 * t3;
+//        HCReal sx0 = x0 * tc + cx0 * t;
+//        HCReal sy0 = y0 * tc + cy0 * t;
+//        HCReal scx = cx0 * tc + cx1 * t;
+//        HCReal scy = cy0 * tc + cy1 * t;
+//        HCReal sx1 = cx1 * tc + x1 * t;
+//        HCReal sy1 = cy1 * tc + y1 * t;
+//        HCReal ssx0 = sx0 * tc + scx * t;
+//        HCReal ssy0 = sy0 * tc + scy * t;
+//        HCReal ssx1 = scx * tc + sx1 * t;
+//        HCReal ssy1 = scy * tc + sy1 * t;
+//        HCReal x = ssx0 * tc + ssx1 * t;
+//        HCReal y = ssy0 * tc + ssy1 * t;
+
+//        HCReal ssx0 = (x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t;
+//        HCReal ssy0 = (y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t;
+//        HCReal ssx1 = (cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t;
+//        HCReal ssy1 = (cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t;
+//        HCReal x = ssx0 * tc + ssx1 * t;
+//        HCReal y = ssy0 * tc + ssy1 * t;
+
+//        HCReal x = ((x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t) * tc + ((cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t) * t;
+//        HCReal y = ((y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t) * tc + ((cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t) * t;
+
+//        HCReal x = (x0 * tc + cx0 * t) * tc * tc + (cx0 * tc + cx1 * t) * t * tc + (cx0 * tc + cx1 * t) * t * tc + (cx1 * tc + x1 * t) * t * t;
+//        HCReal y = (y0 * tc + cy0 * t) * tc * tc + (cy0 * tc + cy1 * t) * t * tc + (cy0 * tc + cy1 * t) * t * tc + (cy1 * tc + y1 * t) * t * t;
+
+//        HCReal x = x0 * tc * tc * tc + cx0 * tc * tc * t + cx0 * t * tc * tc + cx1 * t * t * tc + cx0 * t * tc * tc + cx1 * t * t * tc + cx1 * t * t * tc + x1 * t * t * t;
+//        HCReal y = y0 * tc * tc * tc + cy0 * tc * tc * t + cy0 * t * tc * tc + cy1 * t * t * tc + cy0 * t * tc * tc + cy1 * t * t * tc + cy1 * t * t * tc + y1 * t * t * t;
+
+//        HCReal t2 = t * t;
+//        HCReal t3 = t * t * t;
+//        HCReal tc2 = tc * tc;
+//        HCReal tc3 = tc * tc * tc;
+//        HCReal x = x0 * tc3 + cx0 * t * tc2 + cx0 * t * tc2 + cx1 * t2 * tc + cx0 * t * tc2 + cx1 * t2 * tc + cx1 * t2 * tc + x1 * t3;
+//        HCReal y = y0 * tc3 + cy0 * t * tc2 + cy0 * t * tc2 + cy1 * t2 * tc + cy0 * t * tc2 + cy1 * t2 * tc + cy1 * t2 * tc + y1 * t3;
+
+//        HCReal t2 = t * t;
+//        HCReal t3 = t * t * t;
+//        HCReal tc2 = tc * tc;
+//        HCReal tc3 = tc * tc * tc;
+//        HCReal x = x0 * tc3 + (3.0 * cx0) * t * tc2 + (3.0 * cx1) * t2 * tc + x1 * t3;
+//        HCReal y = y0 * tc3 + (3.0 * cy0) * t * tc2 + (3.0 * cy1) * t2 * tc + y1 * t3;
         
         HCReal a = tc * tc * tc;
         HCReal b = 3.0 * t * tc * tc;
