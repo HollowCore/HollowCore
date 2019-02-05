@@ -33,6 +33,9 @@ extern HCRasterColor HCRasterColorBlack;
 extern HCRasterColor HCRasterColorRed;
 extern HCRasterColor HCRasterColorGreen;
 extern HCRasterColor HCRasterColorBlue;
+extern HCRasterColor HCRasterColorYellow;
+extern HCRasterColor HCRasterColorCyan;
+extern HCRasterColor HCRasterColorMagenta;
 extern HCRasterColor HCRasterColorWhite;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -62,6 +65,7 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger x, HCInteger y, HCRasterColo
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterDrawQuadCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color);
 void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------

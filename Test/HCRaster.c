@@ -36,7 +36,14 @@ CTEST(HCRaster, Print) {
     HCPrint(raster, stdout); // TODO: Not to stdout
 }
 
-CTEST(HCRaster, Draw) {
+CTEST(HCRaster, DrawQuadCurve) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawQuadCurve(raster, 10, 90, 50, 10, 90, 90, HCRasterColorYellow);
+    HCRasterSaveBMP(raster, "quad_curve.bmp");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCRasterColorGreen);
     HCRasterSaveBMP(raster, "curve.bmp");
