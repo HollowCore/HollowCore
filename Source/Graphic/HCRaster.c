@@ -234,6 +234,97 @@ void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCRea
     }
 }
 
+void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
+    // Define state data for parsing the path string
+    char type = '\0';
+    HCReal currentX = 0.0;
+    HCReal currentY = 0.0;
+    HCReal startX = currentX;
+    HCReal startY = currentY;
+    HCInteger argumentsExpected = 0;
+    HCInteger argumentsCount = 0;
+    HCReal arguments[8];
+    
+    // Parse path data according to subset of STL path element data string format
+    const char* current = path;
+    while (*current != '\0') {
+        char c = *current;
+        if (c == ' ' || c == '\n' || c == '\r') {
+            // Skip whitespace (though it is required to separate numbers
+            current++;
+        }
+        else if (type == '\0') {
+            // Determine path sub-component type and, if valid, setup state to parse arguments
+            switch (*current) {
+                case 'M': {
+                    type = 'M';
+                    argumentsCount = 0;
+                    argumentsExpected = 2;
+                } break;
+                case 'L': {
+                    type = 'L';
+                    argumentsCount = 0;
+                    argumentsExpected = 2;
+                } break;
+                case 'Q': {
+                    type = 'Q';
+                    argumentsCount = 0;
+                    argumentsExpected = 4;
+                } break;
+                case 'C': {
+                    type = 'C';
+                    argumentsCount = 0;
+                    argumentsExpected = 6;
+                } break;
+                case 'Z': {
+                    HCRasterDrawLine(self, currentX, currentY, startX, startY, color);
+                    currentX = startX;
+                    currentY = startY;
+                } break;
+            }
+            
+            // Move to next character
+            current++;
+        }
+        else {
+            // Parse an argument number
+            char* end = (char*)current;
+            double argument = strtod(current, &end);
+            if (end <= current) {
+                // Invalid argument, ignore it and dump the current path sub-component
+                type = '\0';
+                current++;
+            }
+            else {
+                // Save the argument and advance to the character after the argument
+                arguments[argumentsCount] = argument;
+                argumentsCount++;
+                current = end;
+                
+                // When enough arguments have been parsed, execute the draw command specified
+                if (argumentsExpected > 0 && argumentsCount == argumentsExpected) {
+                    // Execute the draw command
+                    switch (type) {
+                        case 'M': startX = arguments[0]; startY = arguments[1]; break;
+                        case 'L': HCRasterDrawLine(self, currentX, currentY, arguments[0], arguments[1], color); break;
+                        case 'Q': HCRasterDrawQuadCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color); break;
+                        case 'C': HCRasterDrawCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color); break;
+                    }
+                    
+                    // Save the last two arguments as the first two values of the next draw command
+                    currentX = arguments[argumentsCount - 2];
+                    currentY = arguments[argumentsCount - 1];
+                    
+                    // Reset parsing state to look for a new sub-component type
+                    argumentsExpected = 0;
+                    argumentsCount = 0;
+                    type = '\0';
+                }
+            }
+        }
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------

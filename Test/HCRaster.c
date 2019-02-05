@@ -63,3 +63,10 @@ CTEST(HCRaster, DrawCurve) {
     HCRasterSaveBMP(raster, "curve.bmp");
     HCRelease(raster);
 }
+
+CTEST(HCRaster, DrawPath) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawPath(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 L 70 10 L 90 90 Q 50 10 10 90", HCRasterColorGreen);
+    HCRasterSaveBMP(raster, "path.bmp");
+    HCRelease(raster);
+}
