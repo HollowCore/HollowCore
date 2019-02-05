@@ -36,6 +36,13 @@ CTEST(HCRaster, Print) {
     HCPrint(raster, stdout); // TODO: Not to stdout
 }
 
+CTEST(HCRaster, DrawPoint) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawPoint(raster, 50, 50, HCRasterColorWhite);
+    HCRasterSaveBMP(raster, "point.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawLine) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawLine(raster, 10, 90, 90, 10, HCRasterColorYellow);

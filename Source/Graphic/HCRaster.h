@@ -65,6 +65,7 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger x, HCInteger y, HCRasterColo
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCRasterColor color);
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor color);
 void HCRasterDrawQuadCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color);
 void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color);

@@ -119,12 +119,16 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger x, HCInteger y, HCRasterColo
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCRasterColor color) {
+    HCRasterSetPixelAt(self, round(x), round(y), color);
+}
+
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor color) {
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
-//        HCReal x = x0 * tc + x1 * t;
-//        HCReal y = y0 * tc + y1 * t;
+        //        HCReal x = x0 * tc + x1 * t;
+        //        HCReal y = y0 * tc + y1 * t;
         
         HCReal a = tc;
         HCReal b = t;
