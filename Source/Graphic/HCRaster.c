@@ -250,7 +250,7 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
     while (*current != '\0') {
         char c = *current;
         if (c == ' ' || c == '\n' || c == '\r') {
-            // Skip whitespace (though it is required to separate numbers
+            // Skip whitespace (though it is required to separate numbers)
             current++;
         }
         else if (type == '\0') {
