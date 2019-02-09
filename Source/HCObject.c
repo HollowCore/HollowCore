@@ -21,7 +21,10 @@ void HCRelease(HCRef self) {
     // TODO: Atomic
     ((HCObjectRef)self)->referenceCount--;
     if (((HCObjectRef)self)->referenceCount <= 0) {
-        ((HCObjectRef)self)->type->destroy(self);
+        for (HCType type = ((HCObjectRef)self)->type; type != NULL; type = type->ancestor) {
+            ((HCObjectTypeData*)type)->destroy(self);
+        }
+        free(self);
     }
 }
 
@@ -29,30 +32,31 @@ void HCRelease(HCRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCIsEqual(HCRef self, HCRef other) {
-    return ((HCObjectRef)self)->type->isEqual(self, other);
+    return ((HCObjectTypeData*)((HCObjectRef)self)->type)->isEqual(self, other);
 }
 
 HCInteger HCHashValue(HCRef self) {
-    return ((HCObjectRef)self)->type->hashValue(self);
-
+    return ((HCObjectTypeData*)((HCObjectRef)self)->type)->hashValue(self);
 }
 
 void HCPrint(HCRef self, FILE* stream) {
-    ((HCObjectRef)self)->type->print(self, stream);
+    ((HCObjectTypeData*)((HCObjectRef)self)->type)->print(self, stream);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-const struct HCType HCObjectTypeStatic = {
-    .ancestor = NULL,
-    .name = HCObjectTypeName,
-    .isEqual = HCObjectIsEqual,
-    .hashValue = HCObjectHashValue,
-    .print = HCObjectPrint,
-    .destroy = HCObjectDestroy,
+HCObjectTypeData HCObjectTypeDataInstance = {
+    .base = {
+        .ancestor = NULL,
+        .name = "HCObject",
+    },
+    .isEqual = (void*)HCObjectIsEqual,
+    .hashValue = (void*)HCObjectHashValue,
+    .print = (void*)HCObjectPrint,
+    .destroy = (void*)HCObjectDestroy,
 };
-const struct HCType* HCObjectType = &HCObjectTypeStatic;
+HCType HCObjectType = &HCObjectTypeDataInstance.base;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -63,7 +67,6 @@ void HCObjectInit(void* memory) {
 }
 
 void HCObjectDestroy(HCObjectRef self) {
-    free(self);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

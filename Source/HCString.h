@@ -1,68 +1,64 @@
 //
-//  HCCore.h
-//  HollowCore
+//  HCString.h
+//  Test
 //
-//  Created by Matt Stoker on 12/28/18.
-//  Copyright © 2018 HollowCore. All rights reserved.
+//  Created by Matt Stoker on 1/17/19.
+//  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCCore_h
-#define HCCore_h
+#ifndef HCString_h
+#define HCString_h
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include "HCObject.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Value Types
+// MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef bool HCBoolean;
-typedef int64_t HCInteger;
-typedef double HCReal;
+extern HCType HCStringType;
+typedef struct HCString* HCStringRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Atomic Value Types
+// MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef _Atomic HCBoolean HCAtomicBoolean;
-typedef _Atomic HCInteger HCAtomicInteger;
+typedef uint8_t HCStringCodeUnit;
+typedef uint32_t HCStringCodePoint;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Memory Types
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef uint8_t HCByte;
+HCStringRef HCStringCreate(void);
+HCStringRef HCStringCreateWithBoolean(HCBoolean value);
+HCStringRef HCStringCreateWithInteger(HCInteger value);
+HCStringRef HCStringCreateWithReal(HCReal value);
+HCStringRef HCStringCreateWithCString(const char* value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Boolean Operations
+// MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCBooleanIsEqual(HCBoolean self, HCBoolean other);
-HCInteger HCBooleanHashValue(HCBoolean self);
-void HCBooleanPrint(HCBoolean self, FILE* stream);
+HCBoolean HCStringIsEqual(HCStringRef self, HCStringRef other);
+HCInteger HCStringHashValue(HCStringRef self);
+void HCStringPrint(HCStringRef self, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Integer Operations
+// MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCIntegerIsEqual(HCInteger self, HCInteger other);
-HCInteger HCIntegerHashValue(HCInteger self);
-void HCIntegerPrint(HCInteger self, FILE* stream);
+HCBoolean HCStringIsEmpty(HCStringRef self);
+HCInteger HCStringGetCodeUnitCount(HCStringRef self);
+HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex);
+HCInteger HCStringGetCodePointCount(HCStringRef self);
+HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Real Operations
+// MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCRealIsEqual(HCReal self, HCReal other);
-HCInteger HCRealHashValue(HCReal self);
-void HCRealPrint(HCReal self, FILE* stream);
+HCBoolean HCStringAsBoolean(HCStringRef self);
+HCInteger HCStringAsInteger(HCStringRef self);
+HCReal HCStringAsReal(HCStringRef self);
+const char* HCStringAsCString(HCStringRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Foundation
+// MARK: - Comparison
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef const char* const HCTypeName;
-typedef const struct HCTypeData* HCType;
-typedef const struct HCTypeData {
-    HCType ancestor;
-    HCTypeName name;
-} HCTypeData;
-typedef void* HCRef;
+HCBoolean HCStringIsEqualToCString(HCStringRef self, const char* string);
 
-#endif /* HCCore_h */
+#endif /* HCString_h */

@@ -12,5 +12,6 @@
 #include "HCCore.h"
 #include "HCObject.h"
 #include "HCNumber.h"
+#include "HCString.h"
 
 #endif /* HollowCore_h */

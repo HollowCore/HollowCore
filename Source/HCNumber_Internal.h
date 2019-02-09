@@ -15,25 +15,31 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-enum HCNumberValue {
-    HCNumberValueBoolean = 0,
-    HCNumberValueInteger,
-    HCNumberValueReal
-};
-typedef enum HCNumberValue HCNumberValue;
+typedef enum HCNumberValueType {
+    HCNumberValueTypeBoolean = 0,
+    HCNumberValueTypeInteger,
+    HCNumberValueTypeReal
+} HCNumberValueType;
+
+typedef union HCNumberValue {
+    HCBoolean boolean;
+    HCInteger integer;
+    HCReal real;
+} HCNumberValue;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-struct HCNumber {
+typedef struct HCNumber {
     HCObject base;
-    HCNumberValue type;
-    union {
-        HCBoolean boolean;
-        HCInteger integer;
-        HCReal real;
-    } value;
-};
-typedef struct HCNumber HCNumber;
+    HCNumberValueType type;
+    HCNumberValue value;
+} HCNumber;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Construction
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCNumberInit(void* memory, HCNumberValueType type, HCNumberValue value);
+void HCNumberDestroy(HCNumberRef self);
 
 #endif /* HCNumber_Internal_h */
