@@ -66,16 +66,16 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HC
 // MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCRasterColor color);
-void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor color);
-void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color);
-void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color);
+void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1);
+void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1);
+void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1);
 void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Shape Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color);
-void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color);
+void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
+void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
 void HCRasterDrawRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color);
 void HCRasterFillRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color);
 

@@ -123,7 +123,7 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCRasterColor color
     HCRasterSetPixelAt(self, round(x), round(y), color);
 }
 
-void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor color) {
+void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1) {
     // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
@@ -136,11 +136,11 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
         HCReal x = a * x0 + b * x1;
         HCReal y = a * y0 + b * y1;
         
-        HCRasterSetPixelAt(self, round(x), round(y), color);
+        HCRasterSetPixelAt(self, round(x), round(y), HCRasterColorCombine(c0, c1, t));
     }
 }
 
-void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color) {
+void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1) {
     // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
@@ -174,11 +174,11 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
         HCReal x = a * x0 + b * cx + c * x1;
         HCReal y = a * y0 + b * cy + c * y1;
         
-        HCRasterSetPixelAt(self, round(x), round(y), color);
+        HCRasterSetPixelAt(self, round(x), round(y), HCRasterColorCombine(c0, c1, t));
     }
 }
 
-void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color) {
+void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor c0, HCRasterColor c1) {
     // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
@@ -233,7 +233,7 @@ void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, 
         HCReal x = a * x0 + b * cx0 + c * cx1 + d * x1;
         HCReal y = a * y0 + b * cy0 + c * cy1 + d * y1;
         
-        HCRasterSetPixelAt(self, round(x), round(y), color);
+        HCRasterSetPixelAt(self, round(x), round(y), HCRasterColorCombine(c0, c1, t));
     }
 }
 
@@ -280,7 +280,7 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
                     argumentsExpected = 6;
                 } break;
                 case 'Z': {
-                    HCRasterDrawLine(self, currentX, currentY, startX, startY, color);
+                    HCRasterDrawLine(self, currentX, currentY, startX, startY, color, color);
                     currentX = startX;
                     currentY = startY;
                 } break;
@@ -309,9 +309,9 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
                     // Execute the draw command
                     switch (type) {
                         case 'M': startX = arguments[0]; startY = arguments[1]; break;
-                        case 'L': HCRasterDrawLine(self, currentX, currentY, arguments[0], arguments[1], color); break;
-                        case 'Q': HCRasterDrawQuadraticCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color); break;
-                        case 'C': HCRasterDrawCubicCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color); break;
+                        case 'L': HCRasterDrawLine(self, currentX, currentY, arguments[0], arguments[1], color, color); break;
+                        case 'Q': HCRasterDrawQuadraticCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color, color); break;
+                        case 'C': HCRasterDrawCubicCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color, color); break;
                     }
                     
                     // Save the last two arguments as the first two values of the next draw command
@@ -331,13 +331,13 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Shape Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color) {
-    HCRasterDrawLine(self, ax, ay, bx, by, color);
-    HCRasterDrawLine(self, bx, by, cx, cy, color);
-    HCRasterDrawLine(self, cx, cy, ax, ay, color);
+void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc) {
+    HCRasterDrawLine(self, ax, ay, bx, by, ca, cb);
+    HCRasterDrawLine(self, bx, by, cx, cy, cb, cc);
+    HCRasterDrawLine(self, cx, cy, ax, ay, cc, ca);
 }
 
-void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color) {
+void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc) {
     // Calculate triangle constants for barycentric coordinates
     HCReal determinantInv = 1.0 / ((by - cy)*(ax - cx) + (cx - bx)*(ay - cy));
     HCReal cxbxDifference = cx - bx;
@@ -360,6 +360,7 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
             HCReal lambdaC = 1.0 - lambdaA - lambdaB;
             
             if (lambdaA >= 0.0 && lambdaB >= 0.0 && lambdaC >= 0.0) {
+                HCRasterColor color = HCRasterColorCombine3(ca, lambdaA, cb, lambdaB, cc, lambdaC);
                 HCRasterSetPixelAt(self, xIndex, yIndex, color);
             }
         }
@@ -367,10 +368,10 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
 }
 
 void HCRasterDrawRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
-    HCRasterDrawLine(self, x, y, x + width, y, color);
-    HCRasterDrawLine(self, x + width, y, x + width, y + height, color);
-    HCRasterDrawLine(self, x + width, y + height, x, y + height, color);
-    HCRasterDrawLine(self, x, y + height, x, y, color);
+    HCRasterDrawLine(self, x, y, x + width, y, color, color);
+    HCRasterDrawLine(self, x + width, y, x + width, y + height, color, color);
+    HCRasterDrawLine(self, x + width, y + height, x, y + height, color, color);
+    HCRasterDrawLine(self, x, y + height, x, y, color, color);
 }
 
 void HCRasterFillRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
@@ -518,4 +519,28 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     
     // Cleanup
     fclose(file);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Color Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRasterColor HCRasterColorMake(HCReal a, HCReal r, HCReal g, HCReal b) {
+    return (HCRasterColor){ .a = a, .r = r, .g = g, .b = b };
+}
+
+HCRasterColor HCRasterColorCombine(HCRasterColor c0, HCRasterColor c1, HCReal t) {
+    HCReal tc = 1.0 - t;
+    HCReal a = tc * c0.a + t * c1.a;
+    HCReal r = tc * c0.r + t * c1.r;
+    HCReal g = tc * c0.g + t * c1.g;
+    HCReal b = tc * c0.b + t * c1.b;
+    return HCRasterColorMake(a, r, g, b);
+}
+
+HCRasterColor HCRasterColorCombine3(HCRasterColor ca, HCReal ta, HCRasterColor cb, HCReal tb, HCRasterColor cc, HCReal tc) {
+    HCReal a = ta * ca.a + tb * cb.a + tc * cc.a;
+    HCReal r = ta * ca.r + tb * cb.r + tc * cc.r;
+    HCReal g = ta * ca.g + tb * cb.g + tc * cc.g;
+    HCReal b = ta * ca.b + tb * cb.b + tc * cc.b;
+    return HCRasterColorMake(a, r, g, b);
 }
