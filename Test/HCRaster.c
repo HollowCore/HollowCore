@@ -148,3 +148,11 @@ CTEST(HCRaster, FillQuad) {
     HCRasterSavePPM(raster, "quad_filled.ppm");
     HCRelease(raster);
 }
+
+CTEST(HCRaster, Gradient) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterFillQuad(raster, -50, 50, 50, -50, 150, 50, 50, 150, HCRasterColorRed, HCRasterColorRed, HCRasterColorGreen, HCRasterColorGreen);
+    HCRasterSaveBMP(raster, "gradient.bmp");
+    HCRasterSavePPM(raster, "gradient.ppm");
+    HCRelease(raster);
+}

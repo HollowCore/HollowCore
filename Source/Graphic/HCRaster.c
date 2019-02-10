@@ -362,6 +362,7 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
     HCReal bycyDifference = by - cy;
     HCReal cyayDifference = cy - ay;
     
+    // Iterate over the pixels the triangle could cover, filling the pixels that are covered
     // TODO: Use a non-sampling draw algorithm
     HCInteger startXIndex = floor(fmin(ax, fmin(bx, cx)));
     HCInteger startYIndex = floor(fmin(ay, fmin(by, cy)));
@@ -369,13 +370,14 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
     HCInteger endYIndex = ceil(fmax(ay, fmax(by, cy)));
     for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
         for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
-            // Calculate barycenteric coordinates for coordinate
+            // Calculate barycenteric coordinates for the coordinate
             HCReal x = round(xIndex);
             HCReal y = round(yIndex);
             HCReal lambdaA = (bycyDifference*(x - cx) + cxbxDifference*(y - cy)) * determinantInv;
             HCReal lambdaB = (cyayDifference*(x - cx) + axcxDifference*(y - cy)) * determinantInv;
             HCReal lambdaC = 1.0 - lambdaA - lambdaB;
             
+            // Fill the pixel if it is covered
             if (lambdaA >= 0.0 && lambdaB >= 0.0 && lambdaC >= 0.0) {
                 HCRasterColor color = HCRasterColorCombine3(ca, lambdaA, cb, lambdaB, cc, lambdaC);
                 HCRasterSetPixelAt(self, xIndex, yIndex, color);
