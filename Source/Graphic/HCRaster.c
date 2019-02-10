@@ -399,7 +399,7 @@ void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - File Operat; ons
+// MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterSavePPM(HCRasterRef self, const char* path) {
     // Open file for writing
