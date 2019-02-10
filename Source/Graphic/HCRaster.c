@@ -411,7 +411,7 @@ void HCRasterSavePPM(HCRasterRef self, const char* path) {
     fputs(header, file);
     
     // Write PPM body, top row first, in red, green, blue byte order
-    for (HCInteger yIndex = HCRasterHeight(self) - 1; yIndex >= 0; yIndex--) {
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(self); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
             HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
             HCByte r = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.r * 256.0f)));

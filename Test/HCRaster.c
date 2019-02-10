@@ -73,8 +73,15 @@ CTEST(HCRaster, PixelOperations) {
 
 CTEST(HCRaster, DrawPoint) {
     HCRasterRef raster = HCRasterCreate(100, 100);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorWhite.r);
     HCRasterDrawPoint(raster, 50, 50, HCRasterColorWhite);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).r == HCRasterColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).r == HCRasterColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).r == HCRasterColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).r == HCRasterColorWhite.r);
     HCRasterSaveBMP(raster, "point.bmp");
+    HCRasterSavePPM(raster, "point.ppm");
     HCRelease(raster);
 }
 
@@ -82,6 +89,7 @@ CTEST(HCRaster, DrawLine) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawLine(raster, 10, 80, 90, 20, HCRasterColorYellow, HCRasterColorMagenta);
     HCRasterSaveBMP(raster, "line.bmp");
+    HCRasterSavePPM(raster, "line.ppm");
     HCRelease(raster);
 }
 
@@ -89,6 +97,7 @@ CTEST(HCRaster, DrawQuadraticCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawQuadraticCurve(raster, 10, 90, 50, 10, 90, 90, HCRasterColorMagenta, HCRasterColorCyan);
     HCRasterSaveBMP(raster, "quadratic_curve.bmp");
+    HCRasterSavePPM(raster, "quadratic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -96,6 +105,7 @@ CTEST(HCRaster, DrawCubicCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawCubicCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCRasterColorCyan, HCRasterColorYellow);
     HCRasterSaveBMP(raster, "cubic_curve.bmp");
+    HCRasterSavePPM(raster, "cubic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -103,6 +113,7 @@ CTEST(HCRaster, DrawPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPath(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 L 70 10 L 90 90 Q 50 10 10 90", HCRasterColorGreen);
     HCRasterSaveBMP(raster, "path.bmp");
+    HCRasterSavePPM(raster, "path.ppm");
     HCRelease(raster);
 }
 
@@ -110,6 +121,7 @@ CTEST(HCRaster, DrawTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue);
     HCRasterSaveBMP(raster, "triangle.bmp");
+    HCRasterSavePPM(raster, "triangle.ppm");
     HCRelease(raster);
 }
 
@@ -117,6 +129,7 @@ CTEST(HCRaster, FillTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue);
     HCRasterSaveBMP(raster, "triangle_filled.bmp");
+    HCRasterSavePPM(raster, "triangle_filled.ppm");
     HCRelease(raster);
 }
 
@@ -124,6 +137,7 @@ CTEST(HCRaster, DrawQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawQuad(raster, 10, 80, 30, 20, 80, 10, 90, 90, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
     HCRasterSaveBMP(raster, "quad.bmp");
+    HCRasterSavePPM(raster, "quad.ppm");
     HCRelease(raster);
 }
 
@@ -131,5 +145,6 @@ CTEST(HCRaster, FillQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillQuad(raster, 10, 80, 30, 20, 80, 10, 90, 90, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
     HCRasterSaveBMP(raster, "quad_filled.bmp");
+    HCRasterSavePPM(raster, "quad_filled.ppm");
     HCRelease(raster);
 }
