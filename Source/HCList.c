@@ -28,8 +28,9 @@ HCType HCListType = (HCType)&HCListTypeListInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-const HCInteger HCListNotFound = -1;
-const HCListIterator HCListIteratorInvalid = { .list = NULL, .index = HCListNotFound, .object = NULL, .state = (void*)HCListNotFound };
+#define HCListNotFoundStatic (-1)
+const HCInteger HCListNotFound = HCListNotFoundStatic;
+const HCListIterator HCListIteratorInvalid = { .list = NULL, .index = HCListNotFoundStatic, .object = NULL, .state = (void*)HCListNotFoundStatic };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction

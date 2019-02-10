@@ -33,6 +33,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
+		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
+		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
 		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2A21F26649001AA9E7 /* HCString.c */; };
 		C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2721F18AE8001AA9E7 /* HCString.c */; };
@@ -72,6 +75,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C929AEC521F97F5200E44898 /* HCSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet.h; sourceTree = "<group>"; };
+		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
+		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
+		C929AECD21F9800300E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C9AA9A2321F1743A001AA9E7 /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
 		C9AA9A2521F174B8001AA9E7 /* HollowCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HollowCore.h; sourceTree = "<group>"; };
 		C9AA9A2621F18AE8001AA9E7 /* HCString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCString.h; sourceTree = "<group>"; };
@@ -163,6 +170,7 @@
 				C9AA9A2A21F26649001AA9E7 /* HCString.c */,
 				C9AA9A3121F437CC001AA9E7 /* HCData.c */,
 				C9AA9A3821F6AE98001AA9E7 /* HCList.c */,
+				C929AECD21F9800300E44898 /* HCSet.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -205,6 +213,9 @@
 				C9AA9A3421F69109001AA9E7 /* HCList.h */,
 				C9AA9A3721F69116001AA9E7 /* HCList_Internal.h */,
 				C9AA9A3521F69109001AA9E7 /* HCList.c */,
+				C929AEC521F97F5200E44898 /* HCSet.h */,
+				C929AEC921F97F6400E44898 /* HCSet_Internal.h */,
+				C929AEC621F97F5200E44898 /* HCSet.c */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -216,6 +227,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C929AEC721F97F5200E44898 /* HCSet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +361,7 @@
 				C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */,
 				C9AA9A3321F437EA001AA9E7 /* HCData.c in Sources */,
 				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
+				C929AEC821F97F5200E44898 /* HCSet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +376,7 @@
 				C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */,
 				C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */,
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
+				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

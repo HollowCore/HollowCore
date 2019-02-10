@@ -12,12 +12,22 @@
 // MARK: - Memory Management
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRef HCRetain(HCRef self) {
+    // Retain on the null reference is a no-op
+    if (self == NULL) {
+        return NULL;
+    }
+    
     // TODO: Atomic
     ((HCObjectRef)self)->referenceCount++;
     return self;
 }
 
 void HCRelease(HCRef self) {
+    // Release on the null reference is a no-op
+    if (self == NULL) {
+        return;
+    }
+    
     // TODO: Atomic
     ((HCObjectRef)self)->referenceCount--;
     if (((HCObjectRef)self)->referenceCount <= 0) {
@@ -32,7 +42,7 @@ void HCRelease(HCRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCIsEqual(HCRef self, HCRef other) {
-    return ((HCObjectTypeData*)((HCObjectRef)self)->type)->isEqual(self, other);
+    return self != NULL && other != NULL && ((HCObjectTypeData*)((HCObjectRef)self)->type)->isEqual(self, other);
 }
 
 HCInteger HCHashValue(HCRef self) {

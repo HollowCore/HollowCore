@@ -20,6 +20,7 @@ CTEST(HCList, Access) {
     HCNumberRef number = HCNumberCreateWithInteger(42);
     HCListRef list = HCListCreate();
     ASSERT_TRUE(HCListIsEmpty(list));
+    ASSERT_FALSE(HCListContainsObject(list, number));
     HCListAddObject(list, number);
     ASSERT_FALSE(HCListIsEmpty(list));
     ASSERT_TRUE(HCIsEqual(HCListFirstObject(list), number));
@@ -61,6 +62,28 @@ CTEST(HCList, AddRemove) {
     ASSERT_TRUE(HCListIsEmpty(list));
     ASSERT_NULL(HCListFirstObject(list));
     ASSERT_NULL(HCListLastObject(list));
+    HCRelease(list);
+}
+
+CTEST(HCList, AddRemoveMany) {
+    HCInteger count = 1000;
+    HCListRef list = HCListCreate();
+    for (HCInteger index = 0; index < count; index++) {
+        HCListAddObjectReleased(list, HCNumberCreateWithInteger(index));
+        ASSERT_EQUAL(HCListCount(list), index + 1);
+        for (HCInteger checkIndex = 0; checkIndex <= index; checkIndex++) {
+            ASSERT_TRUE(HCListContainsIndex(list, checkIndex));
+            ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, checkIndex)), checkIndex);
+        }
+    }
+    for (HCInteger index = 0; index < count; index++) {
+        HCListRemoveObjectAtIndex(list, 0);
+        ASSERT_EQUAL(HCListCount(list), count - index - 1);
+        ASSERT_FALSE(HCListContainsIndex(list, count - index));
+        for (HCInteger checkIndex = 0; checkIndex < count - index - 1; checkIndex++) {
+            ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, checkIndex)), checkIndex + index + 1);
+        }
+    }
     HCRelease(list);
 }
 
