@@ -50,17 +50,17 @@ CTEST(HCRaster, DrawLine) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawQuadCurve) {
+CTEST(HCRaster, DrawQuadraticCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawQuadCurve(raster, 10, 90, 50, 10, 90, 90, HCRasterColorCyan);
-    HCRasterSaveBMP(raster, "quad_curve.bmp");
+    HCRasterDrawQuadraticCurve(raster, 10, 90, 50, 10, 90, 90, HCRasterColorCyan);
+    HCRasterSaveBMP(raster, "quadratic_curve.bmp");
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawCurve) {
+CTEST(HCRaster, DrawCubicCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCRasterColorMagenta);
-    HCRasterSaveBMP(raster, "curve.bmp");
+    HCRasterDrawCubicCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCRasterColorMagenta);
+    HCRasterSaveBMP(raster, "cubic_curve.bmp");
     HCRelease(raster);
 }
 
@@ -68,5 +68,33 @@ CTEST(HCRaster, DrawPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPath(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 L 70 10 L 90 90 Q 50 10 10 90", HCRasterColorGreen);
     HCRasterSaveBMP(raster, "path.bmp");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawTriangle) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorBlue);
+    HCRasterSaveBMP(raster, "triangle.bmp");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, FillTriangle) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterFillTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorBlue);
+    HCRasterSaveBMP(raster, "triangle_filled.bmp");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawRectangle) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawRectangle(raster, 10, 20, 80, 60, HCRasterColorRed);
+    HCRasterSaveBMP(raster, "rectangle.bmp");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, FillRectangle) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterFillRectangle(raster, 10, 20, 80, 60, HCRasterColorGreen);
+    HCRasterSaveBMP(raster, "rectangle_filled.bmp");
     HCRelease(raster);
 }

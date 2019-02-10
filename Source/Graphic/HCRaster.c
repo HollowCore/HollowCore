@@ -72,9 +72,9 @@ HCBoolean HCRasterIsEqual(HCRasterRef self, HCRasterRef other) {
 
 HCInteger HCRasterHashValue(HCRasterRef self) {
     HCInteger hash = 5381;
-    for (HCInteger y = 0; y < self->height; y++) {
-        for (HCInteger x = 0; x < self->width; x++) {
-            HCRasterColor pixel = HCRasterPixelAt(self, x, y);
+    for (HCInteger yIndex = 0; yIndex < self->height; yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < self->width; xIndex++) {
+            HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
             // TODO: Better hash
             hash = ((hash << 5) + hash) + pixel.a;
             hash = ((hash << 5) + hash) + pixel.r;
@@ -103,27 +103,28 @@ HCInteger HCRasterHeight(HCRasterRef self) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Pixel Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCRasterColor HCRasterPixelAt(HCRasterRef self, HCInteger x, HCInteger y) {
-    if (x >= 0 && y >= 0 && x < self->width && y < self->height) {
-        return self->pixels[y * self->width + x];
+HCRasterColor HCRasterPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex) {
+    if (xIndex >= 0 && yIndex >= 0 && xIndex < self->width && yIndex < self->height) {
+        return self->pixels[yIndex * self->width + xIndex];
     }
     return HCRasterColorInvalid;
 }
 
-void HCRasterSetPixelAt(HCRasterRef self, HCInteger x, HCInteger y, HCRasterColor pixel) {
-    if (x >= 0 && y >= 0 && x < self->width && y < self->height) {
-        self->pixels[y * self->width + x] = pixel;
+void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HCRasterColor pixel) {
+    if (xIndex >= 0 && yIndex >= 0 && xIndex < self->width && yIndex < self->height) {
+        self->pixels[yIndex * self->width + xIndex] = pixel;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Drawing Operations
+// MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCRasterColor color) {
     HCRasterSetPixelAt(self, round(x), round(y), color);
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCRasterColor color) {
+    // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
@@ -139,7 +140,8 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
     }
 }
 
-void HCRasterDrawQuadCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color) {
+void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCRasterColor color) {
+    // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
@@ -176,7 +178,8 @@ void HCRasterDrawQuadCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HC
     }
 }
 
-void HCRasterDrawCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color) {
+void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCRasterColor color) {
+    // TODO: Use a non-sampling draw algorithm
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
         HCReal tc = 1.0 - t;
         
@@ -307,8 +310,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
                     switch (type) {
                         case 'M': startX = arguments[0]; startY = arguments[1]; break;
                         case 'L': HCRasterDrawLine(self, currentX, currentY, arguments[0], arguments[1], color); break;
-                        case 'Q': HCRasterDrawQuadCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color); break;
-                        case 'C': HCRasterDrawCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color); break;
+                        case 'Q': HCRasterDrawQuadraticCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color); break;
+                        case 'C': HCRasterDrawCubicCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color); break;
                     }
                     
                     // Save the last two arguments as the first two values of the next draw command
@@ -326,7 +329,65 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - File Operations
+// MARK: - Shape Drawing Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color) {
+    HCRasterDrawLine(self, ax, ay, bx, by, color);
+    HCRasterDrawLine(self, bx, by, cx, cy, color);
+    HCRasterDrawLine(self, cx, cy, ax, ay, color);
+}
+
+void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor color) {
+    // Calculate triangle constants for barycentric coordinates
+    HCReal determinantInv = 1.0 / ((by - cy)*(ax - cx) + (cx - bx)*(ay - cy));
+    HCReal cxbxDifference = cx - bx;
+    HCReal axcxDifference = ax - cx;
+    HCReal bycyDifference = by - cy;
+    HCReal cyayDifference = cy - ay;
+    
+    // TODO: Use a non-sampling draw algorithm
+    HCInteger startXIndex = floor(fmin(ax, fmin(bx, cx)));
+    HCInteger startYIndex = floor(fmin(ay, fmin(by, cy)));
+    HCInteger endXIndex = ceil(fmax(ax, fmax(bx, cx)));
+    HCInteger endYIndex = ceil(fmax(ay, fmax(by, cy)));
+    for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
+        for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
+            // Calculate barycenteric coordinates for coordinate
+            HCReal x = round(xIndex);
+            HCReal y = round(yIndex);
+            HCReal lambdaA = (bycyDifference*(x - cx) + cxbxDifference*(y - cy)) * determinantInv;
+            HCReal lambdaB = (cyayDifference*(x - cx) + axcxDifference*(y - cy)) * determinantInv;
+            HCReal lambdaC = 1.0 - lambdaA - lambdaB;
+            
+            if (lambdaA >= 0.0 && lambdaB >= 0.0 && lambdaC >= 0.0) {
+                HCRasterSetPixelAt(self, xIndex, yIndex, color);
+            }
+        }
+    }
+}
+
+void HCRasterDrawRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
+    HCRasterDrawLine(self, x, y, x + width, y, color);
+    HCRasterDrawLine(self, x + width, y, x + width, y + height, color);
+    HCRasterDrawLine(self, x + width, y + height, x, y + height, color);
+    HCRasterDrawLine(self, x, y + height, x, y, color);
+}
+
+void HCRasterFillRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
+    // TODO: Use a non-sampling draw algorithm
+    HCInteger startXIndex = round(x);
+    HCInteger startYIndex = round(y);
+    HCInteger endXIndex = round(x + width);
+    HCInteger endYIndex = round(y + height);
+    for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
+        for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
+            HCRasterSetPixelAt(self, xIndex, yIndex, color);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - File Operat; ons
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterSavePPM(HCRasterRef self, const char* path) {
     // Open file for writing
@@ -340,9 +401,9 @@ void HCRasterSavePPM(HCRasterRef self, const char* path) {
     fputs(header, file);
     
     // Write PPM body, top row first, in red, green, blue byte order
-    for (HCInteger y = HCRasterHeight(self) - 1; y >= 0; y--) {
-        for (HCInteger x = 0; x < HCRasterWidth(self); x++) {
-            HCRasterColor pixel = HCRasterPixelAt(self, x, y);
+    for (HCInteger yIndex = HCRasterHeight(self) - 1; yIndex >= 0; yIndex--) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
+            HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
             HCByte r = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.r * 256.0f)));
             HCByte g = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.g * 256.0f)));
             HCByte b = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.b * 256.0f)));
@@ -444,9 +505,9 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     fwrite(&importantPaletteColorCount, sizeof(importantPaletteColorCount), 1, file);
     
     // Write BMP body (XXRRGGBB)
-    for (HCInteger y = HCRasterHeight(self) - 1; y >= 0; y--) {
-        for (HCInteger x = 0; x < HCRasterWidth(self); x++) {
-            HCRasterColor pixel = HCRasterPixelAt(self, x, y);
+    for (HCInteger yIndex = HCRasterHeight(self) - 1; yIndex >= 0; yIndex--) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
+            HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
             HCByte r = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.r * 256.0f)));
             HCByte g = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.g * 256.0f)));
             HCByte b = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.b * 256.0f)));
