@@ -13,7 +13,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-const HCObjectTypeData HCListTypeListInstance = {
+const HCObjectTypeData HCListTypeDataInstance = {
     .base = {
         .ancestor = &HCObjectTypeDataInstance.base,
         .name = "HCList",
@@ -23,7 +23,7 @@ const HCObjectTypeData HCListTypeListInstance = {
     .print = (void*)HCListPrint,
     .destroy = (void*)HCListDestroy,
 };
-HCType HCListType = (HCType)&HCListTypeListInstance;
+HCType HCListType = (HCType)&HCListTypeDataInstance;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions

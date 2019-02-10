@@ -9,7 +9,7 @@
 #ifndef HCList_h
 #define HCList_h
 
-#include "HCObject.h"
+#include "../Core/HCObject.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type

@@ -9,7 +9,7 @@
 #ifndef HCSet_Internal_h
 #define HCSet_Internal_h
 
-#include "HCObject_Internal.h"
+#include "../Core/HCObject_Internal.h"
 #include "HCSet.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------

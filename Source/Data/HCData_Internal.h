@@ -1,31 +1,31 @@
 //
-//  HCList_Internal.h
+//  HCData_Internal.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 1/21/19.
+//  Created by Matt Stoker on 1/19/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCList_Internal_h
-#define HCList_Internal_h
+#ifndef HCData_Internal_h
+#define HCData_Internal_h
 
-#include "HCObject_Internal.h"
-#include "HCList.h"
+#include "../Core/HCObject_Internal.h"
+#include "HCData.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef struct HCList {
+typedef struct HCData {
     HCObject base;
-    HCInteger count;
-    HCInteger capacity;
-    HCRef* objects;
-} HCList;
+    HCInteger size;
+    HCByte* data;
+} HCData;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCListInit(void* memory, HCInteger capacity);
-void HCListDestroy(HCListRef self);
+void HCDataInit(void* memory, HCInteger size, HCByte* data);
+void HCDataInitWithoutCopying(void* memory, HCInteger size, HCByte* data);
+void HCDataDestroy(HCDataRef self);
 
-#endif /* HCList_Internal_h */
+#endif /* HCData_Internal_h */

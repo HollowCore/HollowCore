@@ -1,84 +1,102 @@
 //
-//  HCSet.h
+//  HCMap.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 1/23/19.
+//  Created by Matt Stoker on 2/2/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCSet_h
-#define HCSet_h
+#ifndef HCMap_h
+#define HCMap_h
 
-#include "HCObject.h"
+#include "HCSet.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-extern HCType HCSetType;
-typedef struct HCSet* HCSetRef;
+extern HCType HCMapType;
+typedef struct HCMap* HCMapRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-extern const HCInteger HCSetNotFound;
+extern const HCInteger HCMapNotFound;
 
-typedef struct HCSetIterator {
-    HCSetRef set;
+typedef struct HCMapIterator {
+    HCMapRef map;
     HCInteger index;
     HCRef object;
+    HCRef key;
     void* state;
-} HCSetIterator;
-extern const HCSetIterator HCSetIteratorInvalid;
+} HCMapIterator;
+extern const HCMapIterator HCMapIteratorInvalid;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCSetRef HCSetCreate(void);
-HCSetRef HCSetCreateWithCapacity(HCInteger capacity);
+HCMapRef HCMapCreate(void);
+HCMapRef HCMapCreateWithCapacity(HCInteger capacity);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCSetIsEqual(HCSetRef self, HCSetRef other);
-HCInteger HCSetHashValue(HCSetRef self);
-void HCSetPrint(HCSetRef self, FILE* stream);
+HCBoolean HCMapIsEqual(HCMapRef self, HCMapRef other);
+HCInteger HCMapHashValue(HCMapRef self);
+void HCMapPrint(HCMapRef self, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Content
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCSetIsEmpty(HCSetRef self);
-HCInteger HCSetCount(HCSetRef self);
+HCBoolean HCMapIsEmpty(HCMapRef self);
+HCInteger HCMapCount(HCMapRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Searching
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCSetContainsObject(HCSetRef self, HCRef object);
-HCRef HCSetFirstObject(HCSetRef self);
-HCRef HCSetLastObject(HCSetRef self);
-HCRef HCSetObjectAtIterationIndex(HCSetRef self, HCInteger index);
+HCBoolean HCMapContainsKey(HCMapRef self, HCRef key);
+HCRef HCMapFirstKey(HCMapRef self);
+HCRef HCMapLastKey(HCMapRef self);
+HCRef HCMapKeyAtIterationIndex(HCMapRef self, HCInteger index);
+HCBoolean HCMapContainsObject(HCMapRef self, HCRef object);
+HCRef HCMapFirstObject(HCMapRef self);
+HCRef HCMapLastObject(HCMapRef self);
+HCRef HCMapObjectAtIterationIndex(HCMapRef self, HCInteger index);
+HCRef HCMapObjectForKey(HCMapRef self, HCRef key);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCSetClear(HCSetRef self);
+void HCMapClear(HCMapRef self);
 
-void HCSetAddObject(HCSetRef self, HCRef object);
-void HCSetRemoveObject(HCSetRef self, HCRef object);
+void HCMapAddObjectForKey(HCMapRef self, HCRef key, HCRef object);
+void HCMapRemoveObjectForKey(HCMapRef self, HCRef key);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Convenience Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCSetAddObjectReleased(HCSetRef self, HCRef object);
-HCRef HCSetRemoveObjectRetained(HCSetRef self, HCRef object);
+void HCMapAddObjectReleasedForKey(HCMapRef self, HCRef key, HCRef object);
+void HCMapAddObjectReleasedForKeyReleased(HCMapRef self, HCRef key, HCRef object);
+HCRef HCMapRemoveObjectRetainedForKey(HCMapRef self, HCRef key);
+HCRef HCMapRemoveObjectRetainedForKeyReleased(HCMapRef self, HCRef key);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Null-Terminated String Convenience Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCMapContainsCStringKey(HCMapRef self, const char* key);
+HCRef HCMapObjectForCStringKey(HCMapRef self, const char* key);
+void HCMapAddObjectForCStringKey(HCMapRef self, const char* key, HCRef object);
+void HCMapRemoveObjectForCStringKey(HCMapRef self, const char* key);
+void HCMapAddObjectReleasedForCStringKey(HCMapRef self, const char* key, HCRef object);
+HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
-HCSetIterator HCSetIterationBegin(HCSetRef self);
-void HCSetIterationNext(HCSetIterator* iterator);
-void HCSetIterationEnd(HCSetIterator* iterator);
-HCBoolean HCSetIterationHasBegun(HCSetIterator* iterator);
-HCBoolean HCSetIterationHasNext(HCSetIterator* iterator);
-HCBoolean HCSetIterationHasEnded(HCSetIterator* iterator);
+HCMapIterator HCMapIterationBegin(HCMapRef self);
+void HCMapIterationNext(HCMapIterator* iterator);
+void HCMapIterationEnd(HCMapIterator* iterator);
+HCBoolean HCMapIterationHasBegun(HCMapIterator* iterator);
+HCBoolean HCMapIterationHasNext(HCMapIterator* iterator);
+HCBoolean HCMapIterationHasEnded(HCMapIterator* iterator);
 
-#endif /* HCSet_h */
+#endif /* HCMap_h */

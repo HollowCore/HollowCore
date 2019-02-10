@@ -27,13 +27,14 @@ endif ()
 
 # HollowCore Library
 set(HOLLOWCORE_LIBRARY_NAME hollowcore)
-set(SOURCES ${SOURCES} Source/HCCore.c)
-set(SOURCES ${SOURCES} Source/HCObject.c)
-set(SOURCES ${SOURCES} Source/HCNumber.c)
-set(SOURCES ${SOURCES} Source/HCString.c)
-set(SOURCES ${SOURCES} Source/HCData.c)
-set(SOURCES ${SOURCES} Source/HCList.c)
-set(SOURCES ${SOURCES} Source/HCSet.c)
+set(SOURCES ${SOURCES} Source/Core/HCCore.c)
+set(SOURCES ${SOURCES} Source/Core/HCObject.c)
+set(SOURCES ${SOURCES} Source/Data/HCNumber.c)
+set(SOURCES ${SOURCES} Source/Data/HCString.c)
+set(SOURCES ${SOURCES} Source/Data/HCData.c)
+set(SOURCES ${SOURCES} Source/Container/HCList.c)
+set(SOURCES ${SOURCES} Source/Container/HCSet.c)
+set(SOURCES ${SOURCES} Source/Container/HCMap.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES})
 
 # HollowCore Links
@@ -49,6 +50,7 @@ set(TEST_SOURCES ${TEST_SOURCES} Test/HCString.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCData.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCList.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCSet.c)
+set(TEST_SOURCES ${TEST_SOURCES} Test/HCMap.c)
 add_executable(${HOLLOWCORE_TEST_NAME} ${TEST_SOURCES})
 target_link_libraries(${HOLLOWCORE_TEST_NAME} hollowcore)
 enable_testing()
@@ -62,6 +64,26 @@ if (COVERAGE)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
     add_custom_command(TARGET coverage
+        COMMAND echo "-- LCOV running tests..."
+        COMMAND ${CMAKE_BINARY_DIR}/${HOLLOWCORE_TEST_NAME}
+        COMMAND echo "-- LCOV tests complete"
+        COMMAND echo "-- LCOV generating coverage..."
+        COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -c -o coverage.info
+        COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -a coverage.info -o coverage.total
+        COMMAND ${GENHTML_PATH} coverage.total --output-directory html
+        COMMAND echo "-- LCOV coverage generation complete"
+        COMMAND echo "-- GCOV analysis"
+        COMMAND ${GCOV_PATH} ${SOURCES} -o ${OBJECT_DIR} > summary.txt
+        COMMAND cat summary.txt
+        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
+        COMMAND open ${CMAKE_BINARY_DIR}/coverage/html/index.html
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
+    )
+    add_custom_target(cumulative_coverage
+        COMMAND mkdir -p coverage
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+    add_custom_command(TARGET cumulative_coverage
         COMMAND echo "-- LCOV establishing baseline..."
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -z
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -c -i -o coverage.base
