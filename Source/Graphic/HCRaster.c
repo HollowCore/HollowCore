@@ -116,6 +116,22 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HC
     }
 }
 
+void HCRasterGetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels) {
+    for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
+        for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
+            pixels[yIndex * self->width + xIndex] = HCRasterPixelAt(self, xIndex, yIndex);
+        }
+    }
+}
+
+void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor color) {
+    for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
+        for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
+            HCRasterSetPixelAt(self, xIndex, yIndex, color);
+        }
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -367,24 +383,16 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
     }
 }
 
-void HCRasterDrawRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
-    HCRasterDrawLine(self, x, y, x + width, y, color, color);
-    HCRasterDrawLine(self, x + width, y, x + width, y + height, color, color);
-    HCRasterDrawLine(self, x + width, y + height, x, y + height, color, color);
-    HCRasterDrawLine(self, x, y + height, x, y, color, color);
+void HCRasterDrawQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd) {
+    HCRasterDrawLine(self, ax, ay, bx, by, ca, cb);
+    HCRasterDrawLine(self, bx, by, cx, cy, cb, cc);
+    HCRasterDrawLine(self, cx, cy, dx, dy, cc, cd);
+    HCRasterDrawLine(self, dx, dy, ax, ay, cd, ca);
 }
 
-void HCRasterFillRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color) {
-    // TODO: Use a non-sampling draw algorithm
-    HCInteger startXIndex = round(x);
-    HCInteger startYIndex = round(y);
-    HCInteger endXIndex = round(x + width);
-    HCInteger endYIndex = round(y + height);
-    for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
-        for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
-            HCRasterSetPixelAt(self, xIndex, yIndex, color);
-        }
-    }
+void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd) {
+    HCRasterFillTriangle(self, ax, ay, bx, by, cx, cy, ca, cb, cc);
+    HCRasterFillTriangle(self, ax, ay, cx, cy, dx, dy, ca, cc, cd);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

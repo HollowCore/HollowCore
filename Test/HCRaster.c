@@ -85,16 +85,16 @@ CTEST(HCRaster, FillTriangle) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawRectangle) {
+CTEST(HCRaster, DrawQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawRectangle(raster, 10, 20, 80, 60, HCRasterColorRed);
-    HCRasterSaveBMP(raster, "rectangle.bmp");
+    HCRasterDrawQuad(raster, 10, 80, 30, 20, 80, 10, 90, 90, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
+    HCRasterSaveBMP(raster, "quad.bmp");
     HCRelease(raster);
 }
 
-CTEST(HCRaster, FillRectangle) {
+CTEST(HCRaster, FillQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterFillRectangle(raster, 10, 20, 80, 60, HCRasterColorGreen);
-    HCRasterSaveBMP(raster, "rectangle_filled.bmp");
+    HCRasterFillQuad(raster, 10, 80, 30, 20, 80, 10, 90, 90, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
+    HCRasterSaveBMP(raster, "quad_filled.bmp");
     HCRelease(raster);
 }

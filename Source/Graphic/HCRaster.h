@@ -61,6 +61,8 @@ HCInteger HCRasterHeight(HCRasterRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRasterColor HCRasterPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex);
 void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HCRasterColor pixel);
+void HCRasterGetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels);
+void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curve Drawing Operations
@@ -76,8 +78,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color);
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
 void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
-void HCRasterDrawRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color);
-void HCRasterFillRectangle(HCRasterRef self, HCReal x, HCReal y, HCReal width, HCReal height, HCRasterColor color);
+void HCRasterDrawQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd);
+void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
