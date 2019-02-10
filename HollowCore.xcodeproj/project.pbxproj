@@ -36,6 +36,10 @@
 		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2A21F26649001AA9E7 /* HCString.c */; };
 		C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2721F18AE8001AA9E7 /* HCString.c */; };
+		C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A3121F437CC001AA9E7 /* HCData.c */; };
+		C9AA9A3321F437EA001AA9E7 /* HCData.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2E21F4379C001AA9E7 /* HCData.c */; };
+		C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A3821F6AE98001AA9E7 /* HCList.c */; };
+		C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A3521F69109001AA9E7 /* HCList.c */; };
 		C9CD282F21E3DD11005B566A /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
 		C9CD283021E3DD13005B566A /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
 		C9CD283121E3DD16005B566A /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5E21D6E03A0001779C /* HCNumber.c */; };
@@ -74,6 +78,14 @@
 		C9AA9A2721F18AE8001AA9E7 /* HCString.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCString.c; sourceTree = "<group>"; };
 		C9AA9A2921F18AFB001AA9E7 /* HCString_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCString_Internal.h; sourceTree = "<group>"; };
 		C9AA9A2A21F26649001AA9E7 /* HCString.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCString.c; sourceTree = "<group>"; };
+		C9AA9A2D21F4379C001AA9E7 /* HCData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCData.h; sourceTree = "<group>"; };
+		C9AA9A2E21F4379C001AA9E7 /* HCData.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCData.c; sourceTree = "<group>"; };
+		C9AA9A3021F437B0001AA9E7 /* HCData_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCData_Internal.h; sourceTree = "<group>"; };
+		C9AA9A3121F437CC001AA9E7 /* HCData.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCData.c; sourceTree = "<group>"; };
+		C9AA9A3421F69109001AA9E7 /* HCList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCList.h; sourceTree = "<group>"; };
+		C9AA9A3521F69109001AA9E7 /* HCList.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCList.c; sourceTree = "<group>"; };
+		C9AA9A3721F69116001AA9E7 /* HCList_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCList_Internal.h; sourceTree = "<group>"; };
+		C9AA9A3821F6AE98001AA9E7 /* HCList.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCList.c; sourceTree = "<group>"; };
 		C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		C9B705E421E3DCC600B63F05 /* libHollowCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHollowCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9DBDC5621D6D8F20001779C /* HCObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCObject.h; sourceTree = "<group>"; };
@@ -149,6 +161,8 @@
 				C9AA9A2321F1743A001AA9E7 /* HCObject.c */,
 				C9E2F57B21ED387700856F21 /* HCNumber.c */,
 				C9AA9A2A21F26649001AA9E7 /* HCString.c */,
+				C9AA9A3121F437CC001AA9E7 /* HCData.c */,
+				C9AA9A3821F6AE98001AA9E7 /* HCList.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -185,6 +199,12 @@
 				C9AA9A2621F18AE8001AA9E7 /* HCString.h */,
 				C9AA9A2921F18AFB001AA9E7 /* HCString_Internal.h */,
 				C9AA9A2721F18AE8001AA9E7 /* HCString.c */,
+				C9AA9A2D21F4379C001AA9E7 /* HCData.h */,
+				C9AA9A3021F437B0001AA9E7 /* HCData_Internal.h */,
+				C9AA9A2E21F4379C001AA9E7 /* HCData.c */,
+				C9AA9A3421F69109001AA9E7 /* HCList.h */,
+				C9AA9A3721F69116001AA9E7 /* HCList_Internal.h */,
+				C9AA9A3521F69109001AA9E7 /* HCList.c */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -327,6 +347,8 @@
 				C9CD283021E3DD13005B566A /* HCObject.c in Sources */,
 				C9CD283121E3DD16005B566A /* HCNumber.c in Sources */,
 				C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */,
+				C9AA9A3321F437EA001AA9E7 /* HCData.c in Sources */,
+				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,7 +360,9 @@
 				C9E2F58E21ED3A4E00856F21 /* HCCore.c in Sources */,
 				C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */,
 				C9E2F58C21ED3A2700856F21 /* HCNumber.c in Sources */,
+				C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */,
 				C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */,
+				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

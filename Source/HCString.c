@@ -10,9 +10,25 @@
 #include <inttypes.h>
 #include <string.h>
 #include <float.h>
+#include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Definitions
+// MARK: - Object Type
+//----------------------------------------------------------------------------------------------------------------------------------
+const HCObjectTypeData HCStringTypeDataInstance = {
+    .base = {
+        .ancestor = &HCObjectTypeDataInstance.base,
+        .name = "HCString",
+    },
+    .isEqual = (void*)HCStringIsEqual,
+    .hashValue = (void*)HCStringHashValue,
+    .print = (void*)HCStringPrint,
+    .destroy = (void*)HCStringDestroy,
+};
+HCType HCStringType = (HCType)&HCStringTypeDataInstance;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 static const char HCStringCodePointCodeUnitCount[256] = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -33,20 +49,19 @@ static const HCStringCodePoint HCStringSurrogateHighStart = 0x0000D800UL;
 static const HCStringCodePoint HCStringSurrogateLowEnd = 0x0000DFFFUL;
 static const HCStringCodePoint HCStringCodePointReplacement = 0x0000FFFDUL;
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Type
-//----------------------------------------------------------------------------------------------------------------------------------
-const HCObjectTypeData HCStringTypeDataInstance = {
-    .base = {
-        .ancestor = &HCObjectTypeDataInstance.base,
-        .name = "HCString",
-    },
-    .isEqual = (void*)HCStringIsEqual,
-    .hashValue = (void*)HCStringHashValue,
-    .print = (void*)HCStringPrint,
-    .destroy = (void*)HCStringDestroy,
+static const char* HCStringFalseBooleans[] = {
+    "⊭",
+    "0",
+    "f",
+    "false",
 };
-HCType HCStringType = (HCType)&HCStringTypeDataInstance;
+
+static const char* HCStringTrueBooleans[] = {
+    "⊨",
+    "1",
+    "t",
+    "true",
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -55,6 +70,27 @@ HCStringRef HCStringCreate(void) {
     HCStringRef self = calloc(sizeof(HCString), 1);
     HCStringInit(self, 0, NULL);
     return self;
+}
+
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes) {
+    // Convert passed bytes to UTF-8 code units
+    HCStringCodeUnit* codeUnits;
+    switch (encoding) {
+        case HCStringEncodingUTF8: codeUnits = (HCStringCodeUnit*)bytes; break;
+        case HCStringEncodingUTF16: return NULL; // TODO: Support for UTF-16
+        case HCStringEncodingUTF32: return NULL; // TODO: Support for UTF-32
+    }
+    
+    // Initialize the string object with the code unit data
+    HCStringRef self = calloc(sizeof(HCString), 1);
+    HCStringInit(self, size, codeUnits);
+    return self;
+}
+
+HCStringRef HCStringCreateWithCString(const char* value) {
+    // Determine the length of the null-terminated string
+    size_t length = strlen(value);
+    return HCStringCreateWithBytes(HCStringEncodingUTF8, length * sizeof(char), (const HCByte*)value);
 }
 
 HCStringRef HCStringCreateWithBoolean(HCBoolean value) {
@@ -89,16 +125,6 @@ HCStringRef HCStringCreateWithReal(HCReal value) {
     return self;
 }
 
-HCStringRef HCStringCreateWithCString(const char* value) {
-    // Determine the length of the null-terminated string
-    size_t length = strlen(value);
-    
-    // Initialize the string object with the null-terminated string value
-    HCStringRef self = calloc(sizeof(HCString), 1);
-    HCStringInit(self, length, (HCStringCodeUnit*)value);
-    return self;
-}
-
 void HCStringInit(void* memory, HCInteger codeUnitCount, HCStringCodeUnit* codeUnits) {
     // Copy the passed code units, ensuring a null terminating character follows them, allowing for ease use as a C string
     // TODO: Check that the allocation and copy proceed successfully, determine how to pass the error otherwise
@@ -128,7 +154,7 @@ void HCStringDestroy(HCStringRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEqual(HCStringRef self, HCStringRef other) {
-    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit));
+    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit)) == 0;
 }
 
 HCInteger HCStringHashValue(HCStringRef self) {
@@ -141,7 +167,7 @@ HCInteger HCStringHashValue(HCStringRef self) {
 }
 
 void HCStringPrint(HCStringRef self, FILE* stream) {
-    fprintf(stream, "%s", HCStringAsCString(self));
+    fprintf(stream, "\"%s\"", HCStringAsCString(self));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -151,49 +177,56 @@ HCBoolean HCStringIsEmpty(HCStringRef self) {
     return self->codeUnitCount == 0;
 }
 
-HCInteger HCStringGetCodeUnitCount(HCStringRef self) {
+HCInteger HCStringCodeUnitCount(HCStringRef self) {
     return self->codeUnitCount;
 }
 
-HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex) {
+HCStringCodeUnit HCStringCodeUnitAtIndex(HCStringRef self, HCInteger codeUnitIndex) {
     return self->codeUnits[codeUnitIndex];
 }
 
-HCInteger HCStringGetCodePointCount(HCStringRef self) {
+void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger count, HCStringCodeUnit* destination) {
+    memcpy(destination, self->codeUnits + codeUnitIndex, count * sizeof(HCStringCodeUnit));
+}
+
+HCInteger HCStringCodePointCount(HCStringRef self) {
     HCInteger size = 0;
     HCStringCodePoint* end = (HCStringCodePoint*)(-1);
     HCStringConvertCodeUnits(self, NULL, NULL, (HCStringCodePoint**)&size, end);
     return (HCInteger)(size) / sizeof(HCStringCodePoint);
 }
 
-HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex) {
+HCStringCodePoint HCStringCodePointAtIndex(HCStringRef self, HCInteger codePointIndex) {
+    // Convert the requested code point
+    HCStringCodePoint result[1] = {0};
+    HCStringExtractCodePoints(self, codePointIndex, 1, result);
+    return *result;
+}
+
+void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInteger count, HCStringCodePoint* destination) {
+    // Walk to the requested code point index
     HCInteger start = 0;
     HCInteger end = sizeof(HCStringCodePoint) * codePointIndex;
     HCStringCodeUnit* codeUnitIndex = self->codeUnits;
     HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, (HCStringCodePoint**)&start, (HCStringCodePoint*)end);
     if (codeUnitIndex >= self->codeUnits + self->codeUnitCount) {
-        return HCStringCodePointReplacement;
+        return;
     }
     
-    HCStringCodePoint result[1] = {0};
-    HCStringCodePoint* resultStart = result;
-    HCStringCodePoint* resultEnd = result + 1;
-    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, &resultStart, resultEnd);
-    return *result;
+    // Convert code points until the count is reached, or the source is exausted
+    HCStringCodePoint* codePoints = destination;
+    HCStringConvertCodeUnits(self, &codeUnitIndex, NULL, &codePoints, codePoints + count);
+    
+    // Fill any remaining memory in the destination
+    for (; codePoints < destination; codePoints++) {
+        *codePoints = HCStringCodePointReplacement;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, const HCStringCodeUnit* sourceEnd) {
-    HCInteger count = HCStringCodePointCodeUnitCount[*source];
-    if (source + count > sourceEnd) {
-        return false;
-    }
-    return HCStringCodeUnitIsLegalUTF8(source, count);
-}
-
-HCBoolean HCStringCodeUnitIsLegalUTF8(const HCStringCodeUnit* source, HCInteger count) {
+HCBoolean HCStringCodeUnitSequeceIsValid(const HCStringCodeUnit* source, HCInteger count) {
     HCStringCodePoint a;
     const HCStringCodeUnit* c = source + count;
     switch (count) {
@@ -233,7 +266,7 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
             target++;
             break;
         }
-        if (!HCStringCodeUnitIsLegalUTF8(source, extraBytesToRead+1)) {
+        if (!HCStringCodeUnitSequeceIsValid(source, extraBytesToRead+1)) {
             source++;
             if (writeTarget) {
                 *target = HCStringCodePointReplacement;
@@ -276,24 +309,85 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
     }
 }
 
-HCBoolean HCStringAsBoolean(HCStringRef self) {
-    // TODO: This
-    return false;
-}
-
-HCInteger HCStringAsInteger(HCStringRef self) {
-    // TODO: This
-    return 0;
-}
-
-HCReal HCStringAsReal(HCStringRef self) {
-    // TODO: This
-    return 0.0;
+HCBoolean HCStringIsCString(HCStringRef self) {
+    // NOTE: Direct conversion is guaranteed by HCStringInit()
+    // TODO: Should check if string is valid UTF-8 as well?
+    return self->codeUnitCount == (HCInteger)strlen(HCStringAsCString(self));
 }
 
 const char* HCStringAsCString(HCStringRef self) {
     // NOTE: Direct conversion is guaranteed by HCStringInit()
     return (char*)self->codeUnits;
+}
+
+HCBoolean HCStringIsBoolean(HCStringRef self) {
+    // TODO: Use HCStringIsEqual() with literal string booleans
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringFalseBooleans) / sizeof(const char*)); booleanIndex++) {
+        if (HCStringIsEqualToCString(self, HCStringFalseBooleans[booleanIndex])) {
+            return true;
+        }
+    }
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringTrueBooleans) / sizeof(const char*)); booleanIndex++) {
+        if (HCStringIsEqualToCString(self, HCStringTrueBooleans[booleanIndex])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+HCBoolean HCStringAsBoolean(HCStringRef self) {
+    // TODO: Use HCStringHasPrefix() with literal string booleans
+    for (HCInteger booleanIndex = 0; booleanIndex < (HCInteger)(sizeof(HCStringTrueBooleans) / sizeof(const char*)); booleanIndex++) {
+        const char* boolean = HCStringTrueBooleans[booleanIndex];
+        size_t booleanLength = strlen(boolean);
+        if (self->codeUnitCount >= (HCInteger)booleanLength && strncmp(HCStringAsCString(self), boolean, booleanLength) == 0) {
+            if (self->codeUnits[booleanLength] == '\0' || self->codeUnits[booleanLength] == ' ') {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+HCBoolean HCStringIsInteger(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    char* end = (char*)string;
+    long long integer = strtoll(string, &end, 10);
+    if (sizeof(long long) != sizeof(HCInteger)) {
+        if (integer > HCIntegerMax) {
+            return false;
+        }
+        if (integer < HCIntegerMin) {
+            return false;
+        }
+    }
+    return end == string + self->codeUnitCount;
+}
+
+HCInteger HCStringAsInteger(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    long long integer = strtoll(string, NULL, 10);
+    if (sizeof(long long) == sizeof(HCInteger)) {
+        return integer;
+    }
+    if (integer > HCIntegerMax) {
+        return HCIntegerMax;
+    }
+    if (integer < HCIntegerMin) {
+        return HCIntegerMin;
+    }
+    return integer;
+}
+
+HCBoolean HCStringIsReal(HCStringRef self) {
+    const char* string = HCStringAsCString(self);
+    char* end = (char*)string;
+    HCReal real = strtod(string, &end);
+    return !isnan(real) && end == string + self->codeUnitCount;
+}
+
+HCReal HCStringAsReal(HCStringRef self) {
+    return strtod(HCStringAsCString(self), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

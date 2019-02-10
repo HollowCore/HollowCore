@@ -33,10 +33,13 @@ HCInteger HCNumberHashValue(HCNumberRef self);
 void HCNumberPrint(HCNumberRef self, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Attributes
+// MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCNumberGetBoolean(HCNumberRef self);
-HCInteger HCNumberGetInteger(HCNumberRef self);
-HCReal HCNumberGetReal(HCNumberRef self);
+HCBoolean HCNumberIsBoolean(HCNumberRef self);
+HCBoolean HCNumberAsBoolean(HCNumberRef self);
+HCBoolean HCNumberIsInteger(HCNumberRef self);
+HCInteger HCNumberAsInteger(HCNumberRef self);
+HCBoolean HCNumberIsReal(HCNumberRef self);
+HCReal HCNumberAsReal(HCNumberRef self);
 
 #endif /* HCNumber_h */

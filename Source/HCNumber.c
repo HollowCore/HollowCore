@@ -61,6 +61,7 @@ void HCNumberInit(void* memory, HCNumberValueType type, HCNumberValue value) {
 }
 
 void HCNumberDestroy(HCNumberRef self) {
+    (void)self; // Unused
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -101,13 +102,21 @@ HCInteger HCNumberHashValue(HCNumberRef self) {
 }
 
 void HCNumberPrint(HCNumberRef self, FILE* stream) {
-    HCObjectPrint((HCObjectRef)self, stream);
+    switch (self->type) {
+        case HCNumberValueTypeBoolean: HCBooleanPrint(self->value.boolean, stream); break;
+        case HCNumberValueTypeInteger: HCIntegerPrint(self->value.integer, stream); break;
+        case HCNumberValueTypeReal: HCRealPrint(self->value.real, stream); break;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Attributes
+// MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCNumberGetBoolean(HCNumberRef self) {
+HCBoolean HCNumberIsBoolean(HCNumberRef self) {
+    return self->type == HCNumberValueTypeBoolean;
+}
+
+HCBoolean HCNumberAsBoolean(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean;
         case HCNumberValueTypeInteger: return self->value.integer != 0;
@@ -116,7 +125,11 @@ HCBoolean HCNumberGetBoolean(HCNumberRef self) {
     return self->value.boolean;
 }
 
-HCInteger HCNumberGetInteger(HCNumberRef self) {
+HCBoolean HCNumberIsInteger(HCNumberRef self) {
+    return self->type == HCNumberValueTypeInteger;
+}
+
+HCInteger HCNumberAsInteger(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean == false ? 0 : 1;
         case HCNumberValueTypeInteger: return self->value.integer;
@@ -125,7 +138,11 @@ HCInteger HCNumberGetInteger(HCNumberRef self) {
     return self->value.integer;
 }
 
-HCReal HCNumberGetReal(HCNumberRef self) {
+HCBoolean HCNumberIsReal(HCNumberRef self) {
+    return self->type == HCNumberValueTypeReal;
+}
+
+HCReal HCNumberAsReal(HCNumberRef self) {
     switch (self->type) {
         case HCNumberValueTypeBoolean: return self->value.boolean == false ? 0.0 : 1.0;
         case HCNumberValueTypeInteger: return (HCReal)self->value.integer;

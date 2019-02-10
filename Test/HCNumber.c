@@ -12,91 +12,100 @@
 
 CTEST(HCNumber, Creation) {
     HCNumberRef number = HCNumberCreate();
-    ASSERT_FALSE(HCNumberGetBoolean(number));
+    ASSERT_FALSE(HCNumberAsBoolean(number));
     HCRelease(number);
 }
 
 CTEST(HCNumber, Boolean) {
     HCNumberRef falseNumber = HCNumberCreateWithBoolean(false);
-    ASSERT_FALSE(HCNumberGetBoolean(falseNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(falseNumber), 0);
-    ASSERT_EQUAL(HCNumberGetReal(falseNumber), 0.0);
+    ASSERT_TRUE(HCNumberIsBoolean(falseNumber));
+    ASSERT_FALSE(HCNumberIsInteger(falseNumber));
+    ASSERT_FALSE(HCNumberIsReal(falseNumber));
+    ASSERT_FALSE(HCNumberAsBoolean(falseNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(falseNumber), 0);
+    ASSERT_EQUAL(HCNumberAsReal(falseNumber), 0.0);
     HCRelease(falseNumber);
     
     HCNumberRef trueNumber = HCNumberCreateWithBoolean(true);
-    ASSERT_TRUE(HCNumberGetBoolean(trueNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(trueNumber), 1);
-    ASSERT_EQUAL(HCNumberGetReal(trueNumber), 1.0);
+    ASSERT_TRUE(HCNumberAsBoolean(trueNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(trueNumber), 1);
+    ASSERT_EQUAL(HCNumberAsReal(trueNumber), 1.0);
     HCRelease(trueNumber);
 }
 
 CTEST(HCNumber, Integer) {
     HCNumberRef zeroNumber = HCNumberCreateWithInteger(0);
-    ASSERT_FALSE(HCNumberGetBoolean(zeroNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(zeroNumber), 0);
-    ASSERT_EQUAL(HCNumberGetReal(zeroNumber), 0.0);
+    ASSERT_FALSE(HCNumberIsBoolean(zeroNumber));
+    ASSERT_TRUE(HCNumberIsInteger(zeroNumber));
+    ASSERT_FALSE(HCNumberIsReal(zeroNumber));
+    ASSERT_FALSE(HCNumberAsBoolean(zeroNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(zeroNumber), 0);
+    ASSERT_EQUAL(HCNumberAsReal(zeroNumber), 0.0);
     HCRelease(zeroNumber);
     
     HCNumberRef oneNumber = HCNumberCreateWithInteger(1);
-    ASSERT_TRUE(HCNumberGetBoolean(oneNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(oneNumber), 1);
-    ASSERT_EQUAL(HCNumberGetReal(oneNumber), 1.0);
+    ASSERT_TRUE(HCNumberAsBoolean(oneNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(oneNumber), 1);
+    ASSERT_EQUAL(HCNumberAsReal(oneNumber), 1.0);
     HCRelease(oneNumber);
     
     HCNumberRef negativeNumber = HCNumberCreateWithInteger(-1);
-    ASSERT_TRUE(HCNumberGetBoolean(negativeNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(negativeNumber), -1);
-    ASSERT_EQUAL(HCNumberGetReal(negativeNumber), -1.0);
+    ASSERT_TRUE(HCNumberAsBoolean(negativeNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(negativeNumber), -1);
+    ASSERT_EQUAL(HCNumberAsReal(negativeNumber), -1.0);
     HCRelease(negativeNumber);
     
     HCNumberRef smallNumber = HCNumberCreateWithInteger(0xFF);
-    ASSERT_TRUE(HCNumberGetBoolean(smallNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(smallNumber), 0xFF);
-    ASSERT_EQUAL(HCNumberGetReal(smallNumber), (HCReal)0xFF);
+    ASSERT_TRUE(HCNumberAsBoolean(smallNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(smallNumber), 0xFF);
+    ASSERT_EQUAL(HCNumberAsReal(smallNumber), (HCReal)0xFF);
     HCRelease(smallNumber);
     
     HCNumberRef bigNumber = HCNumberCreateWithInteger(0x6FFFFFFFFFFFFFFF);
-    ASSERT_TRUE(HCNumberGetBoolean(bigNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(bigNumber), 0x6FFFFFFFFFFFFFFF);
-    ASSERT_EQUAL(HCNumberGetReal(bigNumber), (HCReal)0x6FFFFFFFFFFFFFFF);
+    ASSERT_TRUE(HCNumberAsBoolean(bigNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(bigNumber), 0x6FFFFFFFFFFFFFFF);
+    ASSERT_EQUAL(HCNumberAsReal(bigNumber), (HCReal)0x6FFFFFFFFFFFFFFF);
     HCRelease(bigNumber);
 }
 
 CTEST(HCNumber, Real) {
     HCNumberRef zeroNumber = HCNumberCreateWithReal(0.0);
-    ASSERT_FALSE(HCNumberGetBoolean(zeroNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(zeroNumber), 0);
-    ASSERT_EQUAL(HCNumberGetReal(zeroNumber), 0.0);
+    ASSERT_FALSE(HCNumberIsBoolean(zeroNumber));
+    ASSERT_FALSE(HCNumberIsInteger(zeroNumber));
+    ASSERT_TRUE(HCNumberIsReal(zeroNumber));
+    ASSERT_FALSE(HCNumberAsBoolean(zeroNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(zeroNumber), 0);
+    ASSERT_EQUAL(HCNumberAsReal(zeroNumber), 0.0);
     HCRelease(zeroNumber);
     
     HCNumberRef oneNumber = HCNumberCreateWithReal(1.0);
-    ASSERT_TRUE(HCNumberGetBoolean(oneNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(oneNumber), 1);
-    ASSERT_EQUAL(HCNumberGetReal(oneNumber), 1.0);
+    ASSERT_TRUE(HCNumberAsBoolean(oneNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(oneNumber), 1);
+    ASSERT_EQUAL(HCNumberAsReal(oneNumber), 1.0);
     HCRelease(oneNumber);
     
     HCNumberRef negativeNumber = HCNumberCreateWithReal(-1.0);
-    ASSERT_TRUE(HCNumberGetBoolean(negativeNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(negativeNumber), -1);
-    ASSERT_EQUAL(HCNumberGetReal(negativeNumber), -1.0);
+    ASSERT_TRUE(HCNumberAsBoolean(negativeNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(negativeNumber), -1);
+    ASSERT_EQUAL(HCNumberAsReal(negativeNumber), -1.0);
     HCRelease(negativeNumber);
     
     HCNumberRef smallNumber = HCNumberCreateWithReal(100.0);
-    ASSERT_TRUE(HCNumberGetBoolean(smallNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(smallNumber), 100);
-    ASSERT_EQUAL(HCNumberGetReal(smallNumber), 100.0);
+    ASSERT_TRUE(HCNumberAsBoolean(smallNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(smallNumber), 100);
+    ASSERT_EQUAL(HCNumberAsReal(smallNumber), 100.0);
     HCRelease(smallNumber);
     
     HCNumberRef bigNumber = HCNumberCreateWithReal(3.14159e18);
-    ASSERT_TRUE(HCNumberGetBoolean(bigNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(bigNumber), 3141590000000000000);
-    ASSERT_EQUAL(HCNumberGetReal(bigNumber), (HCReal)3.14159e18);
+    ASSERT_TRUE(HCNumberAsBoolean(bigNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(bigNumber), 3141590000000000000);
+    ASSERT_EQUAL(HCNumberAsReal(bigNumber), (HCReal)3.14159e18);
     HCRelease(bigNumber);
     
     HCNumberRef piNumber = HCNumberCreateWithReal(M_PI);
-    ASSERT_TRUE(HCNumberGetBoolean(piNumber));
-    ASSERT_EQUAL(HCNumberGetInteger(piNumber), 3);
-    ASSERT_EQUAL(HCNumberGetReal(piNumber), M_PI);
+    ASSERT_TRUE(HCNumberAsBoolean(piNumber));
+    ASSERT_EQUAL(HCNumberAsInteger(piNumber), 3);
+    ASSERT_DBL_NEAR(HCNumberAsReal(piNumber), M_PI);
     HCRelease(piNumber);
 }
 
@@ -154,4 +163,10 @@ CTEST(HCNumber, EqualHash) {
     HCRelease(trueNumber);
     HCRelease(oneNumber);
     HCRelease(oneRealNumber);
+}
+
+CTEST(HCNumber, Print) {
+    HCNumberRef a = HCNumberCreateWithReal(M_PI);
+    HCNumberPrint(a, stdout); // TODO: Not to stdout
+    HCPrint(a, stdout); // TODO: Not to stdout
 }

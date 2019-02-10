@@ -22,15 +22,21 @@ typedef struct HCString* HCStringRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef uint8_t HCStringCodeUnit;
 typedef uint32_t HCStringCodePoint;
+typedef enum HCStringEncoding {
+    HCStringEncodingUTF8,
+    HCStringEncodingUTF16,
+    HCStringEncodingUTF32
+} HCStringEncoding;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCStringRef HCStringCreate(void);
+HCStringRef HCStringCreateWithBytes(HCStringEncoding encoding, HCInteger size, const HCByte* bytes);
+HCStringRef HCStringCreateWithCString(const char* value);
 HCStringRef HCStringCreateWithBoolean(HCBoolean value);
 HCStringRef HCStringCreateWithInteger(HCInteger value);
 HCStringRef HCStringCreateWithReal(HCReal value);
-HCStringRef HCStringCreateWithCString(const char* value);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -43,18 +49,24 @@ void HCStringPrint(HCStringRef self, FILE* stream);
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEmpty(HCStringRef self);
-HCInteger HCStringGetCodeUnitCount(HCStringRef self);
-HCStringCodeUnit HCStringGetCodeUnit(HCStringRef self, HCInteger codeUnitIndex);
-HCInteger HCStringGetCodePointCount(HCStringRef self);
-HCStringCodePoint HCStringGetCodePoint(HCStringRef self, HCInteger codePointIndex);
+HCInteger HCStringCodeUnitCount(HCStringRef self);
+HCStringCodeUnit HCStringCodeUnitAtIndex(HCStringRef self, HCInteger codeUnitIndex);
+void HCStringExtractCodeUnits(HCStringRef self, HCInteger codeUnitIndex, HCInteger count, HCStringCodeUnit* destination);
+HCInteger HCStringCodePointCount(HCStringRef self);
+HCStringCodePoint HCStringCodePointAtIndex(HCStringRef self, HCInteger codePointIndex);
+void HCStringExtractCodePoints(HCStringRef self, HCInteger codePointIndex, HCInteger count, HCStringCodePoint* destination);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCStringAsBoolean(HCStringRef self);
-HCInteger HCStringAsInteger(HCStringRef self);
-HCReal HCStringAsReal(HCStringRef self);
+HCBoolean HCStringIsCString(HCStringRef self);
 const char* HCStringAsCString(HCStringRef self);
+HCBoolean HCStringIsBoolean(HCStringRef self);
+HCBoolean HCStringAsBoolean(HCStringRef self);
+HCBoolean HCStringIsInteger(HCStringRef self);
+HCInteger HCStringAsInteger(HCStringRef self);
+HCBoolean HCStringIsReal(HCStringRef self);
+HCReal HCStringAsReal(HCStringRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Comparison

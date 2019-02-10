@@ -64,22 +64,24 @@ HCType HCObjectType = &HCObjectTypeDataInstance.base;
 void HCObjectInit(void* memory) {
     HCObjectRef self = memory;
     self->type = HCObjectType;
+    self->referenceCount = 1;
 }
 
 void HCObjectDestroy(HCObjectRef self) {
+    (void)self; // Unused
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCObjectIsEqual(HCObjectRef self, HCObjectRef other) {
-    return false;
+    return self == other;
 }
 
 HCInteger HCObjectHashValue(HCObjectRef self) {
-    return 0;
+    return (HCInteger)self;
 }
 
 void HCObjectPrint(HCObjectRef self, FILE* stream) {
-    printf("<%s> %p", self->type->name, self);
+    fprintf(stream, "<%s@%p>", self->type->name, self);
 }
