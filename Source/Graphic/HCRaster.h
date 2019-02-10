@@ -61,8 +61,8 @@ HCInteger HCRasterHeight(HCRasterRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRasterColor HCRasterPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex);
 void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HCRasterColor pixel);
-void HCRasterGetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels);
-void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor color);
+void HCRasterPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels);
+void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, const HCRasterColor* pixels);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curve Drawing Operations

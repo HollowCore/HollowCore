@@ -116,7 +116,7 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HC
     }
 }
 
-void HCRasterGetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels) {
+void HCRasterPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels) {
     for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
         for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
             pixels[yIndex * self->width + xIndex] = HCRasterPixelAt(self, xIndex, yIndex);
@@ -124,10 +124,11 @@ void HCRasterGetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger star
     }
 }
 
-void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor color) {
+void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, const HCRasterColor* pixels) {
     for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
         for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
-            HCRasterSetPixelAt(self, xIndex, yIndex, color);
+            HCRasterColor pixel = *pixels++;
+            HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
         }
     }
 }

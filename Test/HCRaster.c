@@ -36,6 +36,35 @@ CTEST(HCRaster, Print) {
     HCPrint(raster, stdout); // TODO: Not to stdout
 }
 
+CTEST(HCRaster, PixelOperations) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
+    HCRasterSetPixelAt(raster, 50, 50, HCRasterColorGreen);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).g == HCRasterColorGreen.g);
+    HCRasterColor pixels[25*25];
+    for (HCInteger i = 0; i < sizeof(pixels) / sizeof(HCRasterColor); i++) {
+        pixels[i] = HCRasterColorRed;
+    }
+    HCRasterSetPixelsAt(raster, 30, 40, 55, 65, pixels);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 49, 50).r == HCRasterColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 30, 50).r == HCRasterColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 54, 50).r == HCRasterColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 29, 50).r == HCRasterColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 55, 50).r == HCRasterColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 39).r == HCRasterColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 65).r == HCRasterColorRed.r);
+    HCRasterSaveBMP(raster, "rectangle.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawPoint) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPoint(raster, 50, 50, HCRasterColorWhite);
@@ -45,7 +74,7 @@ CTEST(HCRaster, DrawPoint) {
 
 CTEST(HCRaster, DrawLine) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawLine(raster, 10, 90, 90, 10, HCRasterColorYellow, HCRasterColorMagenta);
+    HCRasterDrawLine(raster, 10, 80, 90, 20, HCRasterColorYellow, HCRasterColorMagenta);
     HCRasterSaveBMP(raster, "line.bmp");
     HCRelease(raster);
 }
