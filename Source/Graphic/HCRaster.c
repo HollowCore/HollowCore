@@ -119,7 +119,7 @@ void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HC
 void HCRasterPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels) {
     for (HCInteger yIndex = startYIndex; yIndex < endYIndex; yIndex++) {
         for (HCInteger xIndex = startXIndex; xIndex < endXIndex; xIndex++) {
-            pixels[yIndex * self->width + xIndex] = HCRasterPixelAt(self, xIndex, yIndex);
+            *pixels++ = HCRasterPixelAt(self, xIndex, yIndex);
         }
     }
 }

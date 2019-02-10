@@ -61,7 +61,13 @@ CTEST(HCRaster, PixelOperations) {
     ASSERT_FALSE(HCRasterPixelAt(raster, 55, 50).r == HCRasterColorRed.r);
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 39).r == HCRasterColorRed.r);
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 65).r == HCRasterColorRed.r);
+    HCRasterSetPixelAt(raster, 30, 40, HCRasterColorBlue);
+    HCRasterPixelsAt(raster, 30, 40, 55, 65, pixels);
+    ASSERT_TRUE(pixels[0].b == HCRasterColorBlue.b);
+    ASSERT_FALSE(pixels[1].b == HCRasterColorBlue.b);
+    ASSERT_FALSE(pixels[1*(55-30)+0].b == HCRasterColorBlue.b);
     HCRasterSaveBMP(raster, "rectangle.bmp");
+    HCRasterSavePPM(raster, "rectangle.ppm");
     HCRelease(raster);
 }
 
