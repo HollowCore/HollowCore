@@ -63,6 +63,13 @@ HCRasterColor HCRasterPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yInd
 void HCRasterSetPixelAt(HCRasterRef self, HCInteger xIndex, HCInteger yIndex, HCRasterColor pixel);
 void HCRasterPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, HCRasterColor* pixels);
 void HCRasterSetPixelsAt(HCRasterRef self, HCInteger startXIndex, HCInteger startYIndex, HCInteger endXIndex, HCInteger endYIndex, const HCRasterColor* pixels);
+void HCRasterClear(HCRasterRef self);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Lookup Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRasterColor HCRasterPixelNearest(HCRasterRef self, HCReal x, HCReal y);
+HCRasterColor HCRasterPixelFiltered(HCRasterRef self, HCReal x, HCReal y);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curve Drawing Operations
@@ -78,13 +85,16 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCRasterColor color);
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
 void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc);
+void HCRasterFillTexturedTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCRasterRef texture, HCReal tax, HCReal tay, HCReal tbx, HCReal tby, HCReal tcx, HCReal tcy);
 void HCRasterDrawQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd);
 void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterColor ca, HCRasterColor cb, HCRasterColor cc, HCRasterColor cd);
+void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterRef texture, HCReal tax, HCReal tay, HCReal tbx, HCReal tby, HCReal tcx, HCReal tcy, HCReal tdx, HCReal tdy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterSavePPM(HCRasterRef self, const char* path);
+HCRasterRef HCRasterCreateByLoadingBMP(const char* path);
 void HCRasterSaveBMP(HCRasterRef self, const char* path);
 
 #endif /* HCRaster_h */

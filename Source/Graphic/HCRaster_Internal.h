@@ -34,5 +34,6 @@ void HCRasterDestroy(HCRasterRef self);
 HCRasterColor HCRasterColorMake(HCReal a, HCReal r, HCReal g, HCReal b);
 HCRasterColor HCRasterColorCombine(HCRasterColor c0, HCRasterColor c1, HCReal t);
 HCRasterColor HCRasterColorCombine3(HCRasterColor ca, HCReal ta, HCRasterColor cb, HCReal tb, HCRasterColor cc, HCReal tc);
+HCRasterColor HCRasterColorCombine4(HCRasterColor ca, HCReal ta, HCRasterColor cb, HCReal tb, HCRasterColor cc, HCReal tc, HCRasterColor cd, HCReal td);
 
 #endif /* HCRaster_Internal_h */
