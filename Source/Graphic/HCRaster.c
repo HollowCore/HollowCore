@@ -67,7 +67,17 @@ HCBoolean HCRasterIsEqual(HCRasterRef self, HCRasterRef other) {
     if (self->width != other->width || self->height != other->height) {
         return false;
     }
-    return memcmp(self->pixels, other->pixels, sizeof(HCRasterColor) * self->width * self->height) == 0;
+    //return memcmp(self->pixels, other->pixels, sizeof(HCRasterColor) * self->width * self->height) == 0;
+    for (HCInteger yIndex = 0; yIndex < self->height; yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < self->width; xIndex++) {
+            HCRasterColor c = HCRasterPixelAt(self, xIndex, yIndex);
+            HCRasterColor o = HCRasterPixelAt(other, xIndex, yIndex);
+            if (c.a != o.a || c.r != o.r || c.g != o.g || c.b != o.b) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 HCInteger HCRasterHashValue(HCRasterRef self) {
@@ -661,7 +671,7 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     // Change from big-endian to little-endian byte ordering
 #define LE_32(data) (((data & 0x000000FF) << 24) | ((data & 0x0000FF00) << 8) | ((data & 0x00FF0000) >> 8) | ((data >> 24) && 0x000000FF))
 #define LE_16(data) (((data & 0x00FF) << 8) | ((data >> 8) & 0x00FF))
-#define PACK_PIXEL(red, green, blue) (0x00000000 | ((uint32_t)blue << 24) | ((uint32_t)green << 16) | ((uint32_t)red << 8))
+#define PACK_PIXEL(alpha, red, green, blue) (0x00000000 | ((uint32_t)blue << 24) | ((uint32_t)green << 16) | ((uint32_t)red << 8) | ((uint32_t)alpha << 0))
     magicNumber = LE_16(magicNumber);
     reserved0 = LE_16(reserved0);
     reserved1 = LE_16(reserved1);
@@ -679,7 +689,7 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     importantPaletteColorCount = LE_32(importantPaletteColorCount);
     fileSize = LE_32(fileSize);
 #else
-#define PACK_PIXEL(red, green, blue) (0x00000000 | ((uint32_t)red << 16) | ((uint32_t)green << 8) | ((uint32_t)blue))
+#define PACK_PIXEL(alpha, red, green, blue) (((uint32_t)alpha << 24)  | ((uint32_t)red << 16) | ((uint32_t)green << 8) | ((uint32_t)blue))
 #endif //__BIG_ENDIAN__
     
     // Write BMP header (Windows V3, 32bbp)
@@ -704,10 +714,11 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     for (HCInteger yIndex = HCRasterHeight(self) - 1; yIndex >= 0; yIndex--) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
             HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+            HCByte a = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.a * 256.0f)));
             HCByte r = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.r * 256.0f)));
             HCByte g = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.g * 256.0f)));
             HCByte b = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.b * 256.0f)));
-            uint32_t p = PACK_PIXEL(r, g, b);
+            uint32_t p = PACK_PIXEL(a, r, g, b);
             fwrite(&p, sizeof(p), 1, file);
         }
     }

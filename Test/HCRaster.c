@@ -47,7 +47,7 @@ CTEST(HCRaster, PixelOperations) {
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).g == HCRasterColorGreen.g);
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).g == HCRasterColorGreen.g);
     HCRasterColor pixels[25*25];
-    for (HCInteger i = 0; i < sizeof(pixels) / sizeof(HCRasterColor); i++) {
+    for (HCInteger i = 0; i < (HCInteger)(sizeof(pixels) / sizeof(HCRasterColor)); i++) {
         pixels[i] = HCRasterColorRed;
     }
     HCRasterSetPixelsAt(raster, 30, 40, 55, 65, pixels);
@@ -69,6 +69,20 @@ CTEST(HCRaster, PixelOperations) {
     ASSERT_FALSE(pixels[1*(55-30)+0].b == HCRasterColorBlue.b);
     HCRasterClear(raster);
     ASSERT_FALSE(HCRasterPixelAt(raster, 30, 40).b == HCRasterColorBlue.b);
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, Lookup) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
+            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+        }
+    }
+    ASSERT_TRUE(HCRasterPixelNearest(raster, 50.5, 50.5).a == HCRasterPixelFiltered(raster, 50.5, 50.5).a);
+    ASSERT_TRUE(HCRasterPixelNearest(raster, 50.5, 50.5).r == HCRasterPixelFiltered(raster, 50.5, 50.5).r);
+    ASSERT_TRUE(HCRasterPixelNearest(raster, 50.5, 50.5).g == HCRasterPixelFiltered(raster, 50.5, 50.5).g);
+    ASSERT_TRUE(HCRasterPixelNearest(raster, 50.5, 50.5).b == HCRasterPixelFiltered(raster, 50.5, 50.5).b);
     HCRelease(raster);
 }
 
@@ -138,16 +152,13 @@ CTEST(HCRaster, FillTexturedTriangle) {
     HCRasterRef texture = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(texture); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(texture); xIndex++) {
-            HCRasterSetPixelAt(texture, xIndex, yIndex, xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen);
+            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
         }
     }
-//    HCRasterSaveBMP(texture, "texture.bmp");
-    HCRelease(texture);
-    texture = HCRasterCreateByLoadingBMP("texture.bmp");
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillTexturedTriangle(raster, 10, 80, 50, 20, 90, 70, texture, 0, 0, 100, 0, 0, 100);
-    HCRasterSaveBMP(texture, "texture.bmp");
-    HCRasterSavePPM(texture, "texture.ppm");
+    HCRasterSaveBMP(texture, "triangle_texture.bmp");
+    HCRasterSavePPM(texture, "triangle_texture.ppm");
     HCRasterSaveBMP(raster, "triangle_textured.bmp");
     HCRasterSavePPM(raster, "triangle_textured.ppm");
     HCRelease(raster);
@@ -174,23 +185,13 @@ CTEST(HCRaster, FillTexturedQuad) {
     HCRasterRef texture = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(texture); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(texture); xIndex++) {
-            HCRasterSetPixelAt(texture, xIndex, yIndex, xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen);
+            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
         }
     }
-//    HCRasterSaveBMP(texture, "texture.bmp");
-    HCRelease(texture);
-    texture = HCRasterCreateByLoadingBMP("texture.bmp");
     HCRasterRef raster = HCRasterCreate(100, 100);
-    for (HCInteger i = 0; i < HCRasterHeight(texture); i++) {
-        HCRasterFillTexturedQuad(raster, 30, i, 80, 10, 90, 90, 10, 80, texture, 0, 0, 100, 0, 100, 100, 0, 100);
-        char file[0xFF];
-        sprintf(file, "_test-%li.bmp", (long)i);
-        HCRasterSaveBMP(raster, file);
-        HCRasterClear(raster);
-    }
     HCRasterFillTexturedQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, texture, 0, 0, 100, 0, 100, 100, 0, 100);
-    HCRasterSaveBMP(texture, "texture.bmp");
-    HCRasterSavePPM(texture, "texture.ppm");
+    HCRasterSaveBMP(texture, "quad_texture.bmp");
+    HCRasterSavePPM(texture, "quad_texture.ppm");
     HCRasterSaveBMP(raster, "quad_textured.bmp");
     HCRasterSavePPM(raster, "quad_textured.ppm");
     HCRelease(raster);
@@ -203,4 +204,18 @@ CTEST(HCRaster, Gradient) {
     HCRasterSaveBMP(raster, "gradient.bmp");
     HCRasterSavePPM(raster, "gradient.ppm");
     HCRelease(raster);
+}
+
+CTEST(HCRaster, SaveLoad) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
+            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+        }
+    }
+    HCRasterSaveBMP(raster, "test_save.bmp");
+    HCRasterRef other = HCRasterCreateByLoadingBMP("test_save.bmp");
+    ASSERT_TRUE(HCRasterIsEqual(raster, other));
+    HCRelease(raster);
+    HCRelease(other);
 }
