@@ -28,6 +28,8 @@ HCType HCRasterType = (HCType)&HCRasterTypeDataInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCRasterSizeMax = 0x2FFFFFFF;
+
 HCRasterColor HCRasterColorInvalid  = { .a = NAN, .r = NAN, .g = NAN, .b = NAN };
 HCRasterColor HCRasterColorClear    = { .a = 0.0, .r = 0.0, .g = 0.0, .b = 0.0 };
 HCRasterColor HCRasterColorBlack    = { .a = 1.0, .r = 0.0, .g = 0.0, .b = 0.0 };
@@ -38,10 +40,15 @@ HCRasterColor HCRasterColorYellow   = { .a = 1.0, .r = 1.0, .g = 1.0, .b = 0.0 }
 HCRasterColor HCRasterColorCyan     = { .a = 1.0, .r = 0.0, .g = 1.0, .b = 1.0 };
 HCRasterColor HCRasterColorMagenta  = { .a = 1.0, .r = 1.0, .g = 0.0, .b = 1.0 };
 HCRasterColor HCRasterColorWhite    = { .a = 1.0, .r = 1.0, .g = 1.0, .b = 1.0 };
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRasterRef HCRasterCreate(HCInteger width, HCInteger height) {
+    if (width * height > HCRasterSizeMax) {
+        return NULL;
+    }
+    
     HCRasterRef self = calloc(sizeof(HCRaster), 1);
     HCRasterInit(self, width, height);
     return self;
@@ -497,16 +504,107 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCRasterRef HCRasterCreateByLoadingPPM(const char* path) {
+    // Open a file for reading
+    FILE* f = fopen(path, "r");
+    if (f == NULL)
+        return NULL;
+    
+    // Verify file magic number
+    int magic0 = fgetc(f);
+    int magic1 = fgetc(f);
+    if (magic0 != 'P' || (magic1 != '3' && magic1 != '6')) {
+        return NULL;
+    }
+    
+    // Read and validate the size and channel scale from the header and consume the newline sequence
+    int width = 0;
+    int height = 0;
+    int channelMax = 0;
+    if (fscanf(f, "%i %i %i", &width, &height, &channelMax) != 3 || width <= 0 || height <= 0 || channelMax <= 0 || channelMax > 255) {
+        return NULL;
+    }
+    if (fgetc(f) == '\r') {
+        char c = fgetc(f);
+        if (c != '\n') {
+            ungetc(c, f);
+        }
+    }
+    HCBoolean binary = magic1 == '6';
+    
+    // Trash any comment lines
+    if (!binary) {
+        while (true) {
+            // Read a comment start character or return it to the stream and continue
+            int c = fgetc(f);
+            if (c != '#') {
+                ungetc(c, f);
+                break;
+            }
+            
+            // Read until a newline, accounting for possible \r\n sequences
+            while (true) {
+                c = fgetc(f);
+                if (c == '\n' || c == EOF) {
+                    break;
+                }
+                if (c == '\r') {
+                    c = fgetc(f);
+                    if (c != '\n') {
+                        ungetc(c, f);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Allocate raster
+    HCRasterRef self = HCRasterCreate(width, height);
+    if (self == NULL) {
+        return NULL;
+    }
+    
+    // Read pixel information
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(self); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            if (!binary) {
+                fscanf(f, "%i %i %i", &r, &g, &b);
+            }
+            else {
+                fread(&r, 1, 1, f);
+                fread(&g, 1, 1, f);
+                fread(&b, 1, 1, f);
+            }
+            HCRasterColor color = HCRasterColorMake(1.0, (HCReal)r / (HCReal)channelMax, (HCReal)g / (HCReal)channelMax, (HCReal)b / (HCReal)channelMax);
+            HCRasterSetPixelAt(self, xIndex, yIndex, color);
+        }
+    }
+    fclose(f);
+    
+    return self;
+}
+
 void HCRasterSavePPM(HCRasterRef self, const char* path) {
+    HCRasterSavePPMWithOptions(self, path, false);
+}
+
+void HCRasterSavePPMWithOptions(HCRasterRef self, const char* path, HCBoolean binary) {
     // Open file for writing
     FILE* file = fopen(path, "w");
     if (file == NULL)
         return;
     
     // Write PPM Header
-    char header[1024];
-    sprintf(header, "P6 %i %i 255\n", (int)HCRasterWidth(self), (int)HCRasterHeight(self));
-    fputs(header, file);
+    fprintf(file, "P%c %i %i 255\n", binary ? '6' : '3', (int)HCRasterWidth(self), (int)HCRasterHeight(self));
+    
+    // Write comment (where not saving binary)
+    if (!binary) {
+        fprintf(file, "# Created by HollowCore\n");
+    }
     
     // Write PPM body, top row first, in red, green, blue byte order
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(self); yIndex++) {
@@ -515,9 +613,17 @@ void HCRasterSavePPM(HCRasterRef self, const char* path) {
             HCByte r = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.r * 256.0f)));
             HCByte g = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.g * 256.0f)));
             HCByte b = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.b * 256.0f)));
-            fwrite(&r, sizeof(HCByte), 1, file);
-            fwrite(&g, sizeof(HCByte), 1, file);
-            fwrite(&b, sizeof(HCByte), 1, file);
+            if (!binary) {
+                fprintf(file, "%i %i %i ", (int)r, (int)g, (int)b);
+            }
+            else {
+                fwrite(&r, sizeof(HCByte), 1, file);
+                fwrite(&g, sizeof(HCByte), 1, file);
+                fwrite(&b, sizeof(HCByte), 1, file);
+            }
+        }
+        if (!binary) {
+            fprintf(file, "\n");
         }
     }
     
@@ -592,7 +698,7 @@ HCRasterRef HCRasterCreateByLoadingBMP(const char* path) {
     //TODO: Check header for sanity, support non-32bpp
     
     // Verify width and height
-    HCBoolean reversed = height > 0;
+    HCBoolean reversed = height < 0;
     width = width < 0 ? -width : width;
     height = height < 0 ? -height : height;
     if (width <= 0 || height <= 0) {
@@ -601,9 +707,12 @@ HCRasterRef HCRasterCreateByLoadingBMP(const char* path) {
     
     // Allocate raster
     HCRasterRef self = HCRasterCreate(width, height);
+    if (self == NULL) {
+        return NULL;
+    }
     
-    // Read BMP body
-    for (HCInteger yIndex = reversed ? (HCRasterHeight(self) - 1) : 0; reversed ? (yIndex >= 0) : (yIndex < HCRasterHeight(self)); reversed ? yIndex-- : yIndex++) {
+    // Read BMP body (XXRRGGBB), respecting reversed boolean (bottom-to-top or top-to-bottom line ordering)
+    for (HCInteger yIndex = reversed ? 0 : (HCRasterHeight(self) - 1); reversed ? (yIndex < HCRasterHeight(self)) : (yIndex >= 0); reversed ? yIndex++ : yIndex--) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
             uint32_t colorARGB = 0;
             fread(&colorARGB, sizeof(uint32_t), 1, f);
@@ -621,8 +730,11 @@ HCRasterRef HCRasterCreateByLoadingBMP(const char* path) {
     
     return self;
 }
-
 void HCRasterSaveBMP(HCRasterRef self, const char* path) {
+    HCRasterSaveBMPWithOptions(self, path, false);
+}
+
+void HCRasterSaveBMPWithOptions(HCRasterRef self, const char* path, HCBoolean reversed) {
     // BMP (Windows V3)
     // Offset    Size    Description
     // 0         2       the magic number used to identify the BMP file: 0x42 0x4D (Hex code points for B and M in big-endian order)
@@ -649,14 +761,14 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
         return;
     }
     
-    // Define header data
+    // Define header data, repecting reversed boolean in the height parameter
     uint16_t magicNumber = 0x4D42;
     uint16_t reserved0 = 0;//0x4D41;
     uint16_t reserved1 = 0;//0x5454;
     uint32_t dataOffset = 54;
     uint32_t infoHeaderSize = 40;
     int32_t width = (int32_t)HCRasterWidth(self);
-    int32_t height = (int32_t)HCRasterHeight(self);
+    int32_t height = (int32_t)HCRasterHeight(self) * (reversed ? -1 : 1);
     uint16_t colorPlanes = 1;
     uint16_t bitsPerPixel = 32;
     uint32_t compression = 0;
@@ -710,8 +822,8 @@ void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     fwrite(&paletteColorCount, sizeof(paletteColorCount), 1, file);
     fwrite(&importantPaletteColorCount, sizeof(importantPaletteColorCount), 1, file);
     
-    // Write BMP body (XXRRGGBB)
-    for (HCInteger yIndex = HCRasterHeight(self) - 1; yIndex >= 0; yIndex--) {
+    // Write BMP body (XXRRGGBB), respecting reversed boolean (bottom-to-top or top-to-bottom line ordering)
+    for (HCInteger yIndex = reversed ? 0 : (HCRasterHeight(self) - 1); reversed ? (yIndex < HCRasterHeight(self)) : (yIndex >= 0); reversed ? yIndex++ : yIndex--) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
             HCRasterColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
             HCByte a = (HCByte)fmax(0.0f, fmin(255.0f, floor(pixel.a * 256.0f)));

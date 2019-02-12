@@ -20,6 +20,8 @@ typedef struct HCRaster* HCRasterRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
+extern HCInteger HCRasterSizeMax;
+
 typedef struct HCRasterColor {
     HCReal a;
     HCReal r;
@@ -93,8 +95,11 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCRasterRef HCRasterCreateByLoadingPPM(const char* path);
 void HCRasterSavePPM(HCRasterRef self, const char* path);
+void HCRasterSavePPMWithOptions(HCRasterRef self, const char* path, HCBoolean binary);
 HCRasterRef HCRasterCreateByLoadingBMP(const char* path);
 void HCRasterSaveBMP(HCRasterRef self, const char* path);
+void HCRasterSaveBMPWithOptions(HCRasterRef self, const char* path, HCBoolean reverse);
 
 #endif /* HCRaster_h */

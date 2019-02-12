@@ -213,9 +213,26 @@ CTEST(HCRaster, SaveLoad) {
             HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
         }
     }
-    HCRasterSaveBMP(raster, "test_save.bmp");
-    HCRasterRef other = HCRasterCreateByLoadingBMP("test_save.bmp");
-    ASSERT_TRUE(HCRasterIsEqual(raster, other));
+
+    HCRasterSavePPM(raster, "test_ppm.ppm");
+    HCRasterRef ppm = HCRasterCreateByLoadingPPM("test_ppm.ppm");
+    ASSERT_TRUE(HCRasterIsEqual(raster, ppm));
+    HCRelease(ppm);
+    
+    HCRasterSavePPMWithOptions(raster, "test_ppm_binary.ppm", true);
+    HCRasterRef ppmBinary = HCRasterCreateByLoadingPPM("test_ppm_binary.ppm");
+    ASSERT_TRUE(HCRasterIsEqual(raster, ppmBinary));
+    HCRelease(ppmBinary);
+    
+    HCRasterSaveBMP(raster, "test_bmp.bmp");
+    HCRasterRef bmp = HCRasterCreateByLoadingBMP("test_bmp.bmp");
+    ASSERT_TRUE(HCRasterIsEqual(raster, bmp));
+    HCRelease(bmp);
+    
+    HCRasterSaveBMPWithOptions(raster, "test_bmp_reversed.bmp", true);
+    HCRasterRef bmpReversed = HCRasterCreateByLoadingBMP("test_bmp_reversed.bmp");
+    ASSERT_TRUE(HCRasterIsEqual(raster, bmpReversed));
+    HCRelease(bmpReversed);
+    
     HCRelease(raster);
-    HCRelease(other);
 }
