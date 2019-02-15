@@ -46,6 +46,9 @@
 		C97FDB2822069BC5002B17FB /* HCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C9DBDC5621D6D8F20001779C /* HCObject.h */; };
 		C97FDB2922069BCA002B17FB /* HCCore.h in Headers */ = {isa = PBXBuildFile; fileRef = C9DBDC5A21D6D96B0001779C /* HCCore.h */; };
 		C97FDB2A22069BCD002B17FB /* HollowCore.h in Headers */ = {isa = PBXBuildFile; fileRef = C9AA9A2521F174B8001AA9E7 /* HollowCore.h */; };
+		C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB332207F1C9002B17FB /* HCRaster.c */; };
+		C97FDB362207F207002B17FB /* HCRaster.h in Headers */ = {isa = PBXBuildFile; fileRef = C97FDB2F2207E199002B17FB /* HCRaster.h */; };
+		C97FDB372207F20C002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB302207E199002B17FB /* HCRaster.c */; };
 		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2A21F26649001AA9E7 /* HCString.c */; };
 		C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2721F18AE8001AA9E7 /* HCString.c */; };
@@ -93,6 +96,10 @@
 		C97FDB1E22069AD9002B17FB /* HCMap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMap.c; sourceTree = "<group>"; };
 		C97FDB2122069AEB002B17FB /* HCMap_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCMap_Internal.h; sourceTree = "<group>"; };
 		C97FDB2222069B1C002B17FB /* HCMap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMap.c; sourceTree = "<group>"; };
+		C97FDB2F2207E199002B17FB /* HCRaster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRaster.h; sourceTree = "<group>"; };
+		C97FDB302207E199002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
+		C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRaster_Internal.h; sourceTree = "<group>"; };
+		C97FDB332207F1C9002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
 		C9AA9A2321F1743A001AA9E7 /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
 		C9AA9A2521F174B8001AA9E7 /* HollowCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HollowCore.h; sourceTree = "<group>"; };
 		C9AA9A2621F18AE8001AA9E7 /* HCString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCString.h; sourceTree = "<group>"; };
@@ -193,6 +200,16 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		C97FDB2E2207E16F002B17FB /* Graphic */ = {
+			isa = PBXGroup;
+			children = (
+				C97FDB2F2207E199002B17FB /* HCRaster.h */,
+				C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */,
+				C97FDB302207E199002B17FB /* HCRaster.c */,
+			);
+			path = Graphic;
+			sourceTree = "<group>";
+		};
 		C9DBDC4321D6D8B70001779C = {
 			isa = PBXGroup;
 			children = (
@@ -230,6 +247,7 @@
 				C9AA9A3821F6AE98001AA9E7 /* HCList.c */,
 				C929AECD21F9800300E44898 /* HCSet.c */,
 				C97FDB2222069B1C002B17FB /* HCMap.c */,
+				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -257,6 +275,7 @@
 				C97FDB2B2207BEC7002B17FB /* Core */,
 				C97FDB2D2207BF26002B17FB /* Data */,
 				C97FDB2C2207BEDA002B17FB /* Container */,
+				C97FDB2E2207E16F002B17FB /* Graphic */,
 				C9AA9A2521F174B8001AA9E7 /* HollowCore.h */,
 			);
 			path = Source;
@@ -278,6 +297,7 @@
 				C97FDB2422069BAB002B17FB /* HCList.h in Headers */,
 				C929AEC721F97F5200E44898 /* HCSet.h in Headers */,
 				C97FDB1F22069AD9002B17FB /* HCMap.h in Headers */,
+				C97FDB362207F207002B17FB /* HCRaster.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +433,7 @@
 				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
 				C929AEC821F97F5200E44898 /* HCSet.c in Sources */,
 				C97FDB2022069AD9002B17FB /* HCMap.c in Sources */,
+				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,6 +450,7 @@
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
+				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
