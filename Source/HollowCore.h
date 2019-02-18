@@ -18,5 +18,6 @@
 #include "Container/HCSet.h"
 #include "Container/HCMap.h"
 #include "Graphic/HCRaster.h"
+#include "JSON/HCJSON.h"
 
 #endif /* HollowCore_h */

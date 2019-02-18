@@ -31,6 +31,18 @@ extern HCType HCObjectType;
 typedef struct HCObject* HCObjectRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Object Type Query
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCTypeHasAncestor(HCType type, HCType other);
+HCBoolean HCTypeIsOfType(HCType type, HCType other);
+HCBoolean HCTypeIsOfKind(HCType type, HCType other);
+HCTypeName HCObjectName(HCRef object);
+HCType HCObjectAncestor(HCRef object);
+HCBoolean HCObjectHasAncestor(HCRef object, HCType type);
+HCBoolean HCObjectIsOfType(HCRef object, HCType type);
+HCBoolean HCObjectIsOfKind(HCRef object, HCType type);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Management
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRef HCRetain(HCRef self);
