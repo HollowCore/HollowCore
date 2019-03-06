@@ -67,6 +67,7 @@
 		C9E7FB3B221A8A64002991B9 /* json.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB3A221A8A64002991B9 /* json.c */; };
 		C9E7FB3F221A8BC3002991B9 /* HCJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = C9E7FB3D221A8BC3002991B9 /* HCJSON.h */; };
 		C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB3E221A8BC3002991B9 /* HCJSON.c */; };
+		C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB42221AAF0F002991B9 /* HCJSON.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,8 @@
 		C9E7FB3A221A8A64002991B9 /* json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = json.c; sourceTree = "<group>"; };
 		C9E7FB3D221A8BC3002991B9 /* HCJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCJSON.h; sourceTree = "<group>"; };
 		C9E7FB3E221A8BC3002991B9 /* HCJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCJSON.c; sourceTree = "<group>"; };
+		C9E7FB41221AA171002991B9 /* HCJSON_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCJSON_Internal.h; sourceTree = "<group>"; };
+		C9E7FB42221AAF0F002991B9 /* HCJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCJSON.c; sourceTree = "<group>"; };
 		F803D38321EE60FD001E2DE6 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		F803D38421EE60FD001E2DE6 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		F803D38521EEBD27001E2DE6 /* cmake_common_source */ = {isa = PBXFileReference; lastKnownFileType = text; path = cmake_common_source; sourceTree = "<group>"; };
@@ -256,6 +259,7 @@
 				C929AECD21F9800300E44898 /* HCSet.c */,
 				C97FDB2222069B1C002B17FB /* HCMap.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
+				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -272,6 +276,7 @@
 			children = (
 				C9E7FB3C221A8A7A002991B9 /* json-parser */,
 				C9E7FB3D221A8BC3002991B9 /* HCJSON.h */,
+				C9E7FB41221AA171002991B9 /* HCJSON_Internal.h */,
 				C9E7FB3E221A8BC3002991B9 /* HCJSON.c */,
 			);
 			path = JSON;
@@ -460,12 +465,12 @@
 				C9CD283121E3DD16005B566A /* HCNumber.c in Sources */,
 				C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */,
 				C9AA9A3321F437EA001AA9E7 /* HCData.c in Sources */,
-				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
-				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
 				C929AEC821F97F5200E44898 /* HCSet.c in Sources */,
 				C97FDB2022069AD9002B17FB /* HCMap.c in Sources */,
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
+				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
+				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +488,7 @@
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
+				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

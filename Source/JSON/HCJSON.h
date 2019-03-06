@@ -25,7 +25,7 @@ typedef HCRef HCJSONValueRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef enum HCJSONValueType {
     HCJSONValueTypeUnknown = 0,
-    HCJSONValueTypeNone,
+    HCJSONValueTypeNull,
     HCJSONValueTypeFalse,
     HCJSONValueTypeTrue,
     HCJSONValueTypeNumber,
@@ -44,6 +44,6 @@ HCDataRef HCJSONValueAsDataRetained(HCJSONValueRef value);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Query
 //----------------------------------------------------------------------------------------------------------------------------------
-HCJSONValueType HCJSONValueTypeForObject(HCRef object);
+HCJSONValueType HCJSONValueTypeForObject(HCJSONValueRef object);
 
 #endif /* HCJSON_h */
