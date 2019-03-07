@@ -1,38 +1,37 @@
 //
-//  HCRaster_Internal.h
+//  HCPrimitive.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 2/3/19.
+//  Created by Matt Stoker on 3/5/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCRaster_Internal_h
-#define HCRaster_Internal_h
+#ifndef HCPrimitive_h
+#define HCPrimitive_h
 
-#include "../Core/HCObject_Internal.h"
-#include "HCRaster.h"
+#include "../Core/HCObject.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef struct HCRaster {
-    HCObject base;
-    HCInteger width;
-    HCInteger height;
-    HCColor* pixels;
-} HCRaster;
+typedef HCBoolean (*HCPrimitiveIntersectFunction)(HCRef self, HCRef other);
+
+typedef const struct HCPrimitiveTypeData {
+    HCObjectTypeData base;
+    HCPrimitiveIntersectFunction intersect;
+} HCPrimitiveTypeData;
+extern HCType HCPrimitiveType;
+
+typedef struct HCPrimitive* HCPrimitiveRef;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterInit(void* memory, HCInteger width, HCInteger height);
-void HCRasterDestroy(HCRasterRef self);
+// NOTE: Instances of HCPrimitive should be created using sub-types
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Color Operations
+// MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCColor HCColorCombine(HCColor c0, HCColor c1, HCReal t);
-HCColor HCColorCombine3(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc);
-HCColor HCColorCombine4(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc, HCColor cd, HCReal td);
+HCBoolean HCPrimitiveIntersect(HCPrimitiveRef self, HCPrimitiveRef other);
 
-#endif /* HCRaster_Internal_h */
+#endif /* HCPrimitive_h */

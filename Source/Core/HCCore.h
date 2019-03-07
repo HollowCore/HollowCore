@@ -60,6 +60,7 @@ void HCIntegerPrint(HCInteger self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Real Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity);
 HCBoolean HCRealIsEqual(HCReal self, HCReal other);
 HCInteger HCRealHashValue(HCReal self);
 void HCRealPrint(HCReal self, FILE* stream);

@@ -17,6 +17,8 @@
 #include "Container/HCList.h"
 #include "Container/HCSet.h"
 #include "Container/HCMap.h"
+#include "Graphic/HCColor.h"
+#include "Graphic/HCVector.h"
 #include "Graphic/HCRaster.h"
 #include "JSON/HCJSON.h"
 
