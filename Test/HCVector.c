@@ -10,18 +10,36 @@
 #include "../Source/HollowCore.h"
 #include <math.h>
 
-CTEST(HCVector, Operations) {
-    // Vector make checks
+CTEST(HCVector, Creation) {
     HCVector v0 = HCVectorMake(10.0, -20.0, 30.0);
     ASSERT_DBL_NEAR(v0.x, 10.0);
     ASSERT_DBL_NEAR(v0.y, -20.0);
     ASSERT_DBL_NEAR(v0.z, 30.0);
     
-    // Vector make checks
     HCVector v1 = HCVectorMake(30.0, 20.0, -10.0);
     ASSERT_DBL_NEAR(v1.x, 30.0);
     ASSERT_DBL_NEAR(v1.y, 20.0);
     ASSERT_DBL_NEAR(v1.z, -10.0);
+}
+
+CTEST(HCVector, Equality) {
+    ASSERT_FALSE(HCVectorIsInvalid(HCVectorMake(1.0, 2.0, 3.0)));
+    ASSERT_TRUE(HCVectorIsInvalid(HCVectorMake(1.0, 2.0, NAN)));
+    ASSERT_TRUE(HCVectorIsSimilar(HCVectorMake(1.0, 2.0, 3.0), HCVectorMake(1.5, 2.5, 3.5), 0.6));
+    ASSERT_FALSE(HCVectorIsSimilar(HCVectorMake(1.0, 2.0, 3.0), HCVectorMake(1.5, 2.5, 3.5), 0.4));
+    ASSERT_FALSE(HCVectorIsEqual(HCVectorMake(1.0, -2.5, 3.0), HCVectorMake(1.0, 2.5, 3.0)));
+    ASSERT_TRUE(HCVectorIsEqual(HCVectorMake(1.0, -2.5, 3.0), HCVectorMake(1.0, -2.5, 3.0)));
+    ASSERT_EQUAL(HCVectorHashValue(HCVectorMake(1.0, -2.5, 3.0)), HCVectorHashValue(HCVectorMake(1.0, -2.5, 3.0)));
+}
+
+CTEST(HCMap, Print) {
+    HCVector v = HCVectorMake(10.0, -20.0, 30.0);
+    HCVectorPrint(v, stdout); // TODO: Not to stdout
+}
+
+CTEST(HCVector, Operations) {
+    HCVector v0 = HCVectorMake(10.0, -20.0, 30.0);
+    HCVector v1 = HCVectorMake(30.0, 20.0, -10.0);
     
     // Vector add checks
     HCVector vAdd = HCVectorAdd(v0, v1);

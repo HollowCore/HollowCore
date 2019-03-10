@@ -20,7 +20,7 @@ HCColor HCColorMake(HCReal a, HCReal r, HCReal g, HCReal b) {
 HCColor HCColorMakeWithAHSB(HCReal alpha, HCReal hue, HCReal saturation, HCReal brightness) {
     HCReal scaledHue = hue * 360.0;
     HCReal c = brightness * saturation;
-    HCReal x = c * (1.0 - fabs(fmod(scaledHue / 60.0, 2) - 1.0));
+    HCReal x = c * (1.0 - fabs(fmod(scaledHue / 60.0, 2.0) - 1.0));
     HCReal m = brightness - c;
     
     if ((scaledHue >= 0.0) && (scaledHue < 60.0)) {
