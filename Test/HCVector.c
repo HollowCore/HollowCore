@@ -32,7 +32,7 @@ CTEST(HCVector, Equality) {
     ASSERT_EQUAL(HCVectorHashValue(HCVectorMake(1.0, -2.5, 3.0)), HCVectorHashValue(HCVectorMake(1.0, -2.5, 3.0)));
 }
 
-CTEST(HCMap, Print) {
+CTEST(HCVector, Print) {
     HCVector v = HCVectorMake(10.0, -20.0, 30.0);
     HCVectorPrint(v, stdout); // TODO: Not to stdout
 }
