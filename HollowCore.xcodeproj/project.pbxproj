@@ -33,6 +33,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C90EA2912235BA2600341EBD /* HCRay.h in Headers */ = {isa = PBXBuildFile; fileRef = C90EA28F2235BA2600341EBD /* HCRay.h */; };
+		C90EA2922235BA2600341EBD /* HCRay.c in Sources */ = {isa = PBXBuildFile; fileRef = C90EA2902235BA2600341EBD /* HCRay.c */; };
+		C90EA2942235C76D00341EBD /* HCRay.c in Sources */ = {isa = PBXBuildFile; fileRef = C90EA2932235C76D00341EBD /* HCRay.c */; };
 		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
 		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
 		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
@@ -103,6 +106,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C90EA28F2235BA2600341EBD /* HCRay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRay.h; sourceTree = "<group>"; };
+		C90EA2902235BA2600341EBD /* HCRay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRay.c; sourceTree = "<group>"; };
+		C90EA2932235C76D00341EBD /* HCRay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRay.c; sourceTree = "<group>"; };
 		C929AEC521F97F5200E44898 /* HCSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet.h; sourceTree = "<group>"; };
 		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
@@ -240,6 +246,8 @@
 				C95417052230D7A800E461A5 /* HCColor.c */,
 				C95417082230D7CE00E461A5 /* HCVector.h */,
 				C95417092230D7CE00E461A5 /* HCVector.c */,
+				C90EA28F2235BA2600341EBD /* HCRay.h */,
+				C90EA2902235BA2600341EBD /* HCRay.c */,
 				C97FDB2F2207E199002B17FB /* HCRaster.h */,
 				C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */,
 				C97FDB302207E199002B17FB /* HCRaster.c */,
@@ -292,6 +300,7 @@
 				C97FDB2222069B1C002B17FB /* HCMap.c */,
 				C954170E2230DEFD00E461A5 /* HCColor.c */,
 				C954170C2230DA8E00E461A5 /* HCVector.c */,
+				C90EA2932235C76D00341EBD /* HCRay.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
 			);
@@ -357,6 +366,7 @@
 			files = (
 				C9918851222F8C3600A0AA5B /* HCSphere.h in Headers */,
 				C97FDB2A22069BCD002B17FB /* HollowCore.h in Headers */,
+				C90EA2912235BA2600341EBD /* HCRay.h in Headers */,
 				C97FDB2922069BCA002B17FB /* HCCore.h in Headers */,
 				C991884B222F8AD900A0AA5B /* HCPrimitive.h in Headers */,
 				C97FDB2822069BC5002B17FB /* HCObject.h in Headers */,
@@ -513,6 +523,7 @@
 				C991884C222F8AD900A0AA5B /* HCPrimitive.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
+				C90EA2922235BA2600341EBD /* HCRay.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,10 +540,11 @@
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
+				C954170F2230DEFD00E461A5 /* HCColor.c in Sources */,
 				C954170D2230DA8E00E461A5 /* HCVector.c in Sources */,
+				C90EA2942235C76D00341EBD /* HCRay.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
-				C954170F2230DEFD00E461A5 /* HCColor.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

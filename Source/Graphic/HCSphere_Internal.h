@@ -9,22 +9,22 @@
 #ifndef HCSphere_Internal_h
 #define HCSphere_Internal_h
 
-#include "HCPrimitive.h"
+#include "HCPrimitive_Internal.h"
 #include "HCSphere.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef struct HCSphere {
-//    HCPrimitive base;
-    HCReal center;
+    HCPrimitive base;
+    HCVector center;
     HCReal radius;
 } HCSphere;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCSphereInit(void* memory, HCReal center, HCReal radius);
+void HCSphereInit(void* memory, HCVector center, HCReal radius);
 void HCSphereDestroy(HCSphereRef self);
 
 #endif /* HCSphere_Internal_h */

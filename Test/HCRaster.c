@@ -236,3 +236,47 @@ CTEST(HCRaster, SaveLoad) {
     
     HCRelease(raster);
 }
+
+CTEST(HCRaster, Trace) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    
+    HCListRef objects = HCListCreate();
+    HCListAddObjectReleased(objects, HCSphereCreate(HCVectorMake(0.0, 0.0, 0.0), 0.5));
+    
+    HCVector cameraOrigin = HCVectorMake(0.0, 0.0, 1.0);
+    HCVector cameraTarget = HCVectorMake(0.0, 0.0, 0.0);
+    HCVector cameraUp = HCVectorMake(0.0, 1.0, 0.0);
+    
+    HCVector cameraKAxis = HCVectorNormalize(HCVectorSubtract(cameraTarget, cameraOrigin));
+    HCVector cameraIAxis = HCVectorNormalize(HCVectorCross(cameraKAxis, cameraUp));
+    HCVector cameraJAxis = HCVectorNormalize(HCVectorCross(cameraIAxis, cameraKAxis));
+    HCReal cameraFieldOfView = M_PI * 0.75;
+    HCReal cameraAspectRatio = (HCReal)HCRasterWidth(raster) / (HCReal)HCRasterHeight(raster);
+    
+    HCVector cameraViewU = HCVectorScale(cameraIAxis, tanf(cameraFieldOfView * 0.5f));
+    HCVector cameraViewV = HCVectorScale(cameraJAxis, HCVectorMagnitude(cameraViewU) / cameraAspectRatio);
+
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
+            HCReal pointU = ((((HCReal)xIndex + 0.5) / (HCReal)HCRasterWidth(raster)) - 0.5) * 2.0;
+            HCReal pointV = ((((HCReal)yIndex + 0.5) / (HCReal)HCRasterHeight(raster)) - 0.5) * 2.0;
+            HCVector direction = HCVectorAdd(cameraKAxis, HCVectorAdd(HCVectorScale(cameraViewU, pointU), HCVectorScale(cameraViewV, pointV)));
+            HCRay r = HCRayMake(cameraOrigin, direction);
+            HCColor c = HCColorBlack;
+            for (HCListIterator i = HCListIterationBegin(objects); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+                HCPrimitiveRef object = i.object;
+                // TODO: How to call sub-class polymorphic function? Need HCObjectType() call?
+                if (!isnan(HCSphereIntersect((HCSphereRef)object, r))) {
+                    c = HCColorWhite;
+                }
+            }
+            HCRasterSetPixelAt(raster, xIndex, yIndex, c);
+        }
+    }
+    
+    HCRasterSaveBMP(raster, "trace.bmp");
+    HCRasterSavePPM(raster, "trace.ppm");
+    
+    HCRelease(objects);
+    HCRelease(raster);
+}

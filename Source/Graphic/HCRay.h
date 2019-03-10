@@ -1,38 +1,41 @@
 //
-//  HCPrimitive.h
+//  HCRay.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 3/5/19.
+//  Created by Matt Stoker on 3/10/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCPrimitive_h
-#define HCPrimitive_h
+#ifndef HCRay_h
+#define HCRay_h
 
-#include "../Core/HCObject.h"
-#include "HCRay.h"
+#include "HCVector.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef HCBoolean (*HCPrimitiveIntersectFunction)(HCRef self, HCRay ray);
-
-typedef const struct HCPrimitiveTypeData {
-    HCObjectTypeData base;
-    HCPrimitiveIntersectFunction intersect;
-} HCPrimitiveTypeData;
-extern HCType HCPrimitiveType;
-
-typedef struct HCPrimitive* HCPrimitiveRef;
+typedef struct HCRay {
+    HCVector origin;
+    HCVector direction;
+} HCRay;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Construction
+// MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-// NOTE: Instances of HCPrimitive should be created using sub-types
+HCRay HCRayMake(HCVector origin, HCVector direction);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Primitive Polymorphic Functions
+// MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCPrimitiveIntersect(HCPrimitiveRef self, HCRay ray);
+HCBoolean HCRayIsInvalid(HCRay ray);
+HCBoolean HCRayIsSimilar(HCRay ray, HCRay other, HCReal axisDissimilarity);
+HCBoolean HCRayIsEqual(HCRay ray, HCRay other);
+HCInteger HCRayHashValue(HCRay ray);
+void HCRayPrint(HCRay ray, FILE* stream);
 
-#endif /* HCPrimitive_h */
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCVector HCRayPointAt(HCRay ray, HCReal scale);
+
+#endif /* HCRay_h */

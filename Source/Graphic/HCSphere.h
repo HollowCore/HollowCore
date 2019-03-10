@@ -9,6 +9,8 @@
 #ifndef HCSphere_h
 #define HCSphere_h
 
+#include "HCPrimitive.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -18,7 +20,7 @@ typedef struct HCSphere* HCSphereRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCSphereRef HCSphereCreate(HCReal center, HCReal radius);
+HCSphereRef HCSphereCreate(HCVector center, HCReal radius);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -30,12 +32,12 @@ void HCSpherePrint(HCSphereRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Primitive Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCSphereIntersect(HCSphereRef self, HCRef other);
+HCReal HCSphereIntersect(HCSphereRef self, HCRay ray);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCSphereGetCenter(HCSphereRef self);
-HCReal HCSphereGetRadius(HCSphereRef self);
+HCVector HCSphereCenter(HCSphereRef self);
+HCReal HCSphereRadius(HCSphereRef self);
 
 #endif /* HCSphere_h */
