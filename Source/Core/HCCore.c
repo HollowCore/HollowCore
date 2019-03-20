@@ -43,6 +43,10 @@ void HCIntegerPrint(HCInteger self, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Real Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity) {
+    return fabs(self - other) < dissimilarity;
+}
+
 HCBoolean HCRealIsEqual(HCReal self, HCReal other) {
     return self == other; // TODO: NAN?
 }

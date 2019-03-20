@@ -98,6 +98,8 @@ void HCListIterationPrevious(HCListIterator* iterator);
 void HCListIterationNext(HCListIterator* iterator);
 void HCListIterationEnd(HCListIterator* iterator);
 HCBoolean HCListIterationHasBegun(HCListIterator* iterator);
+HCBoolean HCListIterationHasPrevious(HCListIterator* iterator);
+HCBoolean HCListIterationHasNext(HCListIterator* iterator);
 HCBoolean HCListIterationHasEnded(HCListIterator* iterator);
 
 #endif /* HCList_h */

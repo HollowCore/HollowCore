@@ -60,6 +60,7 @@ void HCIntegerPrint(HCInteger self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Real Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity);
 HCBoolean HCRealIsEqual(HCReal self, HCReal other);
 HCInteger HCRealHashValue(HCReal self);
 void HCRealPrint(HCReal self, FILE* stream);
@@ -70,8 +71,8 @@ void HCRealPrint(HCReal self, FILE* stream);
 typedef const char* const HCTypeName;
 typedef const struct HCTypeData* HCType;
 typedef const struct HCTypeData {
-    HCType ancestor;
     HCTypeName name;
+    HCType ancestor;
 } HCTypeData;
 typedef void* HCRef;
 

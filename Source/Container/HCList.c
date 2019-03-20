@@ -341,6 +341,14 @@ HCBoolean HCListIterationHasBegun(HCListIterator* iterator) {
     return iterator->state == (void*)0x1;
 }
 
+HCBoolean HCListIterationHasPrevious(HCListIterator* iterator) {
+    return HCListIterationHasBegun(iterator) && iterator->index > 0;
+}
+
+HCBoolean HCListIterationHasNext(HCListIterator* iterator) {
+    return HCListIterationHasBegun(iterator) && iterator->index < HCListCount(iterator->list) - 1;
+}
+
 HCBoolean HCListIterationHasEnded(HCListIterator* iterator) {
     return HCListIterationHasBegun(iterator) && iterator->list != NULL && (iterator->object == NULL || !HCListContainsIndex(iterator->list, iterator->index));
 }

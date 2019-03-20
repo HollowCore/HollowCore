@@ -1,38 +1,33 @@
 //
-//  HCRaster_Internal.h
+//  HCPrimitive_Internal.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 2/3/19.
+//  Created by Matt Stoker on 3/5/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCRaster_Internal_h
-#define HCRaster_Internal_h
+#ifndef HCPrimitive_Internal_h
+#define HCPrimitive_Internal_h
 
+#include "HCPrimitive.h"
 #include "../Core/HCObject_Internal.h"
-#include "HCRaster.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef struct HCRaster {
+extern HCPrimitiveTypeData HCPrimitiveTypeDataInstance;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Object Instance Data
+//----------------------------------------------------------------------------------------------------------------------------------
+typedef struct HCPrimitive {
     HCObject base;
-    HCInteger width;
-    HCInteger height;
-    HCColor* pixels;
-} HCRaster;
+} HCPrimitive;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterInit(void* memory, HCInteger width, HCInteger height);
-void HCRasterDestroy(HCRasterRef self);
+void HCPrimitiveInit(void* memory);
+void HCPrimitiveDestroy(HCPrimitiveRef self);
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Color Operations
-//----------------------------------------------------------------------------------------------------------------------------------
-HCColor HCColorCombine(HCColor c0, HCColor c1, HCReal t);
-HCColor HCColorCombine3(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc);
-HCColor HCColorCombine4(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc, HCColor cd, HCReal td);
-
-#endif /* HCRaster_Internal_h */
+#endif /* HCPrimitive_Internal_h */

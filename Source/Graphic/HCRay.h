@@ -1,38 +1,41 @@
 //
-//  HCRaster_Internal.h
+//  HCRay.h
 //  HollowCore
 //
-//  Created by Matt Stoker on 2/3/19.
+//  Created by Matt Stoker on 3/10/19.
 //  Copyright © 2019 HollowCore. All rights reserved.
 //
 
-#ifndef HCRaster_Internal_h
-#define HCRaster_Internal_h
+#ifndef HCRay_h
+#define HCRay_h
 
-#include "../Core/HCObject_Internal.h"
-#include "HCRaster.h"
+#include "HCVector.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef struct HCRaster {
-    HCObject base;
-    HCInteger width;
-    HCInteger height;
-    HCColor* pixels;
-} HCRaster;
+typedef struct HCRay {
+    HCVector origin;
+    HCVector direction;
+} HCRay;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Construction
+// MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterInit(void* memory, HCInteger width, HCInteger height);
-void HCRasterDestroy(HCRasterRef self);
+HCRay HCRayMake(HCVector origin, HCVector direction);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Color Operations
+// MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCColor HCColorCombine(HCColor c0, HCColor c1, HCReal t);
-HCColor HCColorCombine3(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc);
-HCColor HCColorCombine4(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc, HCColor cd, HCReal td);
+HCBoolean HCRayIsInvalid(HCRay ray);
+HCBoolean HCRayIsSimilar(HCRay ray, HCRay other, HCReal axisDissimilarity);
+HCBoolean HCRayIsEqual(HCRay ray, HCRay other);
+HCInteger HCRayHashValue(HCRay ray);
+void HCRayPrint(HCRay ray, FILE* stream);
 
-#endif /* HCRaster_Internal_h */
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCVector HCRayPointAt(HCRay ray, HCReal scale);
+
+#endif /* HCRay_h */

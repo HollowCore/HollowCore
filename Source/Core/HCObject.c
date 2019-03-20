@@ -7,6 +7,53 @@
 //
 
 #include "../Core/HCObject_Internal.h"
+#include <string.h>
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Object Type Query
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCTypeHasAncestor(HCType type, HCType other) {
+    // Reject type checks against the null type
+    if (type == NULL) {
+        return false;
+    }
+    
+    // Determine if the type or that of any of its ancestors are of the given type
+    for (HCType ancestor = type->ancestor; ancestor != NULL; ancestor = ancestor->ancestor) {
+        if (HCTypeIsOfType(ancestor, other)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+HCBoolean HCTypeIsOfType(HCType type, HCType other) {
+    return (type != NULL && other != NULL) && (type == other || strcmp(type->name, other->name) == 0);
+}
+
+HCBoolean HCTypeIsOfKind(HCType type, HCType other) {
+    return HCTypeIsOfType(type, other) || HCTypeHasAncestor(type, other);
+}
+
+HCTypeName HCObjectName(HCRef object) {
+    return ((HCObjectRef)object)->type->name;
+}
+
+HCType HCObjectAncestor(HCRef object) {
+    return ((HCObjectRef)object)->type->ancestor;
+}
+
+HCBoolean HCObjectHasAncestor(HCRef object, HCType type) {
+    return object != NULL && HCTypeHasAncestor(((HCObjectRef)object)->type, type);
+}
+
+HCBoolean HCObjectIsOfType(HCRef object, HCType type) {
+    return object != NULL && HCTypeIsOfType(((HCObjectRef)object)->type, type);
+}
+
+HCBoolean HCObjectIsOfKind(HCRef object, HCType type) {
+    return object != NULL && HCTypeIsOfKind(((HCObjectRef)object)->type, type);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Management

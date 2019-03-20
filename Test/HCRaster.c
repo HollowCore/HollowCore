@@ -38,37 +38,37 @@ CTEST(HCRaster, Print) {
 
 CTEST(HCRaster, PixelOperations) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
-    HCRasterSetPixelAt(raster, 50, 50, HCRasterColorGreen);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).g == HCRasterColorGreen.g);
-    HCRasterColor pixels[25*25];
-    for (HCInteger i = 0; i < (HCInteger)(sizeof(pixels) / sizeof(HCRasterColor)); i++) {
-        pixels[i] = HCRasterColorRed;
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCColorGreen.g);
+    HCRasterSetPixelAt(raster, 50, 50, HCColorGreen);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).g == HCColorGreen.g);
+    HCColor pixels[25*25];
+    for (HCInteger i = 0; i < (HCInteger)(sizeof(pixels) / sizeof(HCColor)); i++) {
+        pixels[i] = HCColorRed;
     }
     HCRasterSetPixelsAt(raster, 30, 40, 55, 65, pixels);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCRasterColorGreen.g);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCRasterColorGreen.g);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorRed.r);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 49, 50).r == HCRasterColorRed.r);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 30, 50).r == HCRasterColorRed.r);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 54, 50).r == HCRasterColorRed.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 29, 50).r == HCRasterColorRed.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 55, 50).r == HCRasterColorRed.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 39).r == HCRasterColorRed.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 65).r == HCRasterColorRed.r);
-    HCRasterSetPixelAt(raster, 30, 40, HCRasterColorBlue);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 30, 40).b == HCRasterColorBlue.b);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).g == HCColorGreen.g);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).g == HCColorGreen.g);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 49, 50).r == HCColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 30, 50).r == HCColorRed.r);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 54, 50).r == HCColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 29, 50).r == HCColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 55, 50).r == HCColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 39).r == HCColorRed.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 65).r == HCColorRed.r);
+    HCRasterSetPixelAt(raster, 30, 40, HCColorBlue);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 30, 40).b == HCColorBlue.b);
     HCRasterPixelsAt(raster, 30, 40, 55, 65, pixels);
-    ASSERT_TRUE(pixels[0].b == HCRasterColorBlue.b);
-    ASSERT_FALSE(pixels[1].b == HCRasterColorBlue.b);
-    ASSERT_FALSE(pixels[1*(55-30)+0].b == HCRasterColorBlue.b);
+    ASSERT_TRUE(pixels[0].b == HCColorBlue.b);
+    ASSERT_FALSE(pixels[1].b == HCColorBlue.b);
+    ASSERT_FALSE(pixels[1*(55-30)+0].b == HCColorBlue.b);
     HCRasterClear(raster);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 30, 40).b == HCRasterColorBlue.b);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 30, 40).b == HCColorBlue.b);
     HCRelease(raster);
 }
 
@@ -76,7 +76,7 @@ CTEST(HCRaster, Lookup) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
-            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCColorRed : HCColorGreen) : (xIndex < 50 ? HCColorWhite : HCColorBlue));
         }
     }
     ASSERT_TRUE(HCRasterPixelNearest(raster, 50.5, 50.5).a == HCRasterPixelFiltered(raster, 50.5, 50.5).a);
@@ -88,13 +88,13 @@ CTEST(HCRaster, Lookup) {
 
 CTEST(HCRaster, DrawPoint) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorWhite.r);
-    HCRasterDrawPoint(raster, 50, 50, HCRasterColorWhite);
-    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCRasterColorWhite.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).r == HCRasterColorWhite.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).r == HCRasterColorWhite.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).r == HCRasterColorWhite.r);
-    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).r == HCRasterColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 50).r == HCColorWhite.r);
+    HCRasterDrawPoint(raster, 50, 50, HCColorWhite);
+    ASSERT_TRUE(HCRasterPixelAt(raster, 50, 50).r == HCColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 49, 50).r == HCColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 51, 50).r == HCColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).r == HCColorWhite.r);
+    ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).r == HCColorWhite.r);
     HCRasterSaveBMP(raster, "point.bmp");
     HCRasterSavePPM(raster, "point.ppm");
     HCRelease(raster);
@@ -102,7 +102,7 @@ CTEST(HCRaster, DrawPoint) {
 
 CTEST(HCRaster, DrawLine) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawLine(raster, 10, 80, 90, 20, HCRasterColorYellow, HCRasterColorMagenta);
+    HCRasterDrawLine(raster, 10, 80, 90, 20, HCColorYellow, HCColorMagenta);
     HCRasterSaveBMP(raster, "line.bmp");
     HCRasterSavePPM(raster, "line.ppm");
     HCRelease(raster);
@@ -110,7 +110,7 @@ CTEST(HCRaster, DrawLine) {
 
 CTEST(HCRaster, DrawQuadraticCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawQuadraticCurve(raster, 10, 90, 50, 10, 90, 90, HCRasterColorMagenta, HCRasterColorCyan);
+    HCRasterDrawQuadraticCurve(raster, 10, 90, 50, 10, 90, 90, HCColorMagenta, HCColorCyan);
     HCRasterSaveBMP(raster, "quadratic_curve.bmp");
     HCRasterSavePPM(raster, "quadratic_curve.ppm");
     HCRelease(raster);
@@ -118,7 +118,7 @@ CTEST(HCRaster, DrawQuadraticCurve) {
 
 CTEST(HCRaster, DrawCubicCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawCubicCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCRasterColorCyan, HCRasterColorYellow);
+    HCRasterDrawCubicCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCColorCyan, HCColorYellow);
     HCRasterSaveBMP(raster, "cubic_curve.bmp");
     HCRasterSavePPM(raster, "cubic_curve.ppm");
     HCRelease(raster);
@@ -126,7 +126,7 @@ CTEST(HCRaster, DrawCubicCurve) {
 
 CTEST(HCRaster, DrawPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 L 70 10 L 90 90 Q 50 10 10 90", HCRasterColorGreen);
+    HCRasterDrawPath(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 L 70 10 L 90 90 Q 50 10 10 90", HCColorGreen);
     HCRasterSaveBMP(raster, "path.bmp");
     HCRasterSavePPM(raster, "path.ppm");
     HCRelease(raster);
@@ -134,7 +134,7 @@ CTEST(HCRaster, DrawPath) {
 
 CTEST(HCRaster, DrawTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue);
+    HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCColorRed, HCColorGreen, HCColorBlue);
     HCRasterSaveBMP(raster, "triangle.bmp");
     HCRasterSavePPM(raster, "triangle.ppm");
     HCRelease(raster);
@@ -142,7 +142,7 @@ CTEST(HCRaster, DrawTriangle) {
 
 CTEST(HCRaster, FillTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterFillTriangle(raster, 10, 80, 50, 20, 90, 70, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue);
+    HCRasterFillTriangle(raster, 10, 80, 50, 20, 90, 70, HCColorRed, HCColorGreen, HCColorBlue);
     HCRasterSaveBMP(raster, "triangle_filled.bmp");
     HCRasterSavePPM(raster, "triangle_filled.ppm");
     HCRelease(raster);
@@ -152,7 +152,7 @@ CTEST(HCRaster, FillTexturedTriangle) {
     HCRasterRef texture = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(texture); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(texture); xIndex++) {
-            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCColorRed : HCColorGreen) : (xIndex < 50 ? HCColorWhite : HCColorBlue));
         }
     }
     HCRasterRef raster = HCRasterCreate(100, 100);
@@ -167,7 +167,7 @@ CTEST(HCRaster, FillTexturedTriangle) {
 
 CTEST(HCRaster, DrawQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
+    HCRasterDrawQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCColorRed, HCColorGreen, HCColorBlue, HCColorWhite);
     HCRasterSaveBMP(raster, "quad.bmp");
     HCRasterSavePPM(raster, "quad.ppm");
     HCRelease(raster);
@@ -175,7 +175,7 @@ CTEST(HCRaster, DrawQuad) {
 
 CTEST(HCRaster, FillQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterFillQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCRasterColorRed, HCRasterColorGreen, HCRasterColorBlue, HCRasterColorWhite);
+    HCRasterFillQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCColorRed, HCColorGreen, HCColorBlue, HCColorWhite);
     HCRasterSaveBMP(raster, "quad_filled.bmp");
     HCRasterSavePPM(raster, "quad_filled.ppm");
     HCRelease(raster);
@@ -185,7 +185,7 @@ CTEST(HCRaster, FillTexturedQuad) {
     HCRasterRef texture = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(texture); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(texture); xIndex++) {
-            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+            HCRasterSetPixelAt(texture, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCColorRed : HCColorGreen) : (xIndex < 50 ? HCColorWhite : HCColorBlue));
         }
     }
     HCRasterRef raster = HCRasterCreate(100, 100);
@@ -200,7 +200,7 @@ CTEST(HCRaster, FillTexturedQuad) {
 
 CTEST(HCRaster, Gradient) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterFillQuad(raster, -50, 50, 50, -50, 150, 50, 50, 150, HCRasterColorRed, HCRasterColorRed, HCRasterColorGreen, HCRasterColorGreen);
+    HCRasterFillQuad(raster, -50, 50, 50, -50, 150, 50, 50, 150, HCColorRed, HCColorRed, HCColorGreen, HCColorGreen);
     HCRasterSaveBMP(raster, "gradient.bmp");
     HCRasterSavePPM(raster, "gradient.ppm");
     HCRelease(raster);
@@ -210,7 +210,7 @@ CTEST(HCRaster, SaveLoad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
         for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
-            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCRasterColorRed : HCRasterColorGreen) : (xIndex < 50 ? HCRasterColorWhite : HCRasterColorBlue));
+            HCRasterSetPixelAt(raster, xIndex, yIndex, yIndex < 50 ? (xIndex < 50 ? HCColorRed : HCColorGreen) : (xIndex < 50 ? HCColorWhite : HCColorBlue));
         }
     }
 
@@ -234,5 +234,49 @@ CTEST(HCRaster, SaveLoad) {
     ASSERT_TRUE(HCRasterIsEqual(raster, bmpReversed));
     HCRelease(bmpReversed);
     
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, Trace) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    
+    HCListRef objects = HCListCreate();
+    HCListAddObjectReleased(objects, HCSphereCreate(HCVectorMake(0.0, 0.0, 0.0), 0.5));
+    
+    HCVector cameraOrigin = HCVectorMake(0.0, 0.0, 1.0);
+    HCVector cameraTarget = HCVectorMake(0.0, 0.0, 0.0);
+    HCVector cameraUp = HCVectorMake(0.0, 1.0, 0.0);
+    
+    HCVector cameraKAxis = HCVectorNormalize(HCVectorSubtract(cameraTarget, cameraOrigin));
+    HCVector cameraIAxis = HCVectorNormalize(HCVectorCross(cameraKAxis, cameraUp));
+    HCVector cameraJAxis = HCVectorNormalize(HCVectorCross(cameraIAxis, cameraKAxis));
+    HCReal cameraFieldOfView = M_PI * 0.75;
+    HCReal cameraAspectRatio = (HCReal)HCRasterWidth(raster) / (HCReal)HCRasterHeight(raster);
+    
+    HCVector cameraViewU = HCVectorScale(cameraIAxis, tanf(cameraFieldOfView * 0.5f));
+    HCVector cameraViewV = HCVectorScale(cameraJAxis, HCVectorMagnitude(cameraViewU) / cameraAspectRatio);
+
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(raster); xIndex++) {
+            HCReal pointU = ((((HCReal)xIndex + 0.5) / (HCReal)HCRasterWidth(raster)) - 0.5) * 2.0;
+            HCReal pointV = ((((HCReal)yIndex + 0.5) / (HCReal)HCRasterHeight(raster)) - 0.5) * 2.0;
+            HCVector direction = HCVectorAdd(cameraKAxis, HCVectorAdd(HCVectorScale(cameraViewU, pointU), HCVectorScale(cameraViewV, pointV)));
+            HCRay r = HCRayMake(cameraOrigin, direction);
+            HCColor c = HCColorBlack;
+            for (HCListIterator i = HCListIterationBegin(objects); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+                HCPrimitiveRef object = i.object;
+                // TODO: How to call sub-class polymorphic function? Need HCObjectType() call?
+                if (!isnan(HCSphereIntersect((HCSphereRef)object, r))) {
+                    c = HCColorWhite;
+                }
+            }
+            HCRasterSetPixelAt(raster, xIndex, yIndex, c);
+        }
+    }
+    
+    HCRasterSaveBMP(raster, "trace.bmp");
+    HCRasterSavePPM(raster, "trace.ppm");
+    
+    HCRelease(objects);
     HCRelease(raster);
 }
