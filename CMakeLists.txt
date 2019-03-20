@@ -42,6 +42,7 @@ set(SOURCES ${SOURCES} Source/Graphic/HCRaster.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCPrimitive.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCSphere.c)
 set(SOURCES ${SOURCES} Source/JSON/HCJSON.c)
+set(SOURCES ${SOURCES} Source/Thread/HCThread.c)
 set(LIB_SOURCES ${LIB_SOURCES} Source/JSON/json-parser/json.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES} ${LIB_SOURCES})
 
