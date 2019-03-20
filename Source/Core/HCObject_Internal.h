@@ -30,4 +30,6 @@ typedef struct HCObject {
 void HCObjectInit(void* memory);
 void HCObjectDestroy(HCObjectRef self);
 
+void HCObjectSetType(void* object, HCType type);
+
 #endif /* HCObject_Internal_h */

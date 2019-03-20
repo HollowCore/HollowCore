@@ -45,6 +45,8 @@ void HCThreadInit(void* memory, HCThreadFunction function, void* context, HCThre
     self->function = function;
     self->context = context;
     self->options = options;
+
+    HCObjectSetType(self, HCThreadType);
 }
 
 void HCThreadDestroy(HCThreadRef self) {
@@ -83,13 +85,34 @@ void HCThreadPrint(HCThreadRef self, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Current Thread
+//----------------------------------------------------------------------------------------------------------------------------------
+
+/// The @c pthread_once_t used ensure that @c HCThreadCurrentThreadKey is only initialized once.
+static pthread_once_t HCThreadCurrentThreadKeyOnce = PTHREAD_ONCE_INIT;
+/// The @c pthread_key_t used to lookup the current @c HCThread.
+static pthread_key_t HCThreadCurrentThreadKey;
+
+/// The function called when @c HCThreadCurrentThreadKeyOnce hasn't been run.
+static void HCThreadSetupCurrentThreadKey(void) {
+    pthread_key_create(&HCThreadCurrentThreadKey, NULL);
+}
+
+/// Used to set the current thread as the current thread.
+static void HCThreadSetCurrentThread(HCThreadRef self) {
+    pthread_once(&HCThreadCurrentThreadKeyOnce, HCThreadSetupCurrentThreadKey);
+    pthread_setspecific(HCThreadCurrentThreadKey, self);
+}
+
+HCThreadRef HCThreadGetCurrent(void) {
+    pthread_once(&HCThreadCurrentThreadKeyOnce, HCThreadSetupCurrentThreadKey);
+    return pthread_getspecific(HCThreadCurrentThreadKey);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Execution State
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCThreadStart(HCThreadRef self) {
-    //TODO: Should retain self?
-    if (!(self->options & HCThreadOptionNoRetainOfSelfOnStart)) {
-        HCRetain(self);
-    }
     pthread_create(&self->pthread, NULL, (void*)HCThreadStartEntry, self);
     atomic_store(&self->isJoined, false);
 }
@@ -100,10 +123,6 @@ void HCThreadCancel(HCThreadRef self) {
 
 HCBoolean HCThreadIsExecuting(HCThreadRef self) {
     return atomic_load(&self->isExecuting);
-}
-
-HCBoolean HCThreadIsFinished(HCThreadRef self) {
-    return atomic_load(&self->isFinished);
 }
 
 HCBoolean HCThreadIsCanceled(HCThreadRef self) {
@@ -132,26 +151,24 @@ void* HCThreadGetContext(HCThreadRef self) {
 // MARK: - Entry
 //----------------------------------------------------------------------------------------------------------------------------------
 void* HCThreadStartEntry(HCThreadRef self) {
+    HCThreadSetCurrentThread(self);
+
     atomic_store(&self->isExecuting, true);
     self->function(self->context);
-
-    // Release self if it was retained.
-    if (!(self->options & HCThreadOptionNoRetainOfSelfOnStart)) {
-        HCRelease(self);
-    }
     atomic_store(&self->isExecuting, false);
+
     return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Options
 //----------------------------------------------------------------------------------------------------------------------------------
-// TODO: How thread safe should options be?
-
 HCThreadOption HCThreadGetOptions(HCThreadRef self) {
     return self->options;
 }
 
+// TODO: Should these options exist? If so enable them and expose them in the public header.
+#if 0
 void HCThreadSetOptions(HCThreadRef self, HCThreadOption options) {
     self->options |= options;
 }
@@ -165,3 +182,4 @@ void HCThreadUnsetOptions(HCThreadRef self, HCThreadOption options) {
 void HCThreadClearOptions(HCThreadRef self) {
     self->options = HCThreadOptionNone;
 }
+#endif
