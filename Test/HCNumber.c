@@ -169,4 +169,5 @@ CTEST(HCNumber, Print) {
     HCNumberRef a = HCNumberCreateWithReal(M_PI);
     HCNumberPrint(a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }

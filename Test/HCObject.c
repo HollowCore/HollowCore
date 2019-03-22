@@ -63,4 +63,5 @@ CTEST(HCObject, Print) {
     HCNumberRef a = HCNumberCreate();
     HCObjectPrint((HCObjectRef)a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }

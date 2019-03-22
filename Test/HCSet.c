@@ -150,6 +150,7 @@ CTEST(HCSet, Print) {
     HCSetRef a = HCSetCreate();
     HCSetPrint(a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }
 
 CTEST(HCSet, Clear) {

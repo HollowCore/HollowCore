@@ -57,6 +57,7 @@ CTEST(HCThread, CreateWithOptions) {
         HCThreadOption option = options[i];
         HCThreadRef thread = HCThreadCreateWithOptions(HCThreadTestFunctionEmpty, NULL, option);
         ASSERT_TRUE((HCThreadGetOptions(thread) & option) == option);
+        ASSERT_TRUE((HCThreadGetOptions(thread) ^ option) == 0);
         HCRelease(thread);
     }
 }

@@ -118,6 +118,7 @@ CTEST(HCList, Print) {
     HCListRef a = HCListCreate();
     HCListPrint(a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }
 
 CTEST(HCList, Clear) {

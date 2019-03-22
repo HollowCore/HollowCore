@@ -257,9 +257,8 @@ HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key) {
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
 HCMapIterator HCMapIterationBegin(HCMapRef self) {
-    HCSetIterator i = HCSetIterationBegin(self->pairs);
     HCSetIterator* pairIterator = malloc(sizeof(HCSetIterator));
-    memcpy(pairIterator, &i, sizeof(i));
+    *pairIterator = HCSetIterationBegin(self->pairs);
     HCMapPairRef pair = pairIterator->object;
     HCMapIterator iterator = {
         .map = self,
@@ -294,11 +293,17 @@ HCBoolean HCMapIterationHasBegun(HCMapIterator* iterator) {
 
 HCBoolean HCMapIterationHasNext(HCMapIterator* iterator) {
     HCSetIterator* pairIterator = iterator->state;
-    return HCSetIterationHasNext(pairIterator);
+    return pairIterator == NULL ? false:HCSetIterationHasNext(pairIterator);
 }
 
 HCBoolean HCMapIterationHasEnded(HCMapIterator* iterator) {
-    return HCMapIterationHasBegun(iterator) && iterator->map != NULL && (iterator->key == NULL || iterator->object == NULL);
+    if (HCMapIterationHasBegun(iterator) && iterator->map != NULL && (iterator->key == NULL || iterator->object == NULL)) {
+        if (iterator->state != NULL) {
+            HCMapIterationEnd(iterator);
+        }
+        return true;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
