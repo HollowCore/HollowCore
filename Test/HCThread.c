@@ -27,7 +27,7 @@ void HCThreadTestFunctionIsCurrentThread(void* context) {
 
 #define HCThreadFunctionWhileNotCanceledSleep (100)
 void HCThreadFunctionWhileNotCanceled(void* context) {
-    int timeoutCount = (int)context;
+    HCInteger timeoutCount = (HCInteger)context;
     int count = 0;
     while (!HCThreadIsCanceled(HCThreadGetCurrent())) {
         usleep(HCThreadFunctionWhileNotCanceledSleep);
