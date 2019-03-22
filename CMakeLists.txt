@@ -47,7 +47,7 @@ set(LIB_SOURCES ${LIB_SOURCES} Source/JSON/json-parser/json.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES} ${LIB_SOURCES})
 
 # HollowCore Links
-target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m)
+target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m pthread)
 
 # HollowCore Test Suite
 set(HOLLOWCORE_TEST_NAME hollowcoretest)
