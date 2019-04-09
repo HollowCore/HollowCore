@@ -42,11 +42,12 @@ set(SOURCES ${SOURCES} Source/Graphic/HCRaster.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCPrimitive.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCSphere.c)
 set(SOURCES ${SOURCES} Source/JSON/HCJSON.c)
+set(SOURCES ${SOURCES} Source/Thread/HCThread.c)
 set(LIB_SOURCES ${LIB_SOURCES} Source/JSON/json-parser/json.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES} ${LIB_SOURCES})
 
 # HollowCore Links
-target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m)
+target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m pthread)
 
 # HollowCore Test Suite
 set(HOLLOWCORE_TEST_NAME hollowcoretest)
@@ -64,6 +65,7 @@ set(TEST_SOURCES ${TEST_SOURCES} Test/HCVector.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCRay.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCRaster.c)
 set(TEST_SOURCES ${TEST_SOURCES} Test/HCJSON.c)
+set(TEST_SOURCES ${TEST_SOURCES} Test/HCThread.c)
 add_executable(${HOLLOWCORE_TEST_NAME} ${TEST_SOURCES})
 target_link_libraries(${HOLLOWCORE_TEST_NAME} hollowcore)
 enable_testing()

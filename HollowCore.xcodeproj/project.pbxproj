@@ -81,6 +81,9 @@
 		C9E7FB3F221A8BC3002991B9 /* HCJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = C9E7FB3D221A8BC3002991B9 /* HCJSON.h */; };
 		C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB3E221A8BC3002991B9 /* HCJSON.c */; };
 		C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB42221AAF0F002991B9 /* HCJSON.c */; };
+		F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F81C7F0E2242F392000E8A72 /* HCThread.c */; };
+		F8800CEA221657FC00068863 /* HCThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F8800CE8221657FC00068863 /* HCThread.h */; };
+		F8800CEB221657FC00068863 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F8800CE9221657FC00068863 /* HCThread.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -171,6 +174,10 @@
 		F803D38321EE60FD001E2DE6 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		F803D38421EE60FD001E2DE6 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		F803D38521EEBD27001E2DE6 /* cmake_common_source */ = {isa = PBXFileReference; lastKnownFileType = text; path = cmake_common_source; sourceTree = "<group>"; };
+		F81C7F0E2242F392000E8A72 /* HCThread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HCThread.c; sourceTree = "<group>"; };
+		F8800CE8221657FC00068863 /* HCThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread.h; sourceTree = "<group>"; };
+		F8800CE9221657FC00068863 /* HCThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread.c; sourceTree = "<group>"; };
+		F8800CEC2216581300068863 /* HCThread_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread_Internal.h; sourceTree = "<group>"; };
 		F8CBB8E421E5B97800DB022F /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		F8CBB8E521E5BCE300DB022F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F8CBB8E621E5BCE300DB022F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -303,6 +310,7 @@
 				C90EA2932235C76D00341EBD /* HCRay.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
+				F81C7F0E2242F392000E8A72 /* HCThread.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -344,6 +352,16 @@
 			path = Tools;
 			sourceTree = "<group>";
 		};
+		F8800CE72216578B00068863 /* Thread */ = {
+			isa = PBXGroup;
+			children = (
+				F8800CE8221657FC00068863 /* HCThread.h */,
+				F8800CEC2216581300068863 /* HCThread_Internal.h */,
+				F8800CE9221657FC00068863 /* HCThread.c */,
+			);
+			path = Thread;
+			sourceTree = "<group>";
+		};
 		F8CBB8E721E5BD0B00DB022F /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +370,7 @@
 				C97FDB2C2207BEDA002B17FB /* Container */,
 				C97FDB2E2207E16F002B17FB /* Graphic */,
 				C9E7FB37221A8A36002991B9 /* JSON */,
+				F8800CE72216578B00068863 /* Thread */,
 				C9AA9A2521F174B8001AA9E7 /* HollowCore.h */,
 			);
 			path = Source;
@@ -372,6 +391,7 @@
 				C97FDB2822069BC5002B17FB /* HCObject.h in Headers */,
 				C97FDB2722069BBF002B17FB /* HCNumber.h in Headers */,
 				C97FDB2622069BBA002B17FB /* HCString.h in Headers */,
+				F8800CEA221657FC00068863 /* HCThread.h in Headers */,
 				C97FDB2522069BB5002B17FB /* HCData.h in Headers */,
 				C97FDB2422069BAB002B17FB /* HCList.h in Headers */,
 				C929AEC721F97F5200E44898 /* HCSet.h in Headers */,
@@ -518,6 +538,7 @@
 				C97FDB2022069AD9002B17FB /* HCMap.c in Sources */,
 				C95417072230D7A800E461A5 /* HCColor.c in Sources */,
 				C954170B2230D7CE00E461A5 /* HCVector.c in Sources */,
+				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9918852222F8C3600A0AA5B /* HCSphere.c in Sources */,
 				C991884C222F8AD900A0AA5B /* HCPrimitive.c in Sources */,
@@ -544,6 +565,7 @@
 				C954170D2230DA8E00E461A5 /* HCVector.c in Sources */,
 				C90EA2942235C76D00341EBD /* HCRay.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
+				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

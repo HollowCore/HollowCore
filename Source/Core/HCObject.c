@@ -129,6 +129,11 @@ void HCObjectDestroy(HCObjectRef self) {
     (void)self; // Unused
 }
 
+void HCObjectSetType(void* object, HCType type) {
+    HCObjectRef self = object;
+    self->type = type;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
