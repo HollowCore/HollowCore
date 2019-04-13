@@ -330,6 +330,9 @@ void HCListIterationNext(HCListIterator* iterator) {
         iterator->index = iterator->list->count;
     }
     iterator->object = HCListObjectAtIndex(iterator->list, iterator->index);
+    if (iterator->object == NULL) {
+        HCListIterationEnd(iterator);
+    }
 }
 
 void HCListIterationEnd(HCListIterator* iterator) {

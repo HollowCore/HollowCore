@@ -277,6 +277,9 @@ void HCMapIterationNext(HCMapIterator* iterator) {
     iterator->index = pairIterator->index;
     iterator->object = pair == NULL ? NULL : pair->object;
     iterator->key = pair == NULL ? NULL : pair->key;
+    if (iterator->key == NULL || iterator->object == NULL) {
+        HCMapIterationEnd(iterator);
+    }
 }
 
 void HCMapIterationEnd(HCMapIterator* iterator) {
@@ -297,13 +300,7 @@ HCBoolean HCMapIterationHasNext(HCMapIterator* iterator) {
 }
 
 HCBoolean HCMapIterationHasEnded(HCMapIterator* iterator) {
-    if (HCMapIterationHasBegun(iterator) && iterator->map != NULL && (iterator->key == NULL || iterator->object == NULL)) {
-        if (iterator->state != NULL) {
-            HCMapIterationEnd(iterator);
-        }
-        return true;
-    }
-    return false;
+    return HCMapIterationHasBegun(iterator) && iterator->map != NULL && (iterator->key == NULL || iterator->object == NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
