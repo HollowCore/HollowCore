@@ -24,6 +24,7 @@
 #include "Graphic/HCPrimitive.h"
 #include "Graphic/HCSphere.h"
 #include "JSON/HCJSON.h"
+#include "Thread/HCLock.h"
 #include "Thread/HCThread.h"
 
 #endif /* HollowCore_h */
