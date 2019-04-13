@@ -317,16 +317,16 @@ HCRef HCSetRemoveObjectRetained(HCSetRef self, HCRef object) {
 //----------------------------------------------------------------------------------------------------------------------------------
 HCSetIterator HCSetIterationBegin(HCSetRef self) {
     // Determine if the set has any items to iterate over
-    if (self->count == 0) {
-        HCSetIterator iterator = {
-            .set = self,
-            .index = self->count,
-            .object = NULL,
-            .state = NULL
-        };
-        return iterator;
-    }
-    
+//    if (self->count == 0) {
+//        HCSetIterator iterator = {
+//            .set = self,
+//            .index = self->count,
+//            .object = NULL,
+//            .state = NULL
+//        };
+//        return iterator;
+//    }
+//
     // Begin iteration with the object in the first slot
     HCInteger firstSlotIndex = HCSetNextSlotFromSlot(self, HCSetNotFound);
     HCSetSlot* slot = &self->slots[firstSlotIndex];
@@ -336,6 +336,9 @@ HCSetIterator HCSetIterationBegin(HCSetRef self) {
         .object = slot->object,
         .state = slot
     };
+    if (HCSetIterationHasEnded(&iterator)) {
+        HCSetIterationEnd(&iterator);
+    }
     return iterator;
 }
 

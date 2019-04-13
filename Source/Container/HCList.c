@@ -313,6 +313,9 @@ HCListIterator HCListIterationBeginAtIndex(HCListRef self, HCInteger index) {
         .object = HCListObjectAtIndex(self, index),
         .state = (void*)0x1
     };
+    if (HCListIterationHasEnded(&iterator)) {
+        HCListIterationEnd(&iterator);
+    }
     return iterator;
 }
 
@@ -330,7 +333,7 @@ void HCListIterationNext(HCListIterator* iterator) {
         iterator->index = iterator->list->count;
     }
     iterator->object = HCListObjectAtIndex(iterator->list, iterator->index);
-    if (iterator->object == NULL) {
+    if (HCListIterationHasEnded(iterator)) {
         HCListIterationEnd(iterator);
     }
 }

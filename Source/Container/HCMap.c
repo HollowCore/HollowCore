@@ -267,6 +267,9 @@ HCMapIterator HCMapIterationBegin(HCMapRef self) {
         .key = pair == NULL ? NULL : pair->key,
         .state = pairIterator
     };
+    if (HCMapIterationHasEnded(&iterator)) {
+        HCMapIterationEnd(&iterator);
+    }
     return iterator;
 }
 
