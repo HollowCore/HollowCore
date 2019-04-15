@@ -31,7 +31,7 @@ HCType HCMapType = (HCType)&HCMapTypeDataInstance;
 //----------------------------------------------------------------------------------------------------------------------------------
 #define HCMapNotFoundStatic (-1)
 const HCInteger HCMapNotFound = HCMapNotFoundStatic;
-const HCMapIterator HCMapIteratorInvalid = { .map = NULL, .index = HCMapNotFoundStatic, .object = NULL, .state = NULL };
+const HCMapIterator HCMapIteratorInvalid = { .map = NULL, .index = HCMapNotFoundStatic, .object = NULL, .state = { 0 } };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -257,24 +257,22 @@ HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key) {
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
 HCMapIterator HCMapIterationBegin(HCMapRef self) {
-    HCSetIterator* pairIterator = malloc(sizeof(HCSetIterator));
-    *pairIterator = HCSetIterationBegin(self->pairs);
-    HCMapPairRef pair = pairIterator->object;
+    HCSetIterator i = HCSetIterationBegin(self->pairs);
+    HCMapPairRef pair = i.object;
+
     HCMapIterator iterator = {
         .map = self,
-        .index = pairIterator->index,
+        .index = i.index,
         .object = pair == NULL ? NULL : pair->object,
         .key = pair == NULL ? NULL : pair->key,
-        .state = pairIterator
+        .state = { 0 },
     };
-    if (HCMapIterationHasEnded(&iterator)) {
-        HCMapIterationEnd(&iterator);
-    }
+    memcpy(&iterator.state, &i, sizeof(i));
     return iterator;
 }
 
 void HCMapIterationNext(HCMapIterator* iterator) {
-    HCSetIterator* pairIterator = iterator->state;
+    HCSetIterator* pairIterator = (HCSetIterator*)&iterator->state;
     HCSetIterationNext(pairIterator);
     HCMapPairRef pair = pairIterator->object;
     iterator->index = pairIterator->index;
@@ -286,11 +284,10 @@ void HCMapIterationNext(HCMapIterator* iterator) {
 }
 
 void HCMapIterationEnd(HCMapIterator* iterator) {
-    free(iterator->state);
     iterator->index = HCMapCount(iterator->map);
     iterator->object = NULL;
     iterator->key = NULL;
-    iterator->state = NULL;
+    memset(&iterator->state, 0, HCMapIteratorStateSizeStatic * sizeof(HCByte));
 }
 
 HCBoolean HCMapIterationHasBegun(HCMapIterator* iterator) {
@@ -298,8 +295,8 @@ HCBoolean HCMapIterationHasBegun(HCMapIterator* iterator) {
 }
 
 HCBoolean HCMapIterationHasNext(HCMapIterator* iterator) {
-    HCSetIterator* pairIterator = iterator->state;
-    return pairIterator == NULL ? false:HCSetIterationHasNext(pairIterator);
+    HCSetIterator* pairIterator = (HCSetIterator*)&iterator->state;
+    return HCSetIterationHasNext(pairIterator);
 }
 
 HCBoolean HCMapIterationHasEnded(HCMapIterator* iterator) {

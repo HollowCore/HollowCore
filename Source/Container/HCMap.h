@@ -21,13 +21,14 @@ typedef struct HCMap* HCMapRef;
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 extern const HCInteger HCMapNotFound;
+#define HCMapIteratorStateSizeStatic (sizeof(HCSetIterator))
 
 typedef struct HCMapIterator {
     HCMapRef map;
     HCInteger index;
     HCRef object;
     HCRef key;
-    void* state;
+    HCByte state[HCMapIteratorStateSizeStatic];
 } HCMapIterator;
 extern const HCMapIterator HCMapIteratorInvalid;
 
