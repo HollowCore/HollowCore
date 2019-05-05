@@ -66,6 +66,7 @@ CTEST(HCString, Print) {
     HCStringRef string = HCStringCreateWithCString("Four score and seven years ago");
     HCStringPrint(string, stdout); // TODO: Not to stdout
     HCPrint(string, stdout); // TODO: Not to stdout
+    HCRelease(string);
 }
 
 CTEST(HCString, CodeUnits) {

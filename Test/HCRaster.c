@@ -34,6 +34,7 @@ CTEST(HCRaster, Print) {
     HCRasterRef raster = HCRasterCreate(1, 1);
     HCObjectPrint((HCObjectRef)raster, stdout); // TODO: Not to stdout
     HCPrint(raster, stdout); // TODO: Not to stdout
+    HCRelease(raster);
 }
 
 CTEST(HCRaster, PixelOperations) {

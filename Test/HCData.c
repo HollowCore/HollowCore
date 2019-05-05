@@ -119,6 +119,7 @@ CTEST(HCData, Print) {
     HCDataRef a = HCDataCreateWithInteger(0xBADF00D);
     HCDataPrint(a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }
 
 CTEST(HCData, Clear) {

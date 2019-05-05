@@ -81,7 +81,7 @@ HCInteger HCThreadHashValue(HCThreadRef self) {
 }
 
 void HCThreadPrint(HCThreadRef self, FILE* stream) {
-    // TODO
+    HCObjectPrint((HCObjectRef)self, stream);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

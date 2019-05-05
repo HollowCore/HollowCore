@@ -27,7 +27,7 @@ void HCThreadTestFunctionIsCurrentThread(void* context) {
 
 #define HCThreadFunctionWhileNotCanceledSleep (100)
 void HCThreadFunctionWhileNotCanceled(void* context) {
-    int timeoutCount = (int)context;
+    HCInteger timeoutCount = (HCInteger)context;
     int count = 0;
     while (!HCThreadIsCanceled(HCThreadGetCurrent())) {
         usleep(HCThreadFunctionWhileNotCanceledSleep);
@@ -57,6 +57,7 @@ CTEST(HCThread, CreateWithOptions) {
         HCThreadOption option = options[i];
         HCThreadRef thread = HCThreadCreateWithOptions(HCThreadTestFunctionEmpty, NULL, option);
         ASSERT_TRUE((HCThreadGetOptions(thread) & option) == option);
+        ASSERT_TRUE((HCThreadGetOptions(thread) ^ option) == 0);
         HCRelease(thread);
     }
 }

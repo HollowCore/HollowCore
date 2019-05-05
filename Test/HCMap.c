@@ -231,6 +231,7 @@ CTEST(HCMap, Print) {
     HCMapRef a = HCMapCreate();
     HCMapPrint(a, stdout); // TODO: Not to stdout
     HCPrint(a, stdout); // TODO: Not to stdout
+    HCRelease(a);
 }
 
 CTEST(HCMap, Clear) {
@@ -331,8 +332,8 @@ CTEST(HCMap, MemoryConvenience) {
     HCNumberRef three = HCNumberCreateWithInteger(3);
     HCNumberRef four = HCNumberCreateWithInteger(4);
     HCMapRef map = HCMapCreate();
-    HCMapAddObjectForCStringKey(map, "0", HCRetain(zero));
-    HCMapAddObjectForCStringKey(map, "1", HCRetain(one));
+    HCMapAddObjectForCStringKey(map, "0", zero);
+    HCMapAddObjectForCStringKey(map, "1", one);
     HCMapAddObjectReleasedForCStringKey(map, "2", HCRetain(two));
     HCMapAddObjectReleasedForCStringKey(map, "3", HCRetain(three));
     HCMapAddObjectReleasedForCStringKey(map, "4", HCRetain(four));
@@ -430,7 +431,8 @@ CTEST(HCMap, Iteration) {
     ASSERT_TRUE(HCIsEqual(i.map, map));
     ASSERT_NULL(i.object);
     ASSERT_NULL(i.key);
-    
+    HCMapIterationEnd(&i);
+
     HCRelease(map);
     HCRelease(zeroKey);
     HCRelease(oneKey);

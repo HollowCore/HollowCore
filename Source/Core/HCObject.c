@@ -9,6 +9,11 @@
 #include "../Core/HCObject_Internal.h"
 #include <string.h>
 
+/// If the decrement of the reference count returns this value the object will be destroyed.
+///
+/// - Note: This value is not @c 0 because atomic decrements return the previous value.
+const static HCInteger HCObjectReferenceCountDestructionValue = 1;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type Query
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -63,9 +68,8 @@ HCRef HCRetain(HCRef self) {
     if (self == NULL) {
         return NULL;
     }
-    
-    // TODO: Atomic
-    ((HCObjectRef)self)->referenceCount++;
+
+    atomic_fetch_add(&((HCObjectRef)self)->referenceCount, 1);
     return self;
 }
 
@@ -74,10 +78,8 @@ void HCRelease(HCRef self) {
     if (self == NULL) {
         return;
     }
-    
-    // TODO: Atomic
-    ((HCObjectRef)self)->referenceCount--;
-    if (((HCObjectRef)self)->referenceCount <= 0) {
+
+    if (atomic_fetch_sub(&((HCObjectRef)self)->referenceCount, 1) == HCObjectReferenceCountDestructionValue) {
         for (HCType type = ((HCObjectRef)self)->type; type != NULL; type = type->ancestor) {
             ((HCObjectTypeData*)type)->destroy(self);
         }

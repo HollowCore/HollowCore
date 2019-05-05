@@ -59,6 +59,14 @@ void HCSetInit(void* memory, HCInteger capacity) {
 
 void HCSetDestroy(HCSetRef self) {
     HCSetClear(self);
+    for (HCInteger slotIndex = 0; slotIndex < self->capacity; slotIndex++) {
+        HCSetSlot* slot = self->slots[slotIndex].next;
+        while (slot != NULL) {
+            HCSetSlot* next = slot->next;
+            free(slot);
+            slot = next;
+        }
+    }
     free(self->slots);
 }
 
@@ -221,7 +229,8 @@ void HCSetClear(HCSetRef self) {
         do {
             HCRelease(slot->object);
             slot->object = NULL;
-            slot = slot->next;
+            HCSetSlot* next = slot->next;
+            slot = next;
         } while (slot != NULL);
     }
     self->count = 0;
