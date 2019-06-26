@@ -313,3 +313,21 @@ CTEST(HCSet, Iteration) {
     HCRelease(three);
     HCRelease(four);
 }
+
+CTEST(HCSet, IterationLoop) {
+    HCSetRef set = HCSetCreate();
+    HCSetAddObjectReleased(set, HCNumberCreateWithInteger(0));
+    HCSetAddObjectReleased(set, HCNumberCreateWithInteger(1));
+    HCSetAddObjectReleased(set, HCNumberCreateWithInteger(2));
+    HCSetAddObjectReleased(set, HCNumberCreateWithInteger(3));
+    HCSetAddObjectReleased(set, HCNumberCreateWithInteger(4));
+    
+    HCInteger count = 0;
+    for (HCSetIterator i = HCSetIterationBegin(set); !HCSetIterationHasEnded(&i); HCSetIterationNext(&i)) {
+        ASSERT_NOT_NULL(i.object);
+        count++;
+    }
+    ASSERT_TRUE(count == HCSetCount(set));
+
+    HCRelease(set);
+}

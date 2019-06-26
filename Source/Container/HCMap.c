@@ -256,6 +256,10 @@ HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
+HCInteger _HCMapIteratorMinimumSizeRequiredForState() {
+    return sizeof(HCSetIterator);
+}
+
 HCMapIterator HCMapIterationBegin(HCMapRef self) {
     HCSetIterator i = HCSetIterationBegin(self->pairs);
     HCMapPairRef pair = i.object;

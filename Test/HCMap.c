@@ -445,3 +445,21 @@ CTEST(HCMap, Iteration) {
     HCRelease(three);
     HCRelease(four);
 }
+
+CTEST(HCMap, IterationLoop) {
+    HCMapRef map = HCMapCreate();
+    HCMapAddObjectReleasedForKeyReleased(map, HCStringCreateWithInteger(0), HCNumberCreateWithInteger(0));
+    HCMapAddObjectReleasedForKeyReleased(map, HCStringCreateWithInteger(1), HCNumberCreateWithInteger(1));
+    HCMapAddObjectReleasedForKeyReleased(map, HCStringCreateWithInteger(2), HCNumberCreateWithInteger(2));
+    HCMapAddObjectReleasedForKeyReleased(map, HCStringCreateWithInteger(3), HCNumberCreateWithInteger(3));
+    HCMapAddObjectReleasedForKeyReleased(map, HCStringCreateWithInteger(4), HCNumberCreateWithInteger(4));
+    
+    HCInteger count = 0;
+    for (HCMapIterator i = HCMapIterationBegin(map); !HCMapIterationHasEnded(&i); HCMapIterationNext(&i)) {
+        ASSERT_NOT_NULL(i.object);
+        count++;
+    }
+    ASSERT_TRUE(count == HCMapCount(map));
+    
+    HCRelease(map);
+}

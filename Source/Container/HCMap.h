@@ -9,8 +9,6 @@
 #ifndef HCMap_h
 #define HCMap_h
 
-#include "HCSet.h"
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -21,7 +19,7 @@ typedef struct HCMap* HCMapRef;
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 extern const HCInteger HCMapNotFound;
-#define HCMapIteratorStateSizeStatic (sizeof(HCSetIterator))
+#define HCMapIteratorStateSizeStatic (4 * sizeof(HCInteger))
 
 typedef struct HCMapIterator {
     HCMapRef map;

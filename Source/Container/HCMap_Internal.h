@@ -11,6 +11,7 @@
 
 #include "../Core/HCObject_Internal.h"
 #include "HCMap.h"
+#include "HCSet.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -50,5 +51,10 @@ void HCMapPairDestroy(HCMapPairRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCMapPairIsEqual(HCMapPairRef self, HCMapPairRef other);
 HCInteger HCMapPairHashValue(HCMapPairRef self);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Iteration
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger _HCMapIteratorMinimumSizeRequiredForState(void);
 
 #endif /* HCMap_Internal_h */
