@@ -30,6 +30,9 @@ typedef struct HCListIterator {
 } HCListIterator;
 extern const HCListIterator HCListIteratorInvalid;
 
+typedef void (*HCListForEachFunction)(HCRef value);
+typedef void (*HCListForEachWithContextFunction)(void* context, HCRef value);
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -101,5 +104,11 @@ HCBoolean HCListIterationHasBegun(HCListIterator* iterator);
 HCBoolean HCListIterationHasPrevious(HCListIterator* iterator);
 HCBoolean HCListIterationHasNext(HCListIterator* iterator);
 HCBoolean HCListIterationHasEnded(HCListIterator* iterator);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Iteration Convenience Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction);
+void HCListForEachWithContext(HCListRef self, HCListForEachWithContextFunction forEachFunction, void* context);
 
 #endif /* HCList_h */

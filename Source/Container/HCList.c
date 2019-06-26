@@ -355,3 +355,24 @@ HCBoolean HCListIterationHasNext(HCListIterator* iterator) {
 HCBoolean HCListIterationHasEnded(HCListIterator* iterator) {
     return HCListIterationHasBegun(iterator) && iterator->list != NULL && (iterator->object == NULL || !HCListContainsIndex(iterator->list, iterator->index));
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Iteration Convenience Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction) {
+    if (forEachFunction == NULL) {
+        return;
+    }
+    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        forEachFunction(i.object);
+    }
+}
+
+void HCListForEachWithContext(HCListRef self, HCListForEachWithContextFunction forEachFunction, void* context) {
+    if (forEachFunction == NULL) {
+        return;
+    }
+    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        forEachFunction(context, i.object);
+    }
+}
