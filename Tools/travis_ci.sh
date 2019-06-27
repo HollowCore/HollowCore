@@ -8,7 +8,7 @@ function run_test () {
 }
 
 function run_valgrind_test () {
-    echo ""
+    $(dirname $0)/valgrind_test.sh
 }
 
 ###################################################################

@@ -188,6 +188,7 @@
 		F86BCC9A22C4766000180C12 /* HCThread_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread_Internal.c; sourceTree = "<group>"; };
 		F86BCC9C22C479EA00180C12 /* travis_ci.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = travis_ci.sh; sourceTree = "<group>"; };
 		F86BCC9D22C479F800180C12 /* travis_before_install.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = travis_before_install.sh; sourceTree = "<group>"; };
+		F86BCC9E22C47CC500180C12 /* valgrind_test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = valgrind_test.sh; sourceTree = "<group>"; };
 		F8800CE8221657FC00068863 /* HCThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread.h; sourceTree = "<group>"; };
 		F8800CE9221657FC00068863 /* HCThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread.c; sourceTree = "<group>"; };
 		F8800CEC2216581300068863 /* HCThread_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread_Internal.h; sourceTree = "<group>"; };
@@ -366,6 +367,7 @@
 				F803D38421EE60FD001E2DE6 /* test.sh */,
 				F86BCC9C22C479EA00180C12 /* travis_ci.sh */,
 				F86BCC9D22C479F800180C12 /* travis_before_install.sh */,
+				F86BCC9E22C47CC500180C12 /* valgrind_test.sh */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
