@@ -9,4 +9,4 @@ $(dirname $0)/build.sh
 fi
 
 cd ${BUILD_DIR}
-valgrind --leak-check=full hollowcoretest
+valgrind --leak-check=full ./hollowcoretest
