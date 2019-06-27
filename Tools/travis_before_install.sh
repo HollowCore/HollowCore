@@ -5,7 +5,7 @@
 ###################################################################
 function before_linux () {
     if [[ ${NAME} == "ValgrindTest" ]]; then
-        sudo apt install valgrind
+        sudo apt-get install -f valgrind
     fi
 }
 
