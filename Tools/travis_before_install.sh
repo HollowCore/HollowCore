@@ -1,5 +1,17 @@
 #!/bin/bash
 
+###################################################################
+# Setup
+###################################################################
+function before_linux () {
+    if [[ ${NAME} == "ValgrindTest" ]]; then
+        sudo apt install valgrind
+    fi
+}
+
+###################################################################
+# Main Execution
+###################################################################
 if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-    sudo apt install valgrind
+    before_linux
 fi
