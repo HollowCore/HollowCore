@@ -13,7 +13,7 @@
 
 HCThreadRef atExitRef = NULL;
 void HCThreadFunctionAtExitClean() {
-//    HCRelease(atExitRef);
+    HCRelease(atExitRef);
 };
 
 void HCThreadFunctionDetatch(void* context) {
