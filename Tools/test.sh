@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 source $(dirname $0)/cmake_common_source
 

@@ -1,4 +1,19 @@
-language: c
-dist: xenial
+matrix:
+    include:
+        - os: linux
+          dist: xenial
+          language: c
+          env:
+              - NAME="Test"
+
+        - os: linux
+          dist: xenial
+          language: c
+          env:
+              - NAME="ValgrindTest"
+
 script:
-    - Tools/test.sh
+    - Tools/travis_ci.sh
+
+before_install:
+    - Tools/travis_before_install.sh
