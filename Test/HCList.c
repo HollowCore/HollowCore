@@ -513,3 +513,39 @@ CTEST(HCList, Iteration) {
     HCRelease(three);
     HCRelease(four);
 }
+
+CTEST(HCList, IterationLoop) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCInteger count = 0;
+    for (HCListIterator i = HCListIterationBegin(list); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        ASSERT_NOT_NULL(i.object);
+        count++;
+    }
+    ASSERT_TRUE(count == HCListCount(list));
+    
+    HCRelease(list);
+}
+
+CTEST(HCList, IterationLoopBackward) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCInteger count = 0;
+    for (HCListIterator i = HCListIterationBeginAtLast(list); !HCListIterationHasEnded(&i); HCListIterationPrevious(&i)) {
+        ASSERT_NOT_NULL(i.object);
+        count++;
+    }
+    ASSERT_TRUE(count == HCListCount(list));
+    
+    HCRelease(list);
+}
