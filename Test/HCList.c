@@ -16,6 +16,13 @@ CTEST(HCList, Creation) {
     HCRelease(empty);
 }
 
+CTEST(HCList, Invalid) {
+    ASSERT_TRUE(HCListIterationHasBegun((HCListIterator*)&HCListIteratorInvalid));
+    ASSERT_FALSE(HCListIterationHasPrevious((HCListIterator*)&HCListIteratorInvalid));
+    ASSERT_FALSE(HCListIterationHasNext((HCListIterator*)&HCListIteratorInvalid));
+    ASSERT_TRUE(HCListIterationHasEnded((HCListIterator*)&HCListIteratorInvalid));
+}
+
 CTEST(HCList, Access) {
     HCNumberRef number = HCNumberCreateWithInteger(42);
     HCListRef list = HCListCreate();
@@ -316,10 +323,10 @@ CTEST(HCList, Iteration) {
     HCListAddObject(list, four);
     
     HCListIterator i = HCListIteratorInvalid;
-    ASSERT_FALSE(HCListIterationHasBegun(&i));
+    ASSERT_TRUE(HCListIterationHasBegun(&i));
     ASSERT_FALSE(HCListIterationHasPrevious(&i));
     ASSERT_FALSE(HCListIterationHasNext(&i));
-    ASSERT_FALSE(HCListIterationHasEnded(&i));
+    ASSERT_TRUE(HCListIterationHasEnded(&i));
     i = HCListIterationBegin(list);
     ASSERT_TRUE(HCListIterationHasBegun(&i));
     ASSERT_FALSE(HCListIterationHasPrevious(&i));

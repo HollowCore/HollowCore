@@ -16,6 +16,12 @@ CTEST(HCSet, Creation) {
     HCRelease(empty);
 }
 
+CTEST(HCSet, Invalid) {
+    ASSERT_TRUE(HCSetIterationHasBegun((HCSetIterator*)&HCSetIteratorInvalid));
+    ASSERT_FALSE(HCSetIterationHasNext((HCSetIterator*)&HCSetIteratorInvalid));
+    ASSERT_TRUE(HCSetIterationHasEnded((HCSetIterator*)&HCSetIteratorInvalid));
+}
+
 CTEST(HCSet, Access) {
     HCNumberRef number = HCNumberCreateWithInteger(42);
     HCSetRef set = HCSetCreate();
@@ -268,8 +274,9 @@ CTEST(HCSet, Iteration) {
     HCSetAddObject(set, four);
     
     HCSetIterator i = HCSetIteratorInvalid;
-    ASSERT_FALSE(HCSetIterationHasBegun(&i));
-    ASSERT_FALSE(HCSetIterationHasEnded(&i));
+    ASSERT_TRUE(HCSetIterationHasBegun(&i));
+    ASSERT_FALSE(HCSetIterationHasNext(&i));
+    ASSERT_TRUE(HCSetIterationHasEnded(&i));
     i = HCSetIterationBegin(set);
     ASSERT_TRUE(HCSetIterationHasBegun(&i));
     ASSERT_FALSE(HCSetIterationHasEnded(&i));

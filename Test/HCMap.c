@@ -16,6 +16,12 @@ CTEST(HCMap, Creation) {
     HCRelease(empty);
 }
 
+CTEST(HCMap, Invalid) {
+    ASSERT_TRUE(HCMapIterationHasBegun((HCMapIterator*)&HCMapIteratorInvalid));
+    ASSERT_FALSE(HCMapIterationHasNext((HCMapIterator*)&HCMapIteratorInvalid));
+    ASSERT_TRUE(HCMapIterationHasEnded((HCMapIterator*)&HCMapIteratorInvalid));
+}
+
 CTEST(HCMap, Access) {
     HCStringRef key = HCStringCreateWithInteger(42);
     HCNumberRef number = HCNumberCreateWithInteger(42);
@@ -382,8 +388,9 @@ CTEST(HCMap, Iteration) {
     HCMapAddObjectForKey(map, fourKey, four);
     
     HCMapIterator i = HCMapIteratorInvalid;
-    ASSERT_FALSE(HCMapIterationHasBegun(&i));
-    ASSERT_FALSE(HCMapIterationHasEnded(&i));
+    ASSERT_TRUE(HCMapIterationHasBegun(&i));
+    ASSERT_FALSE(HCMapIterationHasNext(&i));
+    ASSERT_TRUE(HCMapIterationHasEnded(&i));
     i = HCMapIterationBegin(map);
     ASSERT_TRUE(HCMapIterationHasBegun(&i));
     ASSERT_FALSE(HCMapIterationHasEnded(&i));

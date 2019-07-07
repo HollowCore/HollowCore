@@ -317,14 +317,22 @@ HCRef HCSetRemoveObjectRetained(HCSetRef self, HCRef object) {
 //----------------------------------------------------------------------------------------------------------------------------------
 HCSetIterator HCSetIterationBegin(HCSetRef self) {
     // Begin iteration with the object in the first slot
+    HCSetIterator iterator = HCSetIteratorInvalid;
     HCInteger firstSlotIndex = HCSetNextSlotFromSlot(self, HCSetNotFound);
+    if (firstSlotIndex < 0 || firstSlotIndex >= self->capacity) {
+        HCSetIterationEnd(&iterator);
+        return iterator;
+    }
+    
+    // Load the first slot and prepare the iterator there
     HCSetSlot* slot = &self->slots[firstSlotIndex];
-    HCSetIterator iterator = {
-        .set = self,
-        .index = 0,
-        .object = slot->object,
-        .state = slot
-    };
+    iterator.set = self;
+    iterator.index = 0;
+    iterator.object = slot->object;
+    iterator.state = slot;
+    
+    // Determine if the set has no locations to iterate on
+    // TODO: Is a count check sufficient?
     if (HCSetIterationHasEnded(&iterator)) {
         HCSetIterationEnd(&iterator);
     }
@@ -370,13 +378,13 @@ void HCSetIterationNext(HCSetIterator* iterator) {
 }
 
 void HCSetIterationEnd(HCSetIterator* iterator) {
-    iterator->index = iterator->set->count;
+    iterator->index = iterator->set == NULL ? 0 : iterator->set->count;
     iterator->object = NULL;
     iterator->state = NULL;
 }
 
 HCBoolean HCSetIterationHasBegun(HCSetIterator* iterator) {
-    return iterator->index != HCSetNotFound;
+    return iterator->set == NULL || iterator->index != HCSetNotFound;
 }
 
 HCBoolean HCSetIterationHasNext(HCSetIterator* iterator) {
@@ -384,5 +392,5 @@ HCBoolean HCSetIterationHasNext(HCSetIterator* iterator) {
 }
 
 HCBoolean HCSetIterationHasEnded(HCSetIterator* iterator) {
-    return HCSetIterationHasBegun(iterator) && iterator->set != NULL && (iterator->object == NULL || iterator->index == iterator->set->count);
+    return HCSetIterationHasBegun(iterator) && (iterator->set == NULL || iterator->object == NULL || iterator->state == NULL || iterator->index == iterator->set->count);
 }

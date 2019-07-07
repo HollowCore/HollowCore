@@ -82,10 +82,11 @@
 		C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB3E221A8BC3002991B9 /* HCJSON.c */; };
 		C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB42221AAF0F002991B9 /* HCJSON.c */; };
 		F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F81C7F0E2242F392000E8A72 /* HCThread.c */; };
-		F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */ = {isa = PBXBuildFile; fileRef = F86BCC9522C33F1300180C12 /* HCMap_Internal.c */; };
 		F83E472022619E8200616049 /* HCLock.h in Headers */ = {isa = PBXBuildFile; fileRef = F83E471E22619E8200616049 /* HCLock.h */; };
 		F83E472122619E8200616049 /* HCLock.c in Sources */ = {isa = PBXBuildFile; fileRef = F83E471F22619E8200616049 /* HCLock.c */; };
 		F83E47242261A7F800616049 /* HCLock.c in Sources */ = {isa = PBXBuildFile; fileRef = F83E47232261A7F800616049 /* HCLock.c */; };
+		F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */ = {isa = PBXBuildFile; fileRef = F86BCC9522C33F1300180C12 /* HCMap_Internal.c */; };
+		F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */ = {isa = PBXBuildFile; fileRef = F86BCC9A22C4766000180C12 /* HCThread_Internal.c */; };
 		F8800CEA221657FC00068863 /* HCThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F8800CE8221657FC00068863 /* HCThread.h */; };
 		F8800CEB221657FC00068863 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F8800CE9221657FC00068863 /* HCThread.c */; };
 /* End PBXBuildFile section */
@@ -179,11 +180,15 @@
 		F803D38421EE60FD001E2DE6 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		F803D38521EEBD27001E2DE6 /* cmake_common_source */ = {isa = PBXFileReference; lastKnownFileType = text; path = cmake_common_source; sourceTree = "<group>"; };
 		F81C7F0E2242F392000E8A72 /* HCThread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HCThread.c; sourceTree = "<group>"; };
-		F86BCC9522C33F1300180C12 /* HCMap_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMap_Internal.c; sourceTree = "<group>"; };
 		F83E471E22619E8200616049 /* HCLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCLock.h; sourceTree = "<group>"; };
 		F83E471F22619E8200616049 /* HCLock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCLock.c; sourceTree = "<group>"; };
 		F83E472222619E8D00616049 /* HCLock_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCLock_Internal.h; sourceTree = "<group>"; };
 		F83E47232261A7F800616049 /* HCLock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCLock.c; sourceTree = "<group>"; };
+		F86BCC9522C33F1300180C12 /* HCMap_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMap_Internal.c; sourceTree = "<group>"; };
+		F86BCC9A22C4766000180C12 /* HCThread_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread_Internal.c; sourceTree = "<group>"; };
+		F86BCC9C22C479EA00180C12 /* travis_ci.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = travis_ci.sh; sourceTree = "<group>"; };
+		F86BCC9D22C479F800180C12 /* travis_before_install.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = travis_before_install.sh; sourceTree = "<group>"; };
+		F86BCC9E22C47CC500180C12 /* valgrind_test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = valgrind_test.sh; sourceTree = "<group>"; };
 		F8800CE8221657FC00068863 /* HCThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread.h; sourceTree = "<group>"; };
 		F8800CE9221657FC00068863 /* HCThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread.c; sourceTree = "<group>"; };
 		F8800CEC2216581300068863 /* HCThread_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCThread_Internal.h; sourceTree = "<group>"; };
@@ -321,6 +326,7 @@
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
 				F81C7F0E2242F392000E8A72 /* HCThread.c */,
+				F86BCC9A22C4766000180C12 /* HCThread_Internal.c */,
 				F83E47232261A7F800616049 /* HCLock.c */,
 			);
 			path = Test;
@@ -359,6 +365,9 @@
 				F803D38521EEBD27001E2DE6 /* cmake_common_source */,
 				F803D38321EE60FD001E2DE6 /* build.sh */,
 				F803D38421EE60FD001E2DE6 /* test.sh */,
+				F86BCC9C22C479EA00180C12 /* travis_ci.sh */,
+				F86BCC9D22C479F800180C12 /* travis_before_install.sh */,
+				F86BCC9E22C47CC500180C12 /* valgrind_test.sh */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -584,6 +593,7 @@
 				C90EA2942235C76D00341EBD /* HCRay.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 				F83E47242261A7F800616049 /* HCLock.c in Sources */,
+				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
 				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
 			);
