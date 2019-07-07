@@ -295,7 +295,7 @@ void HCMapIterationEnd(HCMapIterator* iterator) {
 }
 
 HCBoolean HCMapIterationHasBegun(HCMapIterator* iterator) {
-    return iterator->index != HCMapNotFound;
+    return iterator->map == NULL || iterator->index != HCMapNotFound;
 }
 
 HCBoolean HCMapIterationHasNext(HCMapIterator* iterator) {
@@ -304,7 +304,7 @@ HCBoolean HCMapIterationHasNext(HCMapIterator* iterator) {
 }
 
 HCBoolean HCMapIterationHasEnded(HCMapIterator* iterator) {
-    return HCMapIterationHasBegun(iterator) && iterator->map != NULL && (iterator->key == NULL || iterator->object == NULL);
+    return HCMapIterationHasBegun(iterator) && (iterator->map == NULL || iterator->key == NULL || iterator->object == NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -32,6 +32,22 @@ $ make test
 $ ctest --verbose
 ```
 
+# Memory Test Requirements
+```bash
+$ sudo apt install build-essential cmake git valgrind
+```
+
+# Memory Testing
+```bash
+$ cd HollowCore
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ make test
+$ valgrind ./hollowcoretest
+```
+
 # Code Coverage
 * Requires cmake, gcc or llvm, gcov, lcov, genhtml
 
