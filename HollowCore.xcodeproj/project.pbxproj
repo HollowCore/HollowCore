@@ -471,7 +471,7 @@
 		C9DBDC4421D6D8B70001779C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = HollowCore;
 				TargetAttributes = {
 					C9B705E321E3DCC600B63F05 = {
@@ -744,6 +744,7 @@
 		C9E2F58721ED38FD00856F21 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -752,6 +753,7 @@
 		C9E2F58821ED38FD00856F21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
