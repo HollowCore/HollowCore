@@ -95,8 +95,42 @@ CTEST(HCRectangle, Operations) {
     ASSERT_TRUE(standardized.size.width >= 0.0);
     ASSERT_TRUE(standardized.size.height >= 0.0);
     
-//    HCRectangle HCRectangleIntegral(HCRectangle rectangle);
-//    HCRectangle HCRectangleOutset(HCRectangle rectangle, HCReal dx, HCReal dy);
+    HCRectangle nonIntegral = HCRectangleMake(HCPointMake(1.1, -2.2), HCSizeMake(3.3, 4.6));
+    HCRectangle integral = HCRectangleIntegral(nonIntegral);
+    ASSERT_FALSE(HCRectangleIsEqual(nonIntegral, integral));
+    ASSERT_DBL_NEAR(integral.origin.x, floor(integral.origin.x));
+    ASSERT_DBL_NEAR(integral.origin.y, floor(integral.origin.y));
+    ASSERT_DBL_NEAR(integral.size.width, floor(integral.size.width));
+    ASSERT_DBL_NEAR(integral.size.height, floor(integral.size.height));
+    
+    HCRectangle small = HCRectangleMake(HCPointMake(1.0, 2.0), HCSizeMake(3.0, 4.0));
+    HCReal outsetDx = 1.5;
+    HCReal outsetDy = 3.25;
+    HCRectangle big = HCRectangleOutset(small, outsetDx, outsetDy);
+    ASSERT_TRUE(HCRectangleContainsRectangle(big, small));
+    ASSERT_DBL_NEAR(HCRectangleWidth(big), HCRectangleWidth(small) + outsetDx * 2.0);
+    ASSERT_DBL_NEAR(HCRectangleHeight(big), HCRectangleHeight(small) + outsetDy * 2.0);
+    ASSERT_DBL_NEAR(HCRectangleMinX(big), HCRectangleMinX(small) - outsetDx);
+    ASSERT_DBL_NEAR(HCRectangleMinY(big), HCRectangleMinY(small) - outsetDy);
+    ASSERT_DBL_NEAR(HCRectangleMaxX(big), HCRectangleMaxX(small) + outsetDx);
+    ASSERT_DBL_NEAR(HCRectangleMaxY(big), HCRectangleMaxY(small) + outsetDy);
+    ASSERT_DBL_NEAR(HCRectangleMidX(big), HCRectangleMidX(small));
+    ASSERT_DBL_NEAR(HCRectangleMidY(big), HCRectangleMidY(small));
+    
+    HCRectangle large = HCRectangleMake(HCPointMake(10.0, 22.0), HCSizeMake(30.0, 40.0));
+    HCReal insetDx = 5.5;
+    HCReal insetDy = 7.25;
+    HCRectangle medium = HCRectangleInset(large, insetDx, insetDy);
+    ASSERT_TRUE(HCRectangleContainsRectangle(large, medium));
+    ASSERT_DBL_NEAR(HCRectangleWidth(large), HCRectangleWidth(medium) + insetDx * 2.0);
+    ASSERT_DBL_NEAR(HCRectangleHeight(large), HCRectangleHeight(medium) + insetDy * 2.0);
+    ASSERT_DBL_NEAR(HCRectangleMinX(large), HCRectangleMinX(medium) - insetDx);
+    ASSERT_DBL_NEAR(HCRectangleMinY(large), HCRectangleMinY(medium) - insetDy);
+    ASSERT_DBL_NEAR(HCRectangleMaxX(large), HCRectangleMaxX(medium) + insetDx);
+    ASSERT_DBL_NEAR(HCRectangleMaxY(large), HCRectangleMaxY(medium) + insetDy);
+    ASSERT_DBL_NEAR(HCRectangleMidX(large), HCRectangleMidX(medium));
+    ASSERT_DBL_NEAR(HCRectangleMidY(large), HCRectangleMidY(medium));
+    
 //    HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy);
 //    HCRectangle HCRectangleOffset(HCRectangle rectangle, HCReal dx, HCReal dy);
 //    HCRectangle HCRectangleUnion(HCRectangle rectangle, HCRectangle other);
