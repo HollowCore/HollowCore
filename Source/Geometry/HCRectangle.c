@@ -65,7 +65,7 @@ HCBoolean HCRectangleIsEmpty(HCRectangle rectangle) {
 }
 
 HCBoolean HCRectangleContainsPoint(HCRectangle rectangle, HCPoint point) {
-    return point.x >= HCRectangleMinX(rectangle) && point.x < HCRectangleMaxX(rectangle) && point.y >= HCRectangleMinY(rectangle) && point.y < HCRectangleMaxY(rectangle);
+    return point.x >= HCRectangleMinX(rectangle) && point.x <= HCRectangleMaxX(rectangle) && point.y >= HCRectangleMinY(rectangle) && point.y <= HCRectangleMaxY(rectangle);
 }
 
 HCBoolean HCRectangleContainsRectangle(HCRectangle rectangle, HCRectangle other) {

@@ -60,22 +60,45 @@ CTEST(HCRectangle, Queries) {
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, -1.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, 0.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, 7.0)));
-    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(1.0, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, 8.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(1.0, 8.00001)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, -2.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(2.0, -2.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(3.0, -2.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(4.0, -2.0)));
     ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(5.0, -2.0)));
-    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.0, -2.0)));
-    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(5.99, 7.99)));
-    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.0, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(6.0, -2.0)));
+    
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, -2.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(0.99999, -2.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.00001, -2.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(1.0, -2.00001)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, -1.99999)));
+    
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(6.0, -2.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(5.99999, -2.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.00001, -2.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.0, -2.00001)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(6.0, -1.99999)));
+    
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, 8.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(0.99999, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.00001, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(1.0, 7.99999)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(1.0, 8.00001)));
+    
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(6.0, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(5.99999, 8.0)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.00001, 8.0)));
+    ASSERT_TRUE(HCRectangleContainsPoint(r, HCPointMake(6.0, 7.99999)));
+    ASSERT_FALSE(HCRectangleContainsPoint(r, HCPointMake(6.0, 8.00001)));
     
     // TODO: Test negative rectangles for point containment
     
     ASSERT_TRUE(HCRectangleContainsRectangle(r, HCRectangleMake(HCPointMake(2.0, 2.0), HCSizeMake(1.0, 1.0))));
     ASSERT_TRUE(HCRectangleContainsRectangle(r, HCRectangleMake(HCPointMake(2.0, 2.0), HCSizeMake(3.0, 5.0))));
     ASSERT_TRUE(HCRectangleContainsRectangle(r, HCRectangleMake(HCPointMake(2.0, -1.0), HCSizeMake(3.0, 5.0))));
-    ASSERT_FALSE(HCRectangleContainsRectangle(r, r));
+    ASSERT_TRUE(HCRectangleContainsRectangle(r, r));
     ASSERT_TRUE(HCRectangleContainsRectangle(r, HCRectangleInset(r, 0.0001, 0.0001)));
     ASSERT_FALSE(HCRectangleContainsRectangle(r, HCRectangleOutset(r, 0.0001, 0.0001)));
     ASSERT_FALSE(HCRectangleContainsRectangle(r, HCRectangleOffset(r, -0.0001, -0.0001)));
@@ -131,8 +154,12 @@ CTEST(HCRectangle, Operations) {
     ASSERT_DBL_NEAR(HCRectangleMidX(large), HCRectangleMidX(medium));
     ASSERT_DBL_NEAR(HCRectangleMidY(large), HCRectangleMidY(medium));
     
-//    HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy);
-//    HCRectangle HCRectangleOffset(HCRectangle rectangle, HCReal dx, HCReal dy);
+    HCRectangle left = HCRectangleMake(HCPointMake(10.0, 5.0), HCSizeMake(20.0, 30.0));
+    HCRectangle right = HCRectangleMake(HCPointMake(23.0, 29.0), HCSizeMake(10.0, 40.0));
+    HCRectangle unionRectangle = HCRectangleUnion(left, right);
+    ASSERT_TRUE(HCRectangleIsSimilar(unionRectangle, HCRectangleUnion(right, left), 0.00001));
+    ASSERT_TRUE(HCRectangleContainsRectangle(unionRectangle, left));
+    ASSERT_TRUE(HCRectangleContainsRectangle(unionRectangle, right));
 //    HCRectangle HCRectangleUnion(HCRectangle rectangle, HCRectangle other);
 //    HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other);
 //    void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* remainder, HCReal amount, HCRectangleEdge edge);
