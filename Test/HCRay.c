@@ -35,6 +35,15 @@ CTEST(HCRay, Print) {
     HCRayPrint(r, stdout); // TODO: Not to stdout
 }
 
+CTEST(HCRay, Queries) {
+    ASSERT_TRUE(HCRayIsZero(HCRayZero));
+    ASSERT_FALSE(HCRayIsZero(HCRayMake(HCVectorMake(1.0, 0.0, 0.0), HCVectorZero)));
+    ASSERT_FALSE(HCRayIsZero(HCRayInvalid));
+    ASSERT_FALSE(HCRayIsInfinite(HCRayZero));
+    ASSERT_FALSE(HCRayIsInfinite(HCRayMake(HCVectorMake(1.0, 0.0, 0.0), HCVectorZero)));
+    ASSERT_TRUE(HCRayIsInfinite(HCRayMake(HCVectorZero, HCVectorMake(INFINITY, 0.0, 0.0))));
+}
+
 CTEST(HCRay, Operations) {
     HCRay r = HCRayMake(HCVectorMake(1.0, 2.0, 3.0), HCVectorMake(4.0, 5.0, 6.0));
     ASSERT_TRUE(HCVectorIsSimilar(HCRayPointAt(r, 0.0), r.origin, 0.00001));

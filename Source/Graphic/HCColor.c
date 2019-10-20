@@ -102,7 +102,7 @@ HCInteger HCColorHashValue(HCColor color) {
 }
 
 void HCColorPrint(HCColor color, FILE* stream) {
-    fprintf(stream, "<%f,%f,%f,%f>", color.a, color.r, color.g, color.b);
+    fprintf(stream, "<r:%f,g:%f,b:%f,a:%f>", color.a, color.r, color.g, color.b);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

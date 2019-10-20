@@ -25,6 +25,7 @@ CTEST(HCVector, Creation) {
 CTEST(HCVector, Equality) {
     ASSERT_FALSE(HCVectorIsInvalid(HCVectorMake(1.0, 2.0, 3.0)));
     ASSERT_TRUE(HCVectorIsInvalid(HCVectorMake(1.0, 2.0, NAN)));
+    ASSERT_TRUE(HCVectorIsInvalid(HCVectorInvalid));
     ASSERT_TRUE(HCVectorIsSimilar(HCVectorMake(1.0, 2.0, 3.0), HCVectorMake(1.5, 2.5, 3.5), 0.6));
     ASSERT_FALSE(HCVectorIsSimilar(HCVectorMake(1.0, 2.0, 3.0), HCVectorMake(1.5, 2.5, 3.5), 0.4));
     ASSERT_FALSE(HCVectorIsEqual(HCVectorMake(1.0, -2.5, 3.0), HCVectorMake(1.0, 2.5, 3.0)));
@@ -35,6 +36,15 @@ CTEST(HCVector, Equality) {
 CTEST(HCVector, Print) {
     HCVector v = HCVectorMake(10.0, -20.0, 30.0);
     HCVectorPrint(v, stdout); // TODO: Not to stdout
+}
+
+CTEST(HCVector, Queries) {
+    ASSERT_TRUE(HCVectorIsZero(HCVectorZero));
+    ASSERT_FALSE(HCVectorIsZero(HCVectorMake(1.0, 0.0, 0.0)));
+    ASSERT_FALSE(HCVectorIsZero(HCVectorInvalid));
+    ASSERT_FALSE(HCVectorIsInfinite(HCVectorZero));
+    ASSERT_FALSE(HCVectorIsInfinite(HCVectorMake(1.0, 0.0, 0.0)));
+    ASSERT_TRUE(HCVectorIsInfinite(HCVectorMake(INFINITY, 0.0, 0.0)));
 }
 
 CTEST(HCVector, Operations) {

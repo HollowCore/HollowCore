@@ -81,6 +81,15 @@
 		C9E7FB3F221A8BC3002991B9 /* HCJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = C9E7FB3D221A8BC3002991B9 /* HCJSON.h */; };
 		C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB3E221A8BC3002991B9 /* HCJSON.c */; };
 		C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7FB42221AAF0F002991B9 /* HCJSON.c */; };
+		C9F8AEF3235C1C88002E7D64 /* HCRectangle.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F8AEF1235C1C88002E7D64 /* HCRectangle.h */; };
+		C9F8AEF4235C1C88002E7D64 /* HCRectangle.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AEF2235C1C88002E7D64 /* HCRectangle.c */; };
+		C9F8AEF7235C1CC7002E7D64 /* HCPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F8AEF5235C1CC7002E7D64 /* HCPoint.h */; };
+		C9F8AEF8235C1CC7002E7D64 /* HCPoint.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AEF6235C1CC7002E7D64 /* HCPoint.c */; };
+		C9F8AEFB235C1CDC002E7D64 /* HCSize.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F8AEF9235C1CDC002E7D64 /* HCSize.h */; };
+		C9F8AEFC235C1CDC002E7D64 /* HCSize.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AEFA235C1CDC002E7D64 /* HCSize.c */; };
+		C9F8AEFF235C3E4C002E7D64 /* HCPoint.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AEFE235C3E4C002E7D64 /* HCPoint.c */; };
+		C9F8AF01235C3E61002E7D64 /* HCSize.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AF00235C3E61002E7D64 /* HCSize.c */; };
+		C9F8AF03235C3E72002E7D64 /* HCRectangle.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F8AF02235C3E72002E7D64 /* HCRectangle.c */; };
 		F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F81C7F0E2242F392000E8A72 /* HCThread.c */; };
 		F83E472022619E8200616049 /* HCLock.h in Headers */ = {isa = PBXBuildFile; fileRef = F83E471E22619E8200616049 /* HCLock.h */; };
 		F83E472122619E8200616049 /* HCLock.c in Sources */ = {isa = PBXBuildFile; fileRef = F83E471F22619E8200616049 /* HCLock.c */; };
@@ -176,6 +185,15 @@
 		C9E7FB3E221A8BC3002991B9 /* HCJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCJSON.c; sourceTree = "<group>"; };
 		C9E7FB41221AA171002991B9 /* HCJSON_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCJSON_Internal.h; sourceTree = "<group>"; };
 		C9E7FB42221AAF0F002991B9 /* HCJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCJSON.c; sourceTree = "<group>"; };
+		C9F8AEF1235C1C88002E7D64 /* HCRectangle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRectangle.h; sourceTree = "<group>"; };
+		C9F8AEF2235C1C88002E7D64 /* HCRectangle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRectangle.c; sourceTree = "<group>"; };
+		C9F8AEF5235C1CC7002E7D64 /* HCPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCPoint.h; sourceTree = "<group>"; };
+		C9F8AEF6235C1CC7002E7D64 /* HCPoint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCPoint.c; sourceTree = "<group>"; };
+		C9F8AEF9235C1CDC002E7D64 /* HCSize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSize.h; sourceTree = "<group>"; };
+		C9F8AEFA235C1CDC002E7D64 /* HCSize.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSize.c; sourceTree = "<group>"; };
+		C9F8AEFE235C3E4C002E7D64 /* HCPoint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCPoint.c; sourceTree = "<group>"; };
+		C9F8AF00235C3E61002E7D64 /* HCSize.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSize.c; sourceTree = "<group>"; };
+		C9F8AF02235C3E72002E7D64 /* HCRectangle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRectangle.c; sourceTree = "<group>"; };
 		F803D38321EE60FD001E2DE6 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		F803D38421EE60FD001E2DE6 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		F803D38521EEBD27001E2DE6 /* cmake_common_source */ = {isa = PBXFileReference; lastKnownFileType = text; path = cmake_common_source; sourceTree = "<group>"; };
@@ -265,10 +283,6 @@
 			children = (
 				C95417042230D7A800E461A5 /* HCColor.h */,
 				C95417052230D7A800E461A5 /* HCColor.c */,
-				C95417082230D7CE00E461A5 /* HCVector.h */,
-				C95417092230D7CE00E461A5 /* HCVector.c */,
-				C90EA28F2235BA2600341EBD /* HCRay.h */,
-				C90EA2902235BA2600341EBD /* HCRay.c */,
 				C97FDB2F2207E199002B17FB /* HCRaster.h */,
 				C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */,
 				C97FDB302207E199002B17FB /* HCRaster.c */,
@@ -320,9 +334,12 @@
 				C929AECD21F9800300E44898 /* HCSet.c */,
 				C97FDB2222069B1C002B17FB /* HCMap.c */,
 				F86BCC9522C33F1300180C12 /* HCMap_Internal.c */,
-				C954170E2230DEFD00E461A5 /* HCColor.c */,
+				C9F8AEFE235C3E4C002E7D64 /* HCPoint.c */,
+				C9F8AF00235C3E61002E7D64 /* HCSize.c */,
+				C9F8AF02235C3E72002E7D64 /* HCRectangle.c */,
 				C954170C2230DA8E00E461A5 /* HCVector.c */,
 				C90EA2932235C76D00341EBD /* HCRay.c */,
+				C954170E2230DEFD00E461A5 /* HCColor.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
 				F81C7F0E2242F392000E8A72 /* HCThread.c */,
@@ -359,6 +376,23 @@
 			path = "json-parser";
 			sourceTree = "<group>";
 		};
+		C9F8AEFD235C25EE002E7D64 /* Geometry */ = {
+			isa = PBXGroup;
+			children = (
+				C9F8AEF5235C1CC7002E7D64 /* HCPoint.h */,
+				C9F8AEF6235C1CC7002E7D64 /* HCPoint.c */,
+				C9F8AEF9235C1CDC002E7D64 /* HCSize.h */,
+				C9F8AEFA235C1CDC002E7D64 /* HCSize.c */,
+				C9F8AEF1235C1C88002E7D64 /* HCRectangle.h */,
+				C9F8AEF2235C1C88002E7D64 /* HCRectangle.c */,
+				C95417082230D7CE00E461A5 /* HCVector.h */,
+				C95417092230D7CE00E461A5 /* HCVector.c */,
+				C90EA28F2235BA2600341EBD /* HCRay.h */,
+				C90EA2902235BA2600341EBD /* HCRay.c */,
+			);
+			path = Geometry;
+			sourceTree = "<group>";
+		};
 		F803D38221EE60FD001E2DE6 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
@@ -391,6 +425,7 @@
 				C97FDB2B2207BEC7002B17FB /* Core */,
 				C97FDB2D2207BF26002B17FB /* Data */,
 				C97FDB2C2207BEDA002B17FB /* Container */,
+				C9F8AEFD235C25EE002E7D64 /* Geometry */,
 				C97FDB2E2207E16F002B17FB /* Graphic */,
 				C9E7FB37221A8A36002991B9 /* JSON */,
 				F8800CE72216578B00068863 /* Thread */,
@@ -414,13 +449,16 @@
 				C97FDB2822069BC5002B17FB /* HCObject.h in Headers */,
 				C97FDB2722069BBF002B17FB /* HCNumber.h in Headers */,
 				C97FDB2622069BBA002B17FB /* HCString.h in Headers */,
+				C9F8AEFB235C1CDC002E7D64 /* HCSize.h in Headers */,
 				F8800CEA221657FC00068863 /* HCThread.h in Headers */,
 				C97FDB2522069BB5002B17FB /* HCData.h in Headers */,
+				C9F8AEF7235C1CC7002E7D64 /* HCPoint.h in Headers */,
 				C97FDB2422069BAB002B17FB /* HCList.h in Headers */,
 				C929AEC721F97F5200E44898 /* HCSet.h in Headers */,
 				C95417062230D7A800E461A5 /* HCColor.h in Headers */,
 				C9E7FB39221A8A5D002991B9 /* json.h in Headers */,
 				C97FDB1F22069AD9002B17FB /* HCMap.h in Headers */,
+				C9F8AEF3235C1C88002E7D64 /* HCRectangle.h in Headers */,
 				F83E472022619E8200616049 /* HCLock.h in Headers */,
 				C97FDB362207F207002B17FB /* HCRaster.h in Headers */,
 				C954170A2230D7CE00E461A5 /* HCVector.h in Headers */,
@@ -564,8 +602,11 @@
 				C97FDB2022069AD9002B17FB /* HCMap.c in Sources */,
 				C95417072230D7A800E461A5 /* HCColor.c in Sources */,
 				C954170B2230D7CE00E461A5 /* HCVector.c in Sources */,
+				C9F8AEF8235C1CC7002E7D64 /* HCPoint.c in Sources */,
+				C9F8AEF4235C1C88002E7D64 /* HCRectangle.c in Sources */,
 				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
+				C9F8AEFC235C1CDC002E7D64 /* HCSize.c in Sources */,
 				C9918852222F8C3600A0AA5B /* HCSphere.c in Sources */,
 				C991884C222F8AD900A0AA5B /* HCPrimitive.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
@@ -579,6 +620,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9E2F58921ED395D00856F21 /* main.c in Sources */,
+				C9F8AEFF235C3E4C002E7D64 /* HCPoint.c in Sources */,
 				C9E2F58E21ED3A4E00856F21 /* HCCore.c in Sources */,
 				C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */,
 				C9E2F58C21ED3A2700856F21 /* HCNumber.c in Sources */,
@@ -588,12 +630,14 @@
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
+				C9F8AF01235C3E61002E7D64 /* HCSize.c in Sources */,
 				C954170F2230DEFD00E461A5 /* HCColor.c in Sources */,
 				C954170D2230DA8E00E461A5 /* HCVector.c in Sources */,
 				C90EA2942235C76D00341EBD /* HCRay.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 				F83E47242261A7F800616049 /* HCLock.c in Sources */,
 				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
+				C9F8AF03235C3E72002E7D64 /* HCRectangle.c in Sources */,
 				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
 			);

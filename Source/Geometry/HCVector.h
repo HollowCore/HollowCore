@@ -10,6 +10,7 @@
 #define HCVector_h
 
 #include "../Core/HCCore.h"
+#include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -19,6 +20,15 @@ typedef struct HCVector {
     HCReal y;
     HCReal z;
 } HCVector;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Special Values
+//----------------------------------------------------------------------------------------------------------------------------------
+#define HCVectorInvalidStatic   {.x = NAN, .y = NAN, .z = NAN}
+#define HCVectorZeroStatic      {.x = 0.0, .y = 0.0, .z = 0.0}
+
+static const HCVector HCVectorInvalid = HCVectorInvalidStatic;
+static const HCVector HCVectorZero = HCVectorZeroStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
@@ -33,6 +43,12 @@ HCBoolean HCVectorIsSimilar(HCVector vector, HCVector other, HCReal axisDissimil
 HCBoolean HCVectorIsEqual(HCVector vector, HCVector other);
 HCInteger HCVectorHashValue(HCVector vector);
 void HCVectorPrint(HCVector vector, FILE* stream);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Queries
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCVectorIsZero(HCVector vector);
+HCBoolean HCVectorIsInfinite(HCVector vector);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations

@@ -7,14 +7,12 @@
 //
 
 #include "HCVector.h"
-#include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
 HCVector HCVectorMake(HCReal x, HCReal y, HCReal z) {
-    HCVector v = {x, y, z};
-    return v;
+    return (HCVector){.x = x, .y = y, .z = z};
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -46,7 +44,18 @@ HCInteger HCVectorHashValue(HCVector vector) {
 }
 
 void HCVectorPrint(HCVector vector, FILE* stream) {
-    fprintf(stream, "<%f,%f,%f>", vector.x, vector.y, vector.z);
+    fprintf(stream, "<x:%f,y:%f,z:%f>", vector.x, vector.y, vector.z);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Queries
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCVectorIsZero(HCVector vector) {
+    return HCVectorIsEqual(vector, HCVectorZero);
+}
+
+HCBoolean HCVectorIsInfinite(HCVector vector) {
+    return isinf(vector.x) || isinf(vector.y) || isinf(vector.z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
