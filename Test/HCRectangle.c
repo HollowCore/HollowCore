@@ -160,7 +160,82 @@ CTEST(HCRectangle, Operations) {
     ASSERT_TRUE(HCRectangleIsSimilar(unionRectangle, HCRectangleUnion(right, left), 0.00001));
     ASSERT_TRUE(HCRectangleContainsRectangle(unionRectangle, left));
     ASSERT_TRUE(HCRectangleContainsRectangle(unionRectangle, right));
-//    HCRectangle HCRectangleUnion(HCRectangle rectangle, HCRectangle other);
-//    HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other);
-//    void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* remainder, HCReal amount, HCRectangleEdge edge);
+    ASSERT_FALSE(HCRectangleContainsRectangle(left, unionRectangle));
+    ASSERT_FALSE(HCRectangleContainsRectangle(right, unionRectangle));
+
+    HCRectangle interactionRectangle = HCRectangleIntersection(left, right);
+    ASSERT_TRUE(HCRectangleIsSimilar(interactionRectangle, HCRectangleIntersection(right, left), 0.00001));
+    ASSERT_TRUE(HCRectangleContainsRectangle(left, interactionRectangle));
+    ASSERT_TRUE(HCRectangleContainsRectangle(right, interactionRectangle));
+    ASSERT_FALSE(HCRectangleContainsRectangle(interactionRectangle, left));
+    ASSERT_FALSE(HCRectangleContainsRectangle(interactionRectangle, right));
+
+    ASSERT_TRUE(HCRectangleIsEqual(left, HCRectangleUnion(left, left)));
+    ASSERT_TRUE(HCRectangleIsEqual(right, HCRectangleUnion(right, right)));
+    ASSERT_TRUE(HCRectangleIsEqual(left, HCRectangleIntersection(left, left)));
+    ASSERT_TRUE(HCRectangleIsEqual(right, HCRectangleIntersection(right, right)));
+    
+    HCRectangle square = HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0));
+    HCRectangle a = HCRectangleInvalid;
+    HCRectangle b = HCRectangleInvalid;
+    HCReal amount = 0.4;
+    HCRectangleDivide(square, &a, &b, amount, HCRectangleEdgeMinX);
+    ASSERT_TRUE(HCRectangleIsEqual(square, HCRectangleUnion(a, b)));
+    ASSERT_TRUE(HCRectangleIsEmpty(HCRectangleIntersection(a, b)));
+    ASSERT_DBL_NEAR(HCRectangleWidth(a), HCRectangleWidth(square) * amount);
+    ASSERT_DBL_NEAR(HCRectangleWidth(b), HCRectangleWidth(square) * (1.0 - amount));
+    ASSERT_TRUE(HCRectangleContainsPoint(a, HCPointMake(HCRectangleMinX(square), HCRectangleMinY(square))));
+    ASSERT_TRUE(HCRectangleContainsPoint(b, HCPointMake(HCRectangleMaxX(square), HCRectangleMaxY(square))));
+    HCRectangleDivide(square, &a, &b, amount, HCRectangleEdgeMaxX);
+    ASSERT_TRUE(HCRectangleIsEqual(square, HCRectangleUnion(a, b)));
+    ASSERT_TRUE(HCRectangleIsEmpty(HCRectangleIntersection(a, b)));
+    ASSERT_DBL_NEAR(HCRectangleWidth(a), HCRectangleWidth(square) * amount);
+    ASSERT_DBL_NEAR(HCRectangleWidth(b), HCRectangleWidth(square) * (1.0 - amount));
+    ASSERT_TRUE(HCRectangleContainsPoint(b, HCPointMake(HCRectangleMinX(square), HCRectangleMinY(square))));
+    ASSERT_TRUE(HCRectangleContainsPoint(a, HCPointMake(HCRectangleMaxX(square), HCRectangleMaxY(square))));
+    HCRectangleDivide(square, &a, &b, amount, HCRectangleEdgeMinY);
+    ASSERT_TRUE(HCRectangleIsEqual(square, HCRectangleUnion(a, b)));
+    ASSERT_TRUE(HCRectangleIsEmpty(HCRectangleIntersection(a, b)));
+    ASSERT_DBL_NEAR(HCRectangleHeight(a), HCRectangleHeight(square) * amount);
+    ASSERT_DBL_NEAR(HCRectangleHeight(b), HCRectangleHeight(square) * (1.0 - amount));
+    ASSERT_TRUE(HCRectangleContainsPoint(a, HCPointMake(HCRectangleMinX(square), HCRectangleMinY(square))));
+    ASSERT_TRUE(HCRectangleContainsPoint(b, HCPointMake(HCRectangleMaxX(square), HCRectangleMaxY(square))));
+    HCRectangleDivide(square, &a, &b, amount, HCRectangleEdgeMaxY);
+    ASSERT_TRUE(HCRectangleIsEqual(square, HCRectangleUnion(a, b)));
+    ASSERT_TRUE(HCRectangleIsEmpty(HCRectangleIntersection(a, b)));
+    ASSERT_DBL_NEAR(HCRectangleHeight(a), HCRectangleHeight(square) * amount);
+    ASSERT_DBL_NEAR(HCRectangleHeight(b), HCRectangleHeight(square) * (1.0 - amount));
+    ASSERT_TRUE(HCRectangleContainsPoint(b, HCPointMake(HCRectangleMinX(square), HCRectangleMinY(square))));
+    ASSERT_TRUE(HCRectangleContainsPoint(a, HCPointMake(HCRectangleMaxX(square), HCRectangleMaxY(square))));
+    
+    HCRectangleDivide(square, &a, NULL, amount, HCRectangleEdgeMinX);
+    ASSERT_DBL_NEAR(HCRectangleWidth(a), HCRectangleWidth(square) * amount);
+    HCRectangleDivide(square, NULL, &b, amount, HCRectangleEdgeMinX);
+    ASSERT_DBL_NEAR(HCRectangleWidth(b), HCRectangleWidth(square) * (1.0 - amount));
+    HCRectangleDivide(square, NULL, NULL, amount, HCRectangleEdgeMinX);
+    
+    HCRectangleDivide(square, &a, NULL, 0.0, HCRectangleEdgeMinX);
+    ASSERT_TRUE(HCRectangleIsEmpty(a));
+    HCRectangleDivide(square, &a, NULL, HCRectangleWidth(square), HCRectangleEdgeMinX);
+    ASSERT_TRUE(HCRectangleIsEqual(a, square));
+    HCRectangleDivide(square, &a, NULL, 0.0, HCRectangleEdgeMaxX);
+    ASSERT_TRUE(HCRectangleIsEmpty(a));
+    HCRectangleDivide(square, &a, NULL, HCRectangleWidth(square), HCRectangleEdgeMaxX);
+    ASSERT_TRUE(HCRectangleIsEqual(a, square));
+    HCRectangleDivide(square, &a, NULL, 0.0, HCRectangleEdgeMinY);
+    ASSERT_TRUE(HCRectangleIsEmpty(a));
+    HCRectangleDivide(square, &a, NULL, HCRectangleHeight(square), HCRectangleEdgeMinY);
+    ASSERT_TRUE(HCRectangleIsEqual(a, square));
+    HCRectangleDivide(square, &a, NULL, 0.0, HCRectangleEdgeMaxY);
+    ASSERT_TRUE(HCRectangleIsEmpty(a));
+    HCRectangleDivide(square, &a, NULL, HCRectangleHeight(square), HCRectangleEdgeMaxY);
+    ASSERT_TRUE(HCRectangleIsEqual(a, square));
+    
+    HCRectangleDivide(square, &a, &b, 2.0, HCRectangleEdgeMinX);
+    ASSERT_TRUE(HCRectangleIsEqual(a, square));
+    ASSERT_TRUE(HCRectangleIsEmpty(b));
+    HCRectangleDivide(square, &a, &b, -1.0, HCRectangleEdgeMinX);
+    ASSERT_TRUE(HCRectangleIsEmpty(a));
+    ASSERT_TRUE(HCRectangleIsEqual(b, square));
+    
 }

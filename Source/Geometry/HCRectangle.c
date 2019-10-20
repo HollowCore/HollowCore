@@ -164,6 +164,16 @@ HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other) {
 }
 
 void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* remainder, HCReal amount, HCRectangleEdge edge) {
+    // Adjust the requested amount if it is out of bounds
+    amount = fmax(0.0, amount);
+    if (edge == HCRectangleEdgeMinX || edge == HCRectangleEdgeMaxX) {
+        amount = fmin(HCRectangleWidth(rectangle), amount);
+    }
+    else {
+        amount = fmin(HCRectangleHeight(rectangle), amount);
+    }
+    
+    // Divide the rectangle by obtaining the extents of the requested divided parts
     HCReal sliceMinX = NAN;
     HCReal sliceMinY = NAN;
     HCReal sliceMaxX = NAN;
@@ -214,6 +224,8 @@ void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* r
             remainderMaxY = sliceMinY;
             break;
     }
+    
+    // Construct rectangles from the extents
     if (slice != NULL) {
         *slice = HCRectangleMake(HCPointMake(sliceMinX, sliceMinY), HCSizeMake(sliceMaxX - sliceMinX, sliceMaxY - sliceMinY));
     }
