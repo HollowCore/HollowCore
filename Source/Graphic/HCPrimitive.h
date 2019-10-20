@@ -10,7 +10,7 @@
 #define HCPrimitive_h
 
 #include "../Core/HCObject.h"
-#include "HCRay.h"
+#include "../Geometry/HCRay.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
