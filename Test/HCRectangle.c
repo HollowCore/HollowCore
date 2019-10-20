@@ -84,8 +84,17 @@ CTEST(HCRectangle, Queries) {
 }
 
 CTEST(HCRectangle, Operations) {
-    // TODO: Test rectangle operations
-//    HCRectangle HCRectangleStandardize(HCRectangle rectangle);
+    HCRectangle inverted = HCRectangleMake(HCPointMake(15.0, 4.0), HCSizeMake(-3.0, -2.0));
+    HCRectangle standardized = HCRectangleStandardize(inverted);
+    ASSERT_TRUE(HCRectangleWidth(inverted) == HCRectangleWidth(standardized));
+    ASSERT_TRUE(HCRectangleHeight(inverted) == HCRectangleHeight(standardized));
+    ASSERT_TRUE(HCRectangleMinX(inverted) == HCRectangleMinX(standardized));
+    ASSERT_TRUE(HCRectangleMinY(inverted) == HCRectangleMinY(standardized));
+    ASSERT_TRUE(HCRectangleMaxX(inverted) == HCRectangleMaxX(standardized));
+    ASSERT_TRUE(HCRectangleMaxY(inverted) == HCRectangleMaxY(standardized));
+    ASSERT_TRUE(standardized.size.width >= 0.0);
+    ASSERT_TRUE(standardized.size.height >= 0.0);
+    
 //    HCRectangle HCRectangleIntegral(HCRectangle rectangle);
 //    HCRectangle HCRectangleOutset(HCRectangle rectangle, HCReal dx, HCReal dy);
 //    HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy);

@@ -112,11 +112,11 @@ HCReal HCRectangleMaxY(HCRectangle rectangle) {
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleStandardize(HCRectangle rectangle) {
     if (rectangle.size.width < 0.0) {
-        rectangle.origin.x -= rectangle.size.width;
+        rectangle.origin.x += rectangle.size.width;
         rectangle.size.width *= -1.0;
     }
     if (rectangle.size.height < 0.0) {
-        rectangle.origin.y -= rectangle.size.height;
+        rectangle.origin.y += rectangle.size.height;
         rectangle.size.height *= -1.0;
     }
     return rectangle;
