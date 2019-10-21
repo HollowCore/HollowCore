@@ -28,6 +28,5 @@ typedef struct HCPrimitive {
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPrimitiveInit(void* memory);
-void HCPrimitiveDestroy(HCPrimitiveRef self);
 
 #endif /* HCPrimitive_Internal_h */

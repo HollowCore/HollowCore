@@ -12,7 +12,7 @@
 
 CTEST(HCMap_Internal, IteratorStateSize) {
     // Ensure that the state is large enough to contain the data intended to be stored in it.
-    if (HCMapIteratorStateSizeStatic < _HCMapIteratorMinimumSizeRequiredForState()) {
+    if ((HCInteger)HCMapIteratorStateSizeStatic < _HCMapIteratorMinimumSizeRequiredForState()) {
         printf("\nCRITICAL ERROR: HCMapIteratorStateSizeStatic is smaller than is required by the implimentation of HCMapIterator logic!\n");
         ASSERT_FAIL();
     }

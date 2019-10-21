@@ -19,6 +19,7 @@ void HCThreadFunctionAtExitClean() {
 };
 
 void HCThreadFunctionDetatch(void* context) {
+    (void)context; // Unused
     HCThreadRef thread = HCThreadGetCurrent();
     pthread_detach(thread->pthread);
     atExitRef = thread;

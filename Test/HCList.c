@@ -556,3 +556,37 @@ CTEST(HCList, IterationLoopBackward) {
     
     HCRelease(list);
 }
+
+void HCListForEachTestFunction(HCRef value) {
+    ASSERT_TRUE(HCNumberAsInteger(value) < 5);
+}
+
+CTEST(HCList, ForEach) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCListForEach(list, HCListForEachTestFunction);
+}
+
+void HCListForEachWithContextTestFunction(void* context, HCRef value) {
+    HCInteger* counter = (HCInteger*)context;
+    ASSERT_TRUE(HCNumberAsInteger(value) == *counter);
+    *counter += 1;
+}
+
+HCInteger HCListForEachWithContextTestFunctionCounter = 0;
+
+CTEST(HCList, ForEachContext) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCListForEachWithContext(list, HCListForEachWithContextTestFunction, &HCListForEachWithContextTestFunctionCounter);
+}
