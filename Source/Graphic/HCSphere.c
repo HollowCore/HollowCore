@@ -15,7 +15,7 @@
 const HCPrimitiveTypeData HCSphereTypeDataInstance = {
     .base = {
         .base = {
-            .ancestor = &HCObjectTypeDataInstance.base,
+            .ancestor = (HCType)&HCPrimitiveTypeDataInstance,
             .name = "HCSphere",
         },
         .isEqual = (void*)HCSphereIsEqual,

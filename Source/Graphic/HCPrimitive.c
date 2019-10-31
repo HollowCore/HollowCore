@@ -35,13 +35,11 @@ void HCPrimitiveInit(void* memory) {
     self->base.type = HCPrimitiveType;
 }
 
-void HCPrimitiveDestroy(HCPrimitiveRef self) {
-    (void)self; // Unused
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Primitive Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCPrimitiveIntersect(HCPrimitiveRef self, HCRay ray) {
+    (void)self; // Unused
+    (void)ray; // Unused
     return NAN;
 }

@@ -13,10 +13,11 @@
 // Some of these tests will require valgrind to ensure that they work correctly.
 
 void HCThreadTestFunctionEmpty(void* context) {
+    (void)context; // Unused
 }
 
 void HCThreadTestFunctionIncrementCallCount(void* context) {
-    int* callCount = context;
+    HCInteger* callCount = context;
     (*callCount)++;
 }
 
@@ -28,7 +29,7 @@ void HCThreadTestFunctionIsCurrentThread(void* context) {
 #define HCThreadFunctionWhileNotCanceledSleep (100)
 void HCThreadFunctionWhileNotCanceled(void* context) {
     HCInteger timeoutCount = (HCInteger)context;
-    int count = 0;
+    HCInteger count = 0;
     while (!HCThreadIsCanceled(HCThreadGetCurrent())) {
         usleep(HCThreadFunctionWhileNotCanceledSleep);
         count++;
@@ -53,7 +54,7 @@ CTEST(HCThread, CreateWithOptions) {
         HCThreadOptionJoinOnDestroy,
     };
     
-    for (int i = 0; i < sizeof(options) / sizeof(HCThreadOption); i++) {
+    for (HCInteger i = 0; i < (HCInteger)(sizeof(options) / sizeof(HCThreadOption)); i++) {
         HCThreadOption option = options[i];
         HCThreadRef thread = HCThreadCreateWithOptions(HCThreadTestFunctionEmpty, NULL, option);
         ASSERT_TRUE((HCThreadGetOptions(thread) & option) == option);
@@ -63,7 +64,7 @@ CTEST(HCThread, CreateWithOptions) {
 }
 
 CTEST(HCThread, Start) {
-    int callCount = 0;
+    HCInteger callCount = 0;
     HCThreadRef thread = HCThreadCreate(HCThreadTestFunctionIncrementCallCount, &callCount);
     
     HCThreadStart(thread);
@@ -100,7 +101,7 @@ CTEST(HCThread, IsExecutingThenCancel) {
 }
 
 CTEST(HCThread, GetContext) {
-    int context = 1;
+    HCInteger context = 1;
     HCThreadRef thread = HCThreadCreate(HCThreadTestFunctionIncrementCallCount, &context);
     ASSERT_TRUE(HCThreadGetContext(thread) == &context);
     HCRelease(thread);
@@ -113,7 +114,7 @@ CTEST(HCThread, OptionReleaseContextOnDestroy) {
 }
 
 CTEST(HCThread, OptionFreeContextOnDestroy) {
-    int* i = malloc(sizeof(int));
+    HCInteger* i = malloc(sizeof(HCInteger));
     HCThreadRef thread = HCThreadCreateWithOptions(HCThreadTestFunctionEmpty, i, HCThreadOptionFreeContextOnDestroy);
     HCRelease(thread);
 }
