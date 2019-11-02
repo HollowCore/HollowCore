@@ -82,12 +82,13 @@ add_test(tests ${HOLLOWCORE_TEST_NAME})
 
 # HollowCore Test Suite Code Coverage
 if (COVERAGE)
+    set(HOLLOWCORE_COVERAGE hollowcorecoverage)
     set(OBJECT_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${HOLLOWCORE_LIBRARY_NAME}.dir/Source)
-    add_custom_target(coverage
-        COMMAND mkdir -p coverage
+    add_custom_target(${HOLLOWCORE_COVERAGE}
+        COMMAND mkdir -p ${HOLLOWCORE_COVERAGE}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
-    add_custom_command(TARGET coverage
+    add_custom_command(TARGET ${HOLLOWCORE_COVERAGE}
         COMMAND echo "-- LCOV running tests..."
         COMMAND ${CMAKE_BINARY_DIR}/${HOLLOWCORE_TEST_NAME}
         COMMAND echo "-- LCOV tests complete"
@@ -99,15 +100,15 @@ if (COVERAGE)
         COMMAND echo "-- GCOV analysis"
         COMMAND ${GCOV_PATH} ${SOURCES} -o ${OBJECT_DIR} > summary.txt
         COMMAND cat summary.txt
-        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
-        COMMAND open ${CMAKE_BINARY_DIR}/coverage/html/index.html
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
+        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}"
+        COMMAND open ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}/html/index.html
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}
     )
-    add_custom_target(cumulative_coverage
-        COMMAND mkdir -p coverage
+    add_custom_target(cumulative_${HOLLOWCORE_COVERAGE}
+        COMMAND mkdir -p ${HOLLOWCORE_COVERAGE}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
-    add_custom_command(TARGET cumulative_coverage
+    add_custom_command(TARGET cumulative_${HOLLOWCORE_COVERAGE}
         COMMAND echo "-- LCOV establishing baseline..."
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -z
         COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -d ${OBJECT_DIR} -c -i -o coverage.base
@@ -123,10 +124,10 @@ if (COVERAGE)
         COMMAND echo "-- GCOV analysis"
         COMMAND ${GCOV_PATH} ${SOURCES} -o ${OBJECT_DIR} > summary.txt
         COMMAND cat summary.txt
-        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
-        COMMAND open ${CMAKE_BINARY_DIR}/coverage/html/index.html
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
+        COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}"
+        COMMAND open ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}/html/index.html
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${HOLLOWCORE_COVERAGE}
     )
-    add_dependencies(coverage ${HOLLOWCORE_TEST_NAME})
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES coverage)
+    add_dependencies(${HOLLOWCORE_COVERAGE} ${HOLLOWCORE_TEST_NAME})
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${HOLLOWCORE_COVERAGE})
 endif ()

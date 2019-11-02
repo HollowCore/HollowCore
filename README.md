@@ -56,6 +56,6 @@ $ cd HollowCore
 $ mkdir build
 $ cd build
 $ cmake .. -DCOVERAGE=1
-$ make coverage
-$ open coverage/html/index.html
+$ make hollowcorecoverage
+$ open hollowcorecoverage/html/index.html
 ```
