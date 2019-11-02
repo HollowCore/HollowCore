@@ -39,7 +39,6 @@ void HCPrimitiveInit(void* memory) {
 // MARK: - Primitive Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCPrimitiveIntersect(HCPrimitiveRef self, HCRay ray) {
-    (void)self; // Unused
-    (void)ray; // Unused
+    (void)self; (void)ray; // Unused
     return NAN;
 }
