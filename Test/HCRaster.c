@@ -335,6 +335,16 @@ CTEST(HCRaster, Gradient) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, ExtractARGB8888) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterSetPixelAt(raster, 10, 20, HCColorWhite);
+    uint32_t pixels[100*100];
+    HCRasterExtractARGB8888(raster, pixels);
+    ASSERT_TRUE(pixels[0] == 0);
+    ASSERT_TRUE(pixels[20*100+10] == 0xFFFFFFFF);
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, SaveLoad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     for (HCInteger yIndex = 0; yIndex < HCRasterHeight(raster); yIndex++) {
