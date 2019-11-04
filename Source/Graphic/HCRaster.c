@@ -328,61 +328,59 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
     const char* current = path;
     while (*current != '\0') {
         char c = *current;
-        if (c == ' ' || c == '\n' || c == '\r') {
-            // Skip whitespace (though it is required to separate numbers)
-            current++;
-        }
-        else if (type == '\0') {
-            // Determine path sub-component type and, if valid, setup state to parse arguments
-            switch (*current) {
-                case 'M': type = 'M'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 'm': type = 'm'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 'L': type = 'L'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 'l': type = 'l'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 'H': type = 'H'; argumentsCount = 0; argumentsExpected = 1; break;
-                case 'h': type = 'h'; argumentsCount = 0; argumentsExpected = 1; break;
-                case 'V': type = 'V'; argumentsCount = 0; argumentsExpected = 1; break;
-                case 'v': type = 'v'; argumentsCount = 0; argumentsExpected = 1; break;
-                case 'Q': type = 'Q'; argumentsCount = 0; argumentsExpected = 4; break;
-                case 'q': type = 'q'; argumentsCount = 0; argumentsExpected = 4; break;
-                case 'T': type = 'T'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 't': type = 't'; argumentsCount = 0; argumentsExpected = 2; break;
-                case 'C': type = 'C'; argumentsCount = 0; argumentsExpected = 6; break;
-                case 'c': type = 'c'; argumentsCount = 0; argumentsExpected = 6; break;
-                case 'S': type = 'S'; argumentsCount = 0; argumentsExpected = 4; break;
-                case 's': type = 's'; argumentsCount = 0; argumentsExpected = 4; break;
-                case 'A': type = 'A'; argumentsCount = 0; argumentsExpected = 7; break;
-                case 'a': type = 'a'; argumentsCount = 0; argumentsExpected = 7; break;
-                case 'Z': // Fallthrough
-                case 'z':
-                    // Close path has no arguments, so just perform the action and move on
-                    HCRasterDrawLine(self, currentX, currentY, startX, startY, color, color);
-                    currentX = startX;
-                    currentY = startY;
-                    break;
-            }
-            
-            // Move to next character
-            current++;
-        }
-        else {
-            // Parse an argument number
-            char* end = (char*)current;
-            double argument = strtod(current, &end);
-            if (end <= current) {
-                // Invalid argument, ignore it and dump the current path sub-component
-                type = '\0';
+        switch (c) {
+            case '\n': // Fallthrough
+            case '\r': // Fallthrough
+            case ',': // Fallthrough
+            case ' ': current++; break;
+            case 'M': type = 'M'; argumentsExpected = 2; current++; break;
+            case 'm': type = 'm'; argumentsExpected = 2; current++; break;
+            case 'L': type = 'L'; argumentsExpected = 2; current++; break;
+            case 'l': type = 'l'; argumentsExpected = 2; current++; break;
+            case 'H': type = 'H'; argumentsExpected = 1; current++; break;
+            case 'h': type = 'h'; argumentsExpected = 1; current++; break;
+            case 'V': type = 'V'; argumentsExpected = 1; current++; break;
+            case 'v': type = 'v'; argumentsExpected = 1; current++; break;
+            case 'Q': type = 'Q'; argumentsExpected = 4; current++; break;
+            case 'q': type = 'q'; argumentsExpected = 4; current++; break;
+            case 'T': type = 'T'; argumentsExpected = 2; current++; break;
+            case 't': type = 't'; argumentsExpected = 2; current++; break;
+            case 'C': type = 'C'; argumentsExpected = 6; current++; break;
+            case 'c': type = 'c'; argumentsExpected = 6; current++; break;
+            case 'S': type = 'S'; argumentsExpected = 4; current++; break;
+            case 's': type = 's'; argumentsExpected = 4; current++; break;
+            case 'A': type = 'A'; argumentsExpected = 7; current++; break;
+            case 'a': type = 'a'; argumentsExpected = 7; current++; break;
+            case 'Z': // Fallthrough
+            case 'z':
+                // Close path has no arguments, so just perform the action and move on
+                HCRasterDrawLine(self, currentX, currentY, startX, startY, color, color);
+                currentX = startX;
+                currentY = startY;
                 current++;
-            }
-            else {
+                break;
+            default: {
+                // Parse an argument number
+                char* end = (char*)current;
+                double argument = strtod(current, &end);
+                if (end <= current) {
+                    // Invalid argument, ignore it and dump the current path sub-component
+                    type = '\0';
+                    current++;
+                    break;
+                }
+                
                 // Save the argument and advance to the character after the argument
                 arguments[argumentsCount] = argument;
                 argumentsCount++;
                 current = end;
                 
                 // When enough arguments have been parsed, execute the draw command specified
-                if (argumentsExpected > 0 && argumentsCount == argumentsExpected) {
-                    // Execute the draw command
+                if (argumentsCount == argumentsExpected) {
+                    // Consume arguments
+                    argumentsCount = 0;
+                    
+                    // Execute the command
                     switch (type) {
                         case 'm':
                             arguments[0] += currentX;
@@ -541,11 +539,6 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawArc(self, x0, y0, x1, y1, xr, yr, rotation, largeArc, sweep, color, color);
                         } break;
                     }
-                    
-                    // Reset parsing state to look for a new sub-component type
-                    argumentsExpected = 0;
-                    argumentsCount = 0;
-                    type = '\0';
                 }
             }
         }

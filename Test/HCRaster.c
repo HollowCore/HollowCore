@@ -239,7 +239,7 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePath) {
 
 CTEST(HCRaster, DrawArcPath) {
     HCRasterRef raster = HCRasterCreate(320, 320);
-    HCRasterDrawPath(raster, "M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 L 172.55 152.45 A 30 50 -45 0 1 215.1 109.9 L 315 10", HCColorGreen);
+    HCRasterDrawPath(raster, "M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 L 315 10", HCColorGreen);
     HCRasterSaveBMP(raster, "path_arc.bmp");
     HCRasterSavePPM(raster, "path_arc.ppm");
     HCRelease(raster);
@@ -247,7 +247,7 @@ CTEST(HCRaster, DrawArcPath) {
 
 CTEST(HCRaster, DrawArcRelativePath) {
     HCRasterRef raster = HCRasterCreate(320, 320);
-    HCRasterDrawPath(raster, "M 10 315 L 110 215 a 30 50 0 0 1 52.55 -52.55 L 172.55 152.45 a 30 50 -45 0 1 42.55 -42.55 L 315 10", HCColorGreen);
+    HCRasterDrawPath(raster, "M 10 315 L 110 215 a 30 50 0 0 1 52.55 -52.55 L 315 10", HCColorGreen);
     HCRasterSaveBMP(raster, "path_arc_relative.bmp");
     HCRasterSavePPM(raster, "path_arc_relative.ppm");
     HCRelease(raster);
