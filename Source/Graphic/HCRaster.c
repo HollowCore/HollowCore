@@ -307,18 +307,24 @@ void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, 
     }
 }
 
+void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1) {
+    // TODO: Draw using 2-point radius dual ellipse intersection calculation
+}
+
 void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
-    // Define state data for parsing the path string
+    // Define state data for parsing the STL path string
     char type = '\0';
     HCReal currentX = 0.0;
     HCReal currentY = 0.0;
     HCReal startX = currentX;
     HCReal startY = currentY;
+    HCReal previousControlX = currentX;
+    HCReal previousControlY = currentY;
     HCInteger argumentsExpected = 0;
     HCInteger argumentsCount = 0;
-    HCReal arguments[8];
+    HCReal arguments[10];
     
-    // Parse path data according to subset of STL path element data string format
+    // Parse path data according to STL path element data string format
     const char* current = path;
     while (*current != '\0') {
         char c = *current;
@@ -329,31 +335,31 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
         else if (type == '\0') {
             // Determine path sub-component type and, if valid, setup state to parse arguments
             switch (*current) {
-                case 'M': {
-                    type = 'M';
-                    argumentsCount = 0;
-                    argumentsExpected = 2;
-                } break;
-                case 'L': {
-                    type = 'L';
-                    argumentsCount = 0;
-                    argumentsExpected = 2;
-                } break;
-                case 'Q': {
-                    type = 'Q';
-                    argumentsCount = 0;
-                    argumentsExpected = 4;
-                } break;
-                case 'C': {
-                    type = 'C';
-                    argumentsCount = 0;
-                    argumentsExpected = 6;
-                } break;
-                case 'Z': {
+                case 'M': type = 'M'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 'm': type = 'm'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 'L': type = 'L'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 'l': type = 'l'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 'H': type = 'H'; argumentsCount = 0; argumentsExpected = 1; break;
+                case 'h': type = 'h'; argumentsCount = 0; argumentsExpected = 1; break;
+                case 'V': type = 'V'; argumentsCount = 0; argumentsExpected = 1; break;
+                case 'v': type = 'v'; argumentsCount = 0; argumentsExpected = 1; break;
+                case 'Q': type = 'Q'; argumentsCount = 0; argumentsExpected = 4; break;
+                case 'q': type = 'q'; argumentsCount = 0; argumentsExpected = 4; break;
+                case 'T': type = 'T'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 't': type = 't'; argumentsCount = 0; argumentsExpected = 2; break;
+                case 'C': type = 'C'; argumentsCount = 0; argumentsExpected = 6; break;
+                case 'c': type = 'c'; argumentsCount = 0; argumentsExpected = 6; break;
+                case 'S': type = 'S'; argumentsCount = 0; argumentsExpected = 4; break;
+                case 's': type = 's'; argumentsCount = 0; argumentsExpected = 4; break;
+                case 'A': type = 'A'; argumentsCount = 0; argumentsExpected = 7; break;
+                case 'a': type = 'a'; argumentsCount = 0; argumentsExpected = 7; break;
+                case 'Z': // Fallthrough
+                case 'z':
+                    // Close path has no arguments, so just perform the action and move on
                     HCRasterDrawLine(self, currentX, currentY, startX, startY, color, color);
                     currentX = startX;
                     currentY = startY;
-                } break;
+                    break;
             }
             
             // Move to next character
@@ -378,15 +384,163 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                 if (argumentsExpected > 0 && argumentsCount == argumentsExpected) {
                     // Execute the draw command
                     switch (type) {
-                        case 'M': startX = arguments[0]; startY = arguments[1]; break;
-                        case 'L': HCRasterDrawLine(self, currentX, currentY, arguments[0], arguments[1], color, color); break;
-                        case 'Q': HCRasterDrawQuadraticCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], color, color); break;
-                        case 'C': HCRasterDrawCubicCurve(self, currentX, currentY, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], color, color); break;
+                        case 'm':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            // Fallthrough
+                        case 'M': {
+                            startX = arguments[0];
+                            startY = arguments[1];
+                            currentX = startX;
+                            currentY = startY;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                        } break;
+                        case 'l':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            // Fallthrough
+                        case 'L': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal x1 = arguments[0];
+                            HCReal y1 = arguments[1];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                            HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
+                        } break;
+                        case 'h':
+                            arguments[0] += currentX;
+                            // Fallthrough
+                        case 'H': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal x1 = arguments[0];
+                            HCReal y1 = currentY;
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                            HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
+                        } break;
+                        case 'v':
+                            arguments[0] += currentY;
+                            // Fallthrough
+                        case 'V': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal x1 = arguments[0];
+                            HCReal y1 = currentY;
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                            HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
+                            currentY = arguments[0];
+                        } break;
+                        case 'q':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            arguments[2] += currentX;
+                            arguments[3] += currentY;
+                            // Fallthrough
+                        case 'Q': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal cx = arguments[0];
+                            HCReal cy = arguments[1];
+                            HCReal x1 = arguments[2];
+                            HCReal y1 = arguments[3];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = cx;
+                            previousControlY = cy;
+                            HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
+                        } break;
+                        case 't':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            // Fallthrough
+                        case 'T': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal cx = 2.0 * x0 - previousControlX;
+                            HCReal cy = 2.0 * y0 - previousControlY;
+                            HCReal x1 = arguments[0];
+                            HCReal y1 = arguments[1];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = cx;
+                            previousControlY = cy;
+                            HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
+                        } break;
+                        case 'c':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            arguments[2] += currentX;
+                            arguments[3] += currentY;
+                            arguments[4] += currentX;
+                            arguments[5] += currentY;
+                            // Fallthrough
+                        case 'C': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal c0x = arguments[0];
+                            HCReal c0y = arguments[1];
+                            HCReal c1x = arguments[2];
+                            HCReal c1y = arguments[3];
+                            HCReal x1 = arguments[4];
+                            HCReal y1 = arguments[5];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = c1x;
+                            previousControlY = c1y;
+                            HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
+                        } break;
+                        case 's':
+                            arguments[0] += currentX;
+                            arguments[1] += currentY;
+                            arguments[2] += currentX;
+                            arguments[3] += currentY;
+                            // Fallthrough
+                        case 'S': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal c0x = 2.0 * x0 - previousControlX;
+                            HCReal c0y = 2.0 * y0 - previousControlY;
+                            HCReal c1x = arguments[0];
+                            HCReal c1y = arguments[1];
+                            HCReal x1 = arguments[2];
+                            HCReal y1 = arguments[3];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = c1x;
+                            previousControlY = c1y;
+                            HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
+                        } break;
+                        case 'a':
+                            arguments[5] += currentX;
+                            arguments[6] += currentY;
+                            // Fallthrough
+                        case 'A': {
+                            HCReal x0 = currentX;
+                            HCReal y0 = currentY;
+                            HCReal xr = arguments[0];
+                            HCReal yr = arguments[1];
+                            HCReal rotation = arguments[2] / 180.0 * M_PI;
+                            HCBoolean largeArc = arguments[3] == 0.0 ? false : true;
+                            HCBoolean sweep = arguments[4] == 0.0 ? false : true;
+                            HCReal x1 = arguments[5];
+                            HCReal y1 = arguments[6];
+                            currentX = x1;
+                            currentY = y1;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                            HCRasterDrawArc(self, x0, y0, x1, y1, xr, yr, rotation, largeArc, sweep, color, color);
+                        } break;
                     }
-                    
-                    // Save the last two arguments as the first two values of the next draw command
-                    currentX = arguments[argumentsCount - 2];
-                    currentY = arguments[argumentsCount - 1];
                     
                     // Reset parsing state to look for a new sub-component type
                     argumentsExpected = 0;
@@ -488,6 +642,19 @@ void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal 
 void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterRef texture, HCReal tax, HCReal tay, HCReal tbx, HCReal tby, HCReal tcx, HCReal tcy, HCReal tdx, HCReal tdy) {
     HCRasterFillTexturedTriangle(self, ax, ay, bx, by, cx, cy, texture, tax, tay, tbx, tby, tcx, tcy);
     HCRasterFillTexturedTriangle(self, ax, ay, cx, cy, dx, dy, texture, tax, tay, tcx, tcy, tdx, tdy);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Data Extraction
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterExtractARGB8888(HCRasterRef self, uint32_t* pixels) {
+    for (HCInteger yIndex = 0; yIndex < HCRasterHeight(self); yIndex++) {
+        for (HCInteger xIndex = 0; xIndex < HCRasterWidth(self); xIndex++) {
+            HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+            *pixels = HCColorAsARGB8888(pixel);
+            pixels++;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -46,21 +46,21 @@ CTEST(HCColor, Creation) {
     ASSERT_DBL_NEAR(redARGB.r, 1.0);
     ASSERT_DBL_NEAR(redARGB.g, 0.0);
     ASSERT_DBL_NEAR(redARGB.b, 0.0);
-    ASSERT_EQUAL(HCColorAsARGB(redARGB), 0xFFFF0000);
+    ASSERT_EQUAL(HCColorAsARGB8888(redARGB), 0xFFFF0000);
     
     HCColor greenARGB = HCColorMakeWithARGB(0xFF00FF00);
     ASSERT_DBL_NEAR(greenARGB.a, 1.0);
     ASSERT_DBL_NEAR(greenARGB.r, 0.0);
     ASSERT_DBL_NEAR(greenARGB.g, 1.0);
     ASSERT_DBL_NEAR(greenARGB.b, 0.0);
-    ASSERT_EQUAL(HCColorAsARGB(greenARGB), 0xFF00FF00);
+    ASSERT_EQUAL(HCColorAsARGB8888(greenARGB), 0xFF00FF00);
     
     HCColor blueARGB = HCColorMakeWithARGB(0xFF0000FF);
     ASSERT_DBL_NEAR(blueARGB.a, 1.0);
     ASSERT_DBL_NEAR(blueARGB.r, 0.0);
     ASSERT_DBL_NEAR(blueARGB.g, 0.0);
     ASSERT_DBL_NEAR(blueARGB.b, 1.0);
-    ASSERT_EQUAL(HCColorAsARGB(blueARGB), 0xFF0000FF);
+    ASSERT_EQUAL(HCColorAsARGB8888(blueARGB), 0xFF0000FF);
 }
 
 CTEST(HCColor, Equality) {

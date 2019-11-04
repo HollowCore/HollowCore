@@ -63,6 +63,7 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color);
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
+void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1);
 void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -74,6 +75,11 @@ void HCRasterFillTexturedTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal
 void HCRasterDrawQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCColor ca, HCColor cb, HCColor cc, HCColor cd);
 void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCColor ca, HCColor cb, HCColor cc, HCColor cd);
 void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterRef texture, HCReal tax, HCReal tay, HCReal tbx, HCReal tby, HCReal tcx, HCReal tcy, HCReal tdx, HCReal tdy);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Data Extraction
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterExtractARGB8888(HCRasterRef self, uint32_t* pixels);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
