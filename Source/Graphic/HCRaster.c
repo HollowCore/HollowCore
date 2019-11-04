@@ -879,6 +879,7 @@ HCRasterRef HCRasterCreateByLoadingBMP(const char* path) {
     
     return self;
 }
+
 void HCRasterSaveBMP(HCRasterRef self, const char* path) {
     HCRasterSaveBMPWithOptions(self, path, false);
 }
