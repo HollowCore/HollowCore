@@ -261,6 +261,66 @@ CTEST(HCRaster, DrawPath) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, DrawManyQuadratics) {
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
+    HCRasterDrawPath(raster,
+        "M 300 500 Q 500  1500 700 500 "
+        "M 280 500 Q 500  1400 720 500 "
+        "M 260 500 Q 500  1300 740 500 "
+        "M 240 500 Q 500  1200 760 500 "
+        "M 220 500 Q 500  1100 780 500 "
+        "M 200 500 Q 500  1000 800 500 "
+        "M 180 500 Q 500   900 820 500 "
+        "M 160 500 Q 500   800 840 500 "
+        "M 140 500 Q 500   700 860 500 "
+        "M 120 500 Q 500   600 880 500 "
+        "M 100 500 Q 500   500 900 500 "
+        "M 120 500 Q 500   400 880 500 "
+        "M 140 500 Q 500   300 860 500 "
+        "M 160 500 Q 500   200 840 500 "
+        "M 180 500 Q 500   100 820 500 "
+        "M 200 500 Q 500     0 800 500 "
+        "M 220 500 Q 500  -100 780 500 "
+        "M 240 500 Q 500  -200 760 500 "
+        "M 260 500 Q 500  -300 740 500 "
+        "M 280 500 Q 500  -400 720 500 "
+        "M 300 500 Q 500  -500 700 500 "
+        , HCColorGreen);
+    HCRasterSaveBMP(raster, "path_many_quadratics.bmp");
+    HCRasterSavePPM(raster, "path_many_quadratics.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawManyCubics) {
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
+    HCRasterDrawPath(raster,
+        "M 300 500 C 500  1500 500  1500 700 500 "
+        "M 280 500 C 500  1400 500  1400 720 500 "
+        "M 260 500 C 500  1300 500  1300 740 500 "
+        "M 240 500 C 500  1200 500  1200 760 500 "
+        "M 220 500 C 500  1100 500  1100 780 500 "
+        "M 200 500 C 500  1000 500  1000 800 500 "
+        "M 180 500 C 500   900 500   900 820 500 "
+        "M 160 500 C 500   800 500   800 840 500 "
+        "M 140 500 C 500   700 500   700 860 500 "
+        "M 120 500 C 500   600 500   600 880 500 "
+        "M 100 500 C 500   500 500   500 900 500 "
+        "M 120 500 C 500   400 500   400 880 500 "
+        "M 140 500 C 500   300 500   300 860 500 "
+        "M 160 500 C 500   200 500   200 840 500 "
+        "M 180 500 C 500   100 500   100 820 500 "
+        "M 200 500 C 500     0 500     0 800 500 "
+        "M 220 500 C 500  -100 500  -100 780 500 "
+        "M 240 500 C 500  -200 500  -200 760 500 "
+        "M 260 500 C 500  -300 500  -300 740 500 "
+        "M 280 500 C 500  -400 500  -400 720 500 "
+        "M 300 500 C 500  -500 500  -500 700 500 "
+        , HCColorGreen);
+    HCRasterSaveBMP(raster, "path_many_cubics.bmp");
+    HCRasterSavePPM(raster, "path_many_cubics.ppm");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCColorRed, HCColorGreen, HCColorBlue);

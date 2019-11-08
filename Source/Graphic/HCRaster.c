@@ -312,7 +312,7 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateLine(t, x0, y0, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.001, 1.0 / fmax(fabs(dx), fabs(dy)));
+        t += fmax(0.00001, 1.00000 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal dx = x1 - x0;
@@ -421,7 +421,7 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.001,  1.0 / fmax(fabs(dx), fabs(dy)));
+        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal flatness =
@@ -449,7 +449,7 @@ void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, 
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.001,  1.0 / fmax(fabs(dx), fabs(dy)));
+        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal flatness =
@@ -478,7 +478,6 @@ void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, 
 //    HCRasterDrawCubicCurve(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, c0, cs);
 //    HCRasterDrawCubicCurve(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, cs, c1);
 }
-
 
 void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1) {
     // TODO: Draw using 2-point radius dual ellipse intersection calculation
