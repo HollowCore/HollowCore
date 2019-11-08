@@ -309,11 +309,10 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     HCReal x, y, dx, dy;
-    HCReal length = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateLine(t, x0, y0, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += sqrt(dx * dx + dy * dy) / length;
+        t += fmax(0.001, 1.0 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal dx = x1 - x0;
@@ -419,11 +418,10 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     HCReal x, y, dx, dy;
-    HCReal length = sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) + sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += sqrt(dx * dx + dy * dy) / length;
+        t += fmax(0.001,  1.0 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal flatness =
@@ -448,11 +446,10 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
 
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     HCReal x, y, dx, dy;
-    HCReal length = sqrt((cx0 - x0) * (cx0 - x0) + (cy0 - y0) * (cy0 - y0)) + sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) + sqrt((x1 - cx1) * (x1 - cx1) + (y1 - cy1) * (y1 - cy1));
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += sqrt(dx * dx + dy * dy);
+        t += fmax(0.001,  1.0 / fmax(fabs(dx), fabs(dy)));
     }
     
 //    HCReal flatness =
@@ -605,8 +602,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                         case 'V': {
                             HCReal x0 = currentX;
                             HCReal y0 = currentY;
-                            HCReal x1 = arguments[0];
-                            HCReal y1 = currentY;
+                            HCReal x1 = currentX;
+                            HCReal y1 = arguments[0];
                             currentX = x1;
                             currentY = y1;
                             previousControlX = currentX;
