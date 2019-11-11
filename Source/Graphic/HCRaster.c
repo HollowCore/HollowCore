@@ -487,10 +487,12 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
     // Define state data for parsing the STL path string
     HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
     char type = '\0';
-    HCReal currentX = 0.0;
-    HCReal currentY = 0.0;
-    HCReal startX = currentX;
-    HCReal startY = currentY;
+    HCReal subpathStartX = 0.0;
+    HCReal subpathStartY = 0.0;
+    HCReal subpathEndX = subpathStartX;
+    HCReal subpathEndY = subpathStartY;
+    HCReal currentX = subpathEndX;
+    HCReal currentY = subpathEndY;
     HCReal previousControlX = currentX;
     HCReal previousControlY = currentY;
     HCInteger argumentsExpected = 0;
@@ -506,30 +508,32 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
             case '\r': // Fallthrough
             case ',': // Fallthrough
             case ' ': current++; break;
-            case 'M': type = 'M'; argumentsExpected = 2; current++; break;
-            case 'm': type = 'm'; argumentsExpected = 2; current++; break;
-            case 'L': type = 'L'; argumentsExpected = 2; current++; break;
-            case 'l': type = 'l'; argumentsExpected = 2; current++; break;
-            case 'H': type = 'H'; argumentsExpected = 1; current++; break;
-            case 'h': type = 'h'; argumentsExpected = 1; current++; break;
-            case 'V': type = 'V'; argumentsExpected = 1; current++; break;
-            case 'v': type = 'v'; argumentsExpected = 1; current++; break;
-            case 'Q': type = 'Q'; argumentsExpected = 4; current++; break;
-            case 'q': type = 'q'; argumentsExpected = 4; current++; break;
-            case 'T': type = 'T'; argumentsExpected = 2; current++; break;
-            case 't': type = 't'; argumentsExpected = 2; current++; break;
-            case 'C': type = 'C'; argumentsExpected = 6; current++; break;
-            case 'c': type = 'c'; argumentsExpected = 6; current++; break;
-            case 'S': type = 'S'; argumentsExpected = 4; current++; break;
-            case 's': type = 's'; argumentsExpected = 4; current++; break;
-            case 'A': type = 'A'; argumentsExpected = 7; current++; break;
-            case 'a': type = 'a'; argumentsExpected = 7; current++; break;
+            case 'M': type = 'M'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'm': type = 'm'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'L': type = 'L'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'l': type = 'l'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'H': type = 'H'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'h': type = 'h'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'V': type = 'V'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'v': type = 'v'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'Q': type = 'Q'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'q': type = 'q'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'T': type = 'T'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 't': type = 't'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'C': type = 'C'; argumentsExpected = 6; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'c': type = 'c'; argumentsExpected = 6; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'S': type = 'S'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 's': type = 's'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'A': type = 'A'; argumentsExpected = 7; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'a': type = 'a'; argumentsExpected = 7; currentX = subpathEndX; currentY = subpathEndY; current++; break;
             case 'Z': // Fallthrough
             case 'z':
                 // Close path has no arguments, so just perform the action and move on
-                HCRasterDrawLine(self, currentX, currentY, startX, startY, color, color);
-                currentX = startX;
-                currentY = startY;
+                HCRasterDrawLine(self, currentX, currentY, subpathStartX, subpathStartY, color, color);
+                subpathEndX = subpathStartX;
+                subpathEndY = subpathStartY;
+                currentX = subpathEndX;
+                currentY = subpathEndY;
                 current++;
                 break;
             default: {
@@ -565,10 +569,10 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[1] += currentY;
                             // Fallthrough
                         case 'M': {
-                            startX = arguments[0];
-                            startY = arguments[1];
-                            currentX = startX;
-                            currentY = startY;
+                            subpathStartX = arguments[0];
+                            subpathStartY = arguments[1];
+                            subpathEndX = subpathStartX;
+                            subpathEndY = subpathStartY;
                             previousControlX = currentX;
                             previousControlY = currentY;
                         } break;
@@ -577,12 +581,12 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[1] += currentY;
                             // Fallthrough
                         case 'L': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal x1 = arguments[0];
                             HCReal y1 = arguments[1];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
@@ -591,12 +595,12 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[0] += currentX;
                             // Fallthrough
                         case 'H': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal x1 = arguments[0];
-                            HCReal y1 = currentY;
-                            currentX = x1;
-                            currentY = y1;
+                            HCReal y1 = subpathEndY;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
@@ -605,16 +609,15 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[0] += currentY;
                             // Fallthrough
                         case 'V': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
-                            HCReal x1 = currentX;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
+                            HCReal x1 = subpathEndX;
                             HCReal y1 = arguments[0];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
-                            currentY = arguments[0];
                         } break;
                         case 'q':
                             arguments[0] += currentX;
@@ -623,14 +626,14 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[3] += currentY;
                             // Fallthrough
                         case 'Q': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal cx = arguments[0];
                             HCReal cy = arguments[1];
                             HCReal x1 = arguments[2];
                             HCReal y1 = arguments[3];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = cx;
                             previousControlY = cy;
                             HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
@@ -640,14 +643,14 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[1] += currentY;
                             // Fallthrough
                         case 'T': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal cx = 2.0 * x0 - previousControlX;
                             HCReal cy = 2.0 * y0 - previousControlY;
                             HCReal x1 = arguments[0];
                             HCReal y1 = arguments[1];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = cx;
                             previousControlY = cy;
                             HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
@@ -661,16 +664,16 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[5] += currentY;
                             // Fallthrough
                         case 'C': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal c0x = arguments[0];
                             HCReal c0y = arguments[1];
                             HCReal c1x = arguments[2];
                             HCReal c1y = arguments[3];
                             HCReal x1 = arguments[4];
                             HCReal y1 = arguments[5];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = c1x;
                             previousControlY = c1y;
                             HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
@@ -682,16 +685,16 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[3] += currentY;
                             // Fallthrough
                         case 'S': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal c0x = 2.0 * x0 - previousControlX;
                             HCReal c0y = 2.0 * y0 - previousControlY;
                             HCReal c1x = arguments[0];
                             HCReal c1y = arguments[1];
                             HCReal x1 = arguments[2];
                             HCReal y1 = arguments[3];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = c1x;
                             previousControlY = c1y;
                             HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
@@ -701,8 +704,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             arguments[6] += currentY;
                             // Fallthrough
                         case 'A': {
-                            HCReal x0 = currentX;
-                            HCReal y0 = currentY;
+                            HCReal x0 = subpathEndX;
+                            HCReal y0 = subpathEndY;
                             HCReal xr = arguments[0];
                             HCReal yr = arguments[1];
                             HCReal rotation = arguments[2] / 180.0 * M_PI;
@@ -710,8 +713,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCBoolean sweep = arguments[4] == 0.0 ? false : true;
                             HCReal x1 = arguments[5];
                             HCReal y1 = arguments[6];
-                            currentX = x1;
-                            currentY = y1;
+                            subpathEndX = x1;
+                            subpathEndY = y1;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCRasterDrawArc(self, x0, y0, x1, y1, xr, yr, rotation, largeArc, sweep, color, color);
