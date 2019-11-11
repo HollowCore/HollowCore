@@ -22,6 +22,8 @@ typedef struct HCRaster* HCRasterRef;
 // MARK: - Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
 extern HCInteger HCRasterSizeMax;
+#define HCRasterColorRotatingStatic {.a = -1000000.0, .r = 0.0, .g = 0.0, .b = 0.0}
+static const HCColor HCRasterColorRotating = HCRasterColorRotatingStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction

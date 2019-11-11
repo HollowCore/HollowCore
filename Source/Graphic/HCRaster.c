@@ -485,6 +485,7 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
 
 void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
     // Define state data for parsing the STL path string
+    HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
     char type = '\0';
     HCReal currentX = 0.0;
     HCReal currentY = 0.0;
@@ -551,6 +552,11 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                 if (argumentsCount == argumentsExpected) {
                     // Consume arguments
                     argumentsCount = 0;
+                    
+                    // When the rotating color is requested, change the color with each segment
+                    if (rotatingColor) {
+                        color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
+                    }
                     
                     // Execute the command
                     switch (type) {
