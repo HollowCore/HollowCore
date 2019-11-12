@@ -308,6 +308,7 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
+    // Draw using direct evaluation informed by derivitive
     HCReal x, y, dx, dy;
     for (HCReal t = 0.0; t <= 1.0;) {
         HCRasterEvaluateLine(t, x0, y0, x1, y1, &x, &y, &dx, &dy);
@@ -315,6 +316,7 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
         t += fmax(0.00001, 1.00000 / fmax(fabs(dx), fabs(dy)));
     }
     
+    // Draw using Bresenham's Algorithm
 //    HCReal dx = x1 - x0;
 //    HCReal dy = y1 - y0;
 //    HCReal step = fmaxf(fabs(dx), fabs(dy));
@@ -346,6 +348,7 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 //        if (e2 < dy) { err += dx; iy0 += sy; }
 //    }
 
+    // Draw using Xiaolin Wu's Algorithm
 //#define fswap(x0, x1) { HCReal t = x0; x0 = x1; x1 = t; }
 //#define fpart(x) (x - floor(x))
 //#define rfpart(x) (1 - fpart(x))
@@ -417,66 +420,70 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 }
 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
-    HCReal x, y, dx, dy;
-    for (HCReal t = 0.0; t <= 1.0;) {
-        HCRasterEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
-        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
-    }
-    
-//    HCReal flatness =
-//       (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
-//        sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy))) /
-//        sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-//    if (flatness < 1.0001) {
-//        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
-//        return;
+    // Draw using direct evaluation informed by derivitive
+//    HCReal x, y, dx, dy;
+//    for (HCReal t = 0.0; t <= 1.0;) {
+//        HCRasterEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
+//        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
+//        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
 //    }
-//
-//    HCReal qx0 =  x0 * 0.5 +  cx * 0.5;
-//    HCReal qy0 =  y0 * 0.5 +  cy * 0.5;
-//    HCReal qx1 =  cx * 0.5 +  x1 * 0.5;
-//    HCReal qy1 =  cy * 0.5 +  y1 * 0.5;
-//    HCReal  sx = qx0 * 0.5 + qx1 * 0.5;
-//    HCReal  sy = qy0 * 0.5 + qy1 * 0.5;
-//    HCColor cs = HCColorCombine(c0, c1, 0.5);
-//    HCRasterDrawQuadraticCurve(self, x0, y0, qx0, qy0, sx, sy, c0, cs);
-//    HCRasterDrawQuadraticCurve(self, sx, sy, qx1, qy1, x1, y1, cs, c1);
+    
+    // Draw using De Casteljau's Algorithm
+    HCReal flatness =
+       (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
+        sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy))) /
+        sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    if (flatness < 1.0001) {
+        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
+        return;
+    }
+
+    HCReal qx0 =  x0 * 0.5 +  cx * 0.5;
+    HCReal qy0 =  y0 * 0.5 +  cy * 0.5;
+    HCReal qx1 =  cx * 0.5 +  x1 * 0.5;
+    HCReal qy1 =  cy * 0.5 +  y1 * 0.5;
+    HCReal  sx = qx0 * 0.5 + qx1 * 0.5;
+    HCReal  sy = qy0 * 0.5 + qy1 * 0.5;
+    HCColor cs = HCColorCombine(c0, c1, 0.5);
+    HCRasterDrawQuadraticCurve(self, x0, y0, qx0, qy0, sx, sy, c0, cs);
+    HCRasterDrawQuadraticCurve(self, sx, sy, qx1, qy1, x1, y1, cs, c1);
 }
 
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
-    HCReal x, y, dx, dy;
-    for (HCReal t = 0.0; t <= 1.0;) {
-        HCRasterEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
-        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
-    }
-    
-//    HCReal flatness =
-//       (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +
-//        sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) +
-//        sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1))) /
-//        sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
-//    if (flatness < 1.0001) {
-//        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
-//        return;
+    // Draw using direct evaluation informed by derivitive
+//    HCReal x, y, dx, dy;
+//    for (HCReal t = 0.0; t <= 1.0;) {
+//        HCRasterEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
+//        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
+//        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
 //    }
-//
-//    HCReal qx0 =  x0 * 0.5 + cx0 * 0.5;
-//    HCReal qy0 =  y0 * 0.5 + cy0 * 0.5;
-//    HCReal qcx = cx0 * 0.5 + cx1 * 0.5;
-//    HCReal qcy = cy0 * 0.5 + cy1 * 0.5;
-//    HCReal qx1 = cx1 * 0.5 +  x1 * 0.5;
-//    HCReal qy1 = cy1 * 0.5 +  y1 * 0.5;
-//    HCReal rx0 = qx0 * 0.5 + qcx * 0.5;
-//    HCReal ry0 = qy0 * 0.5 + qcy * 0.5;
-//    HCReal rx1 = qcx * 0.5 + qx1 * 0.5;
-//    HCReal ry1 = qcy * 0.5 + qy1 * 0.5;
-//    HCReal  sx = rx0 * 0.5 + rx1 * 0.5;
-//    HCReal  sy = ry0 * 0.5 + ry1 * 0.5;
-//    HCColor cs = HCColorCombine(c0, c1, 0.5);
-//    HCRasterDrawCubicCurve(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, c0, cs);
-//    HCRasterDrawCubicCurve(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, cs, c1);
+    
+    // Draw using De Casteljau's Algorithm
+    HCReal flatness =
+       (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +
+        sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) +
+        sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1))) /
+        sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    if (flatness < 1.0001) {
+        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
+        return;
+    }
+
+    HCReal qx0 =  x0 * 0.5 + cx0 * 0.5;
+    HCReal qy0 =  y0 * 0.5 + cy0 * 0.5;
+    HCReal qcx = cx0 * 0.5 + cx1 * 0.5;
+    HCReal qcy = cy0 * 0.5 + cy1 * 0.5;
+    HCReal qx1 = cx1 * 0.5 +  x1 * 0.5;
+    HCReal qy1 = cy1 * 0.5 +  y1 * 0.5;
+    HCReal rx0 = qx0 * 0.5 + qcx * 0.5;
+    HCReal ry0 = qy0 * 0.5 + qcy * 0.5;
+    HCReal rx1 = qcx * 0.5 + qx1 * 0.5;
+    HCReal ry1 = qcy * 0.5 + qy1 * 0.5;
+    HCReal  sx = rx0 * 0.5 + rx1 * 0.5;
+    HCReal  sy = ry0 * 0.5 + ry1 * 0.5;
+    HCColor cs = HCColorCombine(c0, c1, 0.5);
+    HCRasterDrawCubicCurve(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, c0, cs);
+    HCRasterDrawCubicCurve(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, cs, c1);
 }
 
 void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1) {
@@ -529,7 +536,7 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
             case 'Z': // Fallthrough
             case 'z':
                 // Close path has no arguments, so just perform the action and move on
-                HCRasterDrawLine(self, currentX, currentY, subpathStartX, subpathStartY, color, color);
+                HCRasterDrawLine(self, subpathEndX, subpathEndY, subpathStartX, subpathStartY, color, color);
                 subpathEndX = subpathStartX;
                 subpathEndY = subpathStartY;
                 currentX = subpathEndX;
@@ -565,8 +572,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                     // Execute the command
                     switch (type) {
                         case 'm':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
                             // Fallthrough
                         case 'M': {
                             subpathStartX = arguments[0];
@@ -577,8 +584,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             previousControlY = currentY;
                         } break;
                         case 'l':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
                             // Fallthrough
                         case 'L': {
                             HCReal x0 = subpathEndX;
@@ -592,7 +599,7 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
                         } break;
                         case 'h':
-                            arguments[0] += currentX;
+                            arguments[0] += subpathEndX;
                             // Fallthrough
                         case 'H': {
                             HCReal x0 = subpathEndX;
@@ -606,7 +613,7 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
                         } break;
                         case 'v':
-                            arguments[0] += currentY;
+                            arguments[0] += subpathEndY;
                             // Fallthrough
                         case 'V': {
                             HCReal x0 = subpathEndX;
@@ -620,10 +627,10 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawLine(self, x0, y0, x1, y1, color, color);
                         } break;
                         case 'q':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
-                            arguments[2] += currentX;
-                            arguments[3] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
+                            arguments[2] += subpathEndX;
+                            arguments[3] += subpathEndY;
                             // Fallthrough
                         case 'Q': {
                             HCReal x0 = subpathEndX;
@@ -639,8 +646,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
                         } break;
                         case 't':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
                             // Fallthrough
                         case 'T': {
                             HCReal x0 = subpathEndX;
@@ -656,12 +663,12 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawQuadraticCurve(self, x0, y0, cx, cy, x1, y1, color, color);
                         } break;
                         case 'c':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
-                            arguments[2] += currentX;
-                            arguments[3] += currentY;
-                            arguments[4] += currentX;
-                            arguments[5] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
+                            arguments[2] += subpathEndX;
+                            arguments[3] += subpathEndY;
+                            arguments[4] += subpathEndX;
+                            arguments[5] += subpathEndY;
                             // Fallthrough
                         case 'C': {
                             HCReal x0 = subpathEndX;
@@ -679,10 +686,10 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
                         } break;
                         case 's':
-                            arguments[0] += currentX;
-                            arguments[1] += currentY;
-                            arguments[2] += currentX;
-                            arguments[3] += currentY;
+                            arguments[0] += subpathEndX;
+                            arguments[1] += subpathEndY;
+                            arguments[2] += subpathEndX;
+                            arguments[3] += subpathEndY;
                             // Fallthrough
                         case 'S': {
                             HCReal x0 = subpathEndX;
@@ -700,8 +707,8 @@ void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color) {
                             HCRasterDrawCubicCurve(self, x0, y0, c0x, c0y, c1x, c1y, x1, y1, color, color);
                         } break;
                         case 'a':
-                            arguments[5] += currentX;
-                            arguments[6] += currentY;
+                            arguments[5] += subpathEndX;
+                            arguments[6] += subpathEndY;
                             // Fallthrough
                         case 'A': {
                             HCReal x0 = subpathEndX;
