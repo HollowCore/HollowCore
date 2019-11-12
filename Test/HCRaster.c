@@ -135,7 +135,7 @@ CTEST(HCRaster, DrawHorizontalPath) {
 
 CTEST(HCRaster, DrawHorizontalRelativePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 20 h 50", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 20 h 40", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal_relative.bmp");
     HCRasterSavePPM(raster, "path_horizontal_relative.ppm");
     HCRelease(raster);
@@ -151,7 +151,7 @@ CTEST(HCRaster, DrawHorizontalPolyPath) {
 
 CTEST(HCRaster, DrawHorizontalRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 20 h 15 40 65 80", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 20 h 15 25 25 15", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_horizontal_relative_poly.ppm");
     HCRelease(raster);
@@ -183,7 +183,7 @@ CTEST(HCRaster, DrawVerticalPolyPath) {
 
 CTEST(HCRaster, DrawVerticalRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 20 v 5 30 55 60", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 20 v 5 25 25 5", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_vertical_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_vertical_relative_poly.ppm");
     HCRelease(raster);
@@ -215,7 +215,7 @@ CTEST(HCRaster, DrawLinePolyPath) {
 
 CTEST(HCRaster, DrawLineRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 20 l 50 60 40 20 80 0", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 20 l 50 60 -10 -40 40 -20", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_line_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_line_relative_poly.ppm");
     HCRelease(raster);
@@ -247,7 +247,7 @@ CTEST(HCRaster, DrawQuadraticCurvePolyPath) {
 
 CTEST(HCRaster, DrawQuadraticCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
-    HCRasterDrawPath(raster, "M 10 80 q 85 -70 170 0 85 70 0 0", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 80 q 85 -70 170 0 -85 70 -170 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_curve_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_quadratic_curve_relative_poly.ppm");
     HCRelease(raster);
@@ -279,7 +279,7 @@ CTEST(HCRaster, DrawQuadraticSmoothCurvePolyPath) {
 
 CTEST(HCRaster, DrawQuadraticSmoothCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
-    HCRasterDrawPath(raster, "M 10 80 Q 52.5 10 95 80 t 85 0 0 0 -85 0", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 80 Q 52.5 10 95 80 t 85 0 -85 0 -85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_smooth_curve_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_quadratic_smooth_curve_relative_poly.ppm");
     HCRelease(raster);
@@ -311,7 +311,7 @@ CTEST(HCRaster, DrawCubicCurvePolyPath) {
 
 CTEST(HCRaster, DrawCubicCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPath(raster, "M 10 90 c 20 -80 60 -80 80 0 60 -50 20 -50 0 0", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 90 c 20 -80 60 -80 80 0 -20 -50 -60 -50 -80 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_curve_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_cubic_curve_relative_poly.ppm");
     HCRelease(raster);
@@ -343,7 +343,7 @@ CTEST(HCRaster, DrawCubicSmoothCurvePolyPath) {
 
 CTEST(HCRaster, DrawCubicSmoothCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
-    HCRasterDrawPath(raster, "M 10 80 C 40 10 65 10 95 80 s 55 70 85 0 -15 -70 0 0 -85 70 -85 0", HCRasterColorRotating);
+    HCRasterDrawPath(raster, "M 10 80 C 40 10 65 10 95 80 s 55 70 85 0 -100 -70 -85 0 -85 70 -85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_smooth_curve_relative_poly.bmp");
     HCRasterSavePPM(raster, "path_cubic_smooth_curve_relative_poly.ppm");
     HCRelease(raster);
