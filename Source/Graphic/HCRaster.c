@@ -189,129 +189,21 @@ HCColor HCRasterPixelFiltered(HCRasterRef self, HCReal x, HCReal y) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterEvaluateLine(HCReal t, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-        
-//    HCReal x = x0 * tc + x1 * t;
-//    HCReal y = y0 * tc + y1 * t;
-        
-    HCReal a = tc;
-    HCReal b = t;
-    HCReal x = a * x0 + b * x1;
-    HCReal y = a * y0 + b * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = x1 - x0;
-    *dy = y1 - y0;
-}
-
-void HCRasterEvaluateQuadraticCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-    
-    HCReal sx0 = x0 * tc + cx * t;
-    HCReal sy0 = y0 * tc + cy * t;
-    HCReal sx1 = cx * tc + x1 * t;
-    HCReal sy1 = cy * tc + y1 * t;
-    HCReal x = sx0 * tc + sx1 * t;
-    HCReal y = sy0 * tc + sy1 * t;
-    
-//    HCReal x = (x0 * tc + cx * t) * tc + (cx * tc + x1 * t) * t;
-//    HCReal y = (y0 * tc + cy * t) * tc + (cy * tc + y1 * t) * t;
-
-//    HCReal x = x0 * tc * tc + cx * t * tc + cx * tc * t + x1 * t * t;
-//    HCReal y = y0 * tc * tc + cy * t * tc + cy * tc * t + y1 * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = x0 * tc2 + cx * t * tc + cx * tc * t + x1 * t2;
-//    HCReal y = y0 * tc2 + cy * t * tc + cy * tc * t + y1 * t2;
-    
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = x0 * tc2 + (2.0 * cx) * t * tc + x1 * t2;
-//    HCReal y = y0 * tc2 + (2.0 * cy) * t * tc + y1 * t2;
-    
-//    HCReal a = tc * tc;
-//    HCReal b = 2.0 * t * tc;
-//    HCReal c = t * t;
-//    HCReal x = a * x0 + b * cx + c * x1;
-//    HCReal y = a * y0 + b * cy + c * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = sx1 - sx0;
-    *dy = sy1 - sy0;
-}
-
-void HCRasterEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-        
-    HCReal sx0 = x0 * tc + cx0 * t;
-    HCReal sy0 = y0 * tc + cy0 * t;
-    HCReal scx = cx0 * tc + cx1 * t;
-    HCReal scy = cy0 * tc + cy1 * t;
-    HCReal sx1 = cx1 * tc + x1 * t;
-    HCReal sy1 = cy1 * tc + y1 * t;
-    HCReal ssx0 = sx0 * tc + scx * t;
-    HCReal ssy0 = sy0 * tc + scy * t;
-    HCReal ssx1 = scx * tc + sx1 * t;
-    HCReal ssy1 = scy * tc + sy1 * t;
-    HCReal x = ssx0 * tc + ssx1 * t;
-    HCReal y = ssy0 * tc + ssy1 * t;
-
-//    HCReal ssx0 = (x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t;
-//    HCReal ssy0 = (y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t;
-//    HCReal ssx1 = (cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t;
-//    HCReal ssy1 = (cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t;
-//    HCReal x = ssx0 * tc + ssx1 * t;
-//    HCReal y = ssy0 * tc + ssy1 * t;
-
-//    HCReal x = ((x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t) * tc + ((cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t) * t;
-//    HCReal y = ((y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t) * tc + ((cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t) * t;
-
-//    HCReal x = (x0 * tc + cx0 * t) * tc * tc + (cx0 * tc + cx1 * t) * t * tc + (cx0 * tc + cx1 * t) * t * tc + (cx1 * tc + x1 * t) * t * t;
-//    HCReal y = (y0 * tc + cy0 * t) * tc * tc + (cy0 * tc + cy1 * t) * t * tc + (cy0 * tc + cy1 * t) * t * tc + (cy1 * tc + y1 * t) * t * t;
-
-//    HCReal x = x0 * tc * tc * tc + cx0 * tc * tc * t + cx0 * t * tc * tc + cx1 * t * t * tc + cx0 * t * tc * tc + cx1 * t * t * tc + cx1 * t * t * tc + x1 * t * t * t;
-//    HCReal y = y0 * tc * tc * tc + cy0 * tc * tc * t + cy0 * t * tc * tc + cy1 * t * t * tc + cy0 * t * tc * tc + cy1 * t * t * tc + cy1 * t * t * tc + y1 * t * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = x0 * tc3 + cx0 * t * tc2 + cx0 * t * tc2 + cx1 * t2 * tc + cx0 * t * tc2 + cx1 * t2 * tc + cx1 * t2 * tc + x1 * t3;
-//    HCReal y = y0 * tc3 + cy0 * t * tc2 + cy0 * t * tc2 + cy1 * t2 * tc + cy0 * t * tc2 + cy1 * t2 * tc + cy1 * t2 * tc + y1 * t3;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = x0 * tc3 + (3.0 * cx0) * t * tc2 + (3.0 * cx1) * t2 * tc + x1 * t3;
-//    HCReal y = y0 * tc3 + (3.0 * cy0) * t * tc2 + (3.0 * cy1) * t2 * tc + y1 * t3;
-    
-//    HCReal a = tc * tc * tc;
-//    HCReal b = 3.0 * t * tc * tc;
-//    HCReal c = 3.0 * t * t * tc;
-//    HCReal d = t * t * t;
-//    HCReal x = a * x0 + b * cx0 + c * cx1 + d * x1;
-//    HCReal y = a * y0 + b * cy0 + c * cy1 + d * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = ssx1 - ssx0;
-    *dy = ssy1 - ssy0;
-}
-
 void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
     HCRasterSetPixelAt(self, round(x), round(y), color);
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     // Draw using direct evaluation informed by derivitive
-    HCReal x, y, dx, dy;
+    HCReal dx = x1 - x0;
+    HCReal dy = y1 - y0;
     for (HCReal t = 0.0; t <= 1.0;) {
-        HCRasterEvaluateLine(t, x0, y0, x1, y1, &x, &y, &dx, &dy);
+        HCReal tc = 1.0 - t;
+        HCReal a = tc;
+        HCReal b = t;
+        HCReal x = a * x0 + b * x1;
+        HCReal y = a * y0 + b * y1;
+        
         HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
         t += fmax(0.00001, 1.00000 / fmax(fabs(dx), fabs(dy)));
     }

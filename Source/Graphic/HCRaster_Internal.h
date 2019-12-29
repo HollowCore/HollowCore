@@ -28,10 +28,6 @@ typedef struct HCRaster {
 void HCRasterInit(void* memory, HCInteger width, HCInteger height);
 void HCRasterDestroy(HCRasterRef self);
 
-void HCRasterEvaluateLine(HCReal t, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-void HCRasterEvaluateQuadraticCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-void HCRasterEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Color Operations
 //----------------------------------------------------------------------------------------------------------------------------------
