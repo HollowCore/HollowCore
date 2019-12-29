@@ -11,6 +11,7 @@
 
 #include "../Core/HCObject.h"
 #include "HCColor.h"
+#include "HCPath.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -66,7 +67,8 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1);
-void HCRasterDrawPath(HCRasterRef self, const char* path, HCColor color);
+void HCRasterDrawPathData(HCRasterRef self, const char* pathData, HCColor color);
+void HCRasterDrawPath(HCRasterRef self, HCPathRef path, HCColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Shape Drawing Operations
