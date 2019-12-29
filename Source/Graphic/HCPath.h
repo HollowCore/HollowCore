@@ -71,10 +71,16 @@ void HCPathPrintData(HCPathRef self, FILE* stream);
 HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Intersection
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathEvaluateLine(HCReal t, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
 void HCPathEvaluateQuadraticCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
 void HCPathEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
+void HCPathLineLineIntersection(HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal x2, HCReal y2, HCReal x3, HCReal y3, HCReal* t, HCReal* u);
 
 #endif /* HCPath_h */

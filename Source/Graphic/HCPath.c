@@ -368,6 +368,50 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Intersection
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
+    // Convert the path to segments
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self);
+    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
+    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
+    
+    // Convert the other path to segments
+    HCDataRef otherSegmentData = HCPathAsLineSegmentDataRetained(other);
+    HCInteger otherPointCount = HCDataSize(otherSegmentData) / sizeof(HCPoint);
+    HCPoint* otherPoints = (HCPoint*)HCDataBytes(otherSegmentData);
+    
+    // Compare each line segment in the path against those in the other
+    HCBoolean pathsIntersect = false;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
+        HCPoint startPoint = points[pointIndex + 0];
+        HCPoint endPoint = points[pointIndex + 1];
+        for (HCInteger otherPointIndex = 0; otherPointIndex < otherPointCount; otherPointIndex += 2) {
+            HCPoint otherStartPoint = otherPoints[otherPointIndex + 0];
+            HCPoint otherEndPoint = otherPoints[otherPointIndex + 1];
+            
+            // Find the intersection parameters for each segment
+            HCReal t = 0.0;
+            HCReal u = 0.0;
+            HCPathLineLineIntersection(startPoint.x, startPoint.y, endPoint.x, endPoint.y, otherStartPoint.x, otherStartPoint.y, otherEndPoint.x, otherEndPoint.y, &t, &u);
+            
+            // Determine if they intersect within the bounds of the segments
+            HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
+            if (segmentsIntersect) {
+                pathsIntersect = true;
+                break;
+            }
+        }
+    }
+    
+    // Cleanup
+    HCRelease(segmentData);
+    HCRelease(otherSegmentData);
+    
+    return pathsIntersect;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Parsing
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathParse(HCPathRef self, const char* path) {
@@ -707,4 +751,10 @@ void HCPathEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal
     *sy = y;
     *dx = ssx1 - ssx0;
     *dy = ssy1 - ssy0;
+}
+
+void HCPathLineLineIntersection(HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal x2, HCReal y2, HCReal x3, HCReal y3, HCReal* t, HCReal* u) {
+    HCReal d = (x0 - x1)*(y2 - y3) - (y0 - y1)*(x2 - x3);
+    *t = ((x0 - x2)*(y2 - y3) - (y0 - y2)*(x2 - x3)) / d;
+    *u = -((x0 - x1)*(y0 - y2) - (y0 - y1)*(x0 - x2)) / d;
 }

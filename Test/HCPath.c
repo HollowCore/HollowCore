@@ -38,58 +38,6 @@ CTEST(HCPath, Print) {
     HCRelease(path);
 }
 
-CTEST(HCPath, Size) {
-    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z");
-    ASSERT_TRUE(HCSizeIsEqual(HCPathSize(path), HCSizeMake(20.0, 10.0)));
-    HCRelease(path);
-}
-
-CTEST(HCPath, LineSegments) {
-    HCPathRef path = HCPathCreate("M 10 20 L 60 80 30 10 M 1 2 L 6 8 3 1");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 8));
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 20.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[1], HCPointMake(60.0, 80.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[2], HCPointMake(60.0, 80.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[3], HCPointMake(30.0, 10.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[4], HCPointMake(1.0, 2.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[5], HCPointMake(6.0, 8.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[6], HCPointMake(6.0, 8.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[7], HCPointMake(3.0, 1.0)));
-    HCRelease(path);
-    HCRelease(segmentData);
-}
-
-CTEST(HCPath, LineSegmentsFromQuadratic) {
-    HCPathRef path = HCPathCreate("M 10 80 Q 95 10 180 80");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 128));
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 80.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[1], points[2]));
-    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 3], points[pointCount - 2]));
-    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 1], HCPointMake(180.0, 80.0)));
-    HCRelease(path);
-    HCRelease(segmentData);
-}
-
-CTEST(HCPath, LineSegmentsFromCubic) {
-    HCPathRef path = HCPathCreate("M 10 90 C 30 10 70 10 90 90");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 232));
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 90.0)));
-    ASSERT_TRUE(HCPointIsEqual(points[1], points[2]));
-    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 3], points[pointCount - 2]));
-    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 1], HCPointMake(90.0, 90.0)));
-    HCRelease(path);
-    HCRelease(segmentData);
-}
-
 CTEST(HCPath, HorizontalPath) {
     HCPathRef path = HCPathCreate("M 10 20 H 50");
     ASSERT_EQUAL(HCPathElementCount(path), 2);
@@ -587,4 +535,80 @@ CTEST(HCPath, Dinosaur) {
     HCPathRef path = HCPathCreate(dinosaur);
     ASSERT_EQUAL(HCPathElementCount(path), 109);
     HCRelease(path);
+}
+
+CTEST(HCPath, Size) {
+    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z");
+    ASSERT_TRUE(HCSizeIsEqual(HCPathSize(path), HCSizeMake(20.0, 10.0)));
+    HCRelease(path);
+}
+
+CTEST(HCPath, LineSegments) {
+    HCPathRef path = HCPathCreate("M 10 20 L 60 80 30 10 M 1 2 L 6 8 3 1");
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
+    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 8));
+    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
+    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 20.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[1], HCPointMake(60.0, 80.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[2], HCPointMake(60.0, 80.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[3], HCPointMake(30.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[4], HCPointMake(1.0, 2.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[5], HCPointMake(6.0, 8.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[6], HCPointMake(6.0, 8.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[7], HCPointMake(3.0, 1.0)));
+    HCRelease(path);
+    HCRelease(segmentData);
+}
+
+CTEST(HCPath, LineSegmentsFromQuadratic) {
+    HCPathRef path = HCPathCreate("M 10 80 Q 95 10 180 80");
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
+    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 128));
+    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
+    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 80.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[1], points[2]));
+    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 3], points[pointCount - 2]));
+    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 1], HCPointMake(180.0, 80.0)));
+    HCRelease(path);
+    HCRelease(segmentData);
+}
+
+CTEST(HCPath, LineSegmentsFromCubic) {
+    HCPathRef path = HCPathCreate("M 10 90 C 30 10 70 10 90 90");
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
+    ASSERT_TRUE(HCIntegerIsEqual(pointCount, 232));
+    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
+    ASSERT_TRUE(HCPointIsEqual(points[0], HCPointMake(10.0, 90.0)));
+    ASSERT_TRUE(HCPointIsEqual(points[1], points[2]));
+    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 3], points[pointCount - 2]));
+    ASSERT_TRUE(HCPointIsEqual(points[pointCount - 1], HCPointMake(90.0, 90.0)));
+    HCRelease(path);
+    HCRelease(segmentData);
+}
+
+CTEST(HCPath, LinePathLinePathIntersection) {
+    HCPathRef a = HCPathCreate("M 10 20 L 90 100");
+    HCPathRef b = HCPathCreate("M 70 10 L 20 80");
+    ASSERT_TRUE(HCPathIntersectsPath(a, b));
+    HCRelease(a);
+    HCRelease(b);
+}
+
+CTEST(HCPath, QuadraticPathQuadraticPathIntersection) {
+    HCPathRef a = HCPathCreate("M 10 30 Q 50 90 90 30");
+    HCPathRef b = HCPathCreate("M 10 70 Q 50 10 90 70");
+    ASSERT_TRUE(HCPathIntersectsPath(a, b));
+    HCRelease(a);
+    HCRelease(b);
+}
+
+CTEST(HCPath, CubicPathCubicPathIntersection) {
+    HCPathRef a = HCPathCreate("M 10 30 C 30 90 70 90 90 30");
+    HCPathRef b = HCPathCreate("M 10 70 C 30 10 70 10 90 70");
+    ASSERT_TRUE(HCPathIntersectsPath(a, b));
+    HCRelease(a);
+    HCRelease(b);
 }
