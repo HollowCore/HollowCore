@@ -53,6 +53,7 @@ void HCPathPrint(HCPathRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathElementCount(HCPathRef self);
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
+HCPoint HCPathCurrentPoint(HCPathRef self);
 HCSize HCPathSize(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------

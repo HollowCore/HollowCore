@@ -10,10 +10,8 @@
 #include "../Source/HollowCore.h"
 
 CTEST(HCPath, Creation) {
-    HCPathRef path = HCPathCreate("M 0 0");
-    ASSERT_EQUAL(HCPathElementCount(path), 1);
-    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(0.0, 0.0)));
+    HCPathRef path = HCPathCreate("");
+    ASSERT_EQUAL(HCPathElementCount(path), 0);
     HCRelease(path);
 }
 
@@ -538,8 +536,27 @@ CTEST(HCPath, Dinosaur) {
 }
 
 CTEST(HCPath, Size) {
+    HCPathRef emptyPath = HCPathCreate("");
+    ASSERT_TRUE(HCSizeIsEqual(HCPathSize(emptyPath), HCSizeZero));
     HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z");
     ASSERT_TRUE(HCSizeIsEqual(HCPathSize(path), HCSizeMake(20.0, 10.0)));
+    HCRelease(emptyPath);
+    HCRelease(path);
+}
+
+CTEST(HCPath, CurrentPoint) {
+    HCPathRef path = HCPathCreate("");
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
+    HCPathMoveToPoint(path, 5.0, 10.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
+    HCPathAddLine(path, 50.0, 100.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(50.0, 100.0)));
+    HCPathAddQuadraticCurve(path, 8.0, 40.0, -20.0, 60.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(-20.0, 60.0)));
+    HCPathAddCubicCurve(path, 80.0, 45.0, -10.0, -80.0, 35.0, 77.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(35.0, 77.0)));
+    HCPathCloseSubpath(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
     HCRelease(path);
 }
 

@@ -119,6 +119,10 @@ void HCPathPrint(HCPathRef self, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathIsEmpty(HCPathRef self) {
+    return self->elementCount == 0;
+}
+
 HCInteger HCPathElementCount(HCPathRef self) {
     return self->elementCount;
 }
@@ -127,17 +131,47 @@ HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex) {
     return self->elements[elementIndex];
 }
 
+HCPoint HCPathCurrentPoint(HCPathRef self) {
+    if (!HCPathIsEmpty(self)) {
+        // Find the end point of the last command
+        HCPathElement endElement = HCPathElementAt(self, HCPathElementCount(self) - 1);
+        switch (endElement.command) {
+            case HCPathCommandMove: return endElement.points[0];
+            case HCPathCommandAddLine: return endElement.points[0];
+            case HCPathCommandAddQuadraticCurve: return endElement.points[1];
+            case HCPathCommandAddCubicCurve:  return endElement.points[2];
+            case HCPathCommandCloseSubpath: {
+                // Find the move element most recently emitted
+                for (HCInteger elementIndex = HCPathElementCount(self) - 1; elementIndex >= 0; elementIndex--) {
+                    HCPathElement element = HCPathElementAt(self, elementIndex);
+                    if (element.command == HCPathCommandMove) {
+                        return element.points[0];
+                    }
+                }
+            }
+        }
+    }
+    
+    // No end point found, so return the origin, the defined default current point
+    return HCPointZero;
+}
+
 HCSize HCPathSize(HCPathRef self) {
+    // Empty paths have a zero size
+    if (HCPathIsEmpty(self)) {
+        return HCSizeZero;
+    }
+    
     // Convert the path to line segments
     HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
     
     // Find the maxima of the line segment points
-    HCReal minX = HCRealMax;
-    HCReal minY = HCRealMax;
-    HCReal maxX = HCRealMin;
-    HCReal maxY = HCRealMin;
+    HCReal minX = points[0].x;
+    HCReal minY = points[0].y;
+    HCReal maxX = minX;
+    HCReal maxY = minY;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex++) {
         HCPoint point = points[pointIndex];
         minX = fmin(minX, point.x);
