@@ -156,10 +156,10 @@ HCPoint HCPathCurrentPoint(HCPathRef self) {
     return HCPointZero;
 }
 
-HCSize HCPathSize(HCPathRef self) {
+HCRectangle HCPathBounds(HCPathRef self) {
     // Empty paths have a zero size
     if (HCPathIsEmpty(self)) {
-        return HCSizeZero;
+        return HCRectangleZero;
     }
     
     // Convert the path to line segments
@@ -181,8 +181,8 @@ HCSize HCPathSize(HCPathRef self) {
     }
     HCRelease(segmentData);
     
-    // Calculate the size of the path
-    return HCSizeMake(maxX - minX, maxY - minY);
+    // Calculate the bounds of the path
+    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

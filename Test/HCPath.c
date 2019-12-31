@@ -537,9 +537,9 @@ CTEST(HCPath, Dinosaur) {
 
 CTEST(HCPath, Size) {
     HCPathRef emptyPath = HCPathCreate("");
-    ASSERT_TRUE(HCSizeIsEqual(HCPathSize(emptyPath), HCSizeZero));
+    ASSERT_TRUE(HCRectangleIsEqual(HCPathBounds(emptyPath), HCRectangleZero));
     HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z");
-    ASSERT_TRUE(HCSizeIsEqual(HCPathSize(path), HCSizeMake(20.0, 10.0)));
+    ASSERT_TRUE(HCRectangleIsEqual(HCPathBounds(path), HCRectangleMake(HCPointMake(10.0, 10.0), HCSizeMake(20.0, 10.0))));
     HCRelease(emptyPath);
     HCRelease(path);
 }

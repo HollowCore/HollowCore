@@ -10,8 +10,7 @@
 #define HCPath_h
 
 #include "../Core/HCObject.h"
-#include "../Geometry/HCPoint.h"
-#include "../Geometry/HCSize.h"
+#include "../Geometry/HCRectangle.h"
 #include "../Data/HCData.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -54,7 +53,7 @@ void HCPathPrint(HCPathRef self, FILE* stream);
 HCInteger HCPathElementCount(HCPathRef self);
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
 HCPoint HCPathCurrentPoint(HCPathRef self);
-HCSize HCPathSize(HCPathRef self);
+HCRectangle HCPathBounds(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Manipulation
