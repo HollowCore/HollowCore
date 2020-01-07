@@ -35,6 +35,8 @@ typedef struct HCPathElement {
     HCPoint* points;
 } HCPathElement;
 
+typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSearching, HCPathRef path, HCPathRef otherPath, HCPoint point);
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +75,9 @@ HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point);
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
+void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Evaluation

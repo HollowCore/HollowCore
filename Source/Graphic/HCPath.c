@@ -404,7 +404,18 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
+    // TODO: This!
+    return false;
+}
+
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
+    HCBoolean intersects = false;
+    HCPathIntersections(self, other, HCPathIntersects, &intersects);
+    return intersects;
+}
+
+void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context) {
     // Convert the path to segments
     HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
@@ -416,7 +427,6 @@ HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
     HCPoint* otherPoints = (HCPoint*)HCDataBytes(otherSegmentData);
     
     // Compare each line segment in the path against those in the other
-    HCBoolean pathsIntersect = false;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
         HCPoint startPoint = points[pointIndex + 0];
         HCPoint endPoint = points[pointIndex + 1];
@@ -432,8 +442,14 @@ HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
             // Determine if they intersect within the bounds of the segments
             HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
             if (segmentsIntersect) {
-                pathsIntersect = true;
-                break;
+                // Calculate the intersection point and call the intersection function
+                HCReal tc = 1.0 - t;
+                HCPoint point = HCPointMake(tc * startPoint.x + t * endPoint.x, tc * startPoint.y + t * endPoint.y);
+                HCBoolean stopSearching = false;
+                intersection(context, &stopSearching, self, other, point);
+                if (stopSearching) {
+                    break;
+                }
             }
         }
     }
@@ -441,8 +457,11 @@ HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
     // Cleanup
     HCRelease(segmentData);
     HCRelease(otherSegmentData);
-    
-    return pathsIntersect;
+}
+
+void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point) {
+    *((HCBoolean*)context) = true;
+    *stopSearching = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
