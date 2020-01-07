@@ -31,8 +31,8 @@ void HCPathDestroy(HCPathRef self);
 // MARK: - Path Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathAddLineSegment(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef segmentData);
-void HCPathAddQuadraticCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCDataRef segmentData);
-void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCDataRef segmentData);
+void HCPathAddQuadraticCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData);
+void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
