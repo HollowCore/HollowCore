@@ -58,7 +58,7 @@ HCColor HCColorMakeWithARGB(uint32_t color) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-uint32_t HCColorAsARGB(HCColor color) {
+uint32_t HCColorAsARGB8888(HCColor color) {
     return
         (uint32_t)fmax(0.0f, fmin(255.0f, color.a * 256.0f)) << 24 |
         (uint32_t)fmax(0.0f, fmin(255.0f, color.r * 256.0f)) << 16 |
