@@ -21,6 +21,7 @@
 #include "Geometry/HCSize.h"
 #include "Geometry/HCRectangle.h"
 #include "Graphic/HCColor.h"
+#include "Graphic/HCPath.h"
 #include "Graphic/HCRaster.h"
 #include "JSON/HCJSON.h"
 #include "Thread/HCLock.h"

@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
+#include <float.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value Types
@@ -29,8 +30,8 @@ typedef double HCReal;
 #define HCIntegerMin (INT64_MIN)
 #define HCIntegerMax (INT64_MAX)
 
-#define HCRealMin (-DOUBLE_MAX)
-#define HCRealMax (DOUBLE_MAX)
+#define HCRealMin (-DBL_MAX)
+#define HCRealMax (DBL_MAX)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Atomic Value Types
