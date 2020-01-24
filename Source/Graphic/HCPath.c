@@ -405,6 +405,8 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
 // MARK: - Path Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
+    // TODO: Multiple closed sub-paths?
+    
     // Convert the path to segments
     HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
@@ -432,6 +434,52 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     
     // An odd intersection count indicates the point is within the path
     return intersectionCount % 2 == 1;
+}
+
+HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {
+    // TODO: Multiple closed sub-paths?
+    
+    // Convert the path to segments
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
+    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
+    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
+    
+    // Determine the sum of the sweep angles passed through as the segments are walked
+    // TODO: Need to know the path extents to know how distant "distant" should be
+    HCInteger counterClockwiseQuadrantCrossings = 0;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
+        HCPoint startPoint = points[pointIndex + 0];
+        HCPoint endPoint = points[pointIndex + 1];
+        
+        // Offset points such that test point is the origin
+        startPoint = HCPointOffset(startPoint, -point.x, -point.y);
+        endPoint = HCPointOffset(endPoint, -point.x, -point.y);
+        
+        // Determine if the segment crosses from one quadrant to another, then sum the directions
+        HCInteger startQuadrant = startPoint.x >= 0.0 ? (startPoint.y >= 0.0 ? 1 : 4) : (startPoint.y >= 0.0 ? 2 : 3);
+        HCInteger endQuadrant = endPoint.x >= 0.0 ? (endPoint.y >= 0.0 ? 1 : 4) : (endPoint.y >= 0.0 ? 2 : 3);
+        switch (startQuadrant * 10 + endQuadrant) {
+            case 11: counterClockwiseQuadrantCrossings +=  0; break;
+            case 12: counterClockwiseQuadrantCrossings += +1; break;
+            case 13: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
+            case 14: counterClockwiseQuadrantCrossings += -1; break;
+            case 21: counterClockwiseQuadrantCrossings += -1; break;
+            case 22: counterClockwiseQuadrantCrossings +=  0; break;
+            case 23: counterClockwiseQuadrantCrossings += +1; break;
+            case 24: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
+            case 31: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
+            case 32: counterClockwiseQuadrantCrossings += -1; break;
+            case 33: counterClockwiseQuadrantCrossings +=  0; break;
+            case 34: counterClockwiseQuadrantCrossings += +1; break;
+            case 41: counterClockwiseQuadrantCrossings += +1; break;
+            case 42: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
+            case 43: counterClockwiseQuadrantCrossings += -1; break;
+            case 44: counterClockwiseQuadrantCrossings +=  0; break;
+        }
+    }
+    
+    // Quadrant crossings over 4 indicate containment
+    return counterClockwiseQuadrantCrossings >= 4 || counterClockwiseQuadrantCrossings <= -4;
 }
 
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {

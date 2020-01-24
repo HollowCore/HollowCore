@@ -631,8 +631,8 @@ CTEST(HCPath, CubicPathCubicPathIntersection) {
 }
 
 CTEST(HCPath, ContainsPoint) {
-    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z");
-    ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(20.0, 15.0)));
+    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z M 18 14 L 22 14 22 16 18 16 Z");
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 15.0)));
     ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(11.0, 15.0)));
     ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(29.0, 15.0)));
     ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(9.0, 15.0)));
@@ -641,5 +641,19 @@ CTEST(HCPath, ContainsPoint) {
     ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(20.0, 19.0)));
     ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 9.0)));
     ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 21.0)));
+    HCRelease(path);
+}
+
+CTEST(HCPath, ContainsPointNonZero) {
+    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z M 18 14 L 22 14 22 16 18 16 Z");
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(11.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(29.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(9.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(31.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 11.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 19.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 9.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 21.0)));
     HCRelease(path);
 }

@@ -462,8 +462,8 @@ CTEST(HCRaster, DrawDinosaur) {
 CTEST(HCRaster, DrawIntersection) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCPathRef path = HCPathCreate(
-        "M 20 50 C 50  100 50  100 80 50 "
-        "M 20 50 C 50    0 50    0 80 50 "
+        "M 20 50 C 50  100 50  100 80 50 Z "
+        "M 20 50 C 50    0 50    0 80 50 Z "
     );
     HCPathRef rectangle = HCPathCreate("M 10 30 L 90 30 90 70 10 70 Z");
     for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
@@ -479,6 +479,25 @@ CTEST(HCRaster, DrawIntersection) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, DrawIntersectionNonZero) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCPathRef path = HCPathCreate(
+        "M 20 50 C 50  100 50  100 80 50 Z "
+        "M 20 50 C 50    0 50    0 80 50 Z "
+    );
+    HCPathRef rectangle = HCPathCreate("M 10 30 L 90 30 90 70 10 70 Z");
+    for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
+        for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
+            HCPoint point = HCPointMake(x + 0.5, y + 0.5);
+            HCBoolean pathContainsPoint = HCPathContainsPointNonZero(path, point);
+            HCBoolean rectangleContainsPoint = HCPathContainsPointNonZero(rectangle, point);
+            HCRasterSetPixelAt(raster, x, y, pathContainsPoint ? (rectangleContainsPoint ? HCColorGreen : HCColorBlue) : (rectangleContainsPoint ? HCColorYellow : HCColorBlack));
+        }
+    }
+    HCRasterSaveBMP(raster, "path_intersection_nonzero.bmp");
+    HCRasterSavePPM(raster, "path_intersection_nonzero.ppm");
+    HCRelease(raster);
+}
 
 CTEST(HCRaster, DrawTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
