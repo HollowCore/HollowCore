@@ -386,12 +386,12 @@
 		F8800CE72216578B00068863 /* Thread */ = {
 			isa = PBXGroup;
 			children = (
-				F83E471E22619E8200616049 /* HCLock.h */,
-				F83E472222619E8D00616049 /* HCLock_Internal.h */,
-				F83E471F22619E8200616049 /* HCLock.c */,
 				F8800CE8221657FC00068863 /* HCThread.h */,
 				F8800CEC2216581300068863 /* HCThread_Internal.h */,
 				F8800CE9221657FC00068863 /* HCThread.c */,
+				F83E471E22619E8200616049 /* HCLock.h */,
+				F83E472222619E8D00616049 /* HCLock_Internal.h */,
+				F83E471F22619E8200616049 /* HCLock.c */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -566,7 +566,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9CD282F21E3DD11005B566A /* HCCore.c in Sources */,
-				F83E472122619E8200616049 /* HCLock.c in Sources */,
 				C9CD283021E3DD13005B566A /* HCObject.c in Sources */,
 				C9CD283121E3DD16005B566A /* HCNumber.c in Sources */,
 				C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */,
@@ -574,15 +573,16 @@
 				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
 				C929AEC821F97F5200E44898 /* HCSet.c in Sources */,
 				C97FDB2022069AD9002B17FB /* HCMap.c in Sources */,
-				C9AF8D4A23B85FB00007C4D2 /* HCPath.c in Sources */,
-				C95417072230D7A800E461A5 /* HCColor.c in Sources */,
 				C9F8AEF8235C1CC7002E7D64 /* HCPoint.c in Sources */,
-				C9F8AEF4235C1C88002E7D64 /* HCRectangle.c in Sources */,
-				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
-				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9F8AEFC235C1CDC002E7D64 /* HCSize.c in Sources */,
-				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
+				C9F8AEF4235C1C88002E7D64 /* HCRectangle.c in Sources */,
+				C95417072230D7A800E461A5 /* HCColor.c in Sources */,
+				C9AF8D4A23B85FB00007C4D2 /* HCPath.c in Sources */,
+				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
+				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
+				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
+				F83E472122619E8200616049 /* HCLock.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,22 +594,22 @@
 				C9E2F58E21ED3A4E00856F21 /* HCCore.c in Sources */,
 				C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */,
 				C9E2F58C21ED3A2700856F21 /* HCNumber.c in Sources */,
-				C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */,
 				C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */,
-				F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */,
+				C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */,
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
-				C9AF8D4D23B860900007C4D2 /* HCPath.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
+				F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */,
 				C9F8AEFF235C3E4C002E7D64 /* HCPoint.c in Sources */,
 				C9F8AF01235C3E61002E7D64 /* HCSize.c in Sources */,
 				C9F8AF03235C3E72002E7D64 /* HCRectangle.c in Sources */,
 				C954170F2230DEFD00E461A5 /* HCColor.c in Sources */,
+				C9AF8D4D23B860900007C4D2 /* HCPath.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
-				F83E47242261A7F800616049 /* HCLock.c in Sources */,
-				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
-				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
+				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
+				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
+				F83E47242261A7F800616049 /* HCLock.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

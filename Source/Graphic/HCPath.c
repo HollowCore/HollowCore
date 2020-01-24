@@ -185,6 +185,40 @@ HCRectangle HCPathBounds(HCPathRef self) {
     return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
 }
 
+HCRectangle HCPathApproximateBounds(HCPathRef self) {
+    // Empty paths have a zero size
+    if (HCPathIsEmpty(self)) {
+        return HCRectangleZero;
+    }
+    
+    // Find the maxima of the element anchor and control points
+    HCReal minX = HCPathCurrentPoint(self).x;
+    HCReal minY = HCPathCurrentPoint(self).y;
+    HCReal maxX = minX;
+    HCReal maxY = minY;
+    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
+        HCPathElement element = self->elements[elementIndex];
+        HCInteger pointCount = 0;
+        switch (element.command) {
+            case HCPathCommandMove: pointCount = 1; break;
+            case HCPathCommandAddLine: pointCount = 1; break;
+            case HCPathCommandAddQuadraticCurve: pointCount = 2; break;
+            case HCPathCommandAddCubicCurve: pointCount = 3; break;
+            case HCPathCommandCloseSubpath: pointCount = 0; break;
+        }
+        for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex++) {
+            HCPoint point = element.points[pointIndex];
+            minX = fmin(minX, point.x);
+            minY = fmin(minY, point.y);
+            maxX = fmax(maxX, point.x);
+            maxY = fmax(maxY, point.y);
+        }
+    }
+    
+    // Calculate the bounds of the path
+    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Manipulation
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -408,6 +442,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     // TODO: Multiple closed sub-paths?
     
     // Convert the path to segments
+    // TODO: Should only contain the closed sub-paths
     HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
@@ -415,7 +450,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     // Determine how many crossings there are for a ray from the point going in the +x direction
     // TODO: Need to know the path extents to know how distant "distant" should be
     HCInteger intersectionCount = 0;
-    HCPoint distantPoint = HCPointMake(100000.0, point.y);
+    HCPoint distantPoint = HCPointMake(HCPathApproximateBounds(self).size.width * 2.0, point.y);
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
         HCPoint startPoint = points[pointIndex + 0];
         HCPoint endPoint = points[pointIndex + 1];
@@ -440,6 +475,7 @@ HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {
     // TODO: Multiple closed sub-paths?
     
     // Convert the path to segments
+    // TODO: Should only contain the closed sub-paths
     HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
