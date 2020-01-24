@@ -562,7 +562,7 @@ CTEST(HCPath, CurrentPoint) {
 
 CTEST(HCPath, LineSegments) {
     HCPathRef path = HCPathCreate("M 10 20 L 60 80 30 10 M 1 2 L 6 8 3 1");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path, HCPathFlatnessNormal);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     ASSERT_TRUE(HCIntegerIsEqual(pointCount, 8));
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
@@ -580,7 +580,7 @@ CTEST(HCPath, LineSegments) {
 
 CTEST(HCPath, LineSegmentsFromQuadratic) {
     HCPathRef path = HCPathCreate("M 10 80 Q 95 10 180 80");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path, HCPathFlatnessFine);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     ASSERT_TRUE(HCIntegerIsEqual(pointCount, 128));
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
@@ -594,7 +594,7 @@ CTEST(HCPath, LineSegmentsFromQuadratic) {
 
 CTEST(HCPath, LineSegmentsFromCubic) {
     HCPathRef path = HCPathCreate("M 10 90 C 30 10 70 10 90 90");
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path);
+    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(path, HCPathFlatnessFine);
     HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
     ASSERT_TRUE(HCIntegerIsEqual(pointCount, 232));
     HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
@@ -628,4 +628,32 @@ CTEST(HCPath, CubicPathCubicPathIntersection) {
     ASSERT_TRUE(HCPathIntersectsPath(a, b));
     HCRelease(a);
     HCRelease(b);
+}
+
+CTEST(HCPath, ContainsPoint) {
+    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z M 18 14 L 22 14 22 16 18 16 Z");
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(11.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(29.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(9.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(31.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(20.0, 11.0)));
+    ASSERT_TRUE(HCPathContainsPoint(path, HCPointMake(20.0, 19.0)));
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 9.0)));
+    ASSERT_FALSE(HCPathContainsPoint(path, HCPointMake(20.0, 21.0)));
+    HCRelease(path);
+}
+
+CTEST(HCPath, ContainsPointNonZero) {
+    HCPathRef path = HCPathCreate("M 10 10 L 30 10 30 20 10 20 Z M 18 14 L 22 14 22 16 18 16 Z");
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(11.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(29.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(9.0, 15.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(31.0, 15.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 11.0)));
+    ASSERT_TRUE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 19.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 9.0)));
+    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 21.0)));
+    HCRelease(path);
 }

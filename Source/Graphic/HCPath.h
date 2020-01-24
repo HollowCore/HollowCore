@@ -36,6 +36,9 @@ typedef struct HCPathElement {
 } HCPathElement;
 
 typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSearching, HCPathRef path, HCPathRef otherPath, HCPoint point);
+#define HCPathFlatnessCoarse 1.01
+#define HCPathFlatnessNormal 1.001
+#define HCPathFlatnessFine 1.0001
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -70,12 +73,13 @@ void HCPathCloseSubpath(HCPathRef self);
 // MARK: - Path Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathPrintData(HCPathRef self, FILE* stream);
-HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self);
+HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThreshold);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point);
+HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point);
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
 void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
 
