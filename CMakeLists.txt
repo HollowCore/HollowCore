@@ -48,7 +48,10 @@ set(LIB_SOURCES ${LIB_SOURCES} Source/JSON/json-parser/json.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES} ${LIB_SOURCES})
 
 # HollowCore Links
-target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m pthread)
+target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} m)
+if(NOT DEFINED ANDROID_PLATFORM)
+    target_link_libraries(${HOLLOWCORE_LIBRARY_NAME} pthread)
+endif()
 
 # HollowCore Test Suite
 set(HOLLOWCORE_TEST_NAME hollowcoretest)
