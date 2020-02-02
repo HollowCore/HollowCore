@@ -40,6 +40,12 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
 void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Subpaths
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathFilterOpen(void* context, HCPathRef path);
+HCBoolean HCPathFilterClosed(void* context, HCPathRef path);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Parsing
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathParse(HCPathRef self, const char* path);

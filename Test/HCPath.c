@@ -10,14 +10,14 @@
 #include "../Source/HollowCore.h"
 
 CTEST(HCPath, Creation) {
-    HCPathRef path = HCPathCreate("");
+    HCPathRef path = HCPathCreateEmpty();
     ASSERT_EQUAL(HCPathElementCount(path), 0);
     HCRelease(path);
 }
 
 CTEST(HCPath, EqualHash) {
-    HCPathRef a = HCPathCreate("M 0 0");
-    HCPathRef b = HCPathCreate("M 0 0");
+    HCPathRef a = HCPathCreate("M 1 2 L 1 2 Q 1 2 3 4 C 1 2 3 4 5 6 Z");
+    HCPathRef b = HCPathCreate("M 1 2 L 1 2 Q 1 2 3 4 C 1 2 3 4 5 6 Z");
     ASSERT_TRUE(HCObjectIsEqual((HCObjectRef)a, (HCObjectRef)a));
     ASSERT_FALSE(HCObjectIsEqual((HCObjectRef)a, (HCObjectRef)b));
     ASSERT_EQUAL(HCObjectHashValue((HCObjectRef)a), HCObjectHashValue((HCObjectRef)a));
@@ -30,9 +30,39 @@ CTEST(HCPath, EqualHash) {
 }
 
 CTEST(HCPath, Print) {
-    HCPathRef path = HCPathCreate("M 0 0");
+    HCPathRef path = HCPathCreate("M 1 2 L 1 2 Q 1 2 3 4 C 1 2 3 4 5 6 Z");
     HCObjectPrint((HCObjectRef)path, stdout); // TODO: Not to stdout
     HCPrint(path, stdout); // TODO: Not to stdout
+    HCRelease(path);
+}
+
+CTEST(HCPath, CreateWithElements) {
+    HCPoint points[] = {
+        {.x = 1.0, .y = 2.0},
+        {.x = 3.0, .y = 4.0},
+        {.x = 5.0, .y = 6.0},
+    };
+    HCPathElement elements[] = {
+        {.command = HCPathCommandMove, .points = points},
+        {.command = HCPathCommandAddLine, .points = points},
+        {.command = HCPathCommandAddQuadraticCurve, .points = points},
+        {.command = HCPathCommandAddCubicCurve, .points = points},
+        {.command = HCPathCommandCloseSubpath, .points = NULL},
+    };
+    HCPathRef path = HCPathCreateWithElements(elements, sizeof(elements) / sizeof(HCPathElement));
+    ASSERT_EQUAL(HCPathElementCount(path), 5);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(1.0, 2.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(1.0, 2.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(1.0, 2.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[1], HCPointMake(3.0, 4.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(1.0, 2.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[1], HCPointMake(3.0, 4.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[2], HCPointMake(5.0, 6.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseSubpath);
     HCRelease(path);
 }
 
@@ -606,6 +636,85 @@ CTEST(HCPath, LineSegmentsFromCubic) {
     HCRelease(segmentData);
 }
 
+CTEST(HCPath, Subpaths) {
+    HCPathRef path = HCPathCreate("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
+    HCListRef subpaths = HCPathSubpathsRetained(path);
+    ASSERT_EQUAL(HCListCount(subpaths), 3);
+    HCPathRef subpath0 = HCListObjectAtIndex(subpaths, 0);
+    ASSERT_EQUAL(HCPathElementCount(subpath0), 2);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddLine);
+    HCPathRef subpath1 = HCListObjectAtIndex(subpaths, 1);
+    ASSERT_EQUAL(HCPathElementCount(subpath1), 4);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 3).command == HCPathCommandCloseSubpath);
+    HCPathRef subpath2 = HCListObjectAtIndex(subpaths, 2);
+    ASSERT_EQUAL(HCPathElementCount(subpath2), 3);
+    ASSERT_TRUE(HCPathElementAt(subpath2, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath2, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPathElementAt(subpath2, 2).command == HCPathCommandCloseSubpath);
+    HCRelease(path);
+    HCRelease(subpaths);
+}
+
+CTEST(HCPath, OpenSubpaths) {
+    HCPathRef path = HCPathCreate("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
+    HCListRef openSubpaths = HCPathOpenSubpathsRetained(path);
+    ASSERT_EQUAL(HCListCount(openSubpaths), 1);
+    HCPathRef subpath0 = HCListObjectAtIndex(openSubpaths, 0);
+    ASSERT_EQUAL(HCPathElementCount(subpath0), 2);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddLine);
+    HCRelease(path);
+    HCRelease(openSubpaths);
+}
+
+CTEST(HCPath, ClosedSubpaths) {
+    HCPathRef path = HCPathCreate("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
+    HCListRef closedSubpaths = HCPathClosedSubpathsRetained(path);
+    ASSERT_EQUAL(HCListCount(closedSubpaths), 2);
+    HCPathRef subpath0 = HCListObjectAtIndex(closedSubpaths, 0);
+    ASSERT_EQUAL(HCPathElementCount(subpath0), 4);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPathElementAt(subpath0, 3).command == HCPathCommandCloseSubpath);
+    HCPathRef subpath1 = HCListObjectAtIndex(closedSubpaths, 1);
+    ASSERT_EQUAL(HCPathElementCount(subpath1), 3);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPathElementAt(subpath1, 2).command == HCPathCommandCloseSubpath);
+    HCRelease(path);
+    HCRelease(closedSubpaths);
+}
+
+CTEST(HCPath, OpenSubpathsAsPath) {
+    HCPathRef path = HCPathCreate("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
+    HCPathRef open = HCPathOpenSubpathsAsPathRetained(path);
+    ASSERT_EQUAL(HCPathElementCount(open), 2);
+    ASSERT_TRUE(HCPathElementAt(open, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(open, 1).command == HCPathCommandAddLine);
+    HCRelease(path);
+    HCRelease(open);
+}
+
+CTEST(HCPath, ClosedSubpathsAsPath) {
+    HCPathRef path = HCPathCreate("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
+    HCPathRef closed = HCPathClosedSubpathsAsPathRetained(path);
+    ASSERT_EQUAL(HCPathElementCount(closed), 7);
+    ASSERT_TRUE(HCPathElementAt(closed, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(closed, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPathElementAt(closed, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPathElementAt(closed, 3).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(closed, 4).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(closed, 5).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPathElementAt(closed, 6).command == HCPathCommandCloseSubpath);
+    HCRelease(path);
+    HCRelease(closed);
+}
+
 CTEST(HCPath, LinePathLinePathIntersection) {
     HCPathRef a = HCPathCreate("M 10 20 L 90 100");
     HCPathRef b = HCPathCreate("M 70 10 L 20 80");
@@ -656,4 +765,40 @@ CTEST(HCPath, ContainsPointNonZero) {
     ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 9.0)));
     ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 21.0)));
     HCRelease(path);
+}
+
+CTEST(HCPath, LineEvaluation) {
+    HCReal sx = NAN;
+    HCReal sy = NAN;
+    HCReal dx = NAN;
+    HCReal dy = NAN;
+    HCPathEvaluateLine(0.5, 1.0, 2.0, 3.0, 4.0, &sx, &sy, &dx, &dy);
+    ASSERT_DBL_NEAR(sx, 2.0);
+    ASSERT_DBL_NEAR(sy, 3.0);
+    ASSERT_DBL_NEAR(dx, 2.0);
+    ASSERT_DBL_NEAR(dy, 2.0);
+}
+
+CTEST(HCPath, QuadraticEvaluation) {
+    HCReal sx = NAN;
+    HCReal sy = NAN;
+    HCReal dx = NAN;
+    HCReal dy = NAN;
+    HCPathEvaluateQuadraticCurve(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, &sx, &sy, &dx, &dy);
+    ASSERT_DBL_NEAR(sx, 3.0);
+    ASSERT_DBL_NEAR(sy, 4.0);
+    ASSERT_DBL_NEAR(dx, 2.0);
+    ASSERT_DBL_NEAR(dy, 2.0);
+}
+
+CTEST(HCPath, CubicEvaluation) {
+    HCReal sx = NAN;
+    HCReal sy = NAN;
+    HCReal dx = NAN;
+    HCReal dy = NAN;
+    HCPathEvaluateCubicCurve(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, &sx, &sy, &dx, &dy);
+    ASSERT_DBL_NEAR(sx, 4.0);
+    ASSERT_DBL_NEAR(sy, 5.0);
+    ASSERT_DBL_NEAR(dx, 2.0);
+    ASSERT_DBL_NEAR(dy, 2.0);
 }

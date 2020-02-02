@@ -83,7 +83,9 @@ CTEST(HCLock, MultiThreadedAquiredAndRelinquish) {
         HCListAddObjectReleased(threads, HCThreadCreateWithOptions(HCLockMultiThreadedAquiredAndRelinquish, &context, HCThreadOptionJoinOnDestroy));
     }
 
-    HCListForEach(threads, (void*)HCThreadStart);
+    for (HCListIterator i = HCListIterationBegin(threads); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        HCThreadStart(i.object);
+    }
     HCRelease(threads);
     
     ASSERT_TRUE(context.i == HCLockMultiThreadedAquiredAndRelinquishIterationCount * numberOfThreads);

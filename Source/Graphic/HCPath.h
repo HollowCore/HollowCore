@@ -12,6 +12,7 @@
 #include "../Core/HCObject.h"
 #include "../Geometry/HCRectangle.h"
 #include "../Data/HCData.h"
+#include "../Container/HCList.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -44,6 +45,9 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreate(const char* path);
+HCPathRef HCPathCreateEmpty(void);
+HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
+HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -74,6 +78,15 @@ void HCPathCloseSubpath(HCPathRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathPrintData(HCPathRef self, FILE* stream);
 HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThreshold);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Subpaths
+//----------------------------------------------------------------------------------------------------------------------------------
+HCListRef HCPathSubpathsRetained(HCPathRef self);
+HCListRef HCPathOpenSubpathsRetained(HCPathRef self);
+HCListRef HCPathClosedSubpathsRetained(HCPathRef self);
+HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self);
+HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection

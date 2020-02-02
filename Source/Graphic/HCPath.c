@@ -38,6 +38,42 @@ HCPathRef HCPathCreate(const char* path) {
     return self;
 }
 
+HCPathRef HCPathCreateEmpty() {
+    return HCPathCreate("");
+}
+
+HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount) {
+    HCPathRef self = HCPathCreateEmpty();
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCPathElement element = elements[elementIndex];
+        switch (element.command) {
+            case HCPathCommandMove: HCPathMoveToPoint(self, element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
+            case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
+            case HCPathCommandCloseSubpath: HCPathCloseSubpath(self); break;
+        }
+    }
+    return self;
+}
+
+HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
+    HCPathRef self = HCPathCreateEmpty();
+    for (HCListIterator i = HCListIterationBegin(subpaths); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(i.object); elementIndex++) {
+            HCPathElement element = HCPathElementAt(i.object, elementIndex);
+            switch (element.command) {
+                case HCPathCommandMove: HCPathMoveToPoint(self, element.points[0].x, element.points[0].y); break;
+                case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
+                case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
+                case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
+                case HCPathCommandCloseSubpath: HCPathCloseSubpath(self); break;
+            }
+        }
+    }
+    return self;
+}
+
 void HCPathInit(void* memory, const char* path) {
     // Construct path object
     HCObjectInit(memory);
@@ -433,6 +469,84 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
     HCReal  sy = ry0 * 0.5 + ry1 * 0.5;
     HCPathAddCubicCurveSegments(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, flatnessThreshold, segmentData);
     HCPathAddCubicCurveSegments(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, flatnessThreshold, segmentData);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Subpaths
+//----------------------------------------------------------------------------------------------------------------------------------
+HCListRef HCPathSubpathsRetained(HCPathRef self) {
+    HCListRef subpaths = HCListCreate();
+    
+    // Extract each sub-path, ensuring each has at most one move-to at the beginning, at most one close-subpath at the end, and any number of other elements between
+    HCPathRef path = HCPathCreate("");
+    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
+        HCPathElement element = self->elements[elementIndex];
+        switch (element.command) {
+            case HCPathCommandMove:
+                if (!HCPathIsEmpty(path)) {
+                    HCListAddObjectReleased(subpaths, path);
+                    path = HCPathCreate("");
+                }
+                HCPathMoveToPoint(path, element.points[0].x, element.points[0].y);
+                break;
+            case HCPathCommandAddLine:
+                HCPathAddLine(path, element.points[0].x, element.points[0].y);
+                break;
+            case HCPathCommandAddQuadraticCurve:
+                HCPathAddQuadraticCurve(path, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y);
+                break;
+            case HCPathCommandAddCubicCurve:
+                HCPathAddCubicCurve(path, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y);
+                break;
+            case HCPathCommandCloseSubpath:
+                HCPathCloseSubpath(path);
+                break;
+        }
+    }
+    
+    // Package the last sub-path if it is not empty
+    if (!HCPathIsEmpty(path)) {
+        HCListAddObjectReleased(subpaths, path);
+    }
+    else {
+        HCRelease(path);
+    }
+    
+    return subpaths;
+}
+
+HCListRef HCPathOpenSubpathsRetained(HCPathRef self) {
+    HCListRef subpaths = HCPathSubpathsRetained(self);
+    HCListFilter(subpaths, (HCListFilterFunction)HCPathFilterOpen, NULL);
+    return subpaths;
+}
+
+HCBoolean HCPathFilterOpen(void* context, HCPathRef path) {
+    return HCPathElementAt(path, HCPathElementCount(path) - 1).command != HCPathCommandCloseSubpath;
+}
+
+HCListRef HCPathClosedSubpathsRetained(HCPathRef self) {
+    HCListRef subpaths = HCPathSubpathsRetained(self);
+    HCListFilter(subpaths, (HCListFilterFunction)HCPathFilterClosed, NULL);
+    return subpaths;
+}
+
+HCBoolean HCPathFilterClosed(void* context, HCPathRef path) {
+    return HCPathElementAt(path, HCPathElementCount(path) - 1).command == HCPathCommandCloseSubpath;
+}
+
+HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self) {
+    HCListRef openSubpaths = HCPathOpenSubpathsRetained(self);
+    HCPathRef openPath = HCPathCreateWithSubpaths(openSubpaths);
+    HCRelease(openSubpaths);
+    return openPath;
+}
+
+HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self) {
+    HCListRef closedSubpaths = HCPathClosedSubpathsRetained(self);
+    HCPathRef closedPath = HCPathCreateWithSubpaths(closedSubpaths);
+    HCRelease(closedSubpaths);
+    return closedPath;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
