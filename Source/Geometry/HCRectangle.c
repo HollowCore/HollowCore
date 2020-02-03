@@ -15,6 +15,10 @@ HCRectangle HCRectangleMake(HCPoint origin, HCSize size) {
     return (HCRectangle){.origin = origin, .size = size};
 }
 
+HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height) {
+    return HCRectangleMake(HCPointMake(x, y), HCSizeMake(width, height));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
