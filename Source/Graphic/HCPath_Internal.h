@@ -18,6 +18,8 @@
 typedef struct HCPath {
     HCObject base;
     HCDataRef elementData;
+    HCListRef elementPolylines;
+    HCRectangle bounds;
 } HCPath;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -27,11 +29,11 @@ void HCPathInit(void* memory, const char* path);
 void HCPathDestroy(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Conversion
+// MARK: - Polylines
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathAddLineSegment(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef segmentData);
-void HCPathAddQuadraticCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData);
-void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData);
+void HCPathAddLineSegmentPolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef polylineData);
+void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData);
+void HCPathAddCubicCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection

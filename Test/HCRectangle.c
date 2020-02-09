@@ -106,7 +106,7 @@ CTEST(HCRectangle, Queries) {
     // TODO: Test negative rectangles for rectangle containment
 }
 
-CTEST(HCRectangle, Operations) {
+CTEST(HCRectangle, Standardize) {
     HCRectangle inverted = HCRectangleMake(HCPointMake(15.0, 4.0), HCSizeMake(-3.0, -2.0));
     HCRectangle standardized = HCRectangleStandardize(inverted);
     ASSERT_TRUE(HCRectangleWidth(inverted) == HCRectangleWidth(standardized));
@@ -117,7 +117,9 @@ CTEST(HCRectangle, Operations) {
     ASSERT_TRUE(HCRectangleMaxY(inverted) == HCRectangleMaxY(standardized));
     ASSERT_TRUE(standardized.size.width >= 0.0);
     ASSERT_TRUE(standardized.size.height >= 0.0);
-    
+}
+
+CTEST(HCRectangle, Integral) {
     HCRectangle nonIntegral = HCRectangleMake(HCPointMake(1.1, -2.2), HCSizeMake(3.3, 4.6));
     HCRectangle integral = HCRectangleIntegral(nonIntegral);
     ASSERT_FALSE(HCRectangleIsEqual(nonIntegral, integral));
@@ -125,7 +127,9 @@ CTEST(HCRectangle, Operations) {
     ASSERT_DBL_NEAR(integral.origin.y, floor(integral.origin.y));
     ASSERT_DBL_NEAR(integral.size.width, floor(integral.size.width));
     ASSERT_DBL_NEAR(integral.size.height, floor(integral.size.height));
-    
+}
+
+CTEST(HCRectangle, Outset) {
     HCRectangle small = HCRectangleMake(HCPointMake(1.0, 2.0), HCSizeMake(3.0, 4.0));
     HCReal outsetDx = 1.5;
     HCReal outsetDy = 3.25;
@@ -139,7 +143,9 @@ CTEST(HCRectangle, Operations) {
     ASSERT_DBL_NEAR(HCRectangleMaxY(big), HCRectangleMaxY(small) + outsetDy);
     ASSERT_DBL_NEAR(HCRectangleMidX(big), HCRectangleMidX(small));
     ASSERT_DBL_NEAR(HCRectangleMidY(big), HCRectangleMidY(small));
-    
+}
+
+CTEST(HCRectangle, Inset) {
     HCRectangle large = HCRectangleMake(HCPointMake(10.0, 22.0), HCSizeMake(30.0, 40.0));
     HCReal insetDx = 5.5;
     HCReal insetDy = 7.25;
@@ -153,7 +159,9 @@ CTEST(HCRectangle, Operations) {
     ASSERT_DBL_NEAR(HCRectangleMaxY(large), HCRectangleMaxY(medium) + insetDy);
     ASSERT_DBL_NEAR(HCRectangleMidX(large), HCRectangleMidX(medium));
     ASSERT_DBL_NEAR(HCRectangleMidY(large), HCRectangleMidY(medium));
-    
+}
+
+CTEST(HCRectangle, Union) {
     HCRectangle left = HCRectangleMake(HCPointMake(10.0, 5.0), HCSizeMake(20.0, 30.0));
     HCRectangle right = HCRectangleMake(HCPointMake(23.0, 29.0), HCSizeMake(10.0, 40.0));
     HCRectangle unionRectangle = HCRectangleUnion(left, right);
@@ -162,7 +170,11 @@ CTEST(HCRectangle, Operations) {
     ASSERT_TRUE(HCRectangleContainsRectangle(unionRectangle, right));
     ASSERT_FALSE(HCRectangleContainsRectangle(left, unionRectangle));
     ASSERT_FALSE(HCRectangleContainsRectangle(right, unionRectangle));
+}
 
+CTEST(HCRectangle, Intersection) {
+    HCRectangle left = HCRectangleMake(HCPointMake(10.0, 5.0), HCSizeMake(20.0, 30.0));
+    HCRectangle right = HCRectangleMake(HCPointMake(23.0, 29.0), HCSizeMake(10.0, 40.0));
     HCRectangle interactionRectangle = HCRectangleIntersection(left, right);
     ASSERT_TRUE(HCRectangleIsSimilar(interactionRectangle, HCRectangleIntersection(right, left), 0.00001));
     ASSERT_TRUE(HCRectangleContainsRectangle(left, interactionRectangle));
@@ -174,7 +186,25 @@ CTEST(HCRectangle, Operations) {
     ASSERT_TRUE(HCRectangleIsEqual(right, HCRectangleUnion(right, right)));
     ASSERT_TRUE(HCRectangleIsEqual(left, HCRectangleIntersection(left, left)));
     ASSERT_TRUE(HCRectangleIsEqual(right, HCRectangleIntersection(right, right)));
+}
+
+CTEST(HCRectangle, IncludingPoint) {
+    HCRectangle rectangle = HCRectangleMake(HCPointMake(10.0, 5.0), HCSizeMake(20.0, 30.0));
+    HCPoint point = HCPointMake(50.0, 60.0);
+    HCRectangle inclusionRectangle = HCRectangleIncludingPoint(rectangle, point);
+    ASSERT_TRUE(HCRectangleContainsRectangle(inclusionRectangle, rectangle));
+    ASSERT_TRUE(HCRectangleContainsPoint(inclusionRectangle, point));
+    ASSERT_TRUE(HCRectangleIsSimilar(inclusionRectangle, HCRectangleMakeWithComponents(10.0, 5.0, 40.0, 55.0), 0.00001));
     
+    HCPoint negativePoint = HCPointMake(-10.0, -30.0);
+    HCRectangle negativeInclusionRectangle = HCRectangleIncludingPoint(rectangle, negativePoint);
+    ASSERT_TRUE(HCRectangleContainsRectangle(negativeInclusionRectangle, rectangle));
+    ASSERT_TRUE(!HCRectangleContainsPoint(negativeInclusionRectangle, point));
+    ASSERT_TRUE(HCRectangleContainsPoint(negativeInclusionRectangle, negativePoint));
+    ASSERT_TRUE(HCRectangleIsSimilar(negativeInclusionRectangle, HCRectangleMakeWithComponents(-10.0, -30.0, 40.0, 65.0), 0.00001));
+}
+
+CTEST(HCRectangle, Divide) {
     HCRectangle square = HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0));
     HCRectangle a = HCRectangleInvalid;
     HCRectangle b = HCRectangleInvalid;
@@ -237,5 +267,4 @@ CTEST(HCRectangle, Operations) {
     HCRectangleDivide(square, &a, &b, -1.0, HCRectangleEdgeMinX);
     ASSERT_TRUE(HCRectangleIsEmpty(a));
     ASSERT_TRUE(HCRectangleIsEqual(b, square));
-    
 }

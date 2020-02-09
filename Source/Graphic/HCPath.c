@@ -60,7 +60,8 @@ HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCou
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
     HCPathRef self = HCPathCreateEmpty();
     for (HCListIterator i = HCListIterationBegin(subpaths); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(i.object); elementIndex++) {
+        HCInteger elementCount = HCPathElementCount(i.object);
+        for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
             HCPathElement element = HCPathElementAt(i.object, elementIndex);
             switch (element.command) {
                 case HCPathCommandMove: HCPathMoveToPoint(self, element.points[0].x, element.points[0].y); break;
@@ -80,26 +81,35 @@ void HCPathInit(void* memory, const char* path) {
     HCPathRef self = memory;
     self->base.type = HCPathType;
     self->elementData = HCDataCreate();
+    self->elementPolylines = HCListCreate();
+    self->bounds = HCRectangleZero;
     
     // Parse path data into path object
     HCPathParse(self, path);
 }
 
 void HCPathDestroy(HCPathRef self) {
-    while (!HCDataIsEmpty(self->elementData)) {
-        HCPathRemoveLastElement(self);
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
+        if (element.points != NULL) {
+            free(element.points);
+        }
     }
     HCRelease(self->elementData);
+    HCRelease(self->elementPolylines);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathIsEqual(HCPathRef self, HCPathRef other) {
-    if (HCPathElementCount(self) != HCPathElementCount(other)) {
+    HCInteger elementCount = HCPathElementCount(self);
+    HCInteger otherElementCount = HCPathElementCount(other);
+    if (elementCount != otherElementCount) {
         return false;
     }
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
         HCPathElement element = HCPathElementAt(self, elementIndex);
         HCPathElement otherElement = HCPathElementAt(other, elementIndex);
         if (element.command != otherElement.command) {
@@ -135,7 +145,8 @@ HCBoolean HCPathIsEqual(HCPathRef self, HCPathRef other) {
 
 HCInteger HCPathHashValue(HCPathRef self) {
     HCInteger hash = 5381;
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
         HCPathElement element = HCPathElementAt(self, elementIndex);
         hash ^= HCIntegerHashValue(element.command);
         switch (element.command) {
@@ -170,6 +181,22 @@ HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex) {
     return elements[elementIndex];
 }
 
+HCDataRef HCPathElementPolylineDataRetained(HCPathRef self, HCInteger elementIndex) {
+    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
+    return HCDataCreateWithBytes(HCDataSize(polylineData), HCDataBytes(polylineData));
+}
+
+HCInteger HCPathElementPolylinePointCount(HCPathRef self, HCInteger elementIndex) {
+    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
+    return HCDataSize(polylineData) / sizeof(HCPoint);
+}
+
+HCPoint HCPathElementPolylinePointAt(HCPathRef self, HCInteger elementIndex, HCInteger pointIndex) {
+    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
+    HCPoint* points = (HCPoint*)HCDataBytes(polylineData);
+    return points[pointIndex];
+}
+
 HCPoint HCPathCurrentPoint(HCPathRef self) {
     if (!HCPathIsEmpty(self)) {
         // Find the end point of the last command
@@ -196,66 +223,7 @@ HCPoint HCPathCurrentPoint(HCPathRef self) {
 }
 
 HCRectangle HCPathBounds(HCPathRef self) {
-    // Empty paths have a zero size
-    if (HCPathIsEmpty(self)) {
-        return HCRectangleZero;
-    }
-    
-    // Convert the path to line segments
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    
-    // Find the maxima of the line segment points
-    HCReal minX = points[0].x;
-    HCReal minY = points[0].y;
-    HCReal maxX = minX;
-    HCReal maxY = minY;
-    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex++) {
-        HCPoint point = points[pointIndex];
-        minX = fmin(minX, point.x);
-        minY = fmin(minY, point.y);
-        maxX = fmax(maxX, point.x);
-        maxY = fmax(maxY, point.y);
-    }
-    HCRelease(segmentData);
-    
-    // Calculate the bounds of the path
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
-}
-
-HCRectangle HCPathApproximateBounds(HCPathRef self) {
-    // Empty paths have a zero size
-    if (HCPathIsEmpty(self)) {
-        return HCRectangleZero;
-    }
-    
-    // Find the maxima of the element anchor and control points
-    HCReal minX = HCPathCurrentPoint(self).x;
-    HCReal minY = HCPathCurrentPoint(self).y;
-    HCReal maxX = minX;
-    HCReal maxY = minY;
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
-        HCPathElement element = HCPathElementAt(self, elementIndex);
-        HCInteger pointCount = 0;
-        switch (element.command) {
-            case HCPathCommandMove: pointCount = 1; break;
-            case HCPathCommandAddLine: pointCount = 1; break;
-            case HCPathCommandAddQuadraticCurve: pointCount = 2; break;
-            case HCPathCommandAddCubicCurve: pointCount = 3; break;
-            case HCPathCommandCloseSubpath: pointCount = 0; break;
-        }
-        for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex++) {
-            HCPoint point = element.points[pointIndex];
-            minX = fmin(minX, point.x);
-            minY = fmin(minY, point.y);
-            maxX = fmax(maxX, point.x);
-            maxY = fmax(maxY, point.y);
-        }
-    }
-    
-    // Calculate the bounds of the path
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    return self->bounds;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -304,6 +272,9 @@ void HCPathCloseSubpath(HCPathRef self) {
 }
 
 void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points) {
+    // Copy the current point of the path so it can be used in polyline computations
+    HCPoint currentPoint = HCPathCurrentPoint(self);
+    
     // Assemble element and copy points
     HCPathElement element;
     switch (command) {
@@ -338,88 +309,89 @@ void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* poin
     
     // Add element to path
     HCDataAddBytes(self->elementData, sizeof(element), (const HCByte*)&element);
+    
+    // Calculate polyline data for element
+    HCDataRef elementPolylineData = HCDataCreate();
+    switch (element.command) {
+        case HCPathCommandMove:
+            break;
+        case HCPathCommandAddLine:
+            HCPathAddLineSegmentPolylineData(self, currentPoint.x, currentPoint.y, element.points[0].x, element.points[0].y, elementPolylineData);
+            break;
+        case HCPathCommandAddQuadraticCurve:
+            HCPathAddQuadraticCurvePolylineData(self, currentPoint.x, currentPoint.y, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, HCPathFlatnessNormal, elementPolylineData);
+            break;
+        case HCPathCommandAddCubicCurve:
+            HCPathAddCubicCurvePolylineData(self, currentPoint.x, currentPoint.y, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y, HCPathFlatnessNormal, elementPolylineData);
+            break;
+        case HCPathCommandCloseSubpath: {
+            HCPoint closeLineSegmentStart = currentPoint;
+            HCPoint closeLineSegmentEnd = HCPathCurrentPoint(self);
+            HCPathAddLineSegmentPolylineData(self, closeLineSegmentStart.x, closeLineSegmentStart.y, closeLineSegmentEnd.x, closeLineSegmentEnd.y, elementPolylineData);
+        } break;
+    }
+    
+    // Add element polyline data
+    HCListAddObjectReleased(self->elementPolylines, elementPolylineData);
+    
+    // Expand bounds to include polyline data
+    if (HCPathElementCount(self) == 1 && element.command == HCPathCommandMove) {
+        self->bounds = HCRectangleMake(element.points[0], HCSizeZero);
+    }
+    else {
+        HCInteger elementIndex = HCPathElementCount(self) - 1;
+        HCInteger polylinePointCount = HCPathElementPolylinePointCount(self, elementIndex);
+        HCRectangle bounds = self->bounds;
+        for (HCInteger pointIndex = 0; pointIndex < polylinePointCount; pointIndex++) {
+            HCPoint point = HCPathElementPolylinePointAt(self, elementIndex, pointIndex);
+            bounds = HCRectangleIncludingPoint(bounds, point);
+        }
+        self->bounds = bounds;
+    }
 }
 
 void HCPathRemoveLastElement(HCPathRef self) {
-    HCPathElement element = HCPathElementAt(self, HCPathElementCount(self) - 1);
+    HCInteger elementCount = HCPathElementCount(self);
+    
+    // Remove element
+    HCPathElement element = HCPathElementAt(self, elementCount - 1);
     if (element.points != NULL) {
         free(element.points);
     }
     HCDataRemoveBytes(self->elementData, sizeof(HCPathElement));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Conversion
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCPathPrintData(HCPathRef self, FILE* stream) {
-    // Print SVG command for each element
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
-        HCPathElement element = HCPathElementAt(self, elementIndex);
-        switch (element.command) {
-            case HCPathCommandMove: fprintf(stream, "M %f %f ", element.points[0].x, element.points[0].y); break;
-            case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
-            case HCPathCommandAddQuadraticCurve: fprintf(stream, "Q %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
-            case HCPathCommandAddCubicCurve: fprintf(stream, "C %f %f %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-            case HCPathCommandCloseSubpath: fprintf(stream, "Z "); break;
+    
+    // Remove element polyline data
+    HCListRemoveObject(self->elementPolylines);
+    
+    // Re-calculate bounds to exclude the element polylines
+    HCRectangle bounds = HCRectangleMake(HCPathCurrentPoint(self), HCSizeZero);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCInteger polylinePointCount = HCPathElementPolylinePointCount(self, elementIndex);
+        for (HCInteger pointIndex = 0; pointIndex < polylinePointCount; pointIndex++) {
+            HCPoint point = HCPathElementPolylinePointAt(self, elementIndex, pointIndex);
+            bounds = HCRectangleIncludingPoint(bounds, point);
         }
     }
+    self->bounds = bounds;
 }
 
-HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThreshold) {
-    // Convert each element to line segments
-    HCDataRef segmentData = HCDataCreate();
-    HCPoint startPoint = HCPointZero;
-    HCPoint currentPoint = startPoint;
-    HCPoint controlPoint0 = currentPoint;
-    HCPoint controlPoint1 = currentPoint;
-    HCPoint endPoint = currentPoint;
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
-        HCPathElement element = HCPathElementAt(self, elementIndex);
-        switch (element.command) {
-            case HCPathCommandMove:
-                endPoint = HCPointMake(element.points[0].x, element.points[0].y);
-                currentPoint = endPoint;
-                startPoint = currentPoint;
-                break;
-            case HCPathCommandAddLine:
-                endPoint = HCPointMake(element.points[0].x, element.points[0].y);
-                HCPathAddLineSegment(self, currentPoint.x, currentPoint.y, endPoint.x, endPoint.y, segmentData);
-                currentPoint = endPoint;
-                break;
-            case HCPathCommandAddQuadraticCurve:
-                controlPoint0 = HCPointMake(element.points[0].x, element.points[0].y);
-                endPoint = HCPointMake(element.points[1].x, element.points[1].y);
-                HCPathAddQuadraticCurveSegments(self, currentPoint.x, currentPoint.y, controlPoint0.x, controlPoint0.y, endPoint.x, endPoint.y, flatnessThreshold, segmentData);
-                currentPoint = endPoint;
-                break;
-            case HCPathCommandAddCubicCurve:
-                controlPoint0 = HCPointMake(element.points[0].x, element.points[0].y);
-                controlPoint1 = HCPointMake(element.points[1].x, element.points[1].y);
-                endPoint = HCPointMake(element.points[2].x, element.points[2].y);
-                HCPathAddCubicCurveSegments(self, currentPoint.x, currentPoint.y, controlPoint0.x, controlPoint0.y, controlPoint1.x, controlPoint1.y, endPoint.x, endPoint.y, flatnessThreshold, segmentData);
-                currentPoint = endPoint;
-                break;
-            case HCPathCommandCloseSubpath:
-                endPoint = startPoint;
-                HCPathAddLineSegment(self, currentPoint.x, currentPoint.y, endPoint.x, endPoint.y, segmentData);
-                currentPoint = endPoint;
-                break;
-        }
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polylines
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCPathAddLineSegmentPolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef polylineData) {
+    // Start the polyline using the segment start point if the polyline is empty
+    if (HCDataIsEmpty(polylineData)) {
+        HCDataAddReal(polylineData, x0);
+        HCDataAddReal(polylineData, y0);
     }
     
-    return segmentData;
+    // Add the segment end to the polyline
+    HCDataAddReal(polylineData, x1);
+    HCDataAddReal(polylineData, y1);
 }
 
-void HCPathAddLineSegment(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef segmentData) {
-    // Add the segment start and end points
-    HCDataAddReal(segmentData, x0);
-    HCDataAddReal(segmentData, y0);
-    HCDataAddReal(segmentData, x1);
-    HCDataAddReal(segmentData, y1);
-}
-
-void HCPathAddQuadraticCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData) {
-    // Draw using direct evaluation informed by derivitive
+void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData) {
+    // Calculate using direct evaluation informed by derivitive
 //    HCReal x, y, dx, dy;
 //    for (HCReal t = 0.0; t <= 1.0;) {
 //        HCPathEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
@@ -427,28 +399,32 @@ void HCPathAddQuadraticCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCRea
 //        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
 //    }
     
-    // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
-        sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy))) /
-        sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    // Calculate the curve polyline using De Casteljau's Algorithm
+    
+    // Determine quadratic curve flatness
+    HCReal p0cDistance = sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0));
+    HCReal cp1Distance = sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
+    HCReal p0p1Distance = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    HCReal flatness = (p0cDistance + cp1Distance) / p0p1Distance;
     if (flatness < flatnessThreshold) {
-        HCPathAddLineSegment(self, x0, y0, x1, y1, segmentData);
+        // Flatness of the curve is sufficient to approximate it as a line segment, so add it to the
+        HCPathAddLineSegmentPolylineData(self, x0, y0, x1, y1, polylineData);
         return;
     }
 
+    // Split the quadratic curve at t = 0.5 and recursively add their polyline data
     HCReal qx0 =  x0 * 0.5 +  cx * 0.5;
     HCReal qy0 =  y0 * 0.5 +  cy * 0.5;
     HCReal qx1 =  cx * 0.5 +  x1 * 0.5;
     HCReal qy1 =  cy * 0.5 +  y1 * 0.5;
     HCReal  sx = qx0 * 0.5 + qx1 * 0.5;
     HCReal  sy = qy0 * 0.5 + qy1 * 0.5;
-    HCPathAddQuadraticCurveSegments(self, x0, y0, qx0, qy0, sx, sy, flatnessThreshold, segmentData);
-    HCPathAddQuadraticCurveSegments(self, sx, sy, qx1, qy1, x1, y1, flatnessThreshold, segmentData);
+    HCPathAddQuadraticCurvePolylineData(self, x0, y0, qx0, qy0, sx, sy, flatnessThreshold, polylineData);
+    HCPathAddQuadraticCurvePolylineData(self, sx, sy, qx1, qy1, x1, y1, flatnessThreshold, polylineData);
 }
 
-void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef segmentData) {
-    // Draw using direct evaluation informed by derivitive
+void HCPathAddCubicCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData) {
+    // Calculate using direct evaluation informed by derivitive
 //    HCReal x, y, dx, dy;
 //    for (HCReal t = 0.0; t <= 1.0;) {
 //        HCPathEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
@@ -456,17 +432,20 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
 //        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
 //    }
     
-    // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +
-        sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) +
-        sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1))) /
-        sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    // Calculate the curve polyline using De Casteljau's Algorithm
+    
+    // Determine cubic curve flatness
+    HCReal p0c0Distance = sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0));
+    HCReal c0c1Distance = sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0));
+    HCReal c1p1Distance = sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1));
+    HCReal p0p1Distance = sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    HCReal flatness = (p0c0Distance + c0c1Distance + c1p1Distance) / p0p1Distance;
     if (flatness < flatnessThreshold) {
-        HCPathAddLineSegment(self, x0, y0, x1, y1, segmentData);
+        HCPathAddLineSegmentPolylineData(self, x0, y0, x1, y1, polylineData);
         return;
     }
 
+    // Split the cubic curve at t = 0.5 and recursively add their polyline data
     HCReal qx0 =  x0 * 0.5 + cx0 * 0.5;
     HCReal qy0 =  y0 * 0.5 + cy0 * 0.5;
     HCReal qcx = cx0 * 0.5 + cx1 * 0.5;
@@ -479,72 +458,153 @@ void HCPathAddCubicCurveSegments(HCPathRef self, HCReal x0, HCReal y0, HCReal cx
     HCReal ry1 = qcy * 0.5 + qy1 * 0.5;
     HCReal  sx = rx0 * 0.5 + rx1 * 0.5;
     HCReal  sy = ry0 * 0.5 + ry1 * 0.5;
-    HCPathAddCubicCurveSegments(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, flatnessThreshold, segmentData);
-    HCPathAddCubicCurveSegments(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, flatnessThreshold, segmentData);
+    HCPathAddCubicCurvePolylineData(self, x0, y0, qx0, qy0, rx0, ry0, sx, sy, flatnessThreshold, polylineData);
+    HCPathAddCubicCurvePolylineData(self, sx, sy, rx1, ry1, qx1, qy1, x1, y1, flatnessThreshold, polylineData);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Conversion
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCPathPrintData(HCPathRef self, FILE* stream) {
+    // Print SVG command for each element
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: fprintf(stream, "M %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddQuadraticCurve: fprintf(stream, "Q %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
+            case HCPathCommandAddCubicCurve: fprintf(stream, "C %f %f %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
+            case HCPathCommandCloseSubpath: fprintf(stream, "Z "); break;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Subpaths
 //----------------------------------------------------------------------------------------------------------------------------------
-HCListRef HCPathSubpathsRetained(HCPathRef self) {
-    HCListRef subpaths = HCListCreate();
-    
-    // Extract each sub-path, ensuring each has at most one move-to at the beginning, at most one close-subpath at the end, and any number of other elements between
-    HCPathRef path = HCPathCreate("");
-    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
-        HCPathElement element = HCPathElementAt(self, elementIndex);
-        switch (element.command) {
-            case HCPathCommandMove:
-                if (!HCPathIsEmpty(path)) {
-                    HCListAddObjectReleased(subpaths, path);
-                    path = HCPathCreate("");
-                }
-                HCPathMoveToPoint(path, element.points[0].x, element.points[0].y);
+HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
+    // Search for sub-path start element, if requested (not needed to determine if sub-path is open)
+    if (startIndex != NULL) {
+        *startIndex = 0;
+        for (HCInteger subpathStartSearchIndex = elementIndex; subpathStartSearchIndex >= 0; subpathStartSearchIndex--) {
+            HCPathCommand command = HCPathElementAt(self, subpathStartSearchIndex).command;
+            if (command == HCPathCommandMove) {
+                *startIndex = subpathStartSearchIndex;
                 break;
-            case HCPathCommandAddLine:
-                HCPathAddLine(path, element.points[0].x, element.points[0].y);
-                break;
-            case HCPathCommandAddQuadraticCurve:
-                HCPathAddQuadraticCurve(path, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y);
-                break;
-            case HCPathCommandAddCubicCurve:
-                HCPathAddCubicCurve(path, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y);
-                break;
-            case HCPathCommandCloseSubpath:
-                HCPathCloseSubpath(path);
-                break;
+            }
         }
     }
     
-    // Package the last sub-path if it is not empty
-    if (!HCPathIsEmpty(path)) {
-        HCListAddObjectReleased(subpaths, path);
-    }
-    else {
-        HCRelease(path);
+    // Search for sub-path end element and determine if it is open
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger subpathEndSearchIndex = elementIndex; subpathEndSearchIndex < elementCount; subpathEndSearchIndex++) {
+        HCPathCommand command = HCPathElementAt(self, subpathEndSearchIndex).command;
+        if (command == HCPathCommandMove && subpathEndSearchIndex != elementIndex) {
+            // Sub-path ends with a move, so it is open
+            if (endIndex != NULL) {
+                *endIndex = subpathEndSearchIndex;
+            }
+            return true;
+        }
+        if (command == HCPathCommandCloseSubpath) {
+            // Sub-path ends with a close-subpath, so it is closed
+            if (endIndex != NULL) {
+                *endIndex = subpathEndSearchIndex + 1;
+            }
+            return false;
+        }
     }
     
+    // Reached end without finding a move-to or close-subpath command, so the path is open
+    if (endIndex != NULL) {
+        *endIndex = elementCount;
+    }
+    return true;
+}
+
+HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
+    return !HCPathSubpathContainingElementIsOpen(self, elementIndex, startIndex, endIndex);
+}
+
+HCPathRef HCPathSubpathContainingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen) {
+    // Determine sub-path indices
+    HCInteger subpathStartIndex = 0;
+    HCInteger subpathEndIndex = 0;
+    HCBoolean open = HCPathSubpathContainingElementIsOpen(self, elementIndex, &subpathStartIndex, &subpathEndIndex);
+    if (startIndex != NULL) {
+        *startIndex = subpathStartIndex;
+    }
+    if (endIndex != NULL) {
+        *endIndex = subpathEndIndex;
+    }
+    if (isOpen != NULL) {
+        *isOpen = open;
+    }
+    
+    // Create the sub-path with the elements from start to end
+    HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
+    HCPathRef subpath = HCPathCreateWithElements(elements + subpathStartIndex, subpathEndIndex - subpathStartIndex);
+    return subpath;
+}
+
+HCListRef HCPathSubpathsRetained(HCPathRef self) {
+    HCListRef subpaths = HCListCreate();
+    HCInteger elementCount = HCPathElementCount(self);
+    HCInteger elementIndex = 0;
+    while (elementIndex < elementCount) {
+        HCPathRef subpath = HCPathSubpathContainingElementRetained(self, elementIndex, NULL, &elementIndex, NULL);
+        if (!HCPathIsEmpty(subpath)) {
+            HCListAddObjectReleased(subpaths, subpath);
+        }
+    }
     return subpaths;
 }
 
 HCListRef HCPathOpenSubpathsRetained(HCPathRef self) {
-    HCListRef subpaths = HCPathSubpathsRetained(self);
-    HCListFilter(subpaths, (HCListFilterFunction)HCPathFilterOpen, NULL);
-    return subpaths;
-}
-
-HCBoolean HCPathFilterOpen(void* context, HCPathRef path) {
-    return HCPathElementAt(path, HCPathElementCount(path) - 1).command != HCPathCommandCloseSubpath;
+    HCListRef openSubpaths = HCListCreate();
+    HCInteger elementCount = HCPathElementCount(self);
+    HCInteger elementIndex = 0;
+    while (elementIndex < elementCount) {
+        // Find the sub-path start, end, and openness
+        HCInteger startIndex;
+        HCInteger endIndex;
+        HCBoolean isOpen = HCPathSubpathContainingElementIsOpen(self, elementIndex, &startIndex, &endIndex);
+        elementIndex = endIndex;
+        
+        // If open, create the sub-path with the elements from start to end
+        if (isOpen) {
+            HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
+            HCPathRef subpath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(subpath)) {
+                HCListAddObjectReleased(openSubpaths, subpath);
+            }
+        }
+    }
+    return openSubpaths;
 }
 
 HCListRef HCPathClosedSubpathsRetained(HCPathRef self) {
-    HCListRef subpaths = HCPathSubpathsRetained(self);
-    HCListFilter(subpaths, (HCListFilterFunction)HCPathFilterClosed, NULL);
-    return subpaths;
-}
-
-HCBoolean HCPathFilterClosed(void* context, HCPathRef path) {
-    return HCPathElementAt(path, HCPathElementCount(path) - 1).command == HCPathCommandCloseSubpath;
+    HCListRef closedSubpaths = HCListCreate();
+    HCInteger elementCount = HCPathElementCount(self);
+    HCInteger elementIndex = 0;
+    while (elementIndex < elementCount) {
+        // Find the sub-path start, end, and openness
+        HCInteger startIndex;
+        HCInteger endIndex;
+        HCBoolean isClosed = HCPathSubpathContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
+        elementIndex = endIndex;
+        
+        // If closed, create the sub-path with the elements from start to end
+        if (isClosed) {
+            HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
+            HCPathRef subpath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(subpath)) {
+                HCListAddObjectReleased(closedSubpaths, subpath);
+            }
+        }
+    }
+    return closedSubpaths;
 }
 
 HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self) {
@@ -565,83 +625,65 @@ HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self) {
 // MARK: - Path Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
-    // TODO: Multiple closed sub-paths?
-    
-    // Convert the path to segments
-    // TODO: Should only contain the closed sub-paths
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    
     // Determine how many crossings there are for a ray from the point going in the +x direction
-    // TODO: Need to know the path extents to know how distant "distant" should be
+    // Rather than construct a path and the intersection function, this function uses custom intersection code similar to the intersection function
     HCInteger intersectionCount = 0;
-    HCPoint distantPoint = HCPointMake(HCPathApproximateBounds(self).size.width * 2.0, point.y);
-    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
-        HCPoint startPoint = points[pointIndex + 0];
-        HCPoint endPoint = points[pointIndex + 1];
-        
-        // Find the intersection parameters for each segment
-        HCReal t = 0.0;
-        HCReal u = 0.0;
-        HCPathLineLineIntersection(startPoint.x, startPoint.y, endPoint.x, endPoint.y, point.x, point.y, distantPoint.x, distantPoint.y, &t, &u);
-        
-        // Determine if they intersect within the bounds of the segments
-        HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
-        if (segmentsIntersect) {
-            intersectionCount++;
+    HCPoint distantPoint = HCPointMake(self->bounds.size.width * 2.0, point.y);
+    HCPoint q0 = point;
+    HCPoint q1 = distantPoint;
+    HCInteger elementCount = HCPathElementCount(self);
+    HCInteger elementIndex = 0;
+    while (elementIndex < elementCount) {
+        // Determine if the current sub-path is open, and skip it if it is
+        HCInteger endIndex = 0;
+        HCBoolean isOpen = HCPathSubpathContainingElementIsOpen(self, elementIndex, NULL, &endIndex);
+        if (isOpen) {
+            // Move to the next sub-path
+            elementIndex = endIndex;
+            continue;
         }
+        
+        // Extract the initial point of the polyline and use it as the start point of the first line segment, or skip it if it is empty (e.g. a move-to element)
+        HCInteger polylinePointCount = HCPathElementPolylinePointCount(self, elementIndex);
+        if (polylinePointCount <= 0) {
+            // Move to the next element
+            elementIndex++;
+            continue;
+        }
+        HCPoint p0 = HCPathElementPolylinePointAt(self, elementIndex, 0);
+        
+        // Compare the line segments of the polyline against the ray
+        for (HCInteger pointIndex = 1; pointIndex < polylinePointCount; pointIndex++) {
+            // Determine the end point of the line segment from the polyline
+            HCPoint p1 = HCPathElementPolylinePointAt(self, elementIndex, pointIndex);
+            
+            // Find the intersection parameters for the lines formed by the line segment points
+            // TODO: Could performance be improved using a simpler intersection function that is for line-segment to ray?
+            HCReal t = 0.0;
+            HCReal u = 0.0;
+            HCPathLineLineIntersection(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y, &t, &u);
+            
+            // Determine if they intersect within the bounds of the segments
+            HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
+            if (segmentsIntersect) {
+                intersectionCount++;
+            }
+            
+            // Use the end point of the polyline line segment as the start point of the next
+            p0 = p1;
+        }
+        
+        // Move to the next element
+        elementIndex++;
     }
     
     // An odd intersection count indicates the point is within the path
     return intersectionCount % 2 == 1;
 }
 
-HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {
-    // TODO: Multiple closed sub-paths?
-    
-    // Convert the path to segments
-    // TODO: Should only contain the closed sub-paths
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    
-    // Determine the sum of the sweep angles passed through as the segments are walked
-    // TODO: Need to know the path extents to know how distant "distant" should be
-    HCInteger counterClockwiseQuadrantCrossings = 0;
-    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
-        HCPoint startPoint = points[pointIndex + 0];
-        HCPoint endPoint = points[pointIndex + 1];
-        
-        // Offset points such that test point is the origin
-        startPoint = HCPointOffset(startPoint, -point.x, -point.y);
-        endPoint = HCPointOffset(endPoint, -point.x, -point.y);
-        
-        // Determine if the segment crosses from one quadrant to another, then sum the directions
-        HCInteger startQuadrant = startPoint.x >= 0.0 ? (startPoint.y >= 0.0 ? 1 : 4) : (startPoint.y >= 0.0 ? 2 : 3);
-        HCInteger endQuadrant = endPoint.x >= 0.0 ? (endPoint.y >= 0.0 ? 1 : 4) : (endPoint.y >= 0.0 ? 2 : 3);
-        switch (startQuadrant * 10 + endQuadrant) {
-            case 11: counterClockwiseQuadrantCrossings +=  0; break;
-            case 12: counterClockwiseQuadrantCrossings += +1; break;
-            case 13: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
-            case 14: counterClockwiseQuadrantCrossings += -1; break;
-            case 21: counterClockwiseQuadrantCrossings += -1; break;
-            case 22: counterClockwiseQuadrantCrossings +=  0; break;
-            case 23: counterClockwiseQuadrantCrossings += +1; break;
-            case 24: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
-            case 31: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
-            case 32: counterClockwiseQuadrantCrossings += -1; break;
-            case 33: counterClockwiseQuadrantCrossings +=  0; break;
-            case 34: counterClockwiseQuadrantCrossings += +1; break;
-            case 41: counterClockwiseQuadrantCrossings += +1; break;
-            case 42: counterClockwiseQuadrantCrossings +=  0; break; // TODO: Right?
-            case 43: counterClockwiseQuadrantCrossings += -1; break;
-            case 44: counterClockwiseQuadrantCrossings +=  0; break;
-        }
-    }
-    
-    // Quadrant crossings over 4 indicate containment
-    return counterClockwiseQuadrantCrossings >= 4 || counterClockwiseQuadrantCrossings <= -4;
+HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {\
+    // TODO: This!
+    return false;
 }
 
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
@@ -651,47 +693,61 @@ HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
 }
 
 void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context) {
-    // Convert the path to segments
-    HCDataRef segmentData = HCPathAsLineSegmentDataRetained(self, HCPathFlatnessNormal);
-    HCInteger pointCount = HCDataSize(segmentData) / sizeof(HCPoint);
-    HCPoint* points = (HCPoint*)HCDataBytes(segmentData);
-    
-    // Convert the other path to segments
-    HCDataRef otherSegmentData = HCPathAsLineSegmentDataRetained(other, HCPathFlatnessNormal);
-    HCInteger otherPointCount = HCDataSize(otherSegmentData) / sizeof(HCPoint);
-    HCPoint* otherPoints = (HCPoint*)HCDataBytes(otherSegmentData);
-    
-    // Compare each line segment in the path against those in the other
-    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
-        HCPoint startPoint = points[pointIndex + 0];
-        HCPoint endPoint = points[pointIndex + 1];
-        for (HCInteger otherPointIndex = 0; otherPointIndex < otherPointCount; otherPointIndex += 2) {
-            HCPoint otherStartPoint = otherPoints[otherPointIndex + 0];
-            HCPoint otherEndPoint = otherPoints[otherPointIndex + 1];
-            
-            // Find the intersection parameters for each segment
-            HCReal t = 0.0;
-            HCReal u = 0.0;
-            HCPathLineLineIntersection(startPoint.x, startPoint.y, endPoint.x, endPoint.y, otherStartPoint.x, otherStartPoint.y, otherEndPoint.x, otherEndPoint.y, &t, &u);
-            
-            // Determine if they intersect within the bounds of the segments
-            HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
-            if (segmentsIntersect) {
-                // Calculate the intersection point and call the intersection function
-                HCReal tc = 1.0 - t;
-                HCPoint point = HCPointMake(tc * startPoint.x + t * endPoint.x, tc * startPoint.y + t * endPoint.y);
-                HCBoolean stopSearching = false;
-                intersection(context, &stopSearching, self, other, point);
-                if (stopSearching) {
-                    break;
+    // Compare each polyline segment in the path against those in the other path
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        // Extract the initial point of the polyline and use it as the start point of the first line segment, or skip it if it is empty (e.g. a move-to element)
+        HCInteger polylinePointCount = HCPathElementPolylinePointCount(self, elementIndex);
+        if (polylinePointCount <= 0) {
+            continue;
+        }
+        HCPoint p0 = HCPathElementPolylinePointAt(self, elementIndex, 0);
+        
+        // Compare the line segments of the polyline against the other path
+        for (HCInteger pointIndex = 1; pointIndex < polylinePointCount; pointIndex++) {
+            // Determine the end point of the line segment from the polyline
+            HCPoint p1 = HCPathElementPolylinePointAt(self, elementIndex, pointIndex);
+            HCInteger otherElementCount = HCPathElementCount(other);
+            for (HCInteger otherElementIndex = 0; otherElementIndex < otherElementCount; otherElementIndex++) {
+                // Extract the initial point of the other path polyline and use it as the start point of it's first line segment, or skip it if it is empty
+                HCInteger otherPolylinePointCount = HCPathElementPolylinePointCount(other, otherElementIndex);
+                if (otherPolylinePointCount <= 0) {
+                    continue;
+                }
+                HCPoint q0 = HCPathElementPolylinePointAt(other, otherElementIndex, 0);
+                
+                // Compare the line segments of the other polyline against the current line segment in the path
+                for (HCInteger otherPointIndex = 0; otherPointIndex < otherPolylinePointCount; otherPointIndex++) {
+                    // Determine the end point of the line segment from the other polyline
+                    HCPoint q1 = HCPathElementPolylinePointAt(other, otherElementIndex, otherPointIndex);
+                    
+                    // Find the intersection parameters for the lines formed by the line segment points
+                    HCReal t = 0.0;
+                    HCReal u = 0.0;
+                    HCPathLineLineIntersection(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y, &t, &u);
+                    
+                    // Determine if they intersect within the bounds of the segments
+                    HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
+                    if (segmentsIntersect) {
+                        // Calculate the intersection point and call the intersection function
+                        HCReal tc = 1.0 - t;
+                        HCPoint point = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
+                        HCBoolean stopSearching = false;
+                        intersection(context, &stopSearching, self, other, point);
+                        if (stopSearching) {
+                            return;
+                        }
+                    }
+                    
+                    // Use the end point of the other polyline line segment as the start point of the next
+                    q0 = q1;
                 }
             }
+            
+            // Use the end point of the polyline line segment as the start point of the next
+            p0 = p1;
         }
     }
-    
-    // Cleanup
-    HCRelease(segmentData);
-    HCRelease(otherSegmentData);
 }
 
 void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point) {

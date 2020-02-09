@@ -82,11 +82,13 @@ void HCPathRemoveLastElement(HCPathRef self);
 // MARK: - Path Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathPrintData(HCPathRef self, FILE* stream);
-HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThreshold);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Subpaths
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCPathRef HCPathSubpathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
 HCListRef HCPathSubpathsRetained(HCPathRef self);
 HCListRef HCPathOpenSubpathsRetained(HCPathRef self);
 HCListRef HCPathClosedSubpathsRetained(HCPathRef self);
