@@ -61,6 +61,9 @@ void HCPathPrint(HCPathRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathElementCount(HCPathRef self);
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
+HCDataRef HCPathElementPolylineDataRetained(HCPathRef self, HCInteger elementIndex);
+HCInteger HCPathElementPolylinePointCount(HCPathRef self, HCInteger elementIndex);
+HCPoint HCPathElementPolylinePointAt(HCPathRef self, HCInteger elementIndex, HCInteger pointIndex);
 HCPoint HCPathCurrentPoint(HCPathRef self);
 HCRectangle HCPathBounds(HCPathRef self);
 
@@ -72,6 +75,8 @@ void HCPathAddLine(HCPathRef self, HCReal x, HCReal y);
 void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y);
 void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x, HCReal y);
 void HCPathCloseSubpath(HCPathRef self);
+void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points);
+void HCPathRemoveLastElement(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Conversion

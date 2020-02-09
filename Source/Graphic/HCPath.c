@@ -79,27 +79,29 @@ void HCPathInit(void* memory, const char* path) {
     HCObjectInit(memory);
     HCPathRef self = memory;
     self->base.type = HCPathType;
-    self->elementCount = 0;
-    self->elements = NULL;
+    self->elementData = HCDataCreate();
     
     // Parse path data into path object
     HCPathParse(self, path);
 }
 
 void HCPathDestroy(HCPathRef self) {
-    free(self->elements);
+    while (!HCDataIsEmpty(self->elementData)) {
+        HCPathRemoveLastElement(self);
+    }
+    HCRelease(self->elementData);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathIsEqual(HCPathRef self, HCPathRef other) {
-    if (self->elementCount != other->elementCount) {
+    if (HCPathElementCount(self) != HCPathElementCount(other)) {
         return false;
     }
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
-        HCPathElement otherElement = other->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
+        HCPathElement otherElement = HCPathElementAt(other, elementIndex);
         if (element.command != otherElement.command) {
             return false;
         }
@@ -133,8 +135,8 @@ HCBoolean HCPathIsEqual(HCPathRef self, HCPathRef other) {
 
 HCInteger HCPathHashValue(HCPathRef self) {
     HCInteger hash = 5381;
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
         hash ^= HCIntegerHashValue(element.command);
         switch (element.command) {
             case HCPathCommandMove: hash ^= HCPointHashValue(element.points[0]); break;
@@ -156,15 +158,16 @@ void HCPathPrint(HCPathRef self, FILE* stream) {
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathIsEmpty(HCPathRef self) {
-    return self->elementCount == 0;
+    return HCPathElementCount(self) == 0;
 }
 
 HCInteger HCPathElementCount(HCPathRef self) {
-    return self->elementCount;
+    return HCDataSize(self->elementData) / sizeof(HCPathElement);
 }
 
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex) {
-    return self->elements[elementIndex];
+    HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
+    return elements[elementIndex];
 }
 
 HCPoint HCPathCurrentPoint(HCPathRef self) {
@@ -232,8 +235,8 @@ HCRectangle HCPathApproximateBounds(HCPathRef self) {
     HCReal minY = HCPathCurrentPoint(self).y;
     HCReal maxX = minX;
     HCReal maxY = minY;
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
         HCInteger pointCount = 0;
         switch (element.command) {
             case HCPathCommandMove: pointCount = 1; break;
@@ -259,65 +262,37 @@ HCRectangle HCPathApproximateBounds(HCPathRef self) {
 // MARK: - Path Manipulation
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathMoveToPoint(HCPathRef self, HCReal x, HCReal y) {
-    // Create move element
-    HCPathElement element;
-    element.command = HCPathCommandMove;
-    element.points = malloc(sizeof(HCPoint) * 1);
-    element.points[0].x = x;
-    element.points[0].y = y;
-    
-    // Add element to path
-    self->elementCount++;
-    self->elements = realloc(self->elements, sizeof(HCPoint) * self->elementCount);
-    self->elements[self->elementCount - 1] = element;
+    HCPoint points[1];
+    points[0].x = x;
+    points[0].y = y;
+    HCPathAddElement(self, HCPathCommandMove, points);
 }
 
 void HCPathAddLine(HCPathRef self, HCReal x, HCReal y) {
-    // Create add line element
-    HCPathElement element;
-    element.command = HCPathCommandAddLine;
-    element.points = malloc(sizeof(HCPoint) * 1);
-    element.points[0].x = x;
-    element.points[0].y = y;
-    
-    // Add element to path
-    self->elementCount++;
-    self->elements = realloc(self->elements, sizeof(HCPoint) * self->elementCount);
-    self->elements[self->elementCount - 1] = element;
+    HCPoint points[1];
+    points[0].x = x;
+    points[0].y = y;
+    HCPathAddElement(self, HCPathCommandAddLine, points);
 }
 
 void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y) {
-    // Create add quadratic curve element
-    HCPathElement element;
-    element.command = HCPathCommandAddQuadraticCurve;
-    element.points = malloc(sizeof(HCPoint) * 2);
-    element.points[0].x = cx;
-    element.points[0].y = cy;
-    element.points[1].x = x;
-    element.points[1].y = y;
-    
-    // Add element to path
-    self->elementCount++;
-    self->elements = realloc(self->elements, sizeof(HCPoint) * self->elementCount);
-    self->elements[self->elementCount - 1] = element;
+    HCPoint points[2];
+    points[0].x = cx;
+    points[0].y = cy;
+    points[1].x = x;
+    points[1].y = y;
+    HCPathAddElement(self, HCPathCommandAddQuadraticCurve, points);
 }
 
 void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x, HCReal y) {
-    // Create add cubic curve element
-    HCPathElement element;
-    element.command = HCPathCommandAddCubicCurve;
-    element.points = malloc(sizeof(HCPoint) * 3);
-    element.points[0].x = cx0;
-    element.points[0].y = cy0;
-    element.points[1].x = cx1;
-    element.points[1].y = cy1;
-    element.points[2].x = x;
-    element.points[2].y = y;
-    
-    // Add element to path
-    self->elementCount++;
-    self->elements = realloc(self->elements, sizeof(HCPoint) * self->elementCount);
-    self->elements[self->elementCount - 1] = element;
+    HCPoint points[3];
+    points[0].x = cx0;
+    points[0].y = cy0;
+    points[1].x = cx1;
+    points[1].y = cy1;
+    points[2].x = x;
+    points[2].y = y;
+    HCPathAddElement(self, HCPathCommandAddCubicCurve, points);
 }
 
 void HCPathAddArc(HCPathRef self, HCReal x, HCReal y, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep) {
@@ -325,15 +300,52 @@ void HCPathAddArc(HCPathRef self, HCReal x, HCReal y, HCReal xr, HCReal yr, HCRe
 }
 
 void HCPathCloseSubpath(HCPathRef self) {
-    // Create close sub-path element
+    HCPathAddElement(self, HCPathCommandCloseSubpath, NULL);
+}
+
+void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points) {
+    // Assemble element and copy points
     HCPathElement element;
-    element.command = HCPathCommandCloseSubpath;
-    element.points = NULL;
+    switch (command) {
+        case HCPathCommandMove:
+            element.command = HCPathCommandMove;
+            element.points = (HCPoint*)malloc(sizeof(HCPoint) * 1);
+            element.points[0] = points[0];
+            break;
+        case HCPathCommandAddLine:
+            element.command = HCPathCommandAddLine;
+            element.points = (HCPoint*)malloc(sizeof(HCPoint) * 1);
+            element.points[0] = points[0];
+            break;
+        case HCPathCommandAddQuadraticCurve:
+            element.command = HCPathCommandAddQuadraticCurve;
+            element.points = (HCPoint*)malloc(sizeof(HCPoint) * 2);
+            element.points[0] = points[0];
+            element.points[1] = points[1];
+            break;
+        case HCPathCommandAddCubicCurve:
+            element.command = HCPathCommandAddCubicCurve;
+            element.points = (HCPoint*)malloc(sizeof(HCPoint) * 3);
+            element.points[0] = points[0];
+            element.points[1] = points[1];
+            element.points[2] = points[2];
+            break;
+        case HCPathCommandCloseSubpath:
+            element.command = HCPathCommandCloseSubpath;
+            element.points = NULL;
+            break;
+    }
     
     // Add element to path
-    self->elementCount++;
-    self->elements = realloc(self->elements, sizeof(HCPoint) * self->elementCount);
-    self->elements[self->elementCount - 1] = element;
+    HCDataAddBytes(self->elementData, sizeof(element), (const HCByte*)&element);
+}
+
+void HCPathRemoveLastElement(HCPathRef self) {
+    HCPathElement element = HCPathElementAt(self, HCPathElementCount(self) - 1);
+    if (element.points != NULL) {
+        free(element.points);
+    }
+    HCDataRemoveBytes(self->elementData, sizeof(HCPathElement));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -341,8 +353,8 @@ void HCPathCloseSubpath(HCPathRef self) {
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathPrintData(HCPathRef self, FILE* stream) {
     // Print SVG command for each element
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
         switch (element.command) {
             case HCPathCommandMove: fprintf(stream, "M %f %f ", element.points[0].x, element.points[0].y); break;
             case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
@@ -361,8 +373,8 @@ HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThresho
     HCPoint controlPoint0 = currentPoint;
     HCPoint controlPoint1 = currentPoint;
     HCPoint endPoint = currentPoint;
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
         switch (element.command) {
             case HCPathCommandMove:
                 endPoint = HCPointMake(element.points[0].x, element.points[0].y);
@@ -479,8 +491,8 @@ HCListRef HCPathSubpathsRetained(HCPathRef self) {
     
     // Extract each sub-path, ensuring each has at most one move-to at the beginning, at most one close-subpath at the end, and any number of other elements between
     HCPathRef path = HCPathCreate("");
-    for (HCInteger elementIndex = 0; elementIndex < self->elementCount; elementIndex++) {
-        HCPathElement element = self->elements[elementIndex];
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(self); elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
         switch (element.command) {
             case HCPathCommandMove:
                 if (!HCPathIsEmpty(path)) {

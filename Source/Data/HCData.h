@@ -21,7 +21,7 @@ typedef struct HCData* HCDataRef;
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCDataRef HCDataCreate(void);
-HCDataRef HCDataCreateWithBytes(HCInteger size, HCByte* bytes);
+HCDataRef HCDataCreateWithBytes(HCInteger size, const HCByte* bytes);
 HCDataRef HCDataCreateWithBoolean(HCBoolean value);
 HCDataRef HCDataCreateWithInteger(HCInteger value);
 HCDataRef HCDataCreateWithReal(HCReal value);
@@ -54,7 +54,7 @@ HCReal HCDataAsReal(HCDataRef self);
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCDataClear(HCDataRef self);
-void HCDataAddBytes(HCDataRef self, HCInteger size, HCByte* bytes);
+void HCDataAddBytes(HCDataRef self, HCInteger size, const HCByte* bytes);
 void HCDataRemoveBytes(HCDataRef self, HCInteger size);
 void HCDataAddBoolean(HCDataRef self, HCBoolean value);
 void HCDataRemoveBoolean(HCDataRef self);

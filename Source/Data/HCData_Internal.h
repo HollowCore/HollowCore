@@ -24,7 +24,7 @@ typedef struct HCData {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCDataInit(void* memory, HCInteger size, HCByte* data);
+void HCDataInit(void* memory, HCInteger size, const HCByte* data);
 void HCDataInitWithoutCopying(void* memory, HCInteger size, HCByte* data);
 void HCDataDestroy(HCDataRef self);
 

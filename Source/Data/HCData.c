@@ -32,7 +32,7 @@ HCDataRef HCDataCreate() {
     return HCDataCreateWithBytes(0, NULL);
 }
 
-HCDataRef HCDataCreateWithBytes(HCInteger size, HCByte* bytes) {
+HCDataRef HCDataCreateWithBytes(HCInteger size, const HCByte* bytes) {
     HCDataRef self = calloc(sizeof(HCData), 1);
     HCDataInit(self, size, bytes);
     return self;
@@ -50,13 +50,11 @@ HCDataRef HCDataCreateWithReal(HCReal value) {
     return HCDataCreateWithBytes(sizeof(value), (HCByte*)&value);
 }
 
-void HCDataInit(void* memory, HCInteger size, HCByte* data) {
+void HCDataInit(void* memory, HCInteger size, const HCByte* data) {
     HCByte* dataCopy = malloc(size);
     if (data != NULL) {
         memcpy(dataCopy, data, size);
     }
-    // TODO: Check that the allocation and copy proceed successfully, determine how to pass the error otherwise
-    
     HCDataInitWithoutCopying(memory, size, dataCopy);
 }
 
@@ -144,7 +142,7 @@ void HCDataClear(HCDataRef self) {
     HCDataRemoveBytes(self, self->size);
 }
 
-void HCDataAddBytes(HCDataRef self, HCInteger size, HCByte* bytes) {
+void HCDataAddBytes(HCDataRef self, HCInteger size, const HCByte* bytes) {
     self->data = realloc(self->data, self->size + size);
     if (bytes != NULL) {
         memcpy(self->data + self->size, bytes, size);
