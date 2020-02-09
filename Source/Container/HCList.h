@@ -111,8 +111,8 @@ HCBoolean HCListIterationHasEnded(HCListIterator* iterator);
 // MARK: - Iteration Convenience Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction, void* context);
-void HCListFilter(HCListRef self, HCListFilterFunction isIncluded, void* context);
-void HCListMap(HCListRef self, HCListMapFunction transform, void* context);
+HCListRef HCListFilterRetained(HCListRef self, HCListFilterFunction isIncluded, void* context);
+HCListRef HCListMapRetained(HCListRef self, HCListMapFunction transform, void* context);
 HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunction nextPartialResult, void* context);
 
 #endif /* HCList_h */

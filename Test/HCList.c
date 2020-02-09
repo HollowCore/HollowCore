@@ -592,13 +592,14 @@ CTEST(HCList, Filter) {
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
     
-    HCListFilter(list, HCListFilterTestFunction, (void*)0xDEADBEEF);
-    ASSERT_EQUAL(HCListCount(list), 3);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 0)), 2);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 1)), 3);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 2)), 4);
+    HCListRef filtered = HCListFilterRetained(list, HCListFilterTestFunction, (void*)0xDEADBEEF);
+    ASSERT_EQUAL(HCListCount(filtered), 3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 0)), 2);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 1)), 3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 2)), 4);
     
     HCRelease(list);
+    HCRelease(filtered);
 }
 
 HCRef HCListMapTestFunction(void* context, HCRef value) {
@@ -616,15 +617,16 @@ CTEST(HCList, Map) {
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
     
-    HCListMap(list, HCListMapTestFunction, (void*)0xDEADBEEF);
-    ASSERT_EQUAL(HCListCount(list), 5);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 0)), 0);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 1)), -1);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 2)), -2);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 3)), -3);
-    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(list, 4)), -4);
+    HCListRef transformed = HCListMapRetained(list, HCListMapTestFunction, (void*)0xDEADBEEF);
+    ASSERT_EQUAL(HCListCount(transformed), 5);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 0)), 0);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 1)), -1);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 2)), -2);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 3)), -3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 4)), -4);
     
     HCRelease(list);
+    HCRelease(transformed);
 }
 
 HCRef HCListReduceTestFunction(void* context, HCRef aggregate, HCRef value) {
