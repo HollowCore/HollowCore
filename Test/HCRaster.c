@@ -460,12 +460,12 @@ CTEST(HCRaster, DrawDinosaur) {
 }
 
 CTEST(HCRaster, DrawIntersection) {
-    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreate(
-        "M 20 50 C 50  100 50  100 80 50 Z "
-        "M 20 50 C 50    0 50    0 80 50 Z "
+        "M 200 500 C 500  1000 500  1000 800 500 Z "
+        "M 200 500 C 500     0 500     0 800 500 Z "
     );
-    HCPathRef rectangle = HCPathCreate("M 10 30 L 90 30 90 70 10 70 Z");
+    HCPathRef rectangle = HCPathCreate("M 100 300 L 900 300 900 700 100 700 Z");
     for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
         for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
             HCPoint point = HCPointMake(x + 0.5, y + 0.5);
@@ -480,12 +480,12 @@ CTEST(HCRaster, DrawIntersection) {
 }
 
 CTEST(HCRaster, DrawIntersectionNonZero) {
-    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreate(
-        "M 20 50 C 50  100 50  100 80 50 Z "
-        "M 20 50 C 50    0 50    0 80 50 Z "
+        "M 200 500 C 500  1000 500  1000 800 500 Z "
+        "M 200 500 C 500     0 500     0 800 500 Z "
     );
-    HCPathRef rectangle = HCPathCreate("M 10 30 L 90 30 90 70 10 70 Z");
+    HCPathRef rectangle = HCPathCreate("M 100 300 L 900 300 900 700 100 700 Z");
     for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
         for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
             HCPoint point = HCPointMake(x + 0.5, y + 0.5);
@@ -494,8 +494,8 @@ CTEST(HCRaster, DrawIntersectionNonZero) {
             HCRasterSetPixelAt(raster, x, y, pathContainsPoint ? (rectangleContainsPoint ? HCColorGreen : HCColorBlue) : (rectangleContainsPoint ? HCColorYellow : HCColorBlack));
         }
     }
-    HCRasterSaveBMP(raster, "path_intersection_nonzero.bmp");
-    HCRasterSavePPM(raster, "path_intersection_nonzero.ppm");
+    HCRasterSaveBMP(raster, "path_intersection.bmp");
+    HCRasterSavePPM(raster, "path_intersection.ppm");
     HCRelease(raster);
 }
 

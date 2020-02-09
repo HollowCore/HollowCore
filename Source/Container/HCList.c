@@ -368,36 +368,36 @@ void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction, void* 
     }
 }
 
-void HCListFilter(HCListRef self, HCListFilterFunction filterFunction, void* context) {
-    if (filterFunction == NULL) {
+void HCListFilter(HCListRef self, HCListFilterFunction isIncluded, void* context) {
+    if (isIncluded == NULL) {
         return;
     }
     for (HCListIterator i = HCListIterationBeginAtLast(self); !HCListIterationHasEnded(&i); HCListIterationPrevious(&i)) {
-        if (filterFunction(context, i.object) == false) {
+        if (isIncluded(context, i.object) == false) {
             HCListRemoveObjectAtIndex(self, i.index);
         }
     }
 }
 
-void HCListMap(HCListRef self, HCListMapFunction mapFunction, void* context) {
-    if (mapFunction == NULL) {
+void HCListMap(HCListRef self, HCListMapFunction transform, void* context) {
+    if (transform == NULL) {
         return;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
         HCRef value = HCListRemoveObjectRetainedAtIndex(self, i.index);
-        HCRef mappedValue = mapFunction(context, value);
+        HCRef mappedValue = transform(context, value);
         HCListAddObjectReleasedAtIndex(self, i.index, mappedValue);
         HCRelease(value);
     }
 }
 
-HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunction reduceFunction, void* context) {
+HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunction nextPartialResult, void* context) {
     HCRef aggregateValue = HCRetain(initialValue);
-    if (reduceFunction == NULL) {
+    if (nextPartialResult == NULL) {
         return aggregateValue;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        HCRef intermediateValue = reduceFunction(context, aggregateValue, i.object);
+        HCRef intermediateValue = nextPartialResult(context, aggregateValue, i.object);
         HCRelease(aggregateValue);
         aggregateValue = intermediateValue;
     }
