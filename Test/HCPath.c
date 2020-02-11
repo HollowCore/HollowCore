@@ -775,39 +775,3 @@ CTEST(HCPath, ContainsPointNonZero) {
 //    ASSERT_FALSE(HCPathContainsPointNonZero(path, HCPointMake(20.0, 21.0)));
     HCRelease(path);
 }
-
-CTEST(HCPath, LineEvaluation) {
-    HCReal sx = NAN;
-    HCReal sy = NAN;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCPathEvaluateLine(0.5, 1.0, 2.0, 3.0, 4.0, &sx, &sy, &dx, &dy);
-    ASSERT_DBL_NEAR(sx, 2.0);
-    ASSERT_DBL_NEAR(sy, 3.0);
-    ASSERT_DBL_NEAR(dx, 2.0);
-    ASSERT_DBL_NEAR(dy, 2.0);
-}
-
-CTEST(HCPath, QuadraticEvaluation) {
-    HCReal sx = NAN;
-    HCReal sy = NAN;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCPathEvaluateQuadraticCurve(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, &sx, &sy, &dx, &dy);
-    ASSERT_DBL_NEAR(sx, 3.0);
-    ASSERT_DBL_NEAR(sy, 4.0);
-    ASSERT_DBL_NEAR(dx, 2.0);
-    ASSERT_DBL_NEAR(dy, 2.0);
-}
-
-CTEST(HCPath, CubicEvaluation) {
-    HCReal sx = NAN;
-    HCReal sy = NAN;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCPathEvaluateCubicCurve(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, &sx, &sy, &dx, &dy);
-    ASSERT_DBL_NEAR(sx, 4.0);
-    ASSERT_DBL_NEAR(sy, 5.0);
-    ASSERT_DBL_NEAR(dx, 2.0);
-    ASSERT_DBL_NEAR(dy, 2.0);
-}

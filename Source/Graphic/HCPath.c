@@ -7,6 +7,7 @@
 //
 
 #include "HCPath_Internal.h"
+#include "HCContourElement.h"
 #include <math.h>
 #include <string.h>
 
@@ -661,7 +662,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             // TODO: Could performance be improved using a simpler intersection function that is for line-segment to ray?
             HCReal t = 0.0;
             HCReal u = 0.0;
-            HCPathLineLineIntersection(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y, &t, &u);
+            HCContourLineLineIntersection(p0, p1, q0, q1, &t, &u);
             
             // Determine if they intersect within the bounds of the segments
             HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
@@ -724,7 +725,7 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
                     // Find the intersection parameters for the lines formed by the line segment points
                     HCReal t = 0.0;
                     HCReal u = 0.0;
-                    HCPathLineLineIntersection(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y, &t, &u);
+                    HCContourLineLineIntersection(p0, p1, q0, q1, &t, &u);
                     
                     // Determine if they intersect within the bounds of the segments
                     HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
@@ -978,127 +979,4 @@ void HCPathParse(HCPathRef self, const char* path) {
             }
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Evaluation
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCPathEvaluateLine(HCReal t, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-        
-//    HCReal x = x0 * tc + x1 * t;
-//    HCReal y = y0 * tc + y1 * t;
-        
-    HCReal a = tc;
-    HCReal b = t;
-    HCReal x = a * x0 + b * x1;
-    HCReal y = a * y0 + b * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = x1 - x0;
-    *dy = y1 - y0;
-}
-
-void HCPathEvaluateQuadraticCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-    
-    HCReal sx0 = x0 * tc + cx * t;
-    HCReal sy0 = y0 * tc + cy * t;
-    HCReal sx1 = cx * tc + x1 * t;
-    HCReal sy1 = cy * tc + y1 * t;
-    HCReal x = sx0 * tc + sx1 * t;
-    HCReal y = sy0 * tc + sy1 * t;
-    
-//    HCReal x = (x0 * tc + cx * t) * tc + (cx * tc + x1 * t) * t;
-//    HCReal y = (y0 * tc + cy * t) * tc + (cy * tc + y1 * t) * t;
-
-//    HCReal x = x0 * tc * tc + cx * t * tc + cx * tc * t + x1 * t * t;
-//    HCReal y = y0 * tc * tc + cy * t * tc + cy * tc * t + y1 * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = x0 * tc2 + cx * t * tc + cx * tc * t + x1 * t2;
-//    HCReal y = y0 * tc2 + cy * t * tc + cy * tc * t + y1 * t2;
-    
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = x0 * tc2 + (2.0 * cx) * t * tc + x1 * t2;
-//    HCReal y = y0 * tc2 + (2.0 * cy) * t * tc + y1 * t2;
-    
-//    HCReal a = tc * tc;
-//    HCReal b = 2.0 * t * tc;
-//    HCReal c = t * t;
-//    HCReal x = a * x0 + b * cx + c * x1;
-//    HCReal y = a * y0 + b * cy + c * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = sx1 - sx0;
-    *dy = sy1 - sy0;
-}
-
-void HCPathEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy) {
-    HCReal tc = 1.0 - t;
-        
-    HCReal sx0 = x0 * tc + cx0 * t;
-    HCReal sy0 = y0 * tc + cy0 * t;
-    HCReal scx = cx0 * tc + cx1 * t;
-    HCReal scy = cy0 * tc + cy1 * t;
-    HCReal sx1 = cx1 * tc + x1 * t;
-    HCReal sy1 = cy1 * tc + y1 * t;
-    HCReal ssx0 = sx0 * tc + scx * t;
-    HCReal ssy0 = sy0 * tc + scy * t;
-    HCReal ssx1 = scx * tc + sx1 * t;
-    HCReal ssy1 = scy * tc + sy1 * t;
-    HCReal x = ssx0 * tc + ssx1 * t;
-    HCReal y = ssy0 * tc + ssy1 * t;
-
-//    HCReal ssx0 = (x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t;
-//    HCReal ssy0 = (y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t;
-//    HCReal ssx1 = (cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t;
-//    HCReal ssy1 = (cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t;
-//    HCReal x = ssx0 * tc + ssx1 * t;
-//    HCReal y = ssy0 * tc + ssy1 * t;
-
-//    HCReal x = ((x0 * tc + cx0 * t) * tc + (cx0 * tc + cx1 * t) * t) * tc + ((cx0 * tc + cx1 * t) * tc + (cx1 * tc + x1 * t) * t) * t;
-//    HCReal y = ((y0 * tc + cy0 * t) * tc + (cy0 * tc + cy1 * t) * t) * tc + ((cy0 * tc + cy1 * t) * tc + (cy1 * tc + y1 * t) * t) * t;
-
-//    HCReal x = (x0 * tc + cx0 * t) * tc * tc + (cx0 * tc + cx1 * t) * t * tc + (cx0 * tc + cx1 * t) * t * tc + (cx1 * tc + x1 * t) * t * t;
-//    HCReal y = (y0 * tc + cy0 * t) * tc * tc + (cy0 * tc + cy1 * t) * t * tc + (cy0 * tc + cy1 * t) * t * tc + (cy1 * tc + y1 * t) * t * t;
-
-//    HCReal x = x0 * tc * tc * tc + cx0 * tc * tc * t + cx0 * t * tc * tc + cx1 * t * t * tc + cx0 * t * tc * tc + cx1 * t * t * tc + cx1 * t * t * tc + x1 * t * t * t;
-//    HCReal y = y0 * tc * tc * tc + cy0 * tc * tc * t + cy0 * t * tc * tc + cy1 * t * t * tc + cy0 * t * tc * tc + cy1 * t * t * tc + cy1 * t * t * tc + y1 * t * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = x0 * tc3 + cx0 * t * tc2 + cx0 * t * tc2 + cx1 * t2 * tc + cx0 * t * tc2 + cx1 * t2 * tc + cx1 * t2 * tc + x1 * t3;
-//    HCReal y = y0 * tc3 + cy0 * t * tc2 + cy0 * t * tc2 + cy1 * t2 * tc + cy0 * t * tc2 + cy1 * t2 * tc + cy1 * t2 * tc + y1 * t3;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = x0 * tc3 + (3.0 * cx0) * t * tc2 + (3.0 * cx1) * t2 * tc + x1 * t3;
-//    HCReal y = y0 * tc3 + (3.0 * cy0) * t * tc2 + (3.0 * cy1) * t2 * tc + y1 * t3;
-    
-//    HCReal a = tc * tc * tc;
-//    HCReal b = 3.0 * t * tc * tc;
-//    HCReal c = 3.0 * t * t * tc;
-//    HCReal d = t * t * t;
-//    HCReal x = a * x0 + b * cx0 + c * cx1 + d * x1;
-//    HCReal y = a * y0 + b * cy0 + c * cy1 + d * y1;
-    
-    *sx = x;
-    *sy = y;
-    *dx = ssx1 - ssx0;
-    *dy = ssy1 - ssy0;
-}
-
-void HCPathLineLineIntersection(HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal x2, HCReal y2, HCReal x3, HCReal y3, HCReal* t, HCReal* u) {
-    HCReal d = (x0 - x1)*(y2 - y3) - (y0 - y1)*(x2 - x3);
-    *t = ((x0 - x2)*(y2 - y3) - (y0 - y2)*(x2 - x3)) / d;
-    *u = -((x0 - x1)*(y0 - y2) - (y0 - y1)*(x0 - x2)) / d;
 }
