@@ -20,8 +20,5 @@ let package = Package(
             dependencies: [],
             path: "Source",
             publicHeadersPath: "Source"),
-        .testTarget(
-            name: "HollowCoreTests",
-            dependencies: ["HollowCore"]),
     ]
 )
