@@ -52,6 +52,7 @@
 		C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB332207F1C9002B17FB /* HCRaster.c */; };
 		C97FDB362207F207002B17FB /* HCRaster.h in Headers */ = {isa = PBXBuildFile; fileRef = C97FDB2F2207E199002B17FB /* HCRaster.h */; };
 		C97FDB372207F20C002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB302207E199002B17FB /* HCRaster.c */; };
+		C99D6C4024033E32008BB7B6 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99D6C3F24033E32008BB7B6 /* Package.swift */; };
 		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2A21F26649001AA9E7 /* HCString.c */; };
 		C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2721F18AE8001AA9E7 /* HCString.c */; };
@@ -134,6 +135,7 @@
 		C97FDB302207E199002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
 		C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRaster_Internal.h; sourceTree = "<group>"; };
 		C97FDB332207F1C9002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
+		C99D6C3F24033E32008BB7B6 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		C9AA9A2321F1743A001AA9E7 /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
 		C9AA9A2521F174B8001AA9E7 /* HollowCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HollowCore.h; sourceTree = "<group>"; };
 		C9AA9A2621F18AE8001AA9E7 /* HCString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCString.h; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 				F8CBB8E621E5BCE300DB022F /* README.md */,
 				F8CBB8E521E5BCE300DB022F /* LICENSE */,
 				F8CBB8E421E5B97800DB022F /* .travis.yml */,
+				C99D6C3F24033E32008BB7B6 /* Package.swift */,
 				C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */,
 				F8CBB8E721E5BD0B00DB022F /* Source */,
 				C9E2F57721ED37DF00856F21 /* Test */,
@@ -498,6 +501,7 @@
 				TargetAttributes = {
 					C9B705E321E3DCC600B63F05 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1130;
 					};
 					C9E2F58121ED38FD00856F21 = {
 						CreatedOnToolsVersion = 10.1;
@@ -591,6 +595,7 @@
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
+				C99D6C4024033E32008BB7B6 /* Package.swift in Sources */,
 				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
 				F83E472122619E8200616049 /* HCLock.c in Sources */,
 				C9CF5C6423F33B230044D752 /* HCContourElement.c in Sources */,
@@ -639,20 +644,35 @@
 		C9B705E621E3DCC600B63F05 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		C9B705E721E3DCC600B63F05 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
