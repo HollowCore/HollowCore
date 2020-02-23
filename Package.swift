@@ -18,7 +18,7 @@ let package = Package(
         .target(
             name: "HollowCore",
             dependencies: [],
-            path: "Source",
-            publicHeadersPath: "Source"),
+            path: "./Source",
+            publicHeadersPath: "./Source"),
     ]
 )
