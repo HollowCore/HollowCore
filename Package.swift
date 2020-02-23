@@ -19,6 +19,6 @@ let package = Package(
             name: "HollowCore",
             dependencies: [],
             path: "./Source",
-            publicHeadersPath: "./Source"),
+            publicHeadersPath: "."),
     ]
 )
