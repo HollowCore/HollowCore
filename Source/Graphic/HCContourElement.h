@@ -39,13 +39,13 @@ HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCContourElementIsInvalid(HCContourElement element);
 HCBoolean HCContourElementIsLinear(HCContourElement element);
-HCBoolean HCContourElementIsAlmostLinear(HCContourElement element);
 HCBoolean HCContourElementIsQuadratic(HCContourElement element);
-HCBoolean HCContourElementIsAlmostQuadratic(HCContourElement element);
 HCBoolean HCContourElementIsCubic(HCContourElement element);
-HCBoolean HCContourElementIsAlmostCubic(HCContourElement element);
 HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity);
+HCBoolean HCContourElementIsZero(HCContourElement element);
+HCBoolean HCContourElementIsInfinite(HCContourElement element);
 HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other);
 HCInteger HCContourElementHashValue(HCContourElement element);
 void HCContourElementPrint(HCContourElement element, FILE* stream);
@@ -53,9 +53,9 @@ void HCContourElementPrint(HCContourElement element, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourElementAsLinear(HCContourElement element);
-HCBoolean HCContourElementAsQuadratic(HCContourElement element);
-HCBoolean HCContourElementAsCubic(HCContourElement element);
+HCContourElement HCContourElementAsLinear(HCContourElement element);
+HCContourElement HCContourElementAsQuadratic(HCContourElement element);
+HCContourElement HCContourElementAsCubic(HCContourElement element);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Evaluation

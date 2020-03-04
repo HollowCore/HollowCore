@@ -48,11 +48,11 @@ HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCou
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
         HCPathElement element = elements[elementIndex];
         switch (element.command) {
-            case HCPathCommandMove: HCPathMoveToPoint(self, element.points[0].x, element.points[0].y); break;
+            case HCPathCommandMove: HCPathMove(self, element.points[0].x, element.points[0].y); break;
             case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
             case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
             case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-            case HCPathCommandCloseSubpath: HCPathCloseSubpath(self); break;
+            case HCPathCommandCloseSubpath: HCPathClose(self); break;
         }
     }
     return self;
@@ -65,11 +65,11 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
         for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
             HCPathElement element = HCPathElementAt(i.object, elementIndex);
             switch (element.command) {
-                case HCPathCommandMove: HCPathMoveToPoint(self, element.points[0].x, element.points[0].y); break;
+                case HCPathCommandMove: HCPathMove(self, element.points[0].x, element.points[0].y); break;
                 case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
                 case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
                 case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-                case HCPathCommandCloseSubpath: HCPathCloseSubpath(self); break;
+                case HCPathCommandCloseSubpath: HCPathClose(self); break;
             }
         }
     }
@@ -182,18 +182,17 @@ HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex) {
     return elements[elementIndex];
 }
 
-HCDataRef HCPathElementPolylineDataRetained(HCPathRef self, HCInteger elementIndex) {
-    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
-    return HCDataCreateWithBytes(HCDataSize(polylineData), HCDataBytes(polylineData));
+HCDataRef HCPathElementPolylineData(HCPathRef self, HCInteger elementIndex) {
+    return HCListObjectAtIndex(self->elementPolylines, elementIndex);
 }
 
 HCInteger HCPathElementPolylinePointCount(HCPathRef self, HCInteger elementIndex) {
-    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
+    HCDataRef polylineData = HCPathElementPolylineData(self, elementIndex);
     return HCDataSize(polylineData) / sizeof(HCPoint);
 }
 
 HCPoint HCPathElementPolylinePointAt(HCPathRef self, HCInteger elementIndex, HCInteger pointIndex) {
-    HCDataRef polylineData = HCListObjectAtIndex(self->elementPolylines, elementIndex);
+    HCDataRef polylineData = HCPathElementPolylineData(self, elementIndex);
     HCPoint* points = (HCPoint*)HCDataBytes(polylineData);
     return points[pointIndex];
 }
@@ -230,7 +229,7 @@ HCRectangle HCPathBounds(HCPathRef self) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Manipulation
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathMoveToPoint(HCPathRef self, HCReal x, HCReal y) {
+void HCPathMove(HCPathRef self, HCReal x, HCReal y) {
     HCPoint points[1];
     points[0].x = x;
     points[0].y = y;
@@ -268,7 +267,7 @@ void HCPathAddArc(HCPathRef self, HCReal x, HCReal y, HCReal xr, HCReal yr, HCRe
     // TODO: Add arc as cubic curve
 }
 
-void HCPathCloseSubpath(HCPathRef self) {
+void HCPathClose(HCPathRef self) {
     HCPathAddElement(self, HCPathCommandCloseSubpath, NULL);
 }
 
@@ -807,7 +806,7 @@ void HCPathParse(HCPathRef self, const char* path) {
             case 'Z': // Fallthrough
             case 'z':
                 // Close path has no arguments, so just perform the action and move on
-                HCPathCloseSubpath(self);
+                HCPathClose(self);
                 subpathEndX = subpathStartX;
                 subpathEndY = subpathStartY;
                 currentX = subpathEndX;
@@ -848,7 +847,7 @@ void HCPathParse(HCPathRef self, const char* path) {
                             subpathEndY = subpathStartY;
                             previousControlX = currentX;
                             previousControlY = currentY;
-                            HCPathMoveToPoint(self, subpathStartX, subpathStartY);
+                            HCPathMove(self, subpathStartX, subpathStartY);
                         } break;
                         case 'l':
                             arguments[0] += subpathEndX;

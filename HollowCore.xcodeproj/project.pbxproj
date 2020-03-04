@@ -36,6 +36,7 @@
 		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
 		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
 		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
+		C938A8E2240F59BA00B7F80E /* HCContourElement.c in Sources */ = {isa = PBXBuildFile; fileRef = C938A8E1240F59BA00B7F80E /* HCContourElement.c */; };
 		C95417062230D7A800E461A5 /* HCColor.h in Headers */ = {isa = PBXBuildFile; fileRef = C95417042230D7A800E461A5 /* HCColor.h */; };
 		C95417072230D7A800E461A5 /* HCColor.c in Sources */ = {isa = PBXBuildFile; fileRef = C95417052230D7A800E461A5 /* HCColor.c */; };
 		C954170F2230DEFD00E461A5 /* HCColor.c in Sources */ = {isa = PBXBuildFile; fileRef = C954170E2230DEFD00E461A5 /* HCColor.c */; };
@@ -123,6 +124,7 @@
 		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
 		C929AECD21F9800300E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
+		C938A8E1240F59BA00B7F80E /* HCContourElement.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCContourElement.c; sourceTree = "<group>"; };
 		C95417042230D7A800E461A5 /* HCColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCColor.h; sourceTree = "<group>"; };
 		C95417052230D7A800E461A5 /* HCColor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCColor.c; sourceTree = "<group>"; };
 		C954170E2230DEFD00E461A5 /* HCColor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCColor.c; sourceTree = "<group>"; };
@@ -330,6 +332,7 @@
 				C9F8AF00235C3E61002E7D64 /* HCSize.c */,
 				C9F8AF02235C3E72002E7D64 /* HCRectangle.c */,
 				C954170E2230DEFD00E461A5 /* HCColor.c */,
+				C938A8E1240F59BA00B7F80E /* HCContourElement.c */,
 				C9CF5C6523F347E90044D752 /* HCContour.c */,
 				C9AF8D4C23B860900007C4D2 /* HCPath.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
@@ -612,6 +615,7 @@
 				C9AA9A3221F437CC001AA9E7 /* HCData.c in Sources */,
 				C9AA9A3921F6AE98001AA9E7 /* HCList.c in Sources */,
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
+				C938A8E2240F59BA00B7F80E /* HCContourElement.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
 				F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */,
 				C9F8AEFF235C3E4C002E7D64 /* HCPoint.c in Sources */,

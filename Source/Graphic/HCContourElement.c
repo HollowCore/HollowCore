@@ -11,30 +11,126 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourElement HCContourElementMakeLinear(HCPoint p);
-HCContourElement HCContourElementMakeQuadratic(HCPoint p, HCPoint c);
-HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1);
+HCContourElement HCContourElementMakeLinear(HCPoint p) {
+    return (HCContourElement){ .p = p, .c0 = HCPointInvalid, .c1 = HCPointInvalid };
+}
+
+HCContourElement HCContourElementMakeQuadratic(HCPoint p, HCPoint c) {
+    return (HCContourElement){ .p = p, .c0 = c, .c1 = HCPointInvalid };
+}
+
+HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1) {
+    return (HCContourElement){ .p = p, .c0 = c0, .c1 = c1 };
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourElementIsLinear(HCContourElement element);
-HCBoolean HCContourElementIsAlmostLinear(HCContourElement element);
-HCBoolean HCContourElementIsQuadratic(HCContourElement element);
-HCBoolean HCContourElementIsAlmostQuadratic(HCContourElement element);
-HCBoolean HCContourElementIsCubic(HCContourElement element);
-HCBoolean HCContourElementIsAlmostCubic(HCContourElement element);
-HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity);
-HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other);
-HCInteger HCContourElementHashValue(HCContourElement element);
-void HCContourElementPrint(HCContourElement element, FILE* stream);
+HCBoolean HCContourElementIsInvalid(HCContourElement element) {
+    return
+        HCPointIsInvalid(element.p) &&
+        HCPointIsInvalid(element.c0) &&
+        HCPointIsInvalid(element.c1);
+}
+
+HCBoolean HCContourElementIsLinear(HCContourElement element) {
+    return
+        !HCPointIsInvalid(element.p) &&
+        HCPointIsInvalid(element.c0) &&
+        HCPointIsInvalid(element.c1);
+}
+
+HCBoolean HCContourElementIsQuadratic(HCContourElement element) {
+    return
+        !HCPointIsInvalid(element.p) &&
+        !HCPointIsInvalid(element.c0) &&
+        HCPointIsInvalid(element.c1);
+}
+
+HCBoolean HCContourElementIsCubic(HCContourElement element) {
+    return
+        !HCPointIsInvalid(element.p) &&
+        !HCPointIsInvalid(element.c0) &&
+        !HCPointIsInvalid(element.c1);
+}
+
+HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity) {
+    return
+        HCPointIsSimilar(element.p, other.p, axisDissimilarity) &&
+        (HCPointIsSimilar(element.c0, other.c0, axisDissimilarity) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
+        (HCPointIsSimilar(element.c1, other.c1, axisDissimilarity) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1)));
+}
+
+HCBoolean HCContourElementIsZero(HCContourElement element) {
+    return
+        HCPointIsZero(element.p) &&
+        (HCPointIsZero(element.c0) || HCPointIsInvalid(element.c0)) &&
+        (HCPointIsZero(element.c1) || HCPointIsInvalid(element.c1));
+}
+
+HCBoolean HCContourElementIsInfinite(HCContourElement element) {
+    return
+        HCPointIsInfinite(element.p) ||
+        HCPointIsInfinite(element.c0) ||
+        HCPointIsInfinite(element.c1);
+}
+
+HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other) {
+    return
+        HCPointIsEqual(element.p, other.p) &&
+        (HCPointIsEqual(element.c0, other.c0) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
+        (HCPointIsEqual(element.c1, other.c1) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1)));
+}
+
+HCInteger HCContourElementHashValue(HCContourElement element) {
+    return
+        HCPointHashValue(element.p) ^
+        HCPointHashValue(element.c0) ^
+        HCPointHashValue(element.c1);
+}
+
+void HCContourElementPrint(HCContourElement element, FILE* stream) {
+    fprintf(stream, "<p:");
+    HCPointPrint(element.p, stream);
+    fprintf(stream, ",c0:");
+    HCPointPrint(element.c0, stream);
+    fprintf(stream, ",c1:");
+    HCPointPrint(element.c1, stream);
+    fprintf(stream, ">");
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourElementAsLinear(HCContourElement element);
-HCBoolean HCContourElementAsQuadratic(HCContourElement element);
-HCBoolean HCContourElementAsCubic(HCContourElement element);
+HCContourElement HCContourElementAsLinear(HCContourElement element) {
+    if (HCContourElementIsLinear(element)) {
+        return element;
+    }
+    if (HCContourElementIsQuadratic(element)) {
+        return HCContourElementMakeLinear(element.p);
+    }
+    return HCContourElementMakeLinear(element.p);
+}
+
+HCContourElement HCContourElementAsQuadratic(HCContourElement element) {
+    if (HCContourElementIsQuadratic(element)) {
+        return element;
+    }
+    if (HCContourElementIsCubic(element)) {
+        return HCContourElementMakeQuadratic(element.p, HCPointInterpolate(element.c0, element.c1, 0.5));
+    }
+    return HCContourElementMakeQuadratic(element.p, element.p);
+}
+
+HCContourElement HCContourElementAsCubic(HCContourElement element) {
+    if (HCContourElementIsCubic(element)) {
+        return element;
+    }
+    if (HCContourElementIsQuadratic(element)) {
+        return HCContourElementMakeCubic(element.p, element.c0, element.c0);
+    }
+    return HCContourElementMakeCubic(element.p, element.p, element.p);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Evaluation

@@ -574,10 +574,10 @@ CTEST(HCPath, Size) {
     HCRelease(path);
 }
 
-CTEST(HCPath, CurrentPoint) {
+CTEST(HCPath, MutabilityAndCurrentPoint) {
     HCPathRef path = HCPathCreate("");
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
-    HCPathMoveToPoint(path, 5.0, 10.0);
+    HCPathMove(path, 5.0, 10.0);
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
     HCPathAddLine(path, 50.0, 100.0);
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(50.0, 100.0)));
@@ -585,8 +585,18 @@ CTEST(HCPath, CurrentPoint) {
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(-20.0, 60.0)));
     HCPathAddCubicCurve(path, 80.0, 45.0, -10.0, -80.0, 35.0, 77.0);
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(35.0, 77.0)));
-    HCPathCloseSubpath(path);
+    HCPathClose(path);
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
+    HCPathRemoveLastElement(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(35.0, 77.0)));
+    HCPathRemoveLastElement(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(-20.0, 60.0)));
+    HCPathRemoveLastElement(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(50.0, 100.0)));
+    HCPathRemoveLastElement(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
+    HCPathRemoveLastElement(path);
+    ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
     HCRelease(path);
 }
 
