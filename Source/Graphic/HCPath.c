@@ -7,7 +7,7 @@
 //
 
 #include "HCPath_Internal.h"
-#include "HCContourElement.h"
+#include "HCContour.h"
 #include <math.h>
 #include <string.h>
 

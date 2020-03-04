@@ -22,7 +22,7 @@
 #include "Geometry/HCRectangle.h"
 #include "Graphic/HCColor.h"
 #include "Graphic/HCRaster.h"
-#include "Graphic/HCContourElement.h"
+#include "Graphic/HCContour.h"
 #include "Graphic/HCPath.h"
 #include "JSON/HCJSON.h"
 #include "Thread/HCLock.h"

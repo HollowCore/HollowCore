@@ -1,15 +1,16 @@
 //
-//  HCContourElement.c
+//  HCContour.c
 //  HollowCore
 //
 //  Created by Matt Stoker on 2/11/20.
 //  Copyright © 2020 HollowCore. All rights reserved.
 //
 
-#include "HCContourElement.h"
+#include "HCContour.h"
+#include <string.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Element Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContourElement HCContourElementMakeLinear(HCPoint p) {
     return (HCContourElement){ .p = p, .c0 = HCPointInvalid, .c1 = HCPointInvalid };
@@ -24,7 +25,7 @@ HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Equality
+// MARK: - Element Equality
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourElementIsInvalid(HCContourElement element) {
     return
@@ -100,7 +101,7 @@ void HCContourElementPrint(HCContourElement element, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Conversion
+// MARK: - Element Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContourElement HCContourElementAsLinear(HCContourElement element) {
     if (HCContourElementIsLinear(element)) {
@@ -133,7 +134,7 @@ HCContourElement HCContourElementAsCubic(HCContourElement element) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Evaluation
+// MARK: - Element Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCContourEvaluateElement(HCReal t, HCPoint p0, HCContourElement element, HCReal* dx, HCReal* dy) {
     if (HCPointIsInvalid(element.c1)) {
@@ -272,4 +273,122 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
     HCReal d = (p0.x - p1.x) * (q0.y - q1.y) - (p0.y - p1.y) * (q0.x - q1.x);
     *t =      ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
     *u =     -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Object Type
+//----------------------------------------------------------------------------------------------------------------------------------
+typedef union HCContourAtlas {
+    HCContourElement element;
+    struct {
+        HCPoint start;
+        HCInteger count;
+        HCReal invalidMarker1;
+        HCReal invalidMarker2;
+        HCBoolean closed;
+    };
+} HCContourAtlas;
+
+HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger elementCount, HCBoolean isClosed) {
+    HCContourAtlas atlas;
+    atlas.element = HCContourElementMakeLinear(startPoint);
+    atlas.count = elementCount;
+    atlas.closed = isClosed;
+    return atlas;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Constructors
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCContourInitWithElementsNoCopy(HCContourElement* elements, HCInteger elementCount, HCBoolean closed) {
+    HCContourAtlas* atlas = (HCContourAtlas*)elements;
+    *atlas = HCContourAtlasMake(elements[0].p, elementCount, closed);
+}
+
+void HCContourInitWithElements(void* memory, HCContourElement* elements, HCInteger elementCount, HCBoolean closed) {
+    memcpy(memory, elements, sizeof(HCContourElement) * elementCount);
+    HCContourAtlas* atlas = (HCContourAtlas*)memory;
+    *atlas = HCContourAtlasMake(elements[0].p, elementCount, closed);
+}
+
+void HCContourInitWithPolyline(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
+    HCContourAtlas* atlas = (HCContourAtlas*)memory;
+    *atlas = HCContourAtlasMake(startPoint, pointCount + 1, closed);
+    HCContourElement* elements = (HCContourElement*)memory;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 1) {
+        HCInteger elementIndex = 1 + pointIndex;
+        elements[elementIndex] = HCContourElementMakeLinear(points[pointIndex]);
+    }
+}
+
+void HCContourInitWithPolyQuadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
+    HCContourAtlas* atlas = (HCContourAtlas*)memory;
+    *atlas = HCContourAtlasMake(startPoint, pointCount / 2 + 1, closed);
+    HCContourElement* elements = (HCContourElement*)memory;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
+        HCInteger elementIndex = 1 + pointIndex / 2;
+        elements[elementIndex] = HCContourElementMakeQuadratic(points[pointIndex], points[pointIndex + 1]);
+    }
+}
+
+void HCContourInitWithPolyCubic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
+    HCContourAtlas* atlas = (HCContourAtlas*)memory;
+    *atlas = HCContourAtlasMake(startPoint, pointCount / 3 + 1, closed);
+    HCContourElement* elements = (HCContourElement*)memory;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 3) {
+        HCInteger elementIndex = 1 + pointIndex / 3;
+        elements[elementIndex] = HCContourElementMakeCubic(points[pointIndex], points[pointIndex + 1], points[pointIndex + 2]);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Equality
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCContourIsEqual(HCContourElement* contour, HCContourElement* other) {
+    HCInteger elementCount = HCContourElementCount(contour);
+    HCInteger otherElementCount = HCContourElementCount(other);
+    if (elementCount != otherElementCount) {
+        return false;
+    }
+    return memcmp(contour, other, elementCount * sizeof(HCContourElement)) == 0;
+}
+
+HCInteger HCContourHashValue(HCContourElement* contour) {
+    HCInteger elementCount = HCContourElementCount(contour);
+    HCInteger hash = 0;
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        hash ^= HCContourElementHashValue(contour[elementIndex]);
+    }
+    return hash;
+}
+
+void HCContourPrint(HCContourElement* contour, FILE* stream) {
+    HCInteger elementCount = HCContourElementCount(contour);
+    fprintf(stream, "<count:%lli,elements:<", elementCount);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCContourElementPrint(contour[elementIndex], stream);
+    }
+    fprintf(stream, ">>");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Attributes
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCContourElementCount(HCContourElement* contour) {
+    HCContourAtlas* atlas = (HCContourAtlas*)contour;
+    return atlas->count;
+}
+
+HCBoolean HCContourIsClosed(HCContourElement* contour) {
+    HCContourAtlas* atlas = (HCContourAtlas*)contour;
+    return atlas->closed;
+}
+
+HCPoint HCContourStartPoint(HCContourElement* contour) {
+    HCContourAtlas* atlas = (HCContourAtlas*)contour;
+    return atlas->start;
+}
+
+HCPoint HCContourEndPoint(HCContourElement* contour) {
+    return HCContourIsClosed(contour) ? HCContourStartPoint(contour) : contour[HCContourElementCount(contour) - 1].p;
 }
