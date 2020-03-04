@@ -364,6 +364,9 @@ void HCPathRemoveLastElement(HCPathRef self) {
     // Remove element polyline data
     HCListRemoveObject(self->elementPolylines);
     
+    // Update count
+    elementCount = HCPathElementCount(self);
+    
     // Re-calculate bounds to exclude the element polylines
     HCRectangle bounds = HCRectangleMake(HCPathCurrentPoint(self), HCSizeZero);
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {

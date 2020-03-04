@@ -52,7 +52,6 @@
 		C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB332207F1C9002B17FB /* HCRaster.c */; };
 		C97FDB362207F207002B17FB /* HCRaster.h in Headers */ = {isa = PBXBuildFile; fileRef = C97FDB2F2207E199002B17FB /* HCRaster.h */; };
 		C97FDB372207F20C002B17FB /* HCRaster.c in Sources */ = {isa = PBXBuildFile; fileRef = C97FDB302207E199002B17FB /* HCRaster.c */; };
-		C99D6C4024033E32008BB7B6 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99D6C3F24033E32008BB7B6 /* Package.swift */; };
 		C9AA9A2421F1743A001AA9E7 /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2321F1743A001AA9E7 /* HCObject.c */; };
 		C9AA9A2B21F26649001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2A21F26649001AA9E7 /* HCString.c */; };
 		C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */ = {isa = PBXBuildFile; fileRef = C9AA9A2721F18AE8001AA9E7 /* HCString.c */; };
@@ -595,7 +594,6 @@
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
-				C99D6C4024033E32008BB7B6 /* Package.swift in Sources */,
 				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
 				F83E472122619E8200616049 /* HCLock.c in Sources */,
 				C9CF5C6423F33B230044D752 /* HCContourElement.c in Sources */,
