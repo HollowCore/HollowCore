@@ -461,11 +461,11 @@ CTEST(HCRaster, DrawDinosaur) {
 
 CTEST(HCRaster, DrawIntersection) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
-    HCPathRef path = HCPathCreate(
+    HCPathRef path = HCPathCreateWithSVGPathData(
         "M 200 500 C 500  1000 500  1000 800 500 Z "
         "M 200 500 C 500     0 500     0 800 500 Z "
     );
-    HCPathRef rectangle = HCPathCreate("M 100 300 L 900 300 900 700 100 700 Z");
+    HCPathRef rectangle = HCPathCreateWithSVGPathData("M 100 300 L 900 300 900 700 100 700 Z");
     for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
         for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
             HCPoint point = HCPointMake(x + 0.5, y + 0.5);
@@ -481,11 +481,11 @@ CTEST(HCRaster, DrawIntersection) {
 
 CTEST(HCRaster, DrawIntersectionNonZero) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
-    HCPathRef path = HCPathCreate(
+    HCPathRef path = HCPathCreateWithSVGPathData(
         "M 200 500 C 500  1000 500  1000 800 500 Z "
         "M 200 500 C 500     0 500     0 800 500 Z "
     );
-    HCPathRef rectangle = HCPathCreate("M 100 300 L 900 300 900 700 100 700 Z");
+    HCPathRef rectangle = HCPathCreateWithSVGPathData("M 100 300 L 900 300 900 700 100 700 Z");
     for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
         for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
             HCPoint point = HCPointMake(x + 0.5, y + 0.5);

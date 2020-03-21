@@ -24,6 +24,7 @@
 #include "Graphic/HCRaster.h"
 #include "Graphic/HCContour.h"
 #include "Graphic/HCPath.h"
+#include "Graphic/HCPath+SVG.h"
 #include "JSON/HCJSON.h"
 #include "Thread/HCLock.h"
 #include "Thread/HCThread.h"

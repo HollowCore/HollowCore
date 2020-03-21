@@ -383,7 +383,7 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
 }
 
 void HCRasterDrawPathData(HCRasterRef self, const char* pathData, HCColor color) {
-    HCPathRef path = HCPathCreate(pathData);
+    HCPathRef path = HCPathCreateWithSVGPathData(pathData);
     HCRasterDrawPath(self, path, color);
     HCRelease(path);
 }
