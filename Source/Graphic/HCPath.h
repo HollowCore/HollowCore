@@ -47,6 +47,8 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 HCPathRef HCPathCreateEmpty(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
+HCPathRef HCPathCreateRectangle(HCRectangle rectangle);
+HCPathRef HCPathCreateEllipse(HCRectangle ellipseBounds);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions

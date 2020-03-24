@@ -20,5 +20,6 @@ HCPathRef HCPathCreateWithSVGPathData(const char* path);
 // MARK: - Path Parsing
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathParse(HCPathRef self, const char* path);
+void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, HCReal rotation, HCBoolean largeArc, HCBoolean sweep, HCReal x, HCReal y);
 
 #endif /* HCPath_SVG_h */

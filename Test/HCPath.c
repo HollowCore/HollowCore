@@ -66,6 +66,40 @@ CTEST(HCPath, CreateWithElements) {
     HCRelease(path);
 }
 
+CTEST(HCPath, Rectangle) {
+    HCRectangle rectangle = HCRectangleMakeWithComponents(10.0, 20.0, 30.0, 40.0);
+    HCPathRef path = HCPathCreateRectangle(rectangle);
+    ASSERT_EQUAL(HCPathElementCount(path), 5);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(HCRectangleMinX(rectangle), HCRectangleMinY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMinY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMaxY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(HCRectangleMinX(rectangle), HCRectangleMaxY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseSubpath);
+    HCRelease(path);
+}
+
+CTEST(HCPath, Ellipse) {
+    HCRectangle rectangle = HCRectangleMakeWithComponents(10.0, 20.0, 30.0, 40.0);
+    HCPathRef path = HCPathCreateEllipse(rectangle);
+    ASSERT_EQUAL(HCPathElementCount(path), 6);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMidY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[2], HCPointMake(HCRectangleMidX(rectangle), HCRectangleMaxY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[2], HCPointMake(HCRectangleMinX(rectangle), HCRectangleMidY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[2], HCPointMake(HCRectangleMidX(rectangle), HCRectangleMinY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 4).points[2], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMidY(rectangle))));
+    ASSERT_TRUE(HCPathElementAt(path, 5).command == HCPathCommandCloseSubpath);
+    HCRelease(path);
+}
+
 CTEST(HCPath, HorizontalPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 20 H 50");
     ASSERT_EQUAL(HCPathElementCount(path), 2);
@@ -472,33 +506,96 @@ CTEST(HCPath, CubicSmoothCurveRelativePolyPath) {
     HCRelease(path);
 }
 
+/*
 CTEST(HCPath, ArcPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 L 315 10");
-    // TODO: Test when arcs are supported
+    ASSERT_EQUAL(HCPathElementCount(path), 4);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 315.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(110.0, 215.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddCubicCurve);
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(125.0, 150.0)));
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[1], HCPointMake(150.0, 150.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[2], HCPointMake(162.55, 162.45)));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(315.0, 10.0)));
     HCRelease(path);
 }
 
 CTEST(HCPath, ArcRelativePath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 315 L 110 215 a 30 50 0 0 1 52.55 -52.55 L 315 10");
-    // TODO: Test when arcs are supported
+    ASSERT_EQUAL(HCPathElementCount(path), 4);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 315.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(110.0, 215.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddCubicCurve);
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(125.0, 150.0)));
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[1], HCPointMake(150.0, 150.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[2], HCPointMake(162.55, 162.45)));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(315.0, 10.0)));
     HCRelease(path);
 }
 
 CTEST(HCPath, ArcPolyPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 30 50 0 0 1 162.55 162.45 L 315 10");
-    // TODO: Test when arcs are supported
+    ASSERT_EQUAL(HCPathElementCount(path), 4);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 315.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(110.0, 215.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddCubicCurve);
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(125.0, 150.0)));
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[1], HCPointMake(150.0, 150.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[2], HCPointMake(162.55, 162.45)));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(315.0, 10.0)));
     HCRelease(path);
 }
 
 CTEST(HCPath, ArcRelativePolyPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 315 L 110 215 a 30 50 0 0 1 52.55 -52.55 a 30 50 0 0 1 52.55 -52.55 L 315 10");
-    // TODO: Test when arcs are supported
+    ASSERT_EQUAL(HCPathElementCount(path), 5);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 315.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(110.0, 215.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandAddCubicCurve);
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(125.0, 150.0)));
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[1], HCPointMake(150.0, 150.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[2], HCPointMake(162.55, 162.45)));
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddCubicCurve);
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(125.0, 150.0)));
+//    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[1], HCPointMake(150.0, 150.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[2], HCPointMake(162.55 + 52.55, 162.45 + -52.55)));
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 4).points[0], HCPointMake(315.0, 10.0)));
     HCRelease(path);
 }
+*/
 
 CTEST(HCPath, Path) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 90 C 30 10 70 10 90 90 Z L 30 10 H 70 L 90 90 Q 50 10 10 90 Z");
-    // TODO: Test when arcs are supported
+    ASSERT_EQUAL(HCPathElementCount(path), 8);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 90.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(30.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[1], HCPointMake(70.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[2], HCPointMake(90.0, 90.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(30.0, 10.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 4).points[0], HCPointMake(70.0, 10.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 5).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 5).points[0], HCPointMake(90.0, 90.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 6).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 6).points[0], HCPointMake(50.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 6).points[1], HCPointMake(10.0, 90.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 7).command == HCPathCommandCloseSubpath);
     HCRelease(path);
 }
 

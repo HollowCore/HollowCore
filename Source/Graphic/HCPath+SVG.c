@@ -223,22 +223,117 @@ void HCPathParse(HCPathRef self, const char* path) {
                             arguments[6] += subpathEndY;
                             // Fallthrough
                         case 'A': {
-//                            HCReal xr = arguments[0];
-//                            HCReal yr = arguments[1];
-//                            HCReal rotation = arguments[2] / 180.0 * M_PI;
-//                            HCBoolean largeArc = arguments[3] == 0.0 ? false : true;
-//                            HCBoolean sweep = arguments[4] == 0.0 ? false : true;
-//                            HCReal x = arguments[5];
-//                            HCReal y = arguments[6];
-//                            subpathEndX = x;
-//                            subpathEndY = y;
-//                            previousControlX = currentX;
-//                            previousControlY = currentY;
-//                            HCPathAddArc(self, x, y, xr, yr, rotation, largeArc, sweep);
+                            HCReal xr = arguments[0];
+                            HCReal yr = arguments[1];
+                            HCReal rotation = arguments[2] / 180.0 * M_PI;
+                            HCBoolean largeArc = arguments[3] == 0.0 ? false : true;
+                            HCBoolean sweep = arguments[4] == 0.0 ? false : true;
+                            HCReal x = arguments[5];
+                            HCReal y = arguments[6];
+                            subpathEndX = x;
+                            subpathEndY = y;
+                            previousControlX = currentX;
+                            previousControlY = currentY;
+                            HCPathAddCubicCurvesApproximatingArc(self, xr, yr, rotation, largeArc, sweep, x, y);
                         } break;
                     }
                 }
             }
         }
     }
+}
+
+void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, HCReal rotation, HCBoolean largeArc, HCBoolean sweep, HCReal x, HCReal y) {
+    // Correct radii or rotation that are malformed
+    xr = fabs(xr);
+    yr = fabs(yr);
+    rotation = fmod(rotation, 2.0 * M_PI);
+    if (xr == 0.0 || yr == 0.0) {
+        HCPathAddLine(self, x, y);
+        return;
+    }
+    
+    // Obtain the current point for the path as the arc start point, and package the arc end point
+    HCPoint p0 = HCPathCurrentPoint(self);
+    HCPoint p1 = HCPointMake(x, y);
+    if (HCPointIsEqual(p0, p1)) {
+        return;
+    }
+    
+    // Convert from arc end-point parameterization to arc center parameterization
+    HCReal midX = 0.5 * (p0.x - p1.x);
+    HCReal midY = 0.5 * (p0.y - p1.y);
+    HCReal cosPhi = cos(rotation);
+    HCReal sinPhi = sin(rotation);
+    HCReal x1p = +cosPhi * midX + +sinPhi * midY;
+    HCReal y1p = -sinPhi * midX + +cosPhi * midY;
+    HCReal cc = (xr*xr*yr*yr - xr*xr*y1p*y1p - yr*yr*x1p*x1p) / (xr*xr*y1p*y1p + yr*yr*x1p*x1p);
+    cc = (largeArc == sweep) ? cc : -cc;
+    HCReal cxp = cc * +((xr / yr) * y1p);
+    HCReal cyp = cc * -((yr / xr) * x1p);
+    HCReal cx = +cosPhi * cxp + -sinPhi * cyp + (0.5 * (p0.x + p1.x));
+    HCReal cy = +sinPhi * cxp + +cosPhi * cyp + (0.5 * (p0.y + p1.y));
+    HCReal arcStartX = (x1p - cxp) / xr;
+    HCReal arcStartY = (y1p - cyp) / yr;
+    HCReal arcEndX = (-x1p - cxp) / xr;
+    HCReal arcEndY = (-y1p - cyp) / yr;
+    HCReal angleStart = atan2(arcStartY, arcStartX);
+    HCReal angleEnd = atan2(arcEndY, arcEndX);
+    
+    // Adjust angles based on arc selection flags
+    // TODO: How to apply this when using atan2?
+//    if (!sweep && angleDifference > 0.0) {
+//        angleDifference -= 2.0 * M_PI;
+//    }
+//    if (sweep && angleDifference < 0.0) {
+//        angleDifference += 2.0 * M_PI;
+//    }
+    
+    // Calculate a cubic bezier approximation of the arc as if it were origin-centered, x-axis oriented
+    // TODO: Make non-broken version of this!
+//    HCReal rotatedPhi = angleDifference;
+//    HCReal approximation = 4.0 / 3.0 * tan(rotatedPhi * 0.25);
+//    HCReal rotatedCosPhi = cos(rotatedPhi);
+//    HCReal rotatedSinPhi = sin(rotatedPhi);
+//    HCPoint rotatedP0 = HCPointMake(
+//        xr,
+//        0.0);
+//    HCPoint rotatedC0 = HCPointMake(
+//        xr,
+//        yr * approximation);
+//    HCPoint rotatedC1 = HCPointMake(
+//        xr * (rotatedCosPhi + approximation * rotatedSinPhi),
+//        yr * (rotatedSinPhi - approximation * rotatedCosPhi));
+//    HCPoint rotatedP1 = HCPointMake(
+//        xr * rotatedCosPhi,
+//        yr * rotatedSinPhi);
+    
+//    HCPathAddCubicCurve(self, c1.x, c1.y, c0.x, c0.y, x, y);
+    
+    // DEBUG: Plot ellipse center using + marker
+    HCPathMove(self, cx - 5.0, cy);
+    HCPathAddLine(self, cx + 5.0, cy);
+    HCPathMove(self, cx, cy - 5.0);
+    HCPathAddLine(self, cx, cy + 5.0);
+    
+    // DEBUG: Plot points of actual ellipse
+    HCReal angleMin = fmin(angleStart, angleEnd);
+    HCReal angleMax = fmax(angleStart, angleEnd);
+//    angleMin = 0.0;
+//    angleMax = 2.0 * M_PI;
+    HCReal angleStep = (angleMax - angleMin) * 0.05;
+    HCPathMove(self, p0.x, p0.y);
+    for (HCReal angle = angleMin; angle <= angleMax; angle += angleStep) {
+        HCReal x = xr * cos(angle);
+        HCReal y = yr * sin(angle);
+        HCReal tx = x;
+        HCReal ty = y;
+        x = +cosPhi * tx + -sinPhi * ty;
+        y = +sinPhi * tx + +cosPhi * ty;
+        x += cx;
+        y += cy;
+        
+        HCPathAddLine(self, x, y);
+    }
+    HCPathAddLine(self, p1.x, p1.y);
 }
