@@ -557,9 +557,13 @@ CTEST(HCList, IterationLoopBackward) {
     HCRelease(list);
 }
 
-void HCListForEachTestFunction(HCRef value) {
-    ASSERT_TRUE(HCNumberAsInteger(value) < 5);
+void HCListForEachTestFunction(void* context, HCRef value) {
+    HCInteger* counter = (HCInteger*)context;
+    ASSERT_TRUE(HCNumberAsInteger(value) == *counter);
+    *counter += 1;
 }
+
+HCInteger HCListForEachTestFunctionCounter = 0;
 
 CTEST(HCList, ForEach) {
     HCListRef list = HCListCreate();
@@ -569,18 +573,18 @@ CTEST(HCList, ForEach) {
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
     
-    HCListForEach(list, HCListForEachTestFunction);
+    HCListForEach(list, HCListForEachTestFunction, &HCListForEachTestFunctionCounter);
+    ASSERT_EQUAL(HCListForEachTestFunctionCounter, 5);
+    
+    HCRelease(list);
 }
 
-void HCListForEachWithContextTestFunction(void* context, HCRef value) {
-    HCInteger* counter = (HCInteger*)context;
-    ASSERT_TRUE(HCNumberAsInteger(value) == *counter);
-    *counter += 1;
+HCBoolean HCListFilterTestFunction(void* context, HCRef value) {
+    ASSERT_TRUE(context == (void*)0xDEADBEEF);
+    return HCNumberAsInteger(value) >= 2;
 }
 
-HCInteger HCListForEachWithContextTestFunctionCounter = 0;
-
-CTEST(HCList, ForEachContext) {
+CTEST(HCList, Filter) {
     HCListRef list = HCListCreate();
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
@@ -588,5 +592,63 @@ CTEST(HCList, ForEachContext) {
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
     HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
     
-    HCListForEachWithContext(list, HCListForEachWithContextTestFunction, &HCListForEachWithContextTestFunctionCounter);
+    HCListRef filtered = HCListFilterRetained(list, HCListFilterTestFunction, (void*)0xDEADBEEF);
+    ASSERT_EQUAL(HCListCount(filtered), 3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 0)), 2);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 1)), 3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(filtered, 2)), 4);
+    
+    HCRelease(list);
+    HCRelease(filtered);
+}
+
+HCRef HCListMapTestFunction(void* context, HCRef value) {
+    ASSERT_TRUE(context == (void*)0xDEADBEEF);
+    return HCNumberCreateWithInteger(HCNumberAsInteger(value) * -1);
+}
+
+HCInteger HCListMapTestFunctionCounter = 0;
+
+CTEST(HCList, Map) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCListRef transformed = HCListMapRetained(list, HCListMapTestFunction, (void*)0xDEADBEEF);
+    ASSERT_EQUAL(HCListCount(transformed), 5);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 0)), 0);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 1)), -1);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 2)), -2);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 3)), -3);
+    ASSERT_EQUAL(HCNumberAsInteger(HCListObjectAtIndex(transformed, 4)), -4);
+    
+    HCRelease(list);
+    HCRelease(transformed);
+}
+
+HCRef HCListReduceTestFunction(void* context, HCRef aggregate, HCRef value) {
+    ASSERT_TRUE(context == (void*)0xDEADBEEF);
+    return HCNumberCreateWithInteger(HCNumberAsInteger(aggregate) + HCNumberAsInteger(value));
+}
+
+HCInteger HCListReduceTestFunctionCounter = 0;
+
+CTEST(HCList, Reduce) {
+    HCListRef list = HCListCreate();
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(0));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(1));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(2));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(3));
+    HCListAddObjectReleased(list, HCNumberCreateWithInteger(4));
+    
+    HCNumberRef initialValue = HCNumberCreateWithInteger(10);
+    HCNumberRef total = HCListReduceRetained(list, initialValue, HCListReduceTestFunction, (void*)0xDEADBEEF);
+    ASSERT_EQUAL(HCNumberAsInteger(total), 10 + 0 + 1 + 2 + 3 + 4);
+    
+    HCRelease(initialValue);
+    HCRelease(total);
+    HCRelease(list);
 }

@@ -43,6 +43,7 @@ typedef enum HCRectangleEdge {
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleMake(HCPoint origin, HCSize size);
+HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
@@ -84,6 +85,7 @@ HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy);
 HCRectangle HCRectangleOffset(HCRectangle rectangle, HCReal dx, HCReal dy);
 HCRectangle HCRectangleUnion(HCRectangle rectangle, HCRectangle other);
 HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other);
+HCRectangle HCRectangleIncludingPoint(HCRectangle rectangle, HCPoint point);
 void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* remainder, HCReal amount, HCRectangleEdge edge);
 
 #endif /* HCRectangle_h */

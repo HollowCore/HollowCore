@@ -359,20 +359,46 @@ HCBoolean HCListIterationHasEnded(HCListIterator* iterator) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration Convenience Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction) {
-    if (forEachFunction == NULL) {
-        return;
-    }
-    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        forEachFunction(i.object);
-    }
-}
-
-void HCListForEachWithContext(HCListRef self, HCListForEachWithContextFunction forEachFunction, void* context) {
+void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction, void* context) {
     if (forEachFunction == NULL) {
         return;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
         forEachFunction(context, i.object);
     }
+}
+
+HCListRef HCListFilterRetained(HCListRef self, HCListFilterFunction isIncluded, void* context) {
+    HCListRef filtered = HCListCreate();
+    if (isIncluded == NULL) {
+        return filtered;
+    }
+    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        if (isIncluded(context, i.object)) {
+            HCListAddObject(filtered, i.object);
+        }
+    }
+    return filtered;
+}
+
+HCListRef HCListMapRetained(HCListRef self, HCListMapFunction transform, void* context) {
+    HCListRef mapped = HCListCreateWithCapacity(HCListCount(self));
+    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        HCRef mappedValue = transform == NULL ? HCRetain(i.object) : transform(context, i.object);
+        HCListAddObjectReleased(mapped, mappedValue);
+    }
+    return mapped;
+}
+
+HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunction nextPartialResult, void* context) {
+    HCRef aggregateValue = HCRetain(initialValue);
+    if (nextPartialResult == NULL) {
+        return aggregateValue;
+    }
+    for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        HCRef intermediateValue = nextPartialResult(context, aggregateValue, i.object);
+        HCRelease(aggregateValue);
+        aggregateValue = intermediateValue;
+    }
+    return aggregateValue;
 }

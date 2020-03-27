@@ -12,6 +12,7 @@
 #include "../Core/HCObject.h"
 #include "../Geometry/HCRectangle.h"
 #include "../Data/HCData.h"
+#include "../Container/HCList.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -44,6 +45,9 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreate(const char* path);
+HCPathRef HCPathCreateEmpty(void);
+HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
+HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -57,6 +61,9 @@ void HCPathPrint(HCPathRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathElementCount(HCPathRef self);
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
+HCDataRef HCPathElementPolylineDataRetained(HCPathRef self, HCInteger elementIndex);
+HCInteger HCPathElementPolylinePointCount(HCPathRef self, HCInteger elementIndex);
+HCPoint HCPathElementPolylinePointAt(HCPathRef self, HCInteger elementIndex, HCInteger pointIndex);
 HCPoint HCPathCurrentPoint(HCPathRef self);
 HCRectangle HCPathBounds(HCPathRef self);
 
@@ -68,12 +75,25 @@ void HCPathAddLine(HCPathRef self, HCReal x, HCReal y);
 void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y);
 void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x, HCReal y);
 void HCPathCloseSubpath(HCPathRef self);
+void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points);
+void HCPathRemoveLastElement(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathPrintData(HCPathRef self, FILE* stream);
-HCDataRef HCPathAsLineSegmentDataRetained(HCPathRef self, HCReal flatnessThreshold);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Subpaths
+//----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCPathRef HCPathSubpathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
+HCListRef HCPathSubpathsRetained(HCPathRef self);
+HCListRef HCPathOpenSubpathsRetained(HCPathRef self);
+HCListRef HCPathClosedSubpathsRetained(HCPathRef self);
+HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self);
+HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
@@ -83,12 +103,5 @@ HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point);
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
 void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Evaluation
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCPathEvaluateLine(HCReal t, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-void HCPathEvaluateQuadraticCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-void HCPathEvaluateCubicCurve(HCReal t, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal* sx, HCReal* sy, HCReal* dx, HCReal* dy);
-void HCPathLineLineIntersection(HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal x2, HCReal y2, HCReal x3, HCReal y3, HCReal* t, HCReal* u);
 
 #endif /* HCPath_h */

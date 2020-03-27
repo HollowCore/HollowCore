@@ -15,6 +15,10 @@ HCRectangle HCRectangleMake(HCPoint origin, HCSize size) {
     return (HCRectangle){.origin = origin, .size = size};
 }
 
+HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height) {
+    return HCRectangleMake(HCPointMake(x, y), HCSizeMake(width, height));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -156,11 +160,21 @@ HCRectangle HCRectangleUnion(HCRectangle rectangle, HCRectangle other) {
 }
 
 HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other) {
-    HCReal minX = fmax(HCRectangleMinX(rectangle), HCRectangleMinX(other));
-    HCReal minY = fmax(HCRectangleMinY(rectangle), HCRectangleMinY(other));
-    HCReal maxX = fmin(HCRectangleMaxX(rectangle), HCRectangleMaxX(other));
-    HCReal maxY = fmin(HCRectangleMaxY(rectangle), HCRectangleMaxY(other));
-    return (maxX < minX || maxY < minY) ? HCRectangleInvalid : HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    HCReal maxMinX = fmax(HCRectangleMinX(rectangle), HCRectangleMinX(other));
+    HCReal maxMinY = fmax(HCRectangleMinY(rectangle), HCRectangleMinY(other));
+    HCReal minMaxX = fmin(HCRectangleMaxX(rectangle), HCRectangleMaxX(other));
+    HCReal minMaxY = fmin(HCRectangleMaxY(rectangle), HCRectangleMaxY(other));
+    return (minMaxX < maxMinX || minMaxY < maxMinY) ?
+        HCRectangleMake(HCPointMake((maxMinX - minMaxX) * 0.5, (maxMinY - minMaxY) * 0.5), HCSizeZero) :
+        HCRectangleMake(HCPointMake(maxMinX, maxMinY), HCSizeMake(minMaxX - maxMinX, minMaxY - maxMinY));
+}
+
+HCRectangle HCRectangleIncludingPoint(HCRectangle rectangle, HCPoint point) {
+    HCReal minX = fmin(HCRectangleMinX(rectangle), point.x);
+    HCReal minY = fmin(HCRectangleMinY(rectangle), point.y);
+    HCReal maxX = fmax(HCRectangleMaxX(rectangle), point.x);
+    HCReal maxY = fmax(HCRectangleMaxY(rectangle), point.y);
+    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
 }
 
 void HCRectangleDivide(HCRectangle rectangle, HCRectangle* slice, HCRectangle* remainder, HCReal amount, HCRectangleEdge edge) {
