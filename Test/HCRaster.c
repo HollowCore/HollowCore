@@ -481,6 +481,8 @@ CTEST(HCRaster, DrawIntersection) {
     }
     HCRasterSaveBMP(raster, "path_intersection.bmp");
     HCRasterSavePPM(raster, "path_intersection.ppm");
+    HCRelease(rectangle);
+    HCRelease(path);
     HCRelease(raster);
 }
 
@@ -501,6 +503,8 @@ CTEST(HCRaster, DrawIntersectionNonZero) {
     }
     HCRasterSaveBMP(raster, "path_intersection.bmp");
     HCRasterSavePPM(raster, "path_intersection.ppm");
+    HCRelease(rectangle);
+    HCRelease(path);
     HCRelease(raster);
 }
 
@@ -512,6 +516,7 @@ CTEST(HCRaster, DrawRectanglePath) {
     HCRasterSaveBMP(raster, "path_rectangle.bmp");
     HCRasterSavePPM(raster, "path_rectangle.ppm");
     HCRelease(path);
+    HCRelease(raster);
 }
 
 CTEST(HCRaster, DrawEllipsePath) {
@@ -522,6 +527,7 @@ CTEST(HCRaster, DrawEllipsePath) {
     HCRasterSaveBMP(raster, "path_ellipse.bmp");
     HCRasterSavePPM(raster, "path_ellipse.ppm");
     HCRelease(path);
+    HCRelease(raster);
 }
 
 CTEST(HCRaster, DrawTriangle) {
