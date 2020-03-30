@@ -259,14 +259,20 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     if (HCPointIsEqual(p0, p1)) {
         return;
     }
-    
-    // Convert from arc end-point parameterization to arc center parameterization
-    HCReal midX = 0.5 * (p0.x - p1.x);
-    HCReal midY = 0.5 * (p0.y - p1.y);
     HCReal cosPhi = cos(rotation);
     HCReal sinPhi = sin(rotation);
+    
+    // Convert from arc end-point parameterization to arc center parameterization and ensure passed radii can span the gap between p0 and p1
+    HCReal midX = 0.5 * (p0.x - p1.x);
+    HCReal midY = 0.5 * (p0.y - p1.y);
     HCReal x1p = +cosPhi * midX + +sinPhi * midY;
     HCReal y1p = -sinPhi * midX + +cosPhi * midY;
+    HCReal radiiAdjustmentSquared = (x1p * x1p) / (xr * xr) + (y1p * y1p) / (yr * yr);
+    if (radiiAdjustmentSquared > 1.0) {
+        HCReal radiiAdjustment = sqrt(radiiAdjustmentSquared);
+        xr *= radiiAdjustment;
+        yr *= radiiAdjustment;
+    }
     HCReal cc = (xr*xr*yr*yr - xr*xr*y1p*y1p - yr*yr*x1p*x1p) / (xr*xr*y1p*y1p + yr*yr*x1p*x1p);
     cc = (largeArc == sweep) ? cc : -cc;
     HCReal cxp = cc * +((xr / yr) * y1p);
@@ -311,16 +317,14 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
 //    HCPathAddCubicCurve(self, c1.x, c1.y, c0.x, c0.y, x, y);
     
     // DEBUG: Plot ellipse center using + marker
-    HCPathMove(self, cx - 5.0, cy);
-    HCPathAddLine(self, cx + 5.0, cy);
-    HCPathMove(self, cx, cy - 5.0);
-    HCPathAddLine(self, cx, cy + 5.0);
+//    HCPathMove(self, cx - 5.0, cy);
+//    HCPathAddLine(self, cx + 5.0, cy);
+//    HCPathMove(self, cx, cy - 5.0);
+//    HCPathAddLine(self, cx, cy + 5.0);
     
     // DEBUG: Plot points of actual ellipse
-    HCReal angleMin = fmin(angleStart, angleEnd);
-    HCReal angleMax = fmax(angleStart, angleEnd);
-//    angleMin = 0.0;
-//    angleMax = 2.0 * M_PI;
+    HCReal angleMin = angleStart;//fmin(angleStart, angleEnd);
+    HCReal angleMax = angleEnd;//fmax(angleStart, angleEnd);
     HCReal angleStep = (angleMax - angleMin) * 0.05;
     HCPathMove(self, p0.x, p0.y);
     for (HCReal angle = angleMin; angle <= angleMax; angle += angleStep) {
@@ -332,7 +336,7 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         y = +sinPhi * tx + +cosPhi * ty;
         x += cx;
         y += cy;
-        
+
         HCPathAddLine(self, x, y);
     }
     HCPathAddLine(self, p1.x, p1.y);
