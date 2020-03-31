@@ -350,41 +350,78 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePolyPath) {
 }
 
 //CTEST(HCRaster, DrawArcPath) {
-//    HCRasterRef raster = HCRasterCreate(320, 320);
-//    HCRasterDrawPathData(raster, "M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 L 315 10", HCRasterColorRotating);
+//    HCRasterRef raster = HCRasterCreate(500, 500);
+//    HCRasterDrawPathData(raster,
+//        "M25 350 L 75 325"
+//        "A25  25 -30 0 1 125 300 L 175 275"
+//        "A25  50 -30 0 1 225 250 L 275 225"
+//        "A25  75 -30 0 1 325 200 L 375 175"
+//        "A25 100 -30 0 1 425 150 L 475 125", HCRasterColorRotating);
 //    HCRasterSaveBMP(raster, "path_arc.bmp");
 //    HCRasterSavePPM(raster, "path_arc.ppm");
 //    HCRelease(raster);
 //}
+//
+//CTEST(HCRaster, DrawArcRelativePath) {
+//    HCRasterRef raster = HCRasterCreate(500, 500);
+//    HCRasterDrawPathData(raster,
+//        "M25 350 l 50 -25"
+//        "a25  25 -30 0 1 50 -25 l 50 -25"
+//        "a25  50 -30 0 1 50 -25 l 50 -25"
+//        "a25  75 -30 0 1 50 -25 l 50 -25"
+//        "a25 100 -30 0 1 50 -25 l 50 -25", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_relative.bmp");
+//    HCRasterSavePPM(raster, "path_arc_relative.ppm");
+//    HCRelease(raster);
+//}
 
-CTEST(HCRaster, DrawArcRelativePath) {
-    HCRasterRef raster = HCRasterCreate(500, 500);
-    HCRasterDrawPathData(raster,
-        "M25 350 l 50 -25"
-        "a25  25 -30 0 1 50 -25 l 50 -25"
-        "a25  50 -30 0 1 50 -25 l 50 -25"
-        "a25  75 -30 0 1 50 -25 l 50 -25"
-        "a25 100 -30 0 1 50 -25 l 50 -25", HCRasterColorRotating);
-    HCRasterSaveBMP(raster, "path_arc_relative.bmp");
-    HCRasterSavePPM(raster, "path_arc_relative.ppm");
+CTEST(HCRaster, DrawArcPolyPath) {
+    HCRasterRef raster = HCRasterCreate(320, 320);
+    HCRasterDrawPathData(raster, "M 10 315 L 110 215 A 30 50 60 0 1 162.55 162.55 30 50 30 1 0 215.10 110.00 L 315 10", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_poly.bmp");
+    HCRasterSavePPM(raster, "path_arc_poly.ppm");
     HCRelease(raster);
 }
 
-//CTEST(HCRaster, DrawArcPolyPath) {
-//    HCRasterRef raster = HCRasterCreate(320, 320);
-//    HCRasterDrawPathData(raster, "M 10 315 L 110 215 A 30 50 0 0 1 162.55 162.45 30 50 0 0 1 162.55 162.45 L 315 10", HCRasterColorRotating);
-//    HCRasterSaveBMP(raster, "path_arc_poly.bmp");
-//    HCRasterSavePPM(raster, "path_arc_poly.ppm");
-//    HCRelease(raster);
-//}
+CTEST(HCRaster, DrawArcRelativePolyPath) {
+    HCRasterRef raster = HCRasterCreate(320, 320);
+    HCRasterDrawPathData(raster, "M 10 315 L 110 215 a 30 50 60 0 1 52.55 -52.55 30 50 30 1 0 52.55 -52.55 L 315 10", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_relative_poly.bmp");
+    HCRasterSavePPM(raster, "path_arc_relative_poly.ppm");
+    HCRelease(raster);
+}
 
-//CTEST(HCRaster, DrawArcRelativePolyPath) {
-//    HCRasterRef raster = HCRasterCreate(320, 320);
-//    HCRasterDrawPathData(raster, "M 10 315 L 110 215 a 30 50 0 0 1 52.55 -52.55 a 30 50 0 0 1 52.55 -52.55 L 315 10", HCRasterColorRotating);
-//    HCRasterSaveBMP(raster, "path_arc_relative_poly.bmp");
-//    HCRasterSavePPM(raster, "path_arc_relative_poly.ppm");
-//    HCRelease(raster);
-//}
+CTEST(HCRaster, DrawArcSmallArcNegativeSweep) {
+    HCRasterRef raster = HCRasterCreate(350, 200);
+    HCRasterDrawPathData(raster, "M 125,75 a100,50 0 0,0 100,50", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_small_arc_negative_sweep.bmp");
+    HCRasterSavePPM(raster, "path_arc_small_arc_negative_sweep.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawArcLargeArcNegativeSweep) {
+    HCRasterRef raster = HCRasterCreate(350, 200);
+    HCRasterDrawPathData(raster, "M 125,75 a100,50 0 1,0 100,50", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_large_arc_negative_sweep.bmp");
+    HCRasterSavePPM(raster, "path_arc_large_arc_negative_sweep.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawArcSmallArcPositiveSweep) {
+    HCRasterRef raster = HCRasterCreate(350, 200);
+    HCRasterDrawPathData(raster, "M 125,75 a100,50 0 0,1 100,50", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_small_arc_positive_sweep.bmp");
+    HCRasterSavePPM(raster, "path_arc_small_arc_positive_sweep.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawArcLargeArcPositiveSweep) {
+    HCRasterRef raster = HCRasterCreate(350, 200);
+    HCRasterDrawPathData(raster, "M 125,75 a100,50 0 1,1 100,50", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_large_arc_positive_sweep.bmp");
+    HCRasterSavePPM(raster, "path_arc_large_arc_positive_sweep.ppm");
+    HCRelease(raster);
+}
 
 CTEST(HCRaster, DrawPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
