@@ -285,6 +285,13 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     HCReal arcEndY = (-y1p - cyp) / yr;
     HCReal angleStart = atan2(arcStartY, arcStartX);
     HCReal angleEnd = atan2(arcEndY, arcEndX);
+    HCReal angleDistance = fabs(angleEnd - angleStart);
+    if (largeArc && angleDistance < M_PI) {
+        angleDistance = fabs(angleDistance - 2.0 * M_PI);
+    }
+    if (!largeArc && angleDistance > M_PI) {
+        angleDistance = fabs(angleDistance - 2.0 * M_PI);
+    }
     
     // Calculate a cubic bezier approximation of the arc as if it were origin-centered, x-axis oriented
     // TODO: Make non-broken version of this!
@@ -315,27 +322,15 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     
     // DEBUG: Plot points of actual ellipse
     HCInteger stepCount = 100;
-    HCReal angleStep = fabs(angleEnd - angleStart);
-    if (largeArc && angleStep < M_PI) {
-        angleStep = fabs(angleStep - 2.0 * M_PI);
-    }
-    if (!largeArc && angleStep > M_PI) {
-        angleStep = fabs(angleStep - 2.0 * M_PI);
-    }
-    angleStep *= 1.0 / (HCReal)stepCount;
+    HCReal angleStep = angleDistance / (HCReal)stepCount;
     angleStep *= (sweep ? 1.0 : -1.0);
     HCReal angle = angleStart;
     HCPathMove(self, p0.x, p0.y);
     for (HCInteger step = 0; step < stepCount; step++) {
-        HCReal x = xr * cos(angle);
-        HCReal y = yr * sin(angle);
-        HCReal tx = x;
-        HCReal ty = y;
-        x = +cosPhi * tx + -sinPhi * ty;
-        y = +sinPhi * tx + +cosPhi * ty;
-        x += cx;
-        y += cy;
-
+        HCReal tx = xr * cos(angle);
+        HCReal ty = yr * sin(angle);
+        HCReal x = +cosPhi * tx + -sinPhi * ty + cx;
+        HCReal y = +sinPhi * tx + +cosPhi * ty + cy;
         HCPathAddLine(self, x, y);
         angle = fmod(angle + angleStep, 2.0 * M_PI);
     }
