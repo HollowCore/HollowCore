@@ -349,31 +349,124 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePolyPath) {
     HCRelease(raster);
 }
 
-//CTEST(HCRaster, DrawArcPath) {
-//    HCRasterRef raster = HCRasterCreate(500, 500);
-//    HCRasterDrawPathData(raster,
-//        "M25 350 L 75 325"
-//        "A25  25 -30 0 1 125 300 L 175 275"
-//        "A25  50 -30 0 1 225 250 L 275 225"
-//        "A25  75 -30 0 1 325 200 L 375 175"
-//        "A25 100 -30 0 1 425 150 L 475 125", HCRasterColorRotating);
-//    HCRasterSaveBMP(raster, "path_arc.bmp");
-//    HCRasterSavePPM(raster, "path_arc.ppm");
+//CTEST(HCRaster, DrawCircle90ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 500 750", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle90.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle90.ppm");
 //    HCRelease(raster);
 //}
 //
-//CTEST(HCRaster, DrawArcRelativePath) {
-//    HCRasterRef raster = HCRasterCreate(500, 500);
-//    HCRasterDrawPathData(raster,
-//        "M25 350 l 50 -25"
-//        "a25  25 -30 0 1 50 -25 l 50 -25"
-//        "a25  50 -30 0 1 50 -25 l 50 -25"
-//        "a25  75 -30 0 1 50 -25 l 50 -25"
-//        "a25 100 -30 0 1 50 -25 l 50 -25", HCRasterColorRotating);
-//    HCRasterSaveBMP(raster, "path_arc_relative.bmp");
-//    HCRasterSavePPM(raster, "path_arc_relative.ppm");
+//CTEST(HCRaster, DrawCircle180ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 250 500", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle180.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle180.ppm");
 //    HCRelease(raster);
 //}
+//
+//CTEST(HCRaster, DrawCircle270ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 1 1 500 250", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle270.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle270.ppm");
+//    HCRelease(raster);
+//}
+//
+//CTEST(HCRaster, DrawCircle359ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 1 1 749.96 495.64", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle359.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle359.ppm");
+//    HCRelease(raster);
+//}
+//
+//CTEST(HCRaster, DrawCircle45ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 676.78 676.78", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle45.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle45.ppm");
+//    HCRelease(raster);
+//}
+//
+//CTEST(HCRaster, DrawCircle30ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 716.51 625", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle30.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle30.ppm");
+//    HCRelease(raster);
+//}
+//
+//CTEST(HCRaster, DrawCircle60ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 625 716.51", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle60.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle60.ppm");
+//    HCRelease(raster);
+//}
+//
+//CTEST(HCRaster, DrawCircle120to150ArcPath) {
+//    HCRasterRef raster = HCRasterCreate(1000, 1000);
+//    HCRasterDrawPathData(raster, "M 375 716.51 A 250 250 0 0 1 283.49 716.51", HCRasterColorRotating);
+//    HCRasterSaveBMP(raster, "path_arc_circle120to150.bmp");
+//    HCRasterSavePPM(raster, "path_arc_circle120to150.ppm");
+//    HCRelease(raster);
+//}
+
+CTEST(HCRaster, DrawCircleArcsPath) {
+    for (HCInteger i = 0; i < 360; i++) {
+        HCRasterRef raster = HCRasterCreate(1000, 1000);
+        HCReal angleStart = i;
+        HCReal angleEnd = i * 2;
+        HCReal cx = 500;
+        HCReal cy = 500;
+        HCReal rx = 250;
+        HCReal ry = 250;
+        HCReal rotation = 0.0;
+        HCReal x0 = cx + rx * cos(angleStart * M_PI / 180.0);
+        HCReal y0 = cy + ry * sin(angleStart * M_PI / 180.0);
+        HCReal x1 = cx + rx * cos(angleEnd * M_PI / 180.0);
+        HCReal y1 = cy + ry * sin(angleEnd * M_PI / 180.0);
+        HCInteger large_arc = (angleEnd - angleStart) < 180.0 ? 0 : 1;
+        HCInteger sweep = 1;
+        char pathData[1024];
+        sprintf(pathData, "M %f %f A %f %f %f %lli %lli %f %f", x0, y0, rx, ry, rotation, large_arc, sweep, x1, y1);
+        HCRasterDrawPathData(raster, pathData, HCRasterColorRotating);
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "path_arc_circle%ito%i.bmp", (int)angleStart, (int)angleEnd);
+        HCRasterSaveBMP(raster, bmpFileName);
+        char ppmFileName[1024];
+        sprintf(ppmFileName, "path_arc_circle%ito%i.ppm", (int)angleStart, (int)angleEnd);
+        HCRasterSavePPM(raster, ppmFileName);
+        HCRelease(raster);
+    }
+}
+
+CTEST(HCRaster, DrawArcPath) {
+    HCRasterRef raster = HCRasterCreate(500, 500);
+    HCRasterDrawPathData(raster,
+        "M25 350 L 75 325"
+        "A25  25 -30 0 1 125 300 L 175 275"
+        "A25  50 -30 0 1 225 250 L 275 225"
+        "A25  75 -30 0 1 325 200 L 375 175"
+        "A25 100 -30 0 1 425 150 L 475 125", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc.bmp");
+    HCRasterSavePPM(raster, "path_arc.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawArcRelativePath) {
+    HCRasterRef raster = HCRasterCreate(500, 500);
+    HCRasterDrawPathData(raster,
+        "M25 350 l 50 -25"
+        "a25  25 -30 0 1 50 -25 l 50 -25"
+        "a25  50 -30 0 1 50 -25 l 50 -25"
+        "a25  75 -30 0 1 50 -25 l 50 -25"
+        "a25 100 -30 0 1 50 -25 l 50 -25", HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "path_arc_relative.bmp");
+    HCRasterSavePPM(raster, "path_arc_relative.ppm");
+    HCRelease(raster);
+}
 
 CTEST(HCRaster, DrawArcPolyPath) {
     HCRasterRef raster = HCRasterCreate(320, 320);
