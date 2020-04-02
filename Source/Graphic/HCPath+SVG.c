@@ -77,10 +77,8 @@ void HCPathParse(HCPathRef self, const char* path) {
                 char* end = (char*)current;
                 double argument = strtod(current, &end);
                 if (end <= current) {
-                    // Invalid argument, ignore it and dump the current path sub-component
-                    type = '\0';
-                    current++;
-                    break;
+                    // Invalid argument, terminate parsing and return path as far as parsed to this point as directed by SVG specification
+                    return;
                 }
                 
                 // Save the argument and advance to the character after the argument
