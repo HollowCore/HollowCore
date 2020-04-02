@@ -414,14 +414,14 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePolyPath) {
 //}
 
 CTEST(HCRaster, DrawCircleArcsPath) {
-    for (HCInteger i = 0; i < 360; i++) {
+    for (HCInteger i = 0; i < 360; i += 5) {
         HCRasterRef raster = HCRasterCreate(1000, 1000);
-        HCReal angleStart = i;
-        HCReal angleEnd = i * 2;
+        HCReal angleStart = 30;
+        HCReal angleEnd = 90;
         HCReal cx = 500;
         HCReal cy = 500;
-        HCReal rx = 250;
-        HCReal ry = 250;
+        HCReal rx = 100 + i * 5;
+        HCReal ry = 100 + i * 10;
         HCReal rotation = 0.0;
         HCReal x0 = cx + rx * cos(angleStart * M_PI / 180.0);
         HCReal y0 = cy + ry * sin(angleStart * M_PI / 180.0);
@@ -433,10 +433,10 @@ CTEST(HCRaster, DrawCircleArcsPath) {
         sprintf(pathData, "M %f %f A %f %f %f %lli %lli %f %f", x0, y0, rx, ry, rotation, large_arc, sweep, x1, y1);
         HCRasterDrawPathData(raster, pathData, HCRasterColorRotating);
         char bmpFileName[1024];
-        sprintf(bmpFileName, "path_arc_circle%ito%i.bmp", (int)angleStart, (int)angleEnd);
+        sprintf(bmpFileName, "path_arc_circle%i.bmp", (int)i);
         HCRasterSaveBMP(raster, bmpFileName);
         char ppmFileName[1024];
-        sprintf(ppmFileName, "path_arc_circle%ito%i.ppm", (int)angleStart, (int)angleEnd);
+        sprintf(ppmFileName, "path_arc_circle%i.ppm", (int)i);
         HCRasterSavePPM(raster, ppmFileName);
         HCRelease(raster);
     }

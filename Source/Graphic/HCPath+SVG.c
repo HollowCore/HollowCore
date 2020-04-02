@@ -302,15 +302,15 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         HCReal approximation = 4.0 / 3.0 * tan(angleSliceSpan * 0.25);
         HCReal rotatedCosPhi = cos(angleSliceSpan);
         HCReal rotatedSinPhi = sin(angleSliceSpan);
-        HCReal cx0Rotated = xr;
-        HCReal cy0Rotated = yr * approximation;
-        HCReal cx1Rotated = xr * (rotatedCosPhi + approximation * rotatedSinPhi);
-        HCReal cy1Rotated = yr * (rotatedSinPhi - approximation * rotatedCosPhi);
-        HCReal xRotated = xr * rotatedCosPhi;
-        HCReal yRotated = yr * rotatedSinPhi;
+        HCReal cx0Rotated = 1.0;
+        HCReal cy0Rotated = approximation;
+        HCReal cx1Rotated = rotatedCosPhi + approximation * rotatedSinPhi;
+        HCReal cy1Rotated = rotatedSinPhi - approximation * rotatedCosPhi;
+        HCReal xRotated = rotatedCosPhi;
+        HCReal yRotated = rotatedSinPhi;
         if (true) {
             HCPoint current = HCPathCurrentPoint(self);
-            HCReal x0Rotated = xr;
+            HCReal x0Rotated = 1.0;
             HCReal y0Rotated = 0.0;
             HCReal x1Rotated = xRotated;
             HCReal y1Rotated = yRotated;
@@ -320,34 +320,42 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
             HCPathAddLine(self, 5.0 + a, 5.0 + b);
             HCPathMove(self, 5.0 + a, -5.0 + b);
             HCPathAddLine(self, -5.0 + a,  5.0 + b);
-            HCPathMove(self, x0Rotated - 5.0 + a, y0Rotated + b);
-            HCPathAddLine(self, x0Rotated + 5.0 + a, y0Rotated + b);
-            HCPathMove(self, x0Rotated + a, y0Rotated - 5.0 + b);
-            HCPathAddLine(self, x0Rotated + a, y0Rotated + 5.0 + b);
-            HCPathMove(self, cx0Rotated - 5.0 + a, cy0Rotated + b);
-            HCPathAddLine(self, cx0Rotated + 5.0 + a, cy0Rotated + b);
-            HCPathMove(self, cx0Rotated + a, cy0Rotated - 5.0 + b);
-            HCPathAddLine(self, cx0Rotated + a, cy0Rotated + 5.0 + b);
-            HCPathMove(self, cx1Rotated - 5.0 + a, cy1Rotated + b);
-            HCPathAddLine(self, cx1Rotated + 5.0 + a, cy1Rotated + b);
-            HCPathMove(self, cx1Rotated + a, cy1Rotated - 5.0 + b);
-            HCPathAddLine(self, cx1Rotated + a, cy1Rotated + 5.0 + b);
-            HCPathMove(self, x1Rotated - 5.0 + a, y1Rotated + b);
-            HCPathAddLine(self, x1Rotated + 5.0 + a, y1Rotated + b);
-            HCPathMove(self, x1Rotated + a, y1Rotated - 5.0 + b);
-            HCPathAddLine(self, x1Rotated + a, y1Rotated + 5.0 + b);
+            HCPathMove(self, xr * x0Rotated - 5.0 + a, yr * y0Rotated + b);
+            HCPathAddLine(self, xr * x0Rotated + 5.0 + a, yr * y0Rotated + b);
+            HCPathMove(self, xr * x0Rotated + a, yr * y0Rotated - 5.0 + b);
+            HCPathAddLine(self, xr * x0Rotated + a, yr * y0Rotated + 5.0 + b);
+            HCPathMove(self, xr * cx0Rotated - 5.0 + a, yr * cy0Rotated + b);
+            HCPathAddLine(self, xr * cx0Rotated + 5.0 + a, yr * cy0Rotated + b);
+            HCPathMove(self, xr * cx0Rotated + a, yr * cy0Rotated - 5.0 + b);
+            HCPathAddLine(self, xr * cx0Rotated + a, yr * cy0Rotated + 5.0 + b);
+            HCPathMove(self, xr * cx1Rotated - 5.0 + a, yr * cy1Rotated + b);
+            HCPathAddLine(self, xr * cx1Rotated + 5.0 + a, yr * cy1Rotated + b);
+            HCPathMove(self, xr * cx1Rotated + a, yr * cy1Rotated - 5.0 + b);
+            HCPathAddLine(self, xr * cx1Rotated + a, yr * cy1Rotated + 5.0 + b);
+            HCPathMove(self, xr * x1Rotated - 5.0 + a, yr * y1Rotated + b);
+            HCPathAddLine(self, xr * x1Rotated + 5.0 + a, yr * y1Rotated + b);
+            HCPathMove(self, xr * x1Rotated + a, yr * y1Rotated - 5.0 + b);
+            HCPathAddLine(self, xr * x1Rotated + a, yr * y1Rotated + 5.0 + b);
             HCPathMove(self, current.x, current.y);
         }
-        HCReal cosPhi = cos(angle);
-        HCReal sinPhi = sin(angle);
+        HCReal cosAngle = cos(angle);
+        HCReal sinAngle = sin(angle);
         HCReal px0 = HCPathCurrentPoint(self).x;
         HCReal py0 = HCPathCurrentPoint(self).y;
-        HCReal cx0 = cosPhi * cx0Rotated - sinPhi * cy0Rotated + cx;
-        HCReal cy0 = sinPhi * cx0Rotated + cosPhi * cy0Rotated + cy;
-        HCReal cx1 = cosPhi * cx1Rotated - sinPhi * cy1Rotated + cx;
-        HCReal cy1 = sinPhi * cx1Rotated + cosPhi * cy1Rotated + cy;
-        HCReal px1 = cosPhi * xRotated - sinPhi * yRotated + cx;
-        HCReal py1 = sinPhi * xRotated + cosPhi * yRotated + cy;
+        HCReal cx0p = xr * (cosAngle * cx0Rotated - sinAngle * cy0Rotated);
+        HCReal cy0p = yr * (sinAngle * cx0Rotated + cosAngle * cy0Rotated);
+        HCReal cx1p = xr * (cosAngle * cx1Rotated - sinAngle * cy1Rotated);
+        HCReal cy1p = yr * (sinAngle * cx1Rotated + cosAngle * cy1Rotated);
+        HCReal px1p = xr * (cosAngle * xRotated - sinAngle * yRotated);
+        HCReal py1p = yr * (sinAngle * xRotated + cosAngle * yRotated);
+        HCReal cosRotation = cos(rotation);
+        HCReal sinRotation = sin(rotation);
+        HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;
+        HCReal cy0 = sinRotation * cx0p + cosRotation * cy0p + cy;
+        HCReal cx1 = cosRotation * cx1p - sinRotation * cy1p + cx;
+        HCReal cy1 = sinRotation * cx1p + cosRotation * cy1p + cy;
+        HCReal px1 = cosRotation * px1p - sinRotation * py1p + cx;
+        HCReal py1 = sinRotation * px1p + cosRotation * py1p + cy;
         if (true) {
             HCPoint current = HCPathCurrentPoint(self);
             HCPathMove(self, px0 - 5.0, py0);
@@ -405,7 +413,7 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     }
     
     // DEBUG: Plot points of actual ellipse
-    if (false) {
+    if (true) {
         HCPoint current = HCPathCurrentPoint(self);
         HCInteger stepCount = 100;
         HCReal angleStep = angleSpan / (HCReal)stepCount;
