@@ -18,7 +18,7 @@ typedef struct {
 void HCConditionTestRanDataFunction(void* context) {
     HCConditionTestRanData* data = context;
     
-    HCConditionWaitAquired(data->condition);
+    HCConditionWaitAcquired(data->condition);
     data->ran = true;
 }
 
@@ -31,31 +31,31 @@ void HCConditionTestRanDataFunction2(void* context) {
     data->ran = true;
 }
 
-void* HCConditionTestAquiredExecute(void* context) {
+void* HCConditionTestAcquiredExecute(void* context) {
     HCInteger* i = context;
     (*i)++;
     return NULL;
 }
 
-typedef struct MultiThreadedAquiredAndRelinquishContext {
+typedef struct MultiThreadedAcquiredAndRelinquishContext {
     HCConditionRef lock;
     int i;
-} MultiThreadedAquiredAndRelinquishContext;
+} MultiThreadedAcquiredAndRelinquishContext;
 
-const HCInteger HCConditionMultiThreadedAquiredAndRelinquishIterationCount = 100;
+const HCInteger HCConditionMultiThreadedAcquiredAndRelinquishIterationCount = 100;
 
-void HCConditionMultiThreadedAquiredAndRelinquish(void* context) {
-    MultiThreadedAquiredAndRelinquishContext* multiThreadedAquiredAndRelinquishContext = context;
+void HCConditionMultiThreadedAcquiredAndRelinquish(void* context) {
+    MultiThreadedAcquiredAndRelinquishContext* multiThreadedAcquiredAndRelinquishContext = context;
     
-    for (HCInteger i = 0; i < HCConditionMultiThreadedAquiredAndRelinquishIterationCount; i++) {
+    for (HCInteger i = 0; i < HCConditionMultiThreadedAcquiredAndRelinquishIterationCount; i++) {
         // Make it so there is some stagger across the tests
         if (rand() % 4 == 0) {
             useconds_t seconds = rand() % 50 + 1;
             usleep(seconds);
         }
-        HCConditionAquire(multiThreadedAquiredAndRelinquishContext->lock);
-        multiThreadedAquiredAndRelinquishContext->i++;
-        HCConditionRelinquish(multiThreadedAquiredAndRelinquishContext->lock);
+        HCConditionAquire(multiThreadedAcquiredAndRelinquishContext->lock);
+        multiThreadedAcquiredAndRelinquishContext->i++;
+        HCConditionRelinquish(multiThreadedAcquiredAndRelinquishContext->lock);
     }
 }
 
@@ -80,12 +80,12 @@ CTEST(HCCondition, MultiAquireAndRelinquish) {
     HCRelease(lock);
 }
 
-CTEST(HCCondition, AquiredExecute) {
+CTEST(HCCondition, AcquiredExecute) {
     HCConditionRef lock = HCConditionCreate();
     HCInteger counter = 0;
     HCInteger iterationCount = 10000;
     for (HCInteger i = 0; i < iterationCount; i++) {
-        HCConditionExecuteAquired(lock, HCConditionTestAquiredExecute, &counter);
+        HCConditionExecuteAcquired(lock, HCConditionTestAcquiredExecute, &counter);
     }
     
     ASSERT_TRUE(counter == iterationCount);
@@ -93,15 +93,15 @@ CTEST(HCCondition, AquiredExecute) {
     HCRelease(lock);
 }
 
-CTEST(HCCondition, MultiThreadedAquiredAndRelinquish) {
-    MultiThreadedAquiredAndRelinquishContext context = {
+CTEST(HCCondition, MultiThreadedAcquiredAndRelinquish) {
+    MultiThreadedAcquiredAndRelinquishContext context = {
         .lock = HCConditionCreate(),
         .i = 0,
     };
     const HCInteger numberOfThreads = 10;
     HCListRef threads = HCListCreateWithCapacity(numberOfThreads);
     for (HCInteger i = 0; i < numberOfThreads; i++) {
-        HCListAddObjectReleased(threads, HCThreadCreateWithOptions(HCConditionMultiThreadedAquiredAndRelinquish, &context, HCThreadOptionJoinOnDestroy));
+        HCListAddObjectReleased(threads, HCThreadCreateWithOptions(HCConditionMultiThreadedAcquiredAndRelinquish, &context, HCThreadOptionJoinOnDestroy));
     }
 
     for (HCListIterator i = HCListIterationBegin(threads); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
@@ -109,7 +109,7 @@ CTEST(HCCondition, MultiThreadedAquiredAndRelinquish) {
     }
     HCRelease(threads);
     
-    ASSERT_TRUE(context.i == HCConditionMultiThreadedAquiredAndRelinquishIterationCount * numberOfThreads);
+    ASSERT_TRUE(context.i == HCConditionMultiThreadedAcquiredAndRelinquishIterationCount * numberOfThreads);
     
     HCRelease(context.lock);
 }
@@ -137,7 +137,7 @@ CTEST(HCCondition, RaisingEventSignal) {
     HCConditionRelinquishRaisingEvent(condition, HCConditionEventSignal);
     usleep(1000);
     ASSERT_TRUE(data[0].ran != data[1].ran);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
     usleep(1000);
     ASSERT_TRUE(data[0].ran && data[1].ran);
 
@@ -167,7 +167,7 @@ CTEST(HCCondition, RaisingEventBroadcast) {
     HCThreadStart(thread2);
     
     usleep(1000);
-    HCConditionRaiseEventAquired(condition, HCConditionEventBroadcast);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventBroadcast);
     HCThreadJoin(thread1);
     HCThreadJoin(thread2);
     ASSERT_TRUE(data[0].ran == data[1].ran);
@@ -177,13 +177,13 @@ CTEST(HCCondition, RaisingEventBroadcast) {
     HCRelease(condition);
 }
 
-void* HCConditionExecuteRaisingEventAquiredTest(void* context) {
+void* HCConditionExecuteRaisingEventAcquiredTest(void* context) {
     HCBoolean* ran = context;
     *ran = true;
     return NULL;
 }
 
-CTEST(HCCondition, ExecuteRaisingEventAquired) {
+CTEST(HCCondition, ExecuteRaisingEventAcquired) {
     HCConditionRef condition = HCConditionCreate();
     HCConditionTestRanData data = {
         .condition = condition,
@@ -194,7 +194,7 @@ CTEST(HCCondition, ExecuteRaisingEventAquired) {
     HCThreadStart(thread);
     
     usleep(1000);
-    HCConditionExecuteRaisingEventAquired(condition, HCConditionExecuteRaisingEventAquiredTest, &ran, HCConditionEventSignal);
+    HCConditionExecuteRaisingEventAcquired(condition, HCConditionExecuteRaisingEventAcquiredTest, &ran, HCConditionEventSignal);
     
     ASSERT_TRUE(ran);
     HCThreadJoin(thread);
@@ -304,7 +304,7 @@ CTEST(HCCondition, RaiseEventBroadcast) {
     HCRelease(condition);
 }
 
-CTEST(HCCondition, RaiseEventSignalAquired) {
+CTEST(HCCondition, RaiseEventSignalAcquired) {
     HCConditionRef condition = HCConditionCreate();
     HCConditionTestRanData data = {
         .condition = condition,
@@ -314,7 +314,7 @@ CTEST(HCCondition, RaiseEventSignalAquired) {
     HCThreadStart(thread);
     
     usleep(1000);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
     
     HCThreadJoin(thread);
     ASSERT_TRUE(data.ran);
@@ -322,7 +322,7 @@ CTEST(HCCondition, RaiseEventSignalAquired) {
     HCRelease(condition);
 }
 
-CTEST(HCCondition, RaiseEventBroadcastAquired) {
+CTEST(HCCondition, RaiseEventBroadcastAcquired) {
     HCConditionRef condition = HCConditionCreate();
         HCConditionTestRanData data[2] = {
         {
@@ -340,7 +340,7 @@ CTEST(HCCondition, RaiseEventBroadcastAquired) {
     HCThreadStart(thread2);
     
     usleep(1000);
-    HCConditionRaiseEventAquired(condition, HCConditionEventBroadcast);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventBroadcast);
     
     HCThreadJoin(thread1);
     HCThreadJoin(thread2);
@@ -360,7 +360,7 @@ CTEST(HCCondition, Wait) {
     HCThreadStart(thread);
     
     usleep(1000);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
     
     HCThreadJoin(thread);
     ASSERT_TRUE(data.ran);
@@ -382,7 +382,7 @@ void* HCConditionTestWaitThenExecuteDataFunction(void* context) {
 
 void HCConditionTestWaitThenExecuteDataFunctionRunner(void* context) {
     HCConditionTestWaitThenExecuteData* data = context;
-    ASSERT_TRUE(HCConditionWaitThenExecuteAquired(data->condition, HCConditionTestWaitThenExecuteDataFunction, context) == data);
+    ASSERT_TRUE(HCConditionWaitThenExecuteAcquired(data->condition, HCConditionTestWaitThenExecuteDataFunction, context) == data);
 }
 
 CTEST(HCCondition, WaitThenExecute) {
@@ -397,7 +397,7 @@ CTEST(HCCondition, WaitThenExecute) {
     
     usleep(1000);
     ASSERT_FALSE(data.ran);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
 
     HCThreadJoin(thread);
     ASSERT_TRUE(data.ran);
@@ -408,7 +408,7 @@ CTEST(HCCondition, WaitThenExecute) {
 void HCConditionTestWaitTimeoutThenExecuteDataFunctionRunner(void* context) {
     HCConditionTestWaitThenExecuteData* data = context;
     void* result = NULL;
-    HCConditionWaitTimeoutThenExecuteAquired(data->condition, 0.1, HCConditionTestWaitThenExecuteDataFunction, data, &result, &data->didTimeout);
+    HCConditionWaitTimeoutThenExecuteAcquired(data->condition, 0.1, HCConditionTestWaitThenExecuteDataFunction, data, &result, &data->didTimeout);
     if (!data->didTimeout) {
         ASSERT_TRUE(result == data);
     } else {
@@ -429,7 +429,7 @@ CTEST(HCCondition, WaitTimeoutThenExecute1) {
     usleep(1000);
     ASSERT_FALSE(data.ran);
     ASSERT_FALSE(data.didTimeout);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
 
     HCThreadJoin(thread);
     ASSERT_TRUE(data.ran);
@@ -449,7 +449,7 @@ CTEST(HCCondition, WaitTimeoutThenExecute2) {
     HCThreadStart(thread);
     
     sleep(1);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
 
     HCThreadJoin(thread);
     ASSERT_FALSE(data.ran);
@@ -478,7 +478,7 @@ void* HCConditionTestWaitWhileThenExecuteDataFunction(void* context) {
 void HCConditionWaitWhileThenExecuteDataFunctionRunner(void* context) {
     HCConditionTestWaitWhileThenExecuteData* data = context;
 
-    HCConditionWaitWhileThenExecuteAquired(data->condition, HCConditionTestWaitWhileThenExecuteDataWaitWhileFunction, context, 5.0, HCConditionTestWaitWhileThenExecuteDataFunction, context);
+    HCConditionWaitWhileThenExecuteAcquired(data->condition, HCConditionTestWaitWhileThenExecuteDataWaitWhileFunction, context, 5.0, HCConditionTestWaitWhileThenExecuteDataFunction, context);
 }
 
 CTEST(HCCondition, WaitWhileThenExecute) {
@@ -494,12 +494,12 @@ CTEST(HCCondition, WaitWhileThenExecute) {
     usleep(1000);
     ASSERT_FALSE(data.ran);
     ASSERT_TRUE(data.wait);
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
     usleep(1000);
     ASSERT_FALSE(data.ran);
     ASSERT_TRUE(data.wait);
     data.wait = false;
-    HCConditionRaiseEventAquired(condition, HCConditionEventSignal);
+    HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
     usleep(1000);
     ASSERT_TRUE(data.ran);
     ASSERT_FALSE(data.wait);

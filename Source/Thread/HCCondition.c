@@ -78,10 +78,10 @@ void HCConditionRelinquishRaisingEvent(HCConditionRef self, HCConditionEvent eve
     HCConditionRaiseEvent(self, event);
     HCConditionRelinquish(self);
 }
-void* HCConditionExecuteAquired(HCConditionRef self, HCConditionExecuteAquiredFunction function, void* context) {
-    return HCLockExecuteAquired(self->lock, function, context);
+void* HCConditionExecuteAcquired(HCConditionRef self, HCConditionExecuteAcquiredFunction function, void* context) {
+    return HCLockExecuteAcquired(self->lock, function, context);
 }
-void* HCConditionExecuteRaisingEventAquired(HCConditionRef self, HCConditionExecuteAquiredFunction function, void* context, HCConditionEvent event) {
+void* HCConditionExecuteRaisingEventAcquired(HCConditionRef self, HCConditionExecuteAcquiredFunction function, void* context, HCConditionEvent event) {
     if (function == NULL) {
         return NULL;
     }
@@ -114,7 +114,7 @@ void HCConditionRaiseEvent(HCConditionRef self, HCConditionEvent event) {
     }
 }
 
-void HCConditionRaiseEventAquired(HCConditionRef self, HCConditionEvent event) {
+void HCConditionRaiseEventAcquired(HCConditionRef self, HCConditionEvent event) {
     HCConditionAquire(self);
     HCConditionRelinquishRaisingEvent(self, event);
 }
@@ -126,13 +126,13 @@ void HCConditionWait(HCConditionRef self) {
     pthread_cond_wait(&self->condition, &self->lock->mutex);
 }
 
-void HCConditionWaitAquired(HCConditionRef self) {
+void HCConditionWaitAcquired(HCConditionRef self) {
     HCConditionAquire(self);
     HCConditionWait(self);
     HCConditionRelinquish(self);
 }
 
-void* HCConditionWaitThenExecute(HCConditionRef self, HCConditionExecuteAquiredFunction function, void* context) {
+void* HCConditionWaitThenExecute(HCConditionRef self, HCConditionExecuteAcquiredFunction function, void* context) {
     HCConditionWait(self);
     if (function == NULL) {
         return NULL;
@@ -140,7 +140,7 @@ void* HCConditionWaitThenExecute(HCConditionRef self, HCConditionExecuteAquiredF
     return function(context);
 }
 
-void* HCConditionWaitThenExecuteAquired(HCConditionRef self, HCConditionExecuteAquiredFunction function, void* context) {
+void* HCConditionWaitThenExecuteAcquired(HCConditionRef self, HCConditionExecuteAcquiredFunction function, void* context) {
     HCConditionAquire(self);
     void* functionResult = HCConditionWaitThenExecute(self, function, context);
     HCConditionRelinquish(self);
@@ -162,14 +162,14 @@ HCBoolean HCConditionWaitTimeout(HCConditionRef self, HCReal secondsToTimeout) {
     return result;
 }
 
-HCBoolean HCConditionWaitTimeoutAquired(HCConditionRef self, HCReal secondsToTimeout) {
+HCBoolean HCConditionWaitTimeoutAcquired(HCConditionRef self, HCReal secondsToTimeout) {
     HCConditionAquire(self);
     HCBoolean didTimeout = HCConditionWaitTimeout(self, secondsToTimeout);
     HCConditionRelinquish(self);
     return didTimeout;
 }
 
-void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
+void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
     HCBoolean timeoutResult = HCConditionWaitTimeout(self, secondsToTimeout);
     if (didTimeout != NULL) {
         *didTimeout = timeoutResult;
@@ -183,7 +183,7 @@ void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal secondsToTime
     
 }
 
-void HCConditionWaitTimeoutThenExecuteAquired(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
+void HCConditionWaitTimeoutThenExecuteAcquired(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
     HCConditionAquire(self);
     HCConditionWaitTimeoutThenExecute(self, secondsToTimeout, function, context, result, didTimeout);
     HCConditionRelinquish(self);
@@ -198,14 +198,14 @@ void HCConditionWaitWhile(HCConditionRef self, HCConditionWaitWhileFunction wait
     }
 }
 
-void HCConditionWaitWhileAquired(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* context, HCReal waitIntervalDuration) {
+void HCConditionWaitWhileAcquired(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* context, HCReal waitIntervalDuration) {
     HCConditionAquire(self);
     HCConditionWaitWhile(self, waitWhile, context, waitIntervalDuration);
     HCConditionRelinquish(self);
 }
 
 
-void* HCConditionWaitWhileThenExecute(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* waitWhileContext, HCReal waitIntervalDuration, HCConditionExecuteAquiredFunction function, void* functionContext) {
+void* HCConditionWaitWhileThenExecute(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* waitWhileContext, HCReal waitIntervalDuration, HCConditionExecuteAcquiredFunction function, void* functionContext) {
     HCConditionWaitWhile(self, waitWhile, waitWhileContext, waitIntervalDuration);
     if (function == NULL) {
         return NULL;
@@ -213,7 +213,7 @@ void* HCConditionWaitWhileThenExecute(HCConditionRef self, HCConditionWaitWhileF
     return function(functionContext);
 }
 
-void* HCConditionWaitWhileThenExecuteAquired(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* waitWhileContext, HCReal waitIntervalDuration, HCConditionExecuteAquiredFunction function, void* functionContext) {
+void* HCConditionWaitWhileThenExecuteAcquired(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* waitWhileContext, HCReal waitIntervalDuration, HCConditionExecuteAcquiredFunction function, void* functionContext) {
     HCConditionAquire(self);
     void* functionResult = HCConditionWaitWhileThenExecute(self, waitWhile, waitWhileContext, waitIntervalDuration, function, functionContext);
     HCConditionRelinquish(self);
