@@ -89,7 +89,7 @@ void HCLockRelinquish(HCLockRef self) {
     }
 }
 
-void* HCLockAquiredExecute(HCLockRef self, HCLockAquiredExecuteFunction function, void* context) {
+void* HCLockExecuteAquired(HCLockRef self, HCLockExecuteAquiredFunction function, void* context) {
     if (function == NULL) {
         return NULL;
     }

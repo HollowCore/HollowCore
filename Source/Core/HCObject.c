@@ -63,13 +63,31 @@ HCBoolean HCObjectIsOfKind(HCRef object, HCType type) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Management
 //----------------------------------------------------------------------------------------------------------------------------------
+
+// Atomic Memory Ordering Notes:
+//
+//  We are using the same memory orderings as used in Swift 5.2 according to RefCount.h.
+//  See: https://github.com/apple/swift/blob/swift-5.2-branch/stdlib/public/SwiftShims/RefCount.h
+//  Also See: https://gist.github.com/lorentey/cf8703b5974ebe8f85cfb92a6628880d/53e147e4a2e42260b766932a5cfb30040bc63e98
+//
+//  When HCRetain() is running on multiple threads all that matters is that they all complete.
+//  Their order doesn't matter so memory_order_relaxed is correct for this case.
+//  This also has the advantage of being much faster on most platforms.
+//
+//  When HCRelease() is running it uses memory_order_release which requires that this and other threads complete their operation before performing its subtraction.
+//  This means a HCRetain() will win out and the object won't get destroyed.
+//
+//  After the subtraction there is a fence using memory_order_acquire to ensure that the destruction of the object and all other accesses to it are performed afterwards.
+//  We also get the benefit of seperating out this fence from the subtration operation to get substation performance benefits on some platforms.
+
 HCRef HCRetain(HCRef self) {
     // Retain on the null reference is a no-op
     if (self == NULL) {
         return NULL;
     }
 
-    atomic_fetch_add(&((HCObjectRef)self)->referenceCount, 1);
+    // For atomic memory ordering description see the notes at the top of this section.
+    atomic_fetch_add_explicit(&((HCObjectRef)self)->referenceCount, 1, memory_order_relaxed);
     return self;
 }
 
@@ -79,7 +97,9 @@ void HCRelease(HCRef self) {
         return;
     }
 
-    if (atomic_fetch_sub(&((HCObjectRef)self)->referenceCount, 1) == HCObjectReferenceCountDestructionValue) {
+    // For atomic memory ordering description see the notes at the top of this section.
+    if (atomic_fetch_sub_explicit(&((HCObjectRef)self)->referenceCount, 1, memory_order_release) == HCObjectReferenceCountDestructionValue) {
+        atomic_thread_fence(memory_order_acquire);
         for (HCType type = ((HCObjectRef)self)->type; type != NULL; type = type->ancestor) {
             ((HCObjectTypeData*)type)->destroy(self);
         }

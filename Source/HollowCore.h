@@ -25,6 +25,7 @@
 #include "Graphic/HCContourElement.h"
 #include "Graphic/HCPath.h"
 #include "JSON/HCJSON.h"
+#include "Thread/HCCondition.h"
 #include "Thread/HCLock.h"
 #include "Thread/HCThread.h"
 

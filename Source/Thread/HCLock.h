@@ -24,7 +24,7 @@ typedef struct HCLock* HCLockRef;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Other Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef void* (HCLockAquiredExecuteFunction)(void* context);
+typedef void* (HCLockExecuteAquiredFunction)(void* context);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -44,6 +44,6 @@ void HCLockPrint(HCLockRef self, FILE* stream);
 void HCLockAquire(HCLockRef self);
 HCBoolean HCLockTryAquire(HCLockRef self);
 void HCLockRelinquish(HCLockRef self);
-void* HCLockAquiredExecute(HCLockRef self, HCLockAquiredExecuteFunction function, void* context);
+void* HCLockExecuteAquired(HCLockRef self, HCLockExecuteAquiredFunction function, void* context);
 
 #endif /* HCLock_h */

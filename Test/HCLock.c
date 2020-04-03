@@ -64,7 +64,7 @@ CTEST(HCLock, AquiredExecute) {
     HCInteger counter = 0;
     HCInteger iterationCount = 10000;
     for (HCInteger i = 0; i < iterationCount; i++) {
-        HCLockAquiredExecute(lock, HCLockTestAquiredExecute, &counter);
+        HCLockExecuteAquired(lock, HCLockTestAquiredExecute, &counter);
     }
     
     ASSERT_TRUE(counter == iterationCount);
