@@ -50,17 +50,14 @@ CTEST(HCSize, Oserations) {
     
     // Size outset checks
     HCSize sIncrease = HCSizeIncrease(s, -2.0, 3.0);
-    ASSERT_DBL_NEAR(sIncrease.width, s.width + -2.0);
-    ASSERT_DBL_NEAR(sIncrease.height, s.height + 3.0);
+    ASSERT_TRUE(HCSizeIsSimilar(sIncrease, HCSizeMake(s.width + -2.0, s.height + 3.0), 0.000001));
     
     // Size inset checks
     HCSize sDecrease = HCSizeDecrease(s, -2.0, 3.0);
-    ASSERT_DBL_NEAR(sDecrease.width, s.width - -2.0);
-    ASSERT_DBL_NEAR(sDecrease.height, s.height - 3.0);
+    ASSERT_TRUE(HCSizeIsSimilar(sDecrease, HCSizeMake(s.width - -2.0, s.height - 3.0), 0.000001));
     
     // Size scale checks
     HCReal scale = 40.0;
     HCSize sScale = HCSizeScale(s, scale);
-    ASSERT_DBL_NEAR(sScale.width, s.width * scale);
-    ASSERT_DBL_NEAR(sScale.height, s.height * scale);
+    ASSERT_TRUE(HCSizeIsSimilar(sScale, HCSizeMake(s.width * scale, s.height * scale), 0.000001));
 }

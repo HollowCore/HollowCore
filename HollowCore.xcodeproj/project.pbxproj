@@ -33,6 +33,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C917F7162426C9830074F3B1 /* HCPath+SVG.h in Headers */ = {isa = PBXBuildFile; fileRef = C917F7142426C9830074F3B1 /* HCPath+SVG.h */; };
+		C917F7172426C9830074F3B1 /* HCPath+SVG.c in Sources */ = {isa = PBXBuildFile; fileRef = C917F7152426C9830074F3B1 /* HCPath+SVG.c */; };
 		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
 		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
 		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
@@ -65,8 +67,8 @@
 		C9CD282F21E3DD11005B566A /* HCCore.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5B21D6D96B0001779C /* HCCore.c */; };
 		C9CD283021E3DD13005B566A /* HCObject.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5721D6D8F20001779C /* HCObject.c */; };
 		C9CD283121E3DD16005B566A /* HCNumber.c in Sources */ = {isa = PBXBuildFile; fileRef = C9DBDC5E21D6E03A0001779C /* HCNumber.c */; };
-		C9CF5C6323F33B230044D752 /* HCContourElement.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CF5C6123F33B230044D752 /* HCContourElement.h */; };
-		C9CF5C6423F33B230044D752 /* HCContourElement.c in Sources */ = {isa = PBXBuildFile; fileRef = C9CF5C6223F33B230044D752 /* HCContourElement.c */; };
+		C9CF5C6323F33B230044D752 /* HCContour.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CF5C6123F33B230044D752 /* HCContour.h */; };
+		C9CF5C6423F33B230044D752 /* HCContour.c in Sources */ = {isa = PBXBuildFile; fileRef = C9CF5C6223F33B230044D752 /* HCContour.c */; };
 		C9CF5C6623F347E90044D752 /* HCContour.c in Sources */ = {isa = PBXBuildFile; fileRef = C9CF5C6523F347E90044D752 /* HCContour.c */; };
 		C9E2F58921ED395D00856F21 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E2F57821ED37DF00856F21 /* main.c */; };
 		C9E2F58B21ED396800856F21 /* libHollowCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B705E421E3DCC600B63F05 /* libHollowCore.a */; };
@@ -119,6 +121,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C917F7142426C9830074F3B1 /* HCPath+SVG.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HCPath+SVG.h"; sourceTree = "<group>"; };
+		C917F7152426C9830074F3B1 /* HCPath+SVG.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "HCPath+SVG.c"; sourceTree = "<group>"; };
 		C929AEC521F97F5200E44898 /* HCSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet.h; sourceTree = "<group>"; };
 		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 		C97FDB302207E199002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
 		C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCRaster_Internal.h; sourceTree = "<group>"; };
 		C97FDB332207F1C9002B17FB /* HCRaster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCRaster.c; sourceTree = "<group>"; };
+		C99D6C3F24033E32008BB7B6 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		C9AA9A2321F1743A001AA9E7 /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
 		C9AA9A2521F174B8001AA9E7 /* HollowCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HollowCore.h; sourceTree = "<group>"; };
 		C9AA9A2621F18AE8001AA9E7 /* HCString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCString.h; sourceTree = "<group>"; };
@@ -154,8 +159,8 @@
 		C9AF8D4C23B860900007C4D2 /* HCPath.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCPath.c; sourceTree = "<group>"; };
 		C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		C9B705E421E3DCC600B63F05 /* libHollowCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHollowCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9CF5C6123F33B230044D752 /* HCContourElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCContourElement.h; sourceTree = "<group>"; };
-		C9CF5C6223F33B230044D752 /* HCContourElement.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCContourElement.c; sourceTree = "<group>"; };
+		C9CF5C6123F33B230044D752 /* HCContour.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCContour.h; sourceTree = "<group>"; };
+		C9CF5C6223F33B230044D752 /* HCContour.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCContour.c; sourceTree = "<group>"; };
 		C9CF5C6523F347E90044D752 /* HCContour.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCContour.c; sourceTree = "<group>"; };
 		C9DBDC5621D6D8F20001779C /* HCObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCObject.h; sourceTree = "<group>"; };
 		C9DBDC5721D6D8F20001779C /* HCObject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCObject.c; sourceTree = "<group>"; };
@@ -277,11 +282,13 @@
 				C97FDB2F2207E199002B17FB /* HCRaster.h */,
 				C97FDB322207E1A7002B17FB /* HCRaster_Internal.h */,
 				C97FDB302207E199002B17FB /* HCRaster.c */,
-				C9CF5C6123F33B230044D752 /* HCContourElement.h */,
-				C9CF5C6223F33B230044D752 /* HCContourElement.c */,
+				C9CF5C6123F33B230044D752 /* HCContour.h */,
+				C9CF5C6223F33B230044D752 /* HCContour.c */,
 				C9AF8D4723B85FB00007C4D2 /* HCPath.h */,
 				C9AF8D4B23B85FBD0007C4D2 /* HCPath_Internal.h */,
 				C9AF8D4823B85FB00007C4D2 /* HCPath.c */,
+				C917F7142426C9830074F3B1 /* HCPath+SVG.h */,
+				C917F7152426C9830074F3B1 /* HCPath+SVG.c */,
 			);
 			path = Graphic;
 			sourceTree = "<group>";
@@ -292,6 +299,7 @@
 				F8CBB8E621E5BCE300DB022F /* README.md */,
 				F8CBB8E521E5BCE300DB022F /* LICENSE */,
 				F8CBB8E421E5B97800DB022F /* .travis.yml */,
+				C99D6C3F24033E32008BB7B6 /* Package.swift */,
 				C9B705DF21E3D6D300B63F05 /* CMakeLists.txt */,
 				F8CBB8E721E5BD0B00DB022F /* Source */,
 				C9E2F57721ED37DF00856F21 /* Test */,
@@ -441,7 +449,8 @@
 				C929AEC721F97F5200E44898 /* HCSet.h in Headers */,
 				C95417062230D7A800E461A5 /* HCColor.h in Headers */,
 				C9E7FB39221A8A5D002991B9 /* json.h in Headers */,
-				C9CF5C6323F33B230044D752 /* HCContourElement.h in Headers */,
+				C917F7162426C9830074F3B1 /* HCPath+SVG.h in Headers */,
+				C9CF5C6323F33B230044D752 /* HCContour.h in Headers */,
 				C97FDB1F22069AD9002B17FB /* HCMap.h in Headers */,
 				C9F8AEF3235C1C88002E7D64 /* HCRectangle.h in Headers */,
 				F83E472022619E8200616049 /* HCLock.h in Headers */,
@@ -498,6 +507,7 @@
 				TargetAttributes = {
 					C9B705E321E3DCC600B63F05 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1130;
 					};
 					C9E2F58121ED38FD00856F21 = {
 						CreatedOnToolsVersion = 10.1;
@@ -591,9 +601,10 @@
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
+				C917F7172426C9830074F3B1 /* HCPath+SVG.c in Sources */,
 				F8800CEB221657FC00068863 /* HCThread.c in Sources */,
 				F83E472122619E8200616049 /* HCLock.c in Sources */,
-				C9CF5C6423F33B230044D752 /* HCContourElement.c in Sources */,
+				C9CF5C6423F33B230044D752 /* HCContour.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,20 +650,35 @@
 		C9B705E621E3DCC600B63F05 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		C9B705E721E3DCC600B63F05 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

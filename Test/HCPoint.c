@@ -50,12 +50,17 @@ CTEST(HCPoint, Operations) {
     
     // Point offset checks
     HCPoint pOffset = HCPointOffset(p, -2.0, 3.0);
-    ASSERT_DBL_NEAR(pOffset.x, p.x + -2.0);
-    ASSERT_DBL_NEAR(pOffset.y, p.y + 3.0);
+    ASSERT_TRUE(HCPointIsSimilar(pOffset, HCPointMake(p.x + -2.0, p.y + 3.0), 0.000001));
     
     // Point scale checks
     HCReal scale = 40.0;
     HCPoint pScale = HCPointScale(p, scale);
-    ASSERT_DBL_NEAR(pScale.x, p.x * scale);
-    ASSERT_DBL_NEAR(pScale.y, p.y * scale);
+    ASSERT_TRUE(HCPointIsSimilar(pScale, HCPointMake(p.x * scale, p.y * scale), 0.000001));
+    
+    // Point interpolate
+    HCPoint p0 = HCPointMake(1.0, -1.0);
+    HCPoint p1 = HCPointMake(1.0, -1.0);
+    HCReal t = 0.25;
+    HCPoint interpolated = HCPointInterpolate(p0, p1, t);
+    ASSERT_TRUE(HCPointIsSimilar(interpolated, HCPointMake((1.0 - t) * p0.x + t * p1.x, (1.0 - t) * p0.y + t * p1.y), 0.000001));
 }
