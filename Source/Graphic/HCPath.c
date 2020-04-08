@@ -457,7 +457,7 @@ void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, H
     HCReal cp1Distance = sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
     HCReal p0p1Distance = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
     HCReal flatness = (p0cDistance + cp1Distance) / p0p1Distance;
-    if (flatness < flatnessThreshold) {
+    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
         // Flatness of the curve is sufficient to approximate it as a line segment, so add it to the
         HCPathAddLineSegmentPolylineData(self, x0, y0, x1, y1, polylineData);
         return;
@@ -491,7 +491,7 @@ void HCPathAddCubicCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCRea
     HCReal c1p1Distance = sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1));
     HCReal p0p1Distance = sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
     HCReal flatness = (p0c0Distance + c0c1Distance + c1p1Distance) / p0p1Distance;
-    if (flatness < flatnessThreshold) {
+    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
         HCPathAddLineSegmentPolylineData(self, x0, y0, x1, y1, polylineData);
         return;
     }

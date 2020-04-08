@@ -726,6 +726,39 @@ CTEST(HCPath, MoveImplicitLineRelative) {
     HCRelease(path);
 }
 
+CTEST(HCPath, DegenerateLine) {
+    HCPathRef path = HCPathCreateWithSVGPathData("M 10 10 L 10 10");
+    ASSERT_TRUE(HCPathElementCount(path) == 2);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(10.0, 10.0)));
+    HCRelease(path);
+}
+
+CTEST(HCPath, DegenerateQuadratic) {
+    HCPathRef path = HCPathCreateWithSVGPathData("M 10 10 Q 10 10 10 10");
+    ASSERT_TRUE(HCPathElementCount(path) == 2);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[1], HCPointMake(10.0, 10.0)));
+    HCRelease(path);
+}
+
+CTEST(HCPath, DegenerateCubic) {
+    HCPathRef path = HCPathCreateWithSVGPathData("M 10 10 C 10 10 10 10 10 10");
+    ASSERT_TRUE(HCPathElementCount(path) == 2);
+    ASSERT_TRUE(HCPathElementAt(path, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 0).points[0], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPathElementAt(path, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[1], HCPointMake(10.0, 10.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[2], HCPointMake(10.0, 10.0)));
+    HCRelease(path);
+}
+
 CTEST(HCPath, Size) {
     HCPathRef emptyPath = HCPathCreateWithSVGPathData("");
     ASSERT_TRUE(HCRectangleIsEqual(HCPathBounds(emptyPath), HCRectangleZero));
