@@ -18,7 +18,8 @@
 typedef struct HCPath {
     HCObject base;
     HCDataRef elementData;
-    HCListRef elementPolylines;
+    HCListRef polylines;
+    HCListRef contours;
     HCRectangle bounds;
 } HCPath;
 
@@ -29,7 +30,7 @@ void HCPathInit(void* memory);
 void HCPathDestroy(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Polylines
+// MARK: - Polyline Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathAddLineSegmentPolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef polylineData);
 void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData);

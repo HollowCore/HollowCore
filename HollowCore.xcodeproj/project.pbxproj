@@ -38,6 +38,8 @@
 		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
 		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
 		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
+		C93FBD2E2448146C008B473B /* HCPath+Shapes.h in Headers */ = {isa = PBXBuildFile; fileRef = C93FBD2C2448146C008B473B /* HCPath+Shapes.h */; };
+		C93FBD2F2448146C008B473B /* HCPath+Shapes.c in Sources */ = {isa = PBXBuildFile; fileRef = C93FBD2D2448146C008B473B /* HCPath+Shapes.c */; };
 		C95417062230D7A800E461A5 /* HCColor.h in Headers */ = {isa = PBXBuildFile; fileRef = C95417042230D7A800E461A5 /* HCColor.h */; };
 		C95417072230D7A800E461A5 /* HCColor.c in Sources */ = {isa = PBXBuildFile; fileRef = C95417052230D7A800E461A5 /* HCColor.c */; };
 		C954170F2230DEFD00E461A5 /* HCColor.c in Sources */ = {isa = PBXBuildFile; fileRef = C954170E2230DEFD00E461A5 /* HCColor.c */; };
@@ -131,6 +133,8 @@
 		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
 		C929AECD21F9800300E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
+		C93FBD2C2448146C008B473B /* HCPath+Shapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HCPath+Shapes.h"; sourceTree = "<group>"; };
+		C93FBD2D2448146C008B473B /* HCPath+Shapes.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "HCPath+Shapes.c"; sourceTree = "<group>"; };
 		C95417042230D7A800E461A5 /* HCColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCColor.h; sourceTree = "<group>"; };
 		C95417052230D7A800E461A5 /* HCColor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCColor.c; sourceTree = "<group>"; };
 		C954170E2230DEFD00E461A5 /* HCColor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCColor.c; sourceTree = "<group>"; };
@@ -296,6 +300,8 @@
 				C9AF8D4723B85FB00007C4D2 /* HCPath.h */,
 				C9AF8D4B23B85FBD0007C4D2 /* HCPath_Internal.h */,
 				C9AF8D4823B85FB00007C4D2 /* HCPath.c */,
+				C93FBD2C2448146C008B473B /* HCPath+Shapes.h */,
+				C93FBD2D2448146C008B473B /* HCPath+Shapes.c */,
 				C917F7142426C9830074F3B1 /* HCPath+SVG.h */,
 				C917F7152426C9830074F3B1 /* HCPath+SVG.c */,
 			);
@@ -454,6 +460,7 @@
 				C97FDB2822069BC5002B17FB /* HCObject.h in Headers */,
 				C97FDB2722069BBF002B17FB /* HCNumber.h in Headers */,
 				F84FF100242DD48700B27F39 /* HCCondition.h in Headers */,
+				C93FBD2E2448146C008B473B /* HCPath+Shapes.h in Headers */,
 				C97FDB2622069BBA002B17FB /* HCString.h in Headers */,
 				C9AF8D4923B85FB00007C4D2 /* HCPath.h in Headers */,
 				C9F8AEFB235C1CDC002E7D64 /* HCSize.h in Headers */,
@@ -615,6 +622,7 @@
 				C95417072230D7A800E461A5 /* HCColor.c in Sources */,
 				C9AF8D4A23B85FB00007C4D2 /* HCPath.c in Sources */,
 				C97FDB372207F20C002B17FB /* HCRaster.c in Sources */,
+				C93FBD2F2448146C008B473B /* HCPath+Shapes.c in Sources */,
 				C9E7FB3B221A8A64002991B9 /* json.c in Sources */,
 				C9E7FB40221A8BC3002991B9 /* HCJSON.c in Sources */,
 				C917F7172426C9830074F3B1 /* HCPath+SVG.c in Sources */,

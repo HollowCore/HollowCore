@@ -13,14 +13,32 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreateWithSVGPathData(const char* path) {
     HCPathRef self = HCPathCreateEmpty();
-    HCPathParse(self, path);
+    HCPathParseSVGPathData(self, path);
     return self;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Conversion
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCPathPrintSVGPathData(HCPathRef self, FILE* stream) {
+    // Print SVG command for each element
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: fprintf(stream, "M %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddQuadraticCurve: fprintf(stream, "Q %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
+            case HCPathCommandAddCubicCurve: fprintf(stream, "C %f %f %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
+            case HCPathCommandCloseContour: fprintf(stream, "Z "); break;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Parsing
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathParse(HCPathRef self, const char* path) {
+void HCPathParseSVGPathData(HCPathRef self, const char* path) {
     // Define state data for parsing the SVG path string
     char type = '\0';
     HCReal contourStartX = 0.0;

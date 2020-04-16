@@ -17,9 +17,14 @@
 HCPathRef HCPathCreateWithSVGPathData(const char* path);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Parsing
+// MARK: - SVG Path Data Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathParse(HCPathRef self, const char* path);
+void HCPathPrintSVGPathData(HCPathRef self, FILE* stream);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - SVG Path Data Parsing
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCPathParseSVGPathData(HCPathRef self, const char* path);
 void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, HCReal rotation, HCBoolean largeArc, HCBoolean sweep, HCReal x, HCReal y);
 
 #endif /* HCPath_SVG_h */
