@@ -77,7 +77,7 @@ void HCLockAquire(HCLockRef self) {
 HCBoolean HCLockTryAquire(HCLockRef self) {
     int tryLockResult = pthread_mutex_trylock(&self->mutex);
     if (tryLockResult == EBUSY) {
-        // Lock already aquired
+        // Lock already Acquired
     }
     return tryLockResult == 0;
 }
@@ -89,7 +89,7 @@ void HCLockRelinquish(HCLockRef self) {
     }
 }
 
-void* HCLockAquiredExecute(HCLockRef self, HCLockAquiredExecuteFunction function, void* context) {
+void* HCLockExecuteAcquired(HCLockRef self, HCLockExecuteAcquiredFunction function, void* context) {
     if (function == NULL) {
         return NULL;
     }

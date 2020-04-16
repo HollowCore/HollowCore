@@ -10,31 +10,31 @@
 #include "../Source/HollowCore.h"
 #include <unistd.h>
 
-void* HCLockTestAquiredExecute(void* context) {
+void* HCLockTestAcquiredExecute(void* context) {
     HCInteger* i = context;
     (*i)++;
     return NULL;
 }
 
-typedef struct MultiThreadedAquiredAndRelinquishContext {
+typedef struct MultiThreadedAcquiredAndRelinquishContext {
     HCLockRef lock;
     int i;
-} MultiThreadedAquiredAndRelinquishContext;
+} MultiThreadedAcquiredAndRelinquishContext;
 
-const HCInteger HCLockMultiThreadedAquiredAndRelinquishIterationCount = 100;
+const HCInteger HCLockMultiThreadedAcquiredAndRelinquishIterationCount = 100;
 
-void HCLockMultiThreadedAquiredAndRelinquish(void* context) {
-    MultiThreadedAquiredAndRelinquishContext* multiThreadedAquiredAndRelinquishContext = context;
+void HCLockMultiThreadedAcquiredAndRelinquish(void* context) {
+    MultiThreadedAcquiredAndRelinquishContext* multiThreadedAcquiredAndRelinquishContext = context;
     
-    for (HCInteger i = 0; i < HCLockMultiThreadedAquiredAndRelinquishIterationCount; i++) {
+    for (HCInteger i = 0; i < HCLockMultiThreadedAcquiredAndRelinquishIterationCount; i++) {
         // Make it so there is some stagger across the tests
         if (rand() % 4 == 0) {
             useconds_t seconds = rand() % 50 + 1;
             usleep(seconds);
         }
-        HCLockAquire(multiThreadedAquiredAndRelinquishContext->lock);
-        multiThreadedAquiredAndRelinquishContext->i++;
-        HCLockRelinquish(multiThreadedAquiredAndRelinquishContext->lock);
+        HCLockAquire(multiThreadedAcquiredAndRelinquishContext->lock);
+        multiThreadedAcquiredAndRelinquishContext->i++;
+        HCLockRelinquish(multiThreadedAcquiredAndRelinquishContext->lock);
     }
 }
 
@@ -59,12 +59,12 @@ CTEST(HCLock, MultiAquireAndRelinquish) {
     HCRelease(lock);
 }
 
-CTEST(HCLock, AquiredExecute) {
+CTEST(HCLock, AcquiredExecute) {
     HCLockRef lock = HCLockCreate();
     HCInteger counter = 0;
     HCInteger iterationCount = 10000;
     for (HCInteger i = 0; i < iterationCount; i++) {
-        HCLockAquiredExecute(lock, HCLockTestAquiredExecute, &counter);
+        HCLockExecuteAcquired(lock, HCLockTestAcquiredExecute, &counter);
     }
     
     ASSERT_TRUE(counter == iterationCount);
@@ -72,15 +72,15 @@ CTEST(HCLock, AquiredExecute) {
     HCRelease(lock);
 }
 
-CTEST(HCLock, MultiThreadedAquiredAndRelinquish) {
-    MultiThreadedAquiredAndRelinquishContext context = {
+CTEST(HCLock, MultiThreadedAcquiredAndRelinquish) {
+    MultiThreadedAcquiredAndRelinquishContext context = {
         .lock = HCLockCreate(),
         .i = 0,
     };
     const HCInteger numberOfThreads = 10;
     HCListRef threads = HCListCreateWithCapacity(numberOfThreads);
     for (HCInteger i = 0; i < numberOfThreads; i++) {
-        HCListAddObjectReleased(threads, HCThreadCreateWithOptions(HCLockMultiThreadedAquiredAndRelinquish, &context, HCThreadOptionJoinOnDestroy));
+        HCListAddObjectReleased(threads, HCThreadCreateWithOptions(HCLockMultiThreadedAcquiredAndRelinquish, &context, HCThreadOptionJoinOnDestroy));
     }
 
     for (HCListIterator i = HCListIterationBegin(threads); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
@@ -88,7 +88,7 @@ CTEST(HCLock, MultiThreadedAquiredAndRelinquish) {
     }
     HCRelease(threads);
     
-    ASSERT_TRUE(context.i == HCLockMultiThreadedAquiredAndRelinquishIterationCount * numberOfThreads);
+    ASSERT_TRUE(context.i == HCLockMultiThreadedAcquiredAndRelinquishIterationCount * numberOfThreads);
     
     HCRelease(context.lock);
 }

@@ -92,10 +92,14 @@
 		F83E472022619E8200616049 /* HCLock.h in Headers */ = {isa = PBXBuildFile; fileRef = F83E471E22619E8200616049 /* HCLock.h */; };
 		F83E472122619E8200616049 /* HCLock.c in Sources */ = {isa = PBXBuildFile; fileRef = F83E471F22619E8200616049 /* HCLock.c */; };
 		F83E47242261A7F800616049 /* HCLock.c in Sources */ = {isa = PBXBuildFile; fileRef = F83E47232261A7F800616049 /* HCLock.c */; };
+		F84FF0FD242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c in Sources */ = {isa = PBXBuildFile; fileRef = F84FF0FC242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c */; };
+		F84FF100242DD48700B27F39 /* HCCondition.h in Headers */ = {isa = PBXBuildFile; fileRef = F84FF0FE242DD48700B27F39 /* HCCondition.h */; };
+		F84FF101242DD48700B27F39 /* HCCondition.c in Sources */ = {isa = PBXBuildFile; fileRef = F84FF0FF242DD48700B27F39 /* HCCondition.c */; };
 		F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */ = {isa = PBXBuildFile; fileRef = F86BCC9522C33F1300180C12 /* HCMap_Internal.c */; };
 		F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */ = {isa = PBXBuildFile; fileRef = F86BCC9A22C4766000180C12 /* HCThread_Internal.c */; };
 		F8800CEA221657FC00068863 /* HCThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F8800CE8221657FC00068863 /* HCThread.h */; };
 		F8800CEB221657FC00068863 /* HCThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F8800CE9221657FC00068863 /* HCThread.c */; };
+		F8FC5B7C2435B543002340B5 /* HCCondition.c in Sources */ = {isa = PBXBuildFile; fileRef = F8FC5B7B2435B543002340B5 /* HCCondition.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -198,6 +202,10 @@
 		F83E471F22619E8200616049 /* HCLock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCLock.c; sourceTree = "<group>"; };
 		F83E472222619E8D00616049 /* HCLock_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCLock_Internal.h; sourceTree = "<group>"; };
 		F83E47232261A7F800616049 /* HCLock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCLock.c; sourceTree = "<group>"; };
+		F84FF0FC242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMultiThreadedReferenceCounting.c; sourceTree = "<group>"; };
+		F84FF0FE242DD48700B27F39 /* HCCondition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCCondition.h; sourceTree = "<group>"; };
+		F84FF0FF242DD48700B27F39 /* HCCondition.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCCondition.c; sourceTree = "<group>"; };
+		F84FF102242DD49200B27F39 /* HCCondition_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCCondition_Internal.h; sourceTree = "<group>"; };
 		F86BCC9522C33F1300180C12 /* HCMap_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCMap_Internal.c; sourceTree = "<group>"; };
 		F86BCC9A22C4766000180C12 /* HCThread_Internal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCThread_Internal.c; sourceTree = "<group>"; };
 		F86BCC9C22C479EA00180C12 /* travis_ci.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = travis_ci.sh; sourceTree = "<group>"; };
@@ -209,6 +217,7 @@
 		F8CBB8E421E5B97800DB022F /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		F8CBB8E521E5BCE300DB022F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F8CBB8E621E5BCE300DB022F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F8FC5B7B2435B543002340B5 /* HCCondition.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCCondition.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -325,6 +334,7 @@
 				C9E2F57921ED37DF00856F21 /* ctest.h */,
 				C9E2F58D21ED3A4E00856F21 /* HCCore.c */,
 				C9AA9A2321F1743A001AA9E7 /* HCObject.c */,
+				F84FF0FC242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c */,
 				C9E2F57B21ED387700856F21 /* HCNumber.c */,
 				C9AA9A2A21F26649001AA9E7 /* HCString.c */,
 				C9AA9A3121F437CC001AA9E7 /* HCData.c */,
@@ -343,6 +353,7 @@
 				F81C7F0E2242F392000E8A72 /* HCThread.c */,
 				F86BCC9A22C4766000180C12 /* HCThread_Internal.c */,
 				F83E47232261A7F800616049 /* HCLock.c */,
+				F8FC5B7B2435B543002340B5 /* HCCondition.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -409,6 +420,9 @@
 				F83E471E22619E8200616049 /* HCLock.h */,
 				F83E472222619E8D00616049 /* HCLock_Internal.h */,
 				F83E471F22619E8200616049 /* HCLock.c */,
+				F84FF0FE242DD48700B27F39 /* HCCondition.h */,
+				F84FF102242DD49200B27F39 /* HCCondition_Internal.h */,
+				F84FF0FF242DD48700B27F39 /* HCCondition.c */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -439,6 +453,7 @@
 				C97FDB2922069BCA002B17FB /* HCCore.h in Headers */,
 				C97FDB2822069BC5002B17FB /* HCObject.h in Headers */,
 				C97FDB2722069BBF002B17FB /* HCNumber.h in Headers */,
+				F84FF100242DD48700B27F39 /* HCCondition.h in Headers */,
 				C97FDB2622069BBA002B17FB /* HCString.h in Headers */,
 				C9AF8D4923B85FB00007C4D2 /* HCPath.h in Headers */,
 				C9F8AEFB235C1CDC002E7D64 /* HCSize.h in Headers */,
@@ -589,6 +604,7 @@
 				C9CD283021E3DD13005B566A /* HCObject.c in Sources */,
 				C9CD283121E3DD16005B566A /* HCNumber.c in Sources */,
 				C9AA9A2C21F2665E001AA9E7 /* HCString.c in Sources */,
+				F84FF101242DD48700B27F39 /* HCCondition.c in Sources */,
 				C9AA9A3321F437EA001AA9E7 /* HCData.c in Sources */,
 				C9AA9A3A21F6AF6D001AA9E7 /* HCList.c in Sources */,
 				C929AEC821F97F5200E44898 /* HCSet.c in Sources */,
@@ -622,6 +638,7 @@
 				C929AECE21F9800300E44898 /* HCSet.c in Sources */,
 				C97FDB2322069B1C002B17FB /* HCMap.c in Sources */,
 				F86BCC9622C33F1300180C12 /* HCMap_Internal.c in Sources */,
+				F8FC5B7C2435B543002340B5 /* HCCondition.c in Sources */,
 				C9F8AEFF235C3E4C002E7D64 /* HCPoint.c in Sources */,
 				C9F8AF01235C3E61002E7D64 /* HCSize.c in Sources */,
 				C9CF5C6623F347E90044D752 /* HCContour.c in Sources */,
@@ -631,6 +648,7 @@
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
 				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
+				F84FF0FD242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c in Sources */,
 				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
 				F83E47242261A7F800616049 /* HCLock.c in Sources */,
 			);
