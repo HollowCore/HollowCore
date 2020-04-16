@@ -41,7 +41,7 @@ void HCPathAddCubicCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCRea
 void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Subpaths
+// MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathFilterOpen(void* context, HCPathRef path);
 HCBoolean HCPathFilterClosed(void* context, HCPathRef path);

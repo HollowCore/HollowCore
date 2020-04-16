@@ -428,7 +428,7 @@ void HCRasterDrawPath(HCRasterRef self, HCPathRef path, HCColor color) {
                 HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, controlPoint0.x, controlPoint0.y, controlPoint1.x, controlPoint1.y, endPoint.x, endPoint.y, color, color);
                 currentPoint = endPoint;
                 break;
-            case HCPathCommandCloseSubpath:
+            case HCPathCommandCloseContour:
                 endPoint = startPoint;
                 HCRasterDrawLine(self, currentPoint.x, currentPoint.y, endPoint.x, endPoint.y, color, color);
                 currentPoint = endPoint;

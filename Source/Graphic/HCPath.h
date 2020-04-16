@@ -28,7 +28,7 @@ typedef enum HCPathCommand {
     HCPathCommandAddLine,
     HCPathCommandAddQuadraticCurve,
     HCPathCommandAddCubicCurve,
-    HCPathCommandCloseSubpath,
+    HCPathCommandCloseContour,
 } HCPathCommand;
 
 typedef struct HCPathElement {
@@ -46,7 +46,7 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreateEmpty(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
-HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
+HCPathRef HCPathCreateWithContours(HCListRef contours);
 HCPathRef HCPathCreateRectangle(HCRectangle rectangle);
 HCPathRef HCPathCreateEllipse(HCRectangle ellipseBounds);
 
@@ -85,16 +85,16 @@ void HCPathRemoveLastElement(HCPathRef self);
 void HCPathPrintData(HCPathRef self, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Subpaths
+// MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
-HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
-HCPathRef HCPathSubpathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
-HCListRef HCPathSubpathsRetained(HCPathRef self);
-HCListRef HCPathOpenSubpathsRetained(HCPathRef self);
-HCListRef HCPathClosedSubpathsRetained(HCPathRef self);
-HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self);
-HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self);
+HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCPathRef HCPathContourContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
+HCListRef HCPathContoursRetained(HCPathRef self);
+HCListRef HCPathOpenContoursRetained(HCPathRef self);
+HCListRef HCPathClosedContoursRetained(HCPathRef self);
+HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self);
+HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection

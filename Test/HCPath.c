@@ -47,7 +47,7 @@ CTEST(HCPath, CreateWithElements) {
         {.command = HCPathCommandAddLine, .points = points},
         {.command = HCPathCommandAddQuadraticCurve, .points = points},
         {.command = HCPathCommandAddCubicCurve, .points = points},
-        {.command = HCPathCommandCloseSubpath, .points = NULL},
+        {.command = HCPathCommandCloseContour, .points = NULL},
     };
     HCPathRef path = HCPathCreateWithElements(elements, sizeof(elements) / sizeof(HCPathElement));
     ASSERT_EQUAL(HCPathElementCount(path), 5);
@@ -62,7 +62,7 @@ CTEST(HCPath, CreateWithElements) {
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(1.0, 2.0)));
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[1], HCPointMake(3.0, 4.0)));
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[2], HCPointMake(5.0, 6.0)));
-    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseContour);
     HCRelease(path);
 }
 
@@ -78,7 +78,7 @@ CTEST(HCPath, Rectangle) {
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 2).points[0], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMaxY(rectangle))));
     ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(HCRectangleMinX(rectangle), HCRectangleMaxY(rectangle))));
-    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandCloseContour);
     HCRelease(path);
 }
 
@@ -96,7 +96,7 @@ CTEST(HCPath, Ellipse) {
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[2], HCPointMake(HCRectangleMidX(rectangle), HCRectangleMinY(rectangle))));
     ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandAddCubicCurve);
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 4).points[2], HCPointMake(HCRectangleMaxX(rectangle), HCRectangleMidY(rectangle))));
-    ASSERT_TRUE(HCPathElementAt(path, 5).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 5).command == HCPathCommandCloseContour);
     HCRelease(path);
 }
 
@@ -625,7 +625,7 @@ CTEST(HCPath, Path) {
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[0], HCPointMake(30.0, 10.0)));
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[1], HCPointMake(70.0, 10.0)));
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 1).points[2], HCPointMake(90.0, 90.0)));
-    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 2).command == HCPathCommandCloseContour);
     ASSERT_TRUE(HCPathElementAt(path, 3).command == HCPathCommandAddLine);
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 3).points[0], HCPointMake(30.0, 10.0)));
     ASSERT_TRUE(HCPathElementAt(path, 4).command == HCPathCommandAddLine);
@@ -635,7 +635,7 @@ CTEST(HCPath, Path) {
     ASSERT_TRUE(HCPathElementAt(path, 6).command == HCPathCommandAddQuadraticCurve);
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 6).points[0], HCPointMake(50.0, 10.0)));
     ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(path, 6).points[1], HCPointMake(10.0, 90.0)));
-    ASSERT_TRUE(HCPathElementAt(path, 7).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(path, 7).command == HCPathCommandCloseContour);
     HCRelease(path);
 }
 
@@ -834,63 +834,63 @@ CTEST(HCPath, LineSegmentsFromCubic) {
     HCRelease(path);
 }
 
-CTEST(HCPath, Subpaths) {
+CTEST(HCPath, Contours) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
-    HCListRef subpaths = HCPathSubpathsRetained(path);
-    ASSERT_EQUAL(HCListCount(subpaths), 3);
-    HCPathRef subpath0 = HCListObjectAtIndex(subpaths, 0);
-    ASSERT_EQUAL(HCPathElementCount(subpath0), 2);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddLine);
-    HCPathRef subpath1 = HCListObjectAtIndex(subpaths, 1);
-    ASSERT_EQUAL(HCPathElementCount(subpath1), 4);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 1).command == HCPathCommandAddQuadraticCurve);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 2).command == HCPathCommandAddLine);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 3).command == HCPathCommandCloseSubpath);
-    HCPathRef subpath2 = HCListObjectAtIndex(subpaths, 2);
-    ASSERT_EQUAL(HCPathElementCount(subpath2), 3);
-    ASSERT_TRUE(HCPathElementAt(subpath2, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath2, 1).command == HCPathCommandAddCubicCurve);
-    ASSERT_TRUE(HCPathElementAt(subpath2, 2).command == HCPathCommandCloseSubpath);
+    HCListRef contours = HCPathContoursRetained(path);
+    ASSERT_EQUAL(HCListCount(contours), 3);
+    HCPathRef contour0 = HCListObjectAtIndex(contours, 0);
+    ASSERT_EQUAL(HCPathElementCount(contour0), 2);
+    ASSERT_TRUE(HCPathElementAt(contour0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour0, 1).command == HCPathCommandAddLine);
+    HCPathRef contour1 = HCListObjectAtIndex(contours, 1);
+    ASSERT_EQUAL(HCPathElementCount(contour1), 4);
+    ASSERT_TRUE(HCPathElementAt(contour1, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour1, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPathElementAt(contour1, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPathElementAt(contour1, 3).command == HCPathCommandCloseContour);
+    HCPathRef contour2 = HCListObjectAtIndex(contours, 2);
+    ASSERT_EQUAL(HCPathElementCount(contour2), 3);
+    ASSERT_TRUE(HCPathElementAt(contour2, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour2, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPathElementAt(contour2, 2).command == HCPathCommandCloseContour);
     HCRelease(path);
-    HCRelease(subpaths);
+    HCRelease(contours);
 }
 
-CTEST(HCPath, OpenSubpaths) {
+CTEST(HCPath, OpenContours) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
-    HCListRef openSubpaths = HCPathOpenSubpathsRetained(path);
-    ASSERT_EQUAL(HCListCount(openSubpaths), 1);
-    HCPathRef subpath0 = HCListObjectAtIndex(openSubpaths, 0);
-    ASSERT_EQUAL(HCPathElementCount(subpath0), 2);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddLine);
+    HCListRef openContours = HCPathOpenContoursRetained(path);
+    ASSERT_EQUAL(HCListCount(openContours), 1);
+    HCPathRef contour0 = HCListObjectAtIndex(openContours, 0);
+    ASSERT_EQUAL(HCPathElementCount(contour0), 2);
+    ASSERT_TRUE(HCPathElementAt(contour0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour0, 1).command == HCPathCommandAddLine);
     HCRelease(path);
-    HCRelease(openSubpaths);
+    HCRelease(openContours);
 }
 
-CTEST(HCPath, ClosedSubpaths) {
+CTEST(HCPath, ClosedContours) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
-    HCListRef closedSubpaths = HCPathClosedSubpathsRetained(path);
-    ASSERT_EQUAL(HCListCount(closedSubpaths), 2);
-    HCPathRef subpath0 = HCListObjectAtIndex(closedSubpaths, 0);
-    ASSERT_EQUAL(HCPathElementCount(subpath0), 4);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 1).command == HCPathCommandAddQuadraticCurve);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 2).command == HCPathCommandAddLine);
-    ASSERT_TRUE(HCPathElementAt(subpath0, 3).command == HCPathCommandCloseSubpath);
-    HCPathRef subpath1 = HCListObjectAtIndex(closedSubpaths, 1);
-    ASSERT_EQUAL(HCPathElementCount(subpath1), 3);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 0).command == HCPathCommandMove);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 1).command == HCPathCommandAddCubicCurve);
-    ASSERT_TRUE(HCPathElementAt(subpath1, 2).command == HCPathCommandCloseSubpath);
+    HCListRef closedContours = HCPathClosedContoursRetained(path);
+    ASSERT_EQUAL(HCListCount(closedContours), 2);
+    HCPathRef contour0 = HCListObjectAtIndex(closedContours, 0);
+    ASSERT_EQUAL(HCPathElementCount(contour0), 4);
+    ASSERT_TRUE(HCPathElementAt(contour0, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour0, 1).command == HCPathCommandAddQuadraticCurve);
+    ASSERT_TRUE(HCPathElementAt(contour0, 2).command == HCPathCommandAddLine);
+    ASSERT_TRUE(HCPathElementAt(contour0, 3).command == HCPathCommandCloseContour);
+    HCPathRef contour1 = HCListObjectAtIndex(closedContours, 1);
+    ASSERT_EQUAL(HCPathElementCount(contour1), 3);
+    ASSERT_TRUE(HCPathElementAt(contour1, 0).command == HCPathCommandMove);
+    ASSERT_TRUE(HCPathElementAt(contour1, 1).command == HCPathCommandAddCubicCurve);
+    ASSERT_TRUE(HCPathElementAt(contour1, 2).command == HCPathCommandCloseContour);
     HCRelease(path);
-    HCRelease(closedSubpaths);
+    HCRelease(closedContours);
 }
 
-CTEST(HCPath, OpenSubpathsAsPath) {
+CTEST(HCPath, OpenContoursAsPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
-    HCPathRef open = HCPathOpenSubpathsAsPathRetained(path);
+    HCPathRef open = HCPathOpenContoursAsPathRetained(path);
     ASSERT_EQUAL(HCPathElementCount(open), 2);
     ASSERT_TRUE(HCPathElementAt(open, 0).command == HCPathCommandMove);
     ASSERT_TRUE(HCPathElementAt(open, 1).command == HCPathCommandAddLine);
@@ -898,17 +898,17 @@ CTEST(HCPath, OpenSubpathsAsPath) {
     HCRelease(open);
 }
 
-CTEST(HCPath, ClosedSubpathsAsPath) {
+CTEST(HCPath, ClosedContoursAsPath) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 1 2 L 3 4 M 3 4 Q 5 6 7 8 L 9 0 Z M 5 6 C 7 8 9 0 1 2 Z");
-    HCPathRef closed = HCPathClosedSubpathsAsPathRetained(path);
+    HCPathRef closed = HCPathClosedContoursAsPathRetained(path);
     ASSERT_EQUAL(HCPathElementCount(closed), 7);
     ASSERT_TRUE(HCPathElementAt(closed, 0).command == HCPathCommandMove);
     ASSERT_TRUE(HCPathElementAt(closed, 1).command == HCPathCommandAddQuadraticCurve);
     ASSERT_TRUE(HCPathElementAt(closed, 2).command == HCPathCommandAddLine);
-    ASSERT_TRUE(HCPathElementAt(closed, 3).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(closed, 3).command == HCPathCommandCloseContour);
     ASSERT_TRUE(HCPathElementAt(closed, 4).command == HCPathCommandMove);
     ASSERT_TRUE(HCPathElementAt(closed, 5).command == HCPathCommandAddCubicCurve);
-    ASSERT_TRUE(HCPathElementAt(closed, 6).command == HCPathCommandCloseSubpath);
+    ASSERT_TRUE(HCPathElementAt(closed, 6).command == HCPathCommandCloseContour);
     HCRelease(path);
     HCRelease(closed);
 }

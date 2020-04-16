@@ -48,15 +48,15 @@ HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCou
             case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
             case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
             case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-            case HCPathCommandCloseSubpath: HCPathClose(self); break;
+            case HCPathCommandCloseContour: HCPathClose(self); break;
         }
     }
     return self;
 }
 
-HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
+HCPathRef HCPathCreateWithContours(HCListRef contours) {
     HCPathRef self = HCPathCreateEmpty();
-    for (HCListIterator i = HCListIterationBegin(subpaths); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+    for (HCListIterator i = HCListIterationBegin(contours); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
         HCInteger elementCount = HCPathElementCount(i.object);
         for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
             HCPathElement element = HCPathElementAt(i.object, elementIndex);
@@ -65,7 +65,7 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
                 case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x, element.points[0].y); break;
                 case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
                 case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-                case HCPathCommandCloseSubpath: HCPathClose(self); break;
+                case HCPathCommandCloseContour: HCPathClose(self); break;
             }
         }
     }
@@ -185,7 +185,7 @@ HCBoolean HCPathIsEqual(HCPathRef self, HCPathRef other) {
                     return false;
                 }
                 break;
-            case HCPathCommandCloseSubpath:
+            case HCPathCommandCloseContour:
                 break;
         }
     }
@@ -203,7 +203,7 @@ HCInteger HCPathHashValue(HCPathRef self) {
             case HCPathCommandAddLine: hash ^= HCPointHashValue(element.points[0]); break;
             case HCPathCommandAddQuadraticCurve: hash ^= HCPointHashValue(element.points[0]) ^ HCPointHashValue(element.points[1]); break;
             case HCPathCommandAddCubicCurve: hash ^= HCPointHashValue(element.points[0]) ^ HCPointHashValue(element.points[1]) ^ HCPointHashValue(element.points[2]); break;
-            case HCPathCommandCloseSubpath: break;
+            case HCPathCommandCloseContour: break;
         }
     }
     return hash;
@@ -254,7 +254,7 @@ HCPoint HCPathCurrentPoint(HCPathRef self) {
             case HCPathCommandAddLine: return endElement.points[0];
             case HCPathCommandAddQuadraticCurve: return endElement.points[1];
             case HCPathCommandAddCubicCurve:  return endElement.points[2];
-            case HCPathCommandCloseSubpath: {
+            case HCPathCommandCloseContour: {
                 // Find the move element most recently emitted
                 for (HCInteger elementIndex = HCPathElementCount(self) - 1; elementIndex >= 0; elementIndex--) {
                     HCPathElement element = HCPathElementAt(self, elementIndex);
@@ -316,7 +316,7 @@ void HCPathAddArc(HCPathRef self, HCReal x, HCReal y, HCReal xr, HCReal yr, HCRe
 }
 
 void HCPathClose(HCPathRef self) {
-    HCPathAddElement(self, HCPathCommandCloseSubpath, NULL);
+    HCPathAddElement(self, HCPathCommandCloseContour, NULL);
 }
 
 void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points) {
@@ -349,8 +349,8 @@ void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* poin
             element.points[1] = points[1];
             element.points[2] = points[2];
             break;
-        case HCPathCommandCloseSubpath:
-            element.command = HCPathCommandCloseSubpath;
+        case HCPathCommandCloseContour:
+            element.command = HCPathCommandCloseContour;
             element.points = NULL;
             break;
     }
@@ -372,7 +372,7 @@ void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* poin
         case HCPathCommandAddCubicCurve:
             HCPathAddCubicCurvePolylineData(self, currentPoint.x, currentPoint.y, element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y, HCPathFlatnessNormal, elementPolylineData);
             break;
-        case HCPathCommandCloseSubpath: {
+        case HCPathCommandCloseContour: {
             HCPoint closeLineSegmentStart = currentPoint;
             HCPoint closeLineSegmentEnd = HCPathCurrentPoint(self);
             HCPathAddLineSegmentPolylineData(self, closeLineSegmentStart.x, closeLineSegmentStart.y, closeLineSegmentEnd.x, closeLineSegmentEnd.y, elementPolylineData);
@@ -526,149 +526,149 @@ void HCPathPrintData(HCPathRef self, FILE* stream) {
             case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
             case HCPathCommandAddQuadraticCurve: fprintf(stream, "Q %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
             case HCPathCommandAddCubicCurve: fprintf(stream, "C %f %f %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
-            case HCPathCommandCloseSubpath: fprintf(stream, "Z "); break;
+            case HCPathCommandCloseContour: fprintf(stream, "Z "); break;
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Subpaths
+// MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
-    // Search for sub-path start element, if requested (not needed to determine if sub-path is open)
+HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
+    // Search for contour start element, if requested (not needed to determine if contour is open)
     if (startIndex != NULL) {
         *startIndex = 0;
-        for (HCInteger subpathStartSearchIndex = elementIndex; subpathStartSearchIndex >= 0; subpathStartSearchIndex--) {
-            HCPathCommand command = HCPathElementAt(self, subpathStartSearchIndex).command;
+        for (HCInteger contourStartSearchIndex = elementIndex; contourStartSearchIndex >= 0; contourStartSearchIndex--) {
+            HCPathCommand command = HCPathElementAt(self, contourStartSearchIndex).command;
             if (command == HCPathCommandMove) {
-                *startIndex = subpathStartSearchIndex;
+                *startIndex = contourStartSearchIndex;
                 break;
             }
         }
     }
     
-    // Search for sub-path end element and determine if it is open
+    // Search for contour end element and determine if it is open
     HCInteger elementCount = HCPathElementCount(self);
-    for (HCInteger subpathEndSearchIndex = elementIndex; subpathEndSearchIndex < elementCount; subpathEndSearchIndex++) {
-        HCPathCommand command = HCPathElementAt(self, subpathEndSearchIndex).command;
-        if (command == HCPathCommandMove && subpathEndSearchIndex != elementIndex) {
-            // Sub-path ends with a move, so it is open
+    for (HCInteger contourEndSearchIndex = elementIndex; contourEndSearchIndex < elementCount; contourEndSearchIndex++) {
+        HCPathCommand command = HCPathElementAt(self, contourEndSearchIndex).command;
+        if (command == HCPathCommandMove && contourEndSearchIndex != elementIndex) {
+            // Contour ends with a move, so it is open
             if (endIndex != NULL) {
-                *endIndex = subpathEndSearchIndex;
+                *endIndex = contourEndSearchIndex;
             }
             return true;
         }
-        if (command == HCPathCommandCloseSubpath) {
-            // Sub-path ends with a close-subpath, so it is closed
+        if (command == HCPathCommandCloseContour) {
+            // Contour ends with a close-contour, so it is closed
             if (endIndex != NULL) {
-                *endIndex = subpathEndSearchIndex + 1;
+                *endIndex = contourEndSearchIndex + 1;
             }
             return false;
         }
     }
     
-    // Reached end without finding a move-to or close-subpath command, so the path is open
+    // Reached end without finding a move-to or close-contour command, so the path is open
     if (endIndex != NULL) {
         *endIndex = elementCount;
     }
     return true;
 }
 
-HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
-    return !HCPathSubpathContainingElementIsOpen(self, elementIndex, startIndex, endIndex);
+HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
+    return !HCPathContourContainingElementIsOpen(self, elementIndex, startIndex, endIndex);
 }
 
-HCPathRef HCPathSubpathContainingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen) {
-    // Determine sub-path indices
-    HCInteger subpathStartIndex = 0;
-    HCInteger subpathEndIndex = 0;
-    HCBoolean open = HCPathSubpathContainingElementIsOpen(self, elementIndex, &subpathStartIndex, &subpathEndIndex);
+HCPathRef HCPathContourContainingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen) {
+    // Determine contour indices
+    HCInteger contourStartIndex = 0;
+    HCInteger contourEndIndex = 0;
+    HCBoolean open = HCPathContourContainingElementIsOpen(self, elementIndex, &contourStartIndex, &contourEndIndex);
     if (startIndex != NULL) {
-        *startIndex = subpathStartIndex;
+        *startIndex = contourStartIndex;
     }
     if (endIndex != NULL) {
-        *endIndex = subpathEndIndex;
+        *endIndex = contourEndIndex;
     }
     if (isOpen != NULL) {
         *isOpen = open;
     }
     
-    // Create the sub-path with the elements from start to end
+    // Create the contour with the elements from start to end
     HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-    HCPathRef subpath = HCPathCreateWithElements(elements + subpathStartIndex, subpathEndIndex - subpathStartIndex);
-    return subpath;
+    HCPathRef contour = HCPathCreateWithElements(elements + contourStartIndex, contourEndIndex - contourStartIndex);
+    return contour;
 }
 
-HCListRef HCPathSubpathsRetained(HCPathRef self) {
-    HCListRef subpaths = HCListCreate();
+HCListRef HCPathContoursRetained(HCPathRef self) {
+    HCListRef contours = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
-        HCPathRef subpath = HCPathSubpathContainingElementRetained(self, elementIndex, NULL, &elementIndex, NULL);
-        if (!HCPathIsEmpty(subpath)) {
-            HCListAddObjectReleased(subpaths, subpath);
+        HCPathRef contour = HCPathContourContainingElementRetained(self, elementIndex, NULL, &elementIndex, NULL);
+        if (!HCPathIsEmpty(contour)) {
+            HCListAddObjectReleased(contours, contour);
         }
     }
-    return subpaths;
+    return contours;
 }
 
-HCListRef HCPathOpenSubpathsRetained(HCPathRef self) {
-    HCListRef openSubpaths = HCListCreate();
+HCListRef HCPathOpenContoursRetained(HCPathRef self) {
+    HCListRef openContours = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
-        // Find the sub-path start, end, and openness
+        // Find the contour start, end, and openness
         HCInteger startIndex;
         HCInteger endIndex;
-        HCBoolean isOpen = HCPathSubpathContainingElementIsOpen(self, elementIndex, &startIndex, &endIndex);
+        HCBoolean isOpen = HCPathContourContainingElementIsOpen(self, elementIndex, &startIndex, &endIndex);
         elementIndex = endIndex;
         
-        // If open, create the sub-path with the elements from start to end
+        // If open, create the contour with the elements from start to end
         if (isOpen) {
             HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-            HCPathRef subpath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
-            if (!HCPathIsEmpty(subpath)) {
-                HCListAddObjectReleased(openSubpaths, subpath);
+            HCPathRef contour = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(contour)) {
+                HCListAddObjectReleased(openContours, contour);
             }
         }
     }
-    return openSubpaths;
+    return openContours;
 }
 
-HCListRef HCPathClosedSubpathsRetained(HCPathRef self) {
-    HCListRef closedSubpaths = HCListCreate();
+HCListRef HCPathClosedContoursRetained(HCPathRef self) {
+    HCListRef closedContours = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
-        // Find the sub-path start, end, and openness
+        // Find the contour start, end, and openness
         HCInteger startIndex;
         HCInteger endIndex;
-        HCBoolean isClosed = HCPathSubpathContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
+        HCBoolean isClosed = HCPathContourContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
         elementIndex = endIndex;
         
-        // If closed, create the sub-path with the elements from start to end
+        // If closed, create the contour with the elements from start to end
         if (isClosed) {
             HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-            HCPathRef subpath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
-            if (!HCPathIsEmpty(subpath)) {
-                HCListAddObjectReleased(closedSubpaths, subpath);
+            HCPathRef contour = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(contour)) {
+                HCListAddObjectReleased(closedContours, contour);
             }
         }
     }
-    return closedSubpaths;
+    return closedContours;
 }
 
-HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self) {
-    HCListRef openSubpaths = HCPathOpenSubpathsRetained(self);
-    HCPathRef openPath = HCPathCreateWithSubpaths(openSubpaths);
-    HCRelease(openSubpaths);
+HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self) {
+    HCListRef openContours = HCPathOpenContoursRetained(self);
+    HCPathRef openPath = HCPathCreateWithContours(openContours);
+    HCRelease(openContours);
     return openPath;
 }
 
-HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self) {
-    HCListRef closedSubpaths = HCPathClosedSubpathsRetained(self);
-    HCPathRef closedPath = HCPathCreateWithSubpaths(closedSubpaths);
-    HCRelease(closedSubpaths);
+HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self) {
+    HCListRef closedContours = HCPathClosedContoursRetained(self);
+    HCPathRef closedPath = HCPathCreateWithContours(closedContours);
+    HCRelease(closedContours);
     return closedPath;
 }
 
@@ -685,11 +685,11 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
-        // Determine if the current sub-path is open, and skip it if it is
+        // Determine if the current contour is open, and skip it if it is
         HCInteger endIndex = 0;
-        HCBoolean isOpen = HCPathSubpathContainingElementIsOpen(self, elementIndex, NULL, &endIndex);
+        HCBoolean isOpen = HCPathContourContainingElementIsOpen(self, elementIndex, NULL, &endIndex);
         if (isOpen) {
-            // Move to the next sub-path
+            // Move to the next contour
             elementIndex = endIndex;
             continue;
         }
