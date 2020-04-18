@@ -13,15 +13,15 @@
 // MARK: - Element Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContourElement HCContourElementMakeLinear(HCPoint p) {
-    return (HCContourElement){ .p = p, .c0 = HCPointInvalid, .c1 = HCPointInvalid };
+    return (HCContourElement){ .c0 = HCPointInvalid, .c1 = HCPointInvalid, .p = p };
 }
 
-HCContourElement HCContourElementMakeQuadratic(HCPoint p, HCPoint c) {
-    return (HCContourElement){ .p = p, .c0 = c, .c1 = HCPointInvalid };
+HCContourElement HCContourElementMakeQuadratic(HCPoint c, HCPoint p) {
+    return (HCContourElement){ .c0 = c, .c1 = HCPointInvalid, .p = p };
 }
 
-HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1) {
-    return (HCContourElement){ .p = p, .c0 = c0, .c1 = c1 };
+HCContourElement HCContourElementMakeCubic(HCPoint c0, HCPoint c1, HCPoint p) {
+    return (HCContourElement){ .c0 = c0, .c1 = c1, .p = p };
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -29,74 +29,74 @@ HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1) {
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourElementIsInvalid(HCContourElement element) {
     return
-        HCPointIsInvalid(element.p) &&
         HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1);
+        HCPointIsInvalid(element.c1) &&
+        HCPointIsInvalid(element.p);
 }
 
 HCBoolean HCContourElementIsLinear(HCContourElement element) {
     return
-        !HCPointIsInvalid(element.p) &&
         HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1);
+        HCPointIsInvalid(element.c1) &&
+        !HCPointIsInvalid(element.p);
 }
 
 HCBoolean HCContourElementIsQuadratic(HCContourElement element) {
     return
-        !HCPointIsInvalid(element.p) &&
         !HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1);
+        HCPointIsInvalid(element.c1) &&
+        !HCPointIsInvalid(element.p);
 }
 
 HCBoolean HCContourElementIsCubic(HCContourElement element) {
     return
-        !HCPointIsInvalid(element.p) &&
         !HCPointIsInvalid(element.c0) &&
-        !HCPointIsInvalid(element.c1);
+        !HCPointIsInvalid(element.c1) &&
+        !HCPointIsInvalid(element.p);
 }
 
 HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity) {
     return
-        HCPointIsSimilar(element.p, other.p, axisDissimilarity) &&
         (HCPointIsSimilar(element.c0, other.c0, axisDissimilarity) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
-        (HCPointIsSimilar(element.c1, other.c1, axisDissimilarity) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1)));
+        (HCPointIsSimilar(element.c1, other.c1, axisDissimilarity) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1))) &&
+        HCPointIsSimilar(element.p, other.p, axisDissimilarity);
 }
 
 HCBoolean HCContourElementIsZero(HCContourElement element) {
     return
-        HCPointIsZero(element.p) &&
         (HCPointIsZero(element.c0) || HCPointIsInvalid(element.c0)) &&
-        (HCPointIsZero(element.c1) || HCPointIsInvalid(element.c1));
+        (HCPointIsZero(element.c1) || HCPointIsInvalid(element.c1)) &&
+        HCPointIsZero(element.p);
 }
 
 HCBoolean HCContourElementIsInfinite(HCContourElement element) {
     return
-        HCPointIsInfinite(element.p) ||
         HCPointIsInfinite(element.c0) ||
-        HCPointIsInfinite(element.c1);
+        HCPointIsInfinite(element.c1) ||
+        HCPointIsInfinite(element.p);
 }
 
 HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other) {
     return
-        HCPointIsEqual(element.p, other.p) &&
         (HCPointIsEqual(element.c0, other.c0) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
-        (HCPointIsEqual(element.c1, other.c1) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1)));
+        (HCPointIsEqual(element.c1, other.c1) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1))) &&
+        HCPointIsEqual(element.p, other.p);
 }
 
 HCInteger HCContourElementHashValue(HCContourElement element) {
     return
-        HCPointHashValue(element.p) ^
         HCPointHashValue(element.c0) ^
-        HCPointHashValue(element.c1);
+        HCPointHashValue(element.c1) ^
+        HCPointHashValue(element.p);
 }
 
 void HCContourElementPrint(HCContourElement element, FILE* stream) {
-    fprintf(stream, "<p:");
-    HCPointPrint(element.p, stream);
-    fprintf(stream, ",c0:");
+    fprintf(stream, "<c0:");
     HCPointPrint(element.c0, stream);
     fprintf(stream, ",c1:");
     HCPointPrint(element.c1, stream);
+    fprintf(stream, ",p:");
+    HCPointPrint(element.p, stream);
     fprintf(stream, ">");
 }
 
@@ -118,7 +118,7 @@ HCContourElement HCContourElementAsQuadratic(HCContourElement element) {
         return element;
     }
     if (HCContourElementIsCubic(element)) {
-        return HCContourElementMakeQuadratic(element.p, HCPointInterpolate(element.c0, element.c1, 0.5));
+        return HCContourElementMakeQuadratic(HCPointInterpolate(element.c0, element.c1, 0.5), element.p);
     }
     return HCContourElementMakeQuadratic(element.p, element.p);
 }
@@ -128,7 +128,7 @@ HCContourElement HCContourElementAsCubic(HCContourElement element) {
         return element;
     }
     if (HCContourElementIsQuadratic(element)) {
-        return HCContourElementMakeCubic(element.p, element.c0, element.c0);
+        return HCContourElementMakeCubic(element.c0, element.c0, element.p);
     }
     return HCContourElementMakeCubic(element.p, element.p, element.p);
 }
@@ -141,9 +141,9 @@ HCPoint HCContourEvaluateElement(HCReal t, HCPoint p0, HCContourElement element,
         if (HCPointIsInvalid(element.c0)) {
             return HCContourEvaluateLinearCurve(t, p0, element.p, dx, dy);
         }
-        return HCContourEvaluateQuadraticCurve(t, p0, element.p, element.c0, dx, dy);
+        return HCContourEvaluateQuadraticCurve(t, p0, element.c0, element.p, dx, dy);
     }
-    return HCContourEvaluateCubicCurve(t, p0, element.p, element.c0, element.c1, dx, dy);
+    return HCContourEvaluateCubicCurve(t, p0, element.c0, element.c1, element.p, dx, dy);
 }
 
 HCPoint HCContourEvaluateLinearCurve(HCReal t, HCPoint p0, HCPoint p1, HCReal* dx, HCReal* dy) {
@@ -281,11 +281,11 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
 typedef union HCContourAtlas {
     HCContourElement element;
     struct {
-        HCPoint start;
         HCInteger count;
         HCReal invalidMarker1;
         HCReal invalidMarker2;
         HCBoolean closed;
+        HCPoint start;
     };
 } HCContourAtlas;
 
@@ -344,7 +344,7 @@ void HCContourInitWithPolyCubic(void* memory, HCPoint startPoint, HCPoint* point
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourIsEqual(HCContourElement* contour, HCContourElement* other) {
+HCBoolean HCContourIsEqual(const HCContourElement* contour, const HCContourElement* other) {
     HCInteger elementCount = HCContourElementCount(contour);
     HCInteger otherElementCount = HCContourElementCount(other);
     if (elementCount != otherElementCount) {
@@ -353,7 +353,7 @@ HCBoolean HCContourIsEqual(HCContourElement* contour, HCContourElement* other) {
     return memcmp(contour, other, elementCount * sizeof(HCContourElement)) == 0;
 }
 
-HCInteger HCContourHashValue(HCContourElement* contour) {
+HCInteger HCContourHashValue(const HCContourElement* contour) {
     HCInteger elementCount = HCContourElementCount(contour);
     HCInteger hash = 0;
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
@@ -362,7 +362,7 @@ HCInteger HCContourHashValue(HCContourElement* contour) {
     return hash;
 }
 
-void HCContourPrint(HCContourElement* contour, FILE* stream) {
+void HCContourPrint(const HCContourElement* contour, FILE* stream) {
     HCInteger elementCount = HCContourElementCount(contour);
     fprintf(stream, "<count:%lli,elements:<", elementCount);
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
@@ -374,21 +374,21 @@ void HCContourPrint(HCContourElement* contour, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCContourElementCount(HCContourElement* contour) {
+HCInteger HCContourElementCount(const HCContourElement* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->count;
 }
 
-HCBoolean HCContourIsClosed(HCContourElement* contour) {
+HCBoolean HCContourIsClosed(const HCContourElement* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->closed;
 }
 
-HCPoint HCContourStartPoint(HCContourElement* contour) {
+HCPoint HCContourStartPoint(const HCContourElement* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->start;
 }
 
-HCPoint HCContourEndPoint(HCContourElement* contour) {
+HCPoint HCContourEndPoint(const HCContourElement* contour) {
     return HCContourIsClosed(contour) ? HCContourStartPoint(contour) : contour[HCContourElementCount(contour) - 1].p;
 }

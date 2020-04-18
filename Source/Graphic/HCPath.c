@@ -72,9 +72,29 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
     return self;
 }
 
-HCPathRef HCPathCreateWithContourElements(HCContourElement* elements, HCInteger elementCount) {
-    // TODO: This!
-    return NULL;
+HCPathRef HCPathCreateWithContourElements(HCContourElement* contourElements, HCInteger contourElementCount) {
+    HCPathRef self = HCPathCreateEmpty();
+    if (contourElementCount <= 0) {
+        return self;
+    }
+    HCPathMove(self, contourElements[0].p.x, contourElements[0].p.y);
+    for (HCInteger contourElementIndex = 1; contourElementIndex < contourElementCount; contourElementIndex++) {
+        HCContourElement contourElement = contourElements[contourElementIndex];
+        if (HCContourElementIsLinear(contourElement)) {
+            HCPathAddLine(self, contourElement.p.x, contourElement.p.y);
+        }
+        else if (HCContourElementIsQuadratic(contourElement)) {
+            HCPathAddQuadraticCurve(self, contourElement.c0.x, contourElement.c0.y, contourElement.p.x, contourElement.p.y);
+        }
+        else if (HCContourElementIsCubic(contourElement)) {
+            HCPathAddCubicCurve(self, contourElement.c0.x, contourElement.c0.y, contourElement.c1.x, contourElement.c1.y, contourElement.p.x, contourElement.p.y);
+        }
+
+    }
+    if (HCContourIsClosed(contourElements)) {
+        HCPathClose(self);
+    }
+    return self;
 }
 
 void HCPathInit(void* memory) {
@@ -192,19 +212,19 @@ HCInteger HCPathContourCount(HCPathRef self) {
     return HCListCount(self->contours);
 }
 
-HCDataRef HCPathContourDataAt(HCPathRef self, HCInteger contourIndex) {
-    return HCListObjectAtIndex(self->contours, contourIndex);
-}
-
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex) {
-    HCDataRef contourData = HCPathContourDataAt(self, contourIndex);
+    HCDataRef contourData = HCListObjectAtIndex(self->contours, contourIndex);
     return HCDataSize(contourData) / sizeof(HCContourElement);
 }
 
 HCContourElement HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex) {
-    HCDataRef contourData = HCPathContourDataAt(self, contourIndex);
+    HCDataRef contourData = HCListObjectAtIndex(self->contours, contourIndex);
     HCContourElement* curves = (HCContourElement*)HCDataBytes(contourData);
     return curves[curveIndex];
+}
+
+const HCContourElement* HCPathContourAt(HCPathRef self, HCInteger contourIndex) {
+    return (HCContourElement*)HCDataBytes(HCListObjectAtIndex(self->contours, contourIndex));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -360,19 +380,19 @@ HCInteger HCPathPolylineCount(HCPathRef self) {
     return HCPathElementCount(self);
 }
 
-HCDataRef HCPathPolylineDataAt(HCPathRef self, HCInteger polylineIndex) {
-    return HCListObjectAtIndex(self->polylines, polylineIndex);
-}
-
 HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex) {
-    HCDataRef polylineData = HCPathPolylineDataAt(self, polylineIndex);
+    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
     return HCDataSize(polylineData) / sizeof(HCPoint);
 }
 
 HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex) {
-    HCDataRef polylineData = HCPathPolylineDataAt(self, polylineIndex);
+    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
     HCPoint* points = (HCPoint*)HCDataBytes(polylineData);
     return points[pointIndex];
+}
+
+const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex) {
+    return (HCPoint*)HCDataBytes(HCListObjectAtIndex(self->polylines, polylineIndex));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -584,10 +604,6 @@ void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCR
     HCPathAppendElement(self, HCPathCommandAddCubicCurve, points);
 }
 
-void HCPathAddArc(HCPathRef self, HCReal x, HCReal y, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep) {
-    // TODO: Add arc as cubic curve
-}
-
 void HCPathClose(HCPathRef self) {
     HCPathAppendElement(self, HCPathCommandCloseContour, NULL);
 }
@@ -631,7 +647,49 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
     // Add element to path
     HCDataAddBytes(self->elementData, sizeof(element), (const HCByte*)&element);
     
-    // TODO: Calculate contour data for element and add to current contour
+    // Add element data to current contour
+    switch (element.command) {
+        case HCPathCommandMove: {
+            HCContourElement contourElement = HCContourElementMakeLinear(element.points[0]);
+            HCContourInitWithElementsNoCopy(&contourElement, 1, false);
+            HCDataRef contourData = HCDataCreateWithBytes(sizeof(contourElement), (HCByte*)&contourElement);
+            HCListAddObjectReleased(self->contours, contourData);
+        } break;
+        case HCPathCommandAddLine: {
+            HCDataRef contourData = HCPathCurrentContour(self);
+            if (contourData == NULL) {
+                contourData = HCDataCreate();
+                HCListAddObjectReleased(self->contours, contourData);
+            }
+            HCContourElement contourElement = HCContourElementMakeLinear(element.points[0]);
+            HCDataAddBytes(contourData, sizeof(contourElement), (HCByte*)&contourElement);
+            HCContourInitWithElementsNoCopy((HCContourElement*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourElement), false);
+        } break;
+        case HCPathCommandAddQuadraticCurve: {
+            HCDataRef contourData = HCPathCurrentContour(self);
+            if (contourData == NULL) {
+                contourData = HCDataCreate();
+                HCListAddObjectReleased(self->contours, contourData);
+            }
+            HCContourElement contourElement = HCContourElementMakeQuadratic(element.points[0], element.points[1]);
+            HCDataAddBytes(contourData, sizeof(contourElement), (HCByte*)&contourElement);
+            HCContourInitWithElementsNoCopy((HCContourElement*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourElement), false);
+        } break;
+        case HCPathCommandAddCubicCurve: {
+            HCDataRef contourData = HCPathCurrentContour(self);
+            if (contourData == NULL) {
+                contourData = HCDataCreate();
+                HCListAddObjectReleased(self->contours, contourData);
+            }
+            HCContourElement contourElement = HCContourElementMakeCubic(element.points[0], element.points[1], element.points[2]);
+            HCDataAddBytes(contourData, sizeof(contourElement), (HCByte*)&contourElement);
+            HCContourInitWithElementsNoCopy((HCContourElement*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourElement), false);
+        } break;
+        case HCPathCommandCloseContour: {
+            HCDataRef contourData = HCPathCurrentContour(self);
+            HCContourInitWithElementsNoCopy((HCContourElement*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourElement), true);
+        } break;
+    }
     
     // Calculate polyline data for element
     HCDataRef polylineData = HCDataCreate();
@@ -675,7 +733,11 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
 }
 
 void HCPathRemoveElement(HCPathRef self) {
+    // Determine if there are elements to remove
     HCInteger elementCount = HCPathElementCount(self);
+    if (elementCount == 0) {
+        return;
+    }
     
     // Remove element
     HCPathElement element = HCPathElementAt(self, elementCount - 1);
@@ -683,6 +745,20 @@ void HCPathRemoveElement(HCPathRef self) {
         free(element.points);
     }
     HCDataRemoveBytes(self->elementData, sizeof(HCPathElement));
+    
+    // Remove element from contour
+    HCDataRef contourData = HCListLastObject(self->contours);
+    if (contourData != NULL && HCDataSize(contourData) == 0) {
+        HCListRemoveObjectAtIndex(self->contours, HCListCount(self->contours) - 1);
+        contourData = HCListLastObject(self->contours);
+    }
+    if (contourData != NULL && HCDataSize(contourData) != 0) {
+        HCDataRemoveBytes(contourData, sizeof(HCContourElement));
+        if (HCDataSize(contourData) != 0) {
+            HCContourElement* contour = (HCContourElement*)HCDataBytes(contourData);
+            HCContourInitWithElementsNoCopy(contour, HCPathContourCurveCount(self, HCListCount(self->contours) - 1), false);
+        }
+    }
     
     // Remove element polyline data
     HCListRemoveObject(self->polylines);

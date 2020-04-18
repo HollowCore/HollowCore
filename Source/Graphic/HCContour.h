@@ -15,16 +15,16 @@
 // MARK: - Element Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef struct HCContourElement {
-    HCPoint p;
     HCPoint c0;
     HCPoint c1;
+    HCPoint p;
 } HCContourElement;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Element Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCContourElementInvalidStatic {.p = HCPointInvalidStatic, .c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic}
-#define HCContourElementZeroStatic    {.p = HCPointZeroStatic, .c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic}
+#define HCContourElementInvalidStatic {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic}
+#define HCContourElementZeroStatic    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic}
 
 static const HCContourElement HCContourElementInvalid = HCContourElementInvalidStatic;
 static const HCContourElement HCContourElementZero = HCContourElementZeroStatic;
@@ -33,8 +33,8 @@ static const HCContourElement HCContourElementZero = HCContourElementZeroStatic;
 // MARK: - Element Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContourElement HCContourElementMakeLinear(HCPoint p);
-HCContourElement HCContourElementMakeQuadratic(HCPoint p, HCPoint c);
-HCContourElement HCContourElementMakeCubic(HCPoint p, HCPoint c0, HCPoint c1);
+HCContourElement HCContourElementMakeQuadratic(HCPoint c, HCPoint p);
+HCContourElement HCContourElementMakeCubic(HCPoint c0, HCPoint c1, HCPoint p);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Element Equality
@@ -78,16 +78,16 @@ void HCContourInitWithPolyCubic(void* memory, HCPoint startPoint, HCPoint* point
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourIsEqual(HCContourElement* contour, HCContourElement* other);
-HCInteger HCContourHashValue(HCContourElement* contour);
-void HCContourPrint(HCContourElement* contour, FILE* stream);
+HCBoolean HCContourIsEqual(const HCContourElement* contour, const HCContourElement* other);
+HCInteger HCContourHashValue(const HCContourElement* contour);
+void HCContourPrint(const HCContourElement* contour, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCContourElementCount(HCContourElement* contour);
-HCBoolean HCContourIsClosed(HCContourElement* contour);
-HCPoint HCContourStartPoint(HCContourElement* contour);
-HCPoint HCContourEndPoint(HCContourElement* contour);
+HCInteger HCContourElementCount(const HCContourElement* contour);
+HCBoolean HCContourIsClosed(const HCContourElement* contour);
+HCPoint HCContourStartPoint(const HCContourElement* contour);
+HCPoint HCContourEndPoint(const HCContourElement* contour);
 
 #endif /* HCContour_h */
