@@ -37,6 +37,11 @@ void HCRasterFillQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal 
 void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCReal by, HCReal cx, HCReal cy, HCReal dx, HCReal dy, HCRasterRef texture, HCReal tax, HCReal tay, HCReal tbx, HCReal tby, HCReal tcx, HCReal tcy, HCReal tdx, HCReal tdy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Contour Drawing Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCRasterDrawContour(HCRasterRef self, HCContourElement* contour, HCColor color);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawPath(HCRasterRef self, HCPathRef path, HCColor color);

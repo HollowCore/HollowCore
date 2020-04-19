@@ -296,6 +296,54 @@ CTEST(HCRaster, Gradient) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Contour Drawing Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+CTEST(HCRaster, DrawLinearContour) {
+    HCContourElement contour[] = {
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 25.0}},
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 25.0}},
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
+    };
+    HCContourInitWithElementsNoCopy(contour, sizeof(contour) / sizeof(HCContourElement), true);
+    
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawContour(raster, contour, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "contour_linear.bmp");
+    HCRasterSavePPM(raster, "contour_linear.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawQuadraticContour) {
+    HCContourElement contour[] = {
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
+        {.c0 = {.x = 50.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
+    };
+    HCContourInitWithElementsNoCopy(contour, sizeof(contour) / sizeof(HCContourElement), false);
+    
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawContour(raster, contour, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "contour_quadratic.bmp");
+    HCRasterSavePPM(raster, "contour_quadratic.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawCubicContour) {
+    HCContourElement contour[] = {
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
+        {.c0 = {.x = 32.5, .y = 10.0}, .c1 = {.x = 62.5, .y = 10.0}, .p = {.x = 75.0, .y = 75.0}},
+        {.c0 = {.x = 62.5, .y = 50.0}, .c1 = {.x = 32.5, .y = 50.0}, .p = {.x = 25.0, .y = 75.0}},
+    };
+    HCContourInitWithElementsNoCopy(contour, sizeof(contour) / sizeof(HCContourElement), true);
+       
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawContour(raster, contour, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "contour_cubic.bmp");
+    HCRasterSavePPM(raster, "contour_cubic.ppm");
+    HCRelease(raster);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCRaster, DrawHorizontalPath) {

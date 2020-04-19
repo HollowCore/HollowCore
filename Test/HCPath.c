@@ -922,6 +922,8 @@ CTEST(HCPath, ContourIndexFromElement) {
         ASSERT_TRUE(HCIntegerIsEqual(HCPathIndexOfContourContainingElement(path, HCPathElementCount(pathA) + elementIndex), 1));
     }
     
+    HCRelease(pathA);
+    HCRelease(pathB);
     HCRelease(path);
 }
 
