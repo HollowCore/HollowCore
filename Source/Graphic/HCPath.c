@@ -231,8 +231,15 @@ const HCContourElement* HCPathContourAt(HCPathRef self, HCInteger contourIndex) 
 // MARK: - Contour / Path Element Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathIndexOfContourContainingElement(HCPathRef self, HCInteger elementIndex) {
-    // TODO: This!
-    return -1;
+    // Find contour corresponding to element
+    // TODO: Cache?
+    HCInteger contourIndex = -1;
+    HCInteger endIndex = 0;
+    while (elementIndex >= endIndex) {
+        HCPathContourContainingElementIsOpen(self, endIndex, NULL, &endIndex);
+        contourIndex++;
+    }
+    return contourIndex;
 }
 
 HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
@@ -399,6 +406,8 @@ const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex) {
 // MARK: - Polyline / Path Element Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex) {
+    (void)self; // unused
+    
     // Polyline indices and element indices are currently equivalent, as empty polylines are stored for move commands
     // TODO: Remove empty polylines representing moves
     return elementIndex;
@@ -465,6 +474,9 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
 }
 
 HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {\
+    (void)self; // unused
+    (void)point; // unused
+    
     // TODO: This!
     return false;
 }
@@ -534,6 +546,10 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
 }
 
 void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point) {
+    (void)path; // unused
+    (void)otherPath; // unused
+    (void)point; // unused
+    
     *((HCBoolean*)context) = true;
     *stopSearching = true;
 }
@@ -782,6 +798,8 @@ void HCPathRemoveElement(HCPathRef self) {
 // MARK: - Polyline Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCPathAddLineSegmentPolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCDataRef polylineData) {
+    (void)self; // unused
+    
     // Start the polyline using the segment start point if the polyline is empty
     if (HCDataIsEmpty(polylineData)) {
         HCDataAddReal(polylineData, x0);

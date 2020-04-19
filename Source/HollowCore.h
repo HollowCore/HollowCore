@@ -22,6 +22,8 @@
 #include "Geometry/HCRectangle.h"
 #include "Graphic/HCColor.h"
 #include "Graphic/HCRaster.h"
+#include "Graphic/HCRaster+Draw.h"
+#include "Graphic/HCRaster+File.h"
 #include "Graphic/HCContour.h"
 #include "Graphic/HCPath.h"
 #include "Graphic/HCPath+Shapes.h"

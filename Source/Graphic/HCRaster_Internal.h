@@ -28,11 +28,4 @@ typedef struct HCRaster {
 void HCRasterInit(void* memory, HCInteger width, HCInteger height);
 void HCRasterDestroy(HCRasterRef self);
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Color Operations
-//----------------------------------------------------------------------------------------------------------------------------------
-HCColor HCColorCombine(HCColor c0, HCColor c1, HCReal t);
-HCColor HCColorCombine3(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc);
-HCColor HCColorCombine4(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc, HCColor cd, HCReal td);
-
 #endif /* HCRaster_Internal_h */

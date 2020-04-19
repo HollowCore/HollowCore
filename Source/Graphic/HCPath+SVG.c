@@ -275,14 +275,14 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     if (HCPointIsEqual(p0, p1)) {
         return;
     }
-    HCReal cosPhi = cos(rotation);
-    HCReal sinPhi = sin(rotation);
+    HCReal cosRotation = cos(rotation);
+    HCReal sinRotation = sin(rotation);
     
     // Convert from arc end-point parameterization to arc center parameterization and ensure passed radii can span the gap between p0 and p1
     HCReal midX = 0.5 * (p0.x - p1.x);
     HCReal midY = 0.5 * (p0.y - p1.y);
-    HCReal x1p = +cosPhi * midX + +sinPhi * midY;
-    HCReal y1p = -sinPhi * midX + +cosPhi * midY;
+    HCReal x1p = +cosRotation * midX + +sinRotation * midY;
+    HCReal y1p = -sinRotation * midX + +cosRotation * midY;
     HCReal radiiAdjustmentSquared = (x1p * x1p) / (xr * xr) + (y1p * y1p) / (yr * yr);
     if (radiiAdjustmentSquared > 1.0) {
         HCReal radiiAdjustment = sqrt(radiiAdjustmentSquared);
@@ -295,8 +295,8 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     cc = (largeArc == sweep) ? -cc : cc;
     HCReal cxp = cc * +((xr / yr) * y1p);
     HCReal cyp = cc * -((yr / xr) * x1p);
-    HCReal cx = +cosPhi * cxp + -sinPhi * cyp + (0.5 * (p0.x + p1.x));
-    HCReal cy = +sinPhi * cxp + +cosPhi * cyp + (0.5 * (p0.y + p1.y));
+    HCReal cx = +cosRotation * cxp + -sinRotation * cyp + (0.5 * (p0.x + p1.x));
+    HCReal cy = +sinRotation * cxp + +cosRotation * cyp + (0.5 * (p0.y + p1.y));
     HCReal arcStartX = (x1p - cxp) / xr;
     HCReal arcStartY = (y1p - cyp) / yr;
     HCReal arcEndX = (-x1p - cxp) / xr;
@@ -343,8 +343,6 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         HCReal py1p = yr * (sinAngle * xRotated + cosAngle * yRotated);
         
         // Rotate the ellipse by the desired rotation angle
-        HCReal cosRotation = cos(rotation);
-        HCReal sinRotation = sin(rotation);
         HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;
         HCReal cy0 = sinRotation * cx0p + cosRotation * cy0p + cy;
         HCReal cx1 = cosRotation * cx1p - sinRotation * cy1p + cx;
