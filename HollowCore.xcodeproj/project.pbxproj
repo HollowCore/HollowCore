@@ -352,7 +352,6 @@
 				C9E2F57921ED37DF00856F21 /* ctest.h */,
 				C9E2F58D21ED3A4E00856F21 /* HCCore.c */,
 				C9AA9A2321F1743A001AA9E7 /* HCObject.c */,
-				F84FF0FC242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c */,
 				C9E2F57B21ED387700856F21 /* HCNumber.c */,
 				C9AA9A2A21F26649001AA9E7 /* HCString.c */,
 				C9AA9A3121F437CC001AA9E7 /* HCData.c */,
@@ -372,6 +371,7 @@
 				F86BCC9A22C4766000180C12 /* HCThread_Internal.c */,
 				F83E47232261A7F800616049 /* HCLock.c */,
 				F8FC5B7B2435B543002340B5 /* HCCondition.c */,
+				F84FF0FC242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";

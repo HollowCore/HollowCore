@@ -409,28 +409,28 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterDrawContour(HCRasterRef self, HCContourElement* contour, HCColor color) {
+void HCRasterDrawContour(HCRasterRef self, HCContourCurve* contour, HCColor color) {
     // Draw each contour curve
     HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
     HCPoint currentPoint = HCContourStartPoint(contour);
-    for (HCInteger elementIndex = 1; elementIndex < HCContourElementCount(contour); elementIndex++) {
+    for (HCInteger curveIndex = 1; curveIndex < HCContourCurveCount(contour); curveIndex++) {
         // When the rotating color is requested, change the color with each segment
         if (rotatingColor) {
             color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
         }
         
-        // Draw the element
-        HCContourElement element = contour[elementIndex];
-        if (HCContourElementIsLinear(element)) {
-            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, element.p.x, element.p.y, color, color);
+        // Draw the curve
+        HCContourCurve curve = contour[curveIndex];
+        if (HCContourCurveIsLinear(curve)) {
+            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, curve.p.x, curve.p.y, color, color);
         }
-        else if (HCContourElementIsQuadratic(element)) {
-            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, element.c0.x, element.c0.y, element.p.x, element.p.y, color, color);
+        else if (HCContourCurveIsQuadratic(curve)) {
+            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y, color, color);
         }
-        else if (HCContourElementIsCubic(element)) {
-            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, element.c0.x, element.c0.y, element.c1.x, element.c1.y, element.p.x, element.p.y, color, color);
+        else if (HCContourCurveIsCubic(curve)) {
+            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y, color, color);
         }
-        currentPoint = element.p;
+        currentPoint = curve.p;
     }
     if (HCContourIsClosed(contour) && !HCPointIsEqual(currentPoint, HCContourEndPoint(contour))) {
         HCRasterDrawLine(self, currentPoint.x, currentPoint.y, HCContourEndPoint(contour).x, HCContourEndPoint(contour).y, color, color);

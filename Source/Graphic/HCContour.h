@@ -12,55 +12,55 @@
 #include "../Geometry/HCPoint.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Type
+// MARK: - Contour Curve Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef struct HCContourElement {
+typedef struct HCContourCurve {
     HCPoint c0;
     HCPoint c1;
     HCPoint p;
-} HCContourElement;
+} HCContourCurve;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Special Values
+// MARK: - Contour Curve Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCContourElementInvalidStatic {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic}
-#define HCContourElementZeroStatic    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic}
+#define HCContourCurveInvalidStatic {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic}
+#define HCContourCurveZeroStatic    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic}
 
-static const HCContourElement HCContourElementInvalid = HCContourElementInvalidStatic;
-static const HCContourElement HCContourElementZero = HCContourElementZeroStatic;
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Constructors
-//----------------------------------------------------------------------------------------------------------------------------------
-HCContourElement HCContourElementMakeLinear(HCPoint p);
-HCContourElement HCContourElementMakeQuadratic(HCPoint c, HCPoint p);
-HCContourElement HCContourElementMakeCubic(HCPoint c0, HCPoint c1, HCPoint p);
+static const HCContourCurve HCContourCurveInvalid = HCContourCurveInvalidStatic;
+static const HCContourCurve HCContourCurveZero = HCContourCurveZeroStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Equality
+// MARK: - Contour Curve Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourElementIsInvalid(HCContourElement element);
-HCBoolean HCContourElementIsLinear(HCContourElement element);
-HCBoolean HCContourElementIsQuadratic(HCContourElement element);
-HCBoolean HCContourElementIsCubic(HCContourElement element);
-HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity);
-HCBoolean HCContourElementIsZero(HCContourElement element);
-HCBoolean HCContourElementIsInfinite(HCContourElement element);
-HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other);
-HCInteger HCContourElementHashValue(HCContourElement element);
-void HCContourElementPrint(HCContourElement element, FILE* stream);
+HCContourCurve HCContourCurveMakeLinear(HCPoint p);
+HCContourCurve HCContourCurveMakeQuadratic(HCPoint c, HCPoint p);
+HCContourCurve HCContourCurveMakeCubic(HCPoint c0, HCPoint c1, HCPoint p);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Conversion
+// MARK: - Contour Curve Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourElement HCContourElementAsLinear(HCContourElement element);
-HCContourElement HCContourElementAsQuadratic(HCContourElement element);
-HCContourElement HCContourElementAsCubic(HCContourElement element);
+HCBoolean HCContourCurveIsInvalid(HCContourCurve curve);
+HCBoolean HCContourCurveIsLinear(HCContourCurve curve);
+HCBoolean HCContourCurveIsQuadratic(HCContourCurve curve);
+HCBoolean HCContourCurveIsCubic(HCContourCurve curve);
+HCBoolean HCContourCurveIsSimilar(HCContourCurve curve, HCContourCurve other, HCReal axisDissimilarity);
+HCBoolean HCContourCurveIsZero(HCContourCurve curve);
+HCBoolean HCContourCurveIsInfinite(HCContourCurve curve);
+HCBoolean HCContourCurveIsEqual(HCContourCurve curve, HCContourCurve other);
+HCInteger HCContourCurveHashValue(HCContourCurve curve);
+void HCContourCurvePrint(HCContourCurve curve, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Evaluation
+// MARK: - Contour Curve Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourEvaluateElement(HCReal t, HCPoint p0, HCContourElement element, HCReal* dx, HCReal* dy);
+HCContourCurve HCContourCurveAsLinear(HCContourCurve curve);
+HCContourCurve HCContourCurveAsQuadratic(HCContourCurve curve);
+HCContourCurve HCContourCurveAsCubic(HCContourCurve curve);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Contour Curve Evaluation
+//----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourEvaluateCurve(HCReal t, HCPoint p0, HCContourCurve curve, HCReal* dx, HCReal* dy);
 HCPoint HCContourEvaluateLinearCurve(HCReal t, HCPoint p0, HCPoint p1, HCReal* dx, HCReal* dy);
 HCPoint HCContourEvaluateQuadraticCurve(HCReal t, HCPoint p0, HCPoint c, HCPoint p1, HCReal* dx, HCReal* dy);
 HCPoint HCContourEvaluateCubicCurve(HCReal t, HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal* dx, HCReal* dy);
@@ -69,25 +69,25 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourInitWithElementsNoCopy(HCContourElement* elements, HCInteger elementCount, HCBoolean closed);
-void HCContourInitWithElements(void* memory, HCContourElement* elements, HCInteger elementCount, HCBoolean closed);
+void HCContourInitWithCurvesNoCopy(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
+void HCContourInitWithCurves(void* memory, HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed);
-void HCContourInitWithPolyQuadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger count, HCBoolean closed);
-void HCContourInitWithPolyCubic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger count, HCBoolean closed);
+void HCContourInitWithPolyquadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed);
+void HCContourInitWithPolycubic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourIsEqual(const HCContourElement* contour, const HCContourElement* other);
-HCInteger HCContourHashValue(const HCContourElement* contour);
-void HCContourPrint(const HCContourElement* contour, FILE* stream);
+HCBoolean HCContourIsEqual(const HCContourCurve* contour, const HCContourCurve* other);
+HCInteger HCContourHashValue(const HCContourCurve* contour);
+void HCContourPrint(const HCContourCurve* contour, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCContourElementCount(const HCContourElement* contour);
-HCBoolean HCContourIsClosed(const HCContourElement* contour);
-HCPoint HCContourStartPoint(const HCContourElement* contour);
-HCPoint HCContourEndPoint(const HCContourElement* contour);
+HCInteger HCContourCurveCount(const HCContourCurve* contour);
+HCBoolean HCContourIsClosed(const HCContourCurve* contour);
+HCPoint HCContourStartPoint(const HCContourCurve* contour);
+HCPoint HCContourEndPoint(const HCContourCurve* contour);
 
 #endif /* HCContour_h */

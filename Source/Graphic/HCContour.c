@@ -10,140 +10,140 @@
 #include <string.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Constructors
+// MARK: - Contour Curve Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourElement HCContourElementMakeLinear(HCPoint p) {
-    return (HCContourElement){ .c0 = HCPointInvalid, .c1 = HCPointInvalid, .p = p };
+HCContourCurve HCContourCurveMakeLinear(HCPoint p) {
+    return (HCContourCurve){ .c0 = HCPointInvalid, .c1 = HCPointInvalid, .p = p };
 }
 
-HCContourElement HCContourElementMakeQuadratic(HCPoint c, HCPoint p) {
-    return (HCContourElement){ .c0 = c, .c1 = HCPointInvalid, .p = p };
+HCContourCurve HCContourCurveMakeQuadratic(HCPoint c, HCPoint p) {
+    return (HCContourCurve){ .c0 = c, .c1 = HCPointInvalid, .p = p };
 }
 
-HCContourElement HCContourElementMakeCubic(HCPoint c0, HCPoint c1, HCPoint p) {
-    return (HCContourElement){ .c0 = c0, .c1 = c1, .p = p };
+HCContourCurve HCContourCurveMakeCubic(HCPoint c0, HCPoint c1, HCPoint p) {
+    return (HCContourCurve){ .c0 = c0, .c1 = c1, .p = p };
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Equality
+// MARK: - Contour Curve Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourElementIsInvalid(HCContourElement element) {
+HCBoolean HCContourCurveIsInvalid(HCContourCurve curve) {
     return
-        HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1) &&
-        HCPointIsInvalid(element.p);
+        HCPointIsInvalid(curve.c0) &&
+        HCPointIsInvalid(curve.c1) &&
+        HCPointIsInvalid(curve.p);
 }
 
-HCBoolean HCContourElementIsLinear(HCContourElement element) {
+HCBoolean HCContourCurveIsLinear(HCContourCurve curve) {
     return
-        HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1) &&
-        !HCPointIsInvalid(element.p);
+        HCPointIsInvalid(curve.c0) &&
+        HCPointIsInvalid(curve.c1) &&
+        !HCPointIsInvalid(curve.p);
 }
 
-HCBoolean HCContourElementIsQuadratic(HCContourElement element) {
+HCBoolean HCContourCurveIsQuadratic(HCContourCurve curve) {
     return
-        !HCPointIsInvalid(element.c0) &&
-        HCPointIsInvalid(element.c1) &&
-        !HCPointIsInvalid(element.p);
+        !HCPointIsInvalid(curve.c0) &&
+        HCPointIsInvalid(curve.c1) &&
+        !HCPointIsInvalid(curve.p);
 }
 
-HCBoolean HCContourElementIsCubic(HCContourElement element) {
+HCBoolean HCContourCurveIsCubic(HCContourCurve curve) {
     return
-        !HCPointIsInvalid(element.c0) &&
-        !HCPointIsInvalid(element.c1) &&
-        !HCPointIsInvalid(element.p);
+        !HCPointIsInvalid(curve.c0) &&
+        !HCPointIsInvalid(curve.c1) &&
+        !HCPointIsInvalid(curve.p);
 }
 
-HCBoolean HCContourElementIsSimilar(HCContourElement element, HCContourElement other, HCReal axisDissimilarity) {
+HCBoolean HCContourCurveIsSimilar(HCContourCurve curve, HCContourCurve other, HCReal axisDissimilarity) {
     return
-        (HCPointIsSimilar(element.c0, other.c0, axisDissimilarity) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
-        (HCPointIsSimilar(element.c1, other.c1, axisDissimilarity) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1))) &&
-        HCPointIsSimilar(element.p, other.p, axisDissimilarity);
+        (HCPointIsSimilar(curve.c0, other.c0, axisDissimilarity) || (HCPointIsInvalid(curve.c0) && HCPointIsInvalid(other.c0))) &&
+        (HCPointIsSimilar(curve.c1, other.c1, axisDissimilarity) || (HCPointIsInvalid(curve.c1) && HCPointIsInvalid(other.c1))) &&
+        HCPointIsSimilar(curve.p, other.p, axisDissimilarity);
 }
 
-HCBoolean HCContourElementIsZero(HCContourElement element) {
+HCBoolean HCContourCurveIsZero(HCContourCurve curve) {
     return
-        (HCPointIsZero(element.c0) || HCPointIsInvalid(element.c0)) &&
-        (HCPointIsZero(element.c1) || HCPointIsInvalid(element.c1)) &&
-        HCPointIsZero(element.p);
+        (HCPointIsZero(curve.c0) || HCPointIsInvalid(curve.c0)) &&
+        (HCPointIsZero(curve.c1) || HCPointIsInvalid(curve.c1)) &&
+        HCPointIsZero(curve.p);
 }
 
-HCBoolean HCContourElementIsInfinite(HCContourElement element) {
+HCBoolean HCContourCurveIsInfinite(HCContourCurve curve) {
     return
-        HCPointIsInfinite(element.c0) ||
-        HCPointIsInfinite(element.c1) ||
-        HCPointIsInfinite(element.p);
+        HCPointIsInfinite(curve.c0) ||
+        HCPointIsInfinite(curve.c1) ||
+        HCPointIsInfinite(curve.p);
 }
 
-HCBoolean HCContourElementIsEqual(HCContourElement element, HCContourElement other) {
+HCBoolean HCContourCurveIsEqual(HCContourCurve curve, HCContourCurve other) {
     return
-        (HCPointIsEqual(element.c0, other.c0) || (HCPointIsInvalid(element.c0) && HCPointIsInvalid(other.c0))) &&
-        (HCPointIsEqual(element.c1, other.c1) || (HCPointIsInvalid(element.c1) && HCPointIsInvalid(other.c1))) &&
-        HCPointIsEqual(element.p, other.p);
+        (HCPointIsEqual(curve.c0, other.c0) || (HCPointIsInvalid(curve.c0) && HCPointIsInvalid(other.c0))) &&
+        (HCPointIsEqual(curve.c1, other.c1) || (HCPointIsInvalid(curve.c1) && HCPointIsInvalid(other.c1))) &&
+        HCPointIsEqual(curve.p, other.p);
 }
 
-HCInteger HCContourElementHashValue(HCContourElement element) {
+HCInteger HCContourCurveHashValue(HCContourCurve curve) {
     return
-        HCPointHashValue(element.c0) ^
-        HCPointHashValue(element.c1) ^
-        HCPointHashValue(element.p);
+        HCPointHashValue(curve.c0) ^
+        HCPointHashValue(curve.c1) ^
+        HCPointHashValue(curve.p);
 }
 
-void HCContourElementPrint(HCContourElement element, FILE* stream) {
+void HCContourCurvePrint(HCContourCurve curve, FILE* stream) {
     fprintf(stream, "<c0:");
-    HCPointPrint(element.c0, stream);
+    HCPointPrint(curve.c0, stream);
     fprintf(stream, ",c1:");
-    HCPointPrint(element.c1, stream);
+    HCPointPrint(curve.c1, stream);
     fprintf(stream, ",p:");
-    HCPointPrint(element.p, stream);
+    HCPointPrint(curve.p, stream);
     fprintf(stream, ">");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Conversion
+// MARK: - Contour Curve Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourElement HCContourElementAsLinear(HCContourElement element) {
-    if (HCContourElementIsLinear(element)) {
-        return element;
+HCContourCurve HCContourCurveAsLinear(HCContourCurve curve) {
+    if (HCContourCurveIsLinear(curve)) {
+        return curve;
     }
-    if (HCContourElementIsQuadratic(element)) {
-        return HCContourElementMakeLinear(element.p);
+    if (HCContourCurveIsQuadratic(curve)) {
+        return HCContourCurveMakeLinear(curve.p);
     }
-    return HCContourElementMakeLinear(element.p);
+    return HCContourCurveMakeLinear(curve.p);
 }
 
-HCContourElement HCContourElementAsQuadratic(HCContourElement element) {
-    if (HCContourElementIsQuadratic(element)) {
-        return element;
+HCContourCurve HCContourCurveAsQuadratic(HCContourCurve curve) {
+    if (HCContourCurveIsQuadratic(curve)) {
+        return curve;
     }
-    if (HCContourElementIsCubic(element)) {
-        return HCContourElementMakeQuadratic(HCPointInterpolate(element.c0, element.c1, 0.5), element.p);
+    if (HCContourCurveIsCubic(curve)) {
+        return HCContourCurveMakeQuadratic(HCPointInterpolate(curve.c0, curve.c1, 0.5), curve.p);
     }
-    return HCContourElementMakeQuadratic(element.p, element.p);
+    return HCContourCurveMakeQuadratic(curve.p, curve.p);
 }
 
-HCContourElement HCContourElementAsCubic(HCContourElement element) {
-    if (HCContourElementIsCubic(element)) {
-        return element;
+HCContourCurve HCContourCurveAsCubic(HCContourCurve curve) {
+    if (HCContourCurveIsCubic(curve)) {
+        return curve;
     }
-    if (HCContourElementIsQuadratic(element)) {
-        return HCContourElementMakeCubic(element.c0, element.c0, element.p);
+    if (HCContourCurveIsQuadratic(curve)) {
+        return HCContourCurveMakeCubic(curve.c0, curve.c0, curve.p);
     }
-    return HCContourElementMakeCubic(element.p, element.p, element.p);
+    return HCContourCurveMakeCubic(curve.p, curve.p, curve.p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Element Evaluation
+// MARK: - Contour Curve Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourEvaluateElement(HCReal t, HCPoint p0, HCContourElement element, HCReal* dx, HCReal* dy) {
-    if (HCPointIsInvalid(element.c1)) {
-        if (HCPointIsInvalid(element.c0)) {
-            return HCContourEvaluateLinearCurve(t, p0, element.p, dx, dy);
+HCPoint HCContourEvaluateCurve(HCReal t, HCPoint p0, HCContourCurve curve, HCReal* dx, HCReal* dy) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCContourEvaluateLinearCurve(t, p0, curve.p, dx, dy);
         }
-        return HCContourEvaluateQuadraticCurve(t, p0, element.c0, element.p, dx, dy);
+        return HCContourEvaluateQuadraticCurve(t, p0, curve.c0, curve.p, dx, dy);
     }
-    return HCContourEvaluateCubicCurve(t, p0, element.c0, element.c1, element.p, dx, dy);
+    return HCContourEvaluateCubicCurve(t, p0, curve.c0, curve.c1, curve.p, dx, dy);
 }
 
 HCPoint HCContourEvaluateLinearCurve(HCReal t, HCPoint p0, HCPoint p1, HCReal* dx, HCReal* dy) {
@@ -279,7 +279,7 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef union HCContourAtlas {
-    HCContourElement element;
+    HCContourCurve curve;
     struct {
         HCInteger count;
         HCReal invalidMarker1;
@@ -289,10 +289,10 @@ typedef union HCContourAtlas {
     };
 } HCContourAtlas;
 
-HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger elementCount, HCBoolean isClosed) {
+HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger curveCount, HCBoolean isClosed) {
     HCContourAtlas atlas;
-    atlas.element = HCContourElementMakeLinear(startPoint);
-    atlas.count = elementCount;
+    atlas.curve = HCContourCurveMakeLinear(startPoint);
+    atlas.count = curveCount;
     atlas.closed = isClosed;
     return atlas;
 }
@@ -300,73 +300,73 @@ HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger elementCount, HC
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourInitWithElementsNoCopy(HCContourElement* elements, HCInteger elementCount, HCBoolean closed) {
-    HCContourAtlas* atlas = (HCContourAtlas*)elements;
-    *atlas = HCContourAtlasMake(elements[0].p, elementCount, closed);
+void HCContourInitWithCurvesNoCopy(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
+    HCContourAtlas* atlas = (HCContourAtlas*)curves;
+    *atlas = HCContourAtlasMake(curves[0].p, curveCount, closed);
 }
 
-void HCContourInitWithElements(void* memory, HCContourElement* elements, HCInteger elementCount, HCBoolean closed) {
-    memcpy(memory, elements, sizeof(HCContourElement) * elementCount);
+void HCContourInitWithCurves(void* memory, HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
+    memcpy(memory, curves, sizeof(HCContourCurve) * curveCount);
     HCContourAtlas* atlas = (HCContourAtlas*)memory;
-    *atlas = HCContourAtlasMake(elements[0].p, elementCount, closed);
+    *atlas = HCContourAtlasMake(curves[0].p, curveCount, closed);
 }
 
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
     HCContourAtlas* atlas = (HCContourAtlas*)memory;
     *atlas = HCContourAtlasMake(startPoint, pointCount + 1, closed);
-    HCContourElement* elements = (HCContourElement*)memory;
+    HCContourCurve* curves = (HCContourCurve*)memory;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 1) {
-        HCInteger elementIndex = 1 + pointIndex;
-        elements[elementIndex] = HCContourElementMakeLinear(points[pointIndex]);
+        HCInteger curveIndex = 1 + pointIndex;
+        curves[curveIndex] = HCContourCurveMakeLinear(points[pointIndex]);
     }
 }
 
-void HCContourInitWithPolyQuadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
+void HCContourInitWithPolyquadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
     HCContourAtlas* atlas = (HCContourAtlas*)memory;
     *atlas = HCContourAtlasMake(startPoint, pointCount / 2 + 1, closed);
-    HCContourElement* elements = (HCContourElement*)memory;
+    HCContourCurve* curves = (HCContourCurve*)memory;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 2) {
-        HCInteger elementIndex = 1 + pointIndex / 2;
-        elements[elementIndex] = HCContourElementMakeQuadratic(points[pointIndex], points[pointIndex + 1]);
+        HCInteger curveIndex = 1 + pointIndex / 2;
+        curves[curveIndex] = HCContourCurveMakeQuadratic(points[pointIndex], points[pointIndex + 1]);
     }
 }
 
-void HCContourInitWithPolyCubic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
+void HCContourInitWithPolycubic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed) {
     HCContourAtlas* atlas = (HCContourAtlas*)memory;
     *atlas = HCContourAtlasMake(startPoint, pointCount / 3 + 1, closed);
-    HCContourElement* elements = (HCContourElement*)memory;
+    HCContourCurve* curves = (HCContourCurve*)memory;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 3) {
-        HCInteger elementIndex = 1 + pointIndex / 3;
-        elements[elementIndex] = HCContourElementMakeCubic(points[pointIndex], points[pointIndex + 1], points[pointIndex + 2]);
+        HCInteger curveIndex = 1 + pointIndex / 3;
+        curves[curveIndex] = HCContourCurveMakeCubic(points[pointIndex], points[pointIndex + 1], points[pointIndex + 2]);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourIsEqual(const HCContourElement* contour, const HCContourElement* other) {
-    HCInteger elementCount = HCContourElementCount(contour);
-    HCInteger otherElementCount = HCContourElementCount(other);
-    if (elementCount != otherElementCount) {
+HCBoolean HCContourIsEqual(const HCContourCurve* contour, const HCContourCurve* other) {
+    HCInteger curveCount = HCContourCurveCount(contour);
+    HCInteger otherCurveCount = HCContourCurveCount(other);
+    if (curveCount != otherCurveCount) {
         return false;
     }
-    return memcmp(contour, other, elementCount * sizeof(HCContourElement)) == 0;
+    return memcmp(contour, other, curveCount * sizeof(HCContourCurve)) == 0;
 }
 
-HCInteger HCContourHashValue(const HCContourElement* contour) {
-    HCInteger elementCount = HCContourElementCount(contour);
+HCInteger HCContourHashValue(const HCContourCurve* contour) {
+    HCInteger curveCount = HCContourCurveCount(contour);
     HCInteger hash = 0;
-    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
-        hash ^= HCContourElementHashValue(contour[elementIndex]);
+    for (HCInteger curveIndex = 0; curveIndex < curveCount; curveIndex++) {
+        hash ^= HCContourCurveHashValue(contour[curveIndex]);
     }
     return hash;
 }
 
-void HCContourPrint(const HCContourElement* contour, FILE* stream) {
-    HCInteger elementCount = HCContourElementCount(contour);
-    fprintf(stream, "<count:%lli,elements:<", elementCount);
-    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
-        HCContourElementPrint(contour[elementIndex], stream);
+void HCContourPrint(const HCContourCurve* contour, FILE* stream) {
+    HCInteger curveCount = HCContourCurveCount(contour);
+    fprintf(stream, "<count:%lli,curves:<", curveCount);
+    for (HCInteger curveIndex = 0; curveIndex < curveCount; curveIndex++) {
+        HCContourCurvePrint(contour[curveIndex], stream);
     }
     fprintf(stream, ">>");
 }
@@ -374,21 +374,21 @@ void HCContourPrint(const HCContourElement* contour, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCContourElementCount(const HCContourElement* contour) {
+HCInteger HCContourCurveCount(const HCContourCurve* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->count;
 }
 
-HCBoolean HCContourIsClosed(const HCContourElement* contour) {
+HCBoolean HCContourIsClosed(const HCContourCurve* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->closed;
 }
 
-HCPoint HCContourStartPoint(const HCContourElement* contour) {
+HCPoint HCContourStartPoint(const HCContourCurve* contour) {
     HCContourAtlas* atlas = (HCContourAtlas*)contour;
     return atlas->start;
 }
 
-HCPoint HCContourEndPoint(const HCContourElement* contour) {
-    return HCContourIsClosed(contour) ? HCContourStartPoint(contour) : contour[HCContourElementCount(contour) - 1].p;
+HCPoint HCContourEndPoint(const HCContourCurve* contour) {
+    return HCContourIsClosed(contour) ? HCContourStartPoint(contour) : contour[HCContourCurveCount(contour) - 1].p;
 }

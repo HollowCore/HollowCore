@@ -809,19 +809,19 @@ CTEST(HCPath, Size) {
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, PathFromContour) {
-    HCContourElement contour[] = {
+    HCContourCurve contour[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 10.0}},
         {.c0 = {.x = 15.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 20.0, .y = 10.0}},
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    HCContourInitWithElementsNoCopy(contour, sizeof(contour) / sizeof(HCContourElement), true);
-    HCPathRef path = HCPathCreateWithContourElements(contour, HCContourElementCount(contour));
+    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
+    HCPathRef path = HCPathCreateWithContourCurves(contour, HCContourCurveCount(contour));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourElementCount(contour)));
-    for (HCInteger elementIndex = 0; elementIndex < HCContourElementCount(contour); elementIndex++) {
-        ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, elementIndex), contour[elementIndex]));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourCurveCount(contour)));
+    for (HCInteger elementIndex = 0; elementIndex < HCContourCurveCount(contour); elementIndex++) {
+        ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, elementIndex), contour[elementIndex]));
     }
     
     HCRelease(path);
@@ -832,21 +832,21 @@ CTEST(HCPath, ContourFromLinear) {
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 2));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 3));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourElementMakeLinear(HCPointMake(10.0, 20.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourElementMakeLinear(HCPointMake(60.0, 80.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 2), HCContourElementMakeLinear(HCPointMake(30.0, 10.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 20.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeLinear(HCPointMake(60.0, 80.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 2), HCContourCurveMakeLinear(HCPointMake(30.0, 10.0))));
     
-    ASSERT_TRUE(HCIntegerIsEqual(HCContourElementCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), true));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 20.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 20.0)));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 1), 3));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 1, 0), HCContourElementMakeLinear(HCPointMake(1.0, 2.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 1, 1), HCContourElementMakeLinear(HCPointMake(6.0, 8.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 1, 2), HCContourElementMakeLinear(HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 1), HCContourCurveMakeLinear(HCPointMake(6.0, 8.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
     
-    ASSERT_TRUE(HCIntegerIsEqual(HCContourElementCount(HCPathContourAt(path, 1)), HCPathContourCurveCount(path, 1)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 1)), HCPathContourCurveCount(path, 1)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 1)), false));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(HCPathContourAt(path, 1)), HCPointMake(1.0, 2.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(HCPathContourAt(path, 1)), HCPointMake(3.0, 1.0)));
@@ -859,10 +859,10 @@ CTEST(HCPath, ContourFromQuadratic) {
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 2));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourElementMakeLinear(HCPointMake(10.0, 80.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourElementMakeQuadratic(HCPointMake(95.0, 10.0), HCPointMake(180.0, 80.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 80.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeQuadratic(HCPointMake(95.0, 10.0), HCPointMake(180.0, 80.0))));
     
-    ASSERT_TRUE(HCIntegerIsEqual(HCContourElementCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), false));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 80.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(HCPathContourAt(path, 0)), HCPointMake(180.0, 80.0)));
@@ -875,10 +875,10 @@ CTEST(HCPath, ContourFromCubic) {
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 2));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourElementMakeLinear(HCPointMake(10.0, 90.0))));
-    ASSERT_TRUE(HCContourElementIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourElementMakeCubic(HCPointMake(30.0, 10.0), HCPointMake(70.0, 10.0), HCPointMake(90.0, 90.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 90.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeCubic(HCPointMake(30.0, 10.0), HCPointMake(70.0, 10.0), HCPointMake(90.0, 90.0))));
     
-    ASSERT_TRUE(HCIntegerIsEqual(HCContourElementCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), false));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 90.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(HCPathContourAt(path, 0)), HCPointMake(90.0, 90.0)));
@@ -891,30 +891,30 @@ CTEST(HCPath, ContourFromCubic) {
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, ContourIndexFromElement) {
     HCListRef subPaths = HCListCreate();
-    HCContourElement contourA[] = {
+    HCContourCurve contourA[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 0.0, .y = 0.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 5.0, .y = 0.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 5.0, .y = 5.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 0.0, .y = 5.0}},
     };
-    HCContourInitWithElementsNoCopy(contourA, sizeof(contourA) / sizeof(HCContourElement), true);
-    HCPathRef pathA = HCPathCreateWithContourElements(contourA, HCContourElementCount(contourA));
+    HCContourInitWithCurvesNoCopy(contourA, sizeof(contourA) / sizeof(HCContourCurve), true);
+    HCPathRef pathA = HCPathCreateWithContourCurves(contourA, HCContourCurveCount(contourA));
     HCListAddObject(subPaths, pathA);
-    HCContourElement contourB[] = {
+    HCContourCurve contourB[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 10.0}},
         {.c0 = {.x = 15.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 20.0, .y = 10.0}},
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    HCContourInitWithElementsNoCopy(contourB, sizeof(contourB) / sizeof(HCContourElement), true);
-    HCPathRef pathB = HCPathCreateWithContourElements(contourB, HCContourElementCount(contourB));
+    HCContourInitWithCurvesNoCopy(contourB, sizeof(contourB) / sizeof(HCContourCurve), true);
+    HCPathRef pathB = HCPathCreateWithContourCurves(contourB, HCContourCurveCount(contourB));
     HCListAddObject(subPaths, pathB);
     HCPathRef path = HCPathCreateWithSubpaths(subPaths);
     HCRelease(subPaths);
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 2));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourElementCount(contourA)));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 1), HCContourElementCount(contourB)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourCurveCount(contourA)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 1), HCContourCurveCount(contourB)));
     for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(pathA); elementIndex++) {
         ASSERT_TRUE(HCIntegerIsEqual(HCPathIndexOfContourContainingElement(path, elementIndex), 0));
     }

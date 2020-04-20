@@ -48,7 +48,7 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 HCPathRef HCPathCreateEmpty(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
-HCPathRef HCPathCreateWithContourElements(HCContourElement* contourElements, HCInteger contourElementCount);
+HCPathRef HCPathCreateWithContourCurves(HCContourCurve* contourCurves, HCInteger contourCurveCount);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -70,8 +70,8 @@ HCRectangle HCPathBounds(HCPathRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathContourCount(HCPathRef self);
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex);
-HCContourElement HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
-const HCContourElement* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
+HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
+const HCContourCurve* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour / Path Element Correspondence
