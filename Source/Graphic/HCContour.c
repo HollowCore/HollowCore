@@ -278,31 +278,15 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
-typedef union HCContourAtlas {
-    HCContourCurve curve;
-    struct {
-        HCInteger count;
-        HCReal invalidMarker1;
-        HCReal invalidMarker2;
-        HCBoolean closed;
-        HCPoint start;
-    };
-} HCContourAtlas;
-
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Constructors
+//----------------------------------------------------------------------------------------------------------------------------------
 HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger curveCount, HCBoolean isClosed) {
     HCContourAtlas atlas;
     atlas.curve = HCContourCurveMakeLinear(startPoint);
     atlas.count = curveCount;
     atlas.closed = isClosed;
     return atlas;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCContourInitWithCurvesNoCopy(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
-    HCContourAtlas* atlas = (HCContourAtlas*)curves;
-    *atlas = HCContourAtlasMake(curves[0].p, curveCount, closed);
 }
 
 void HCContourInitWithCurves(void* memory, HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {

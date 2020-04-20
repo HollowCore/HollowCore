@@ -136,25 +136,7 @@ CTEST(HCContourCurve, ElementEvaluation) {
     ASSERT_DBL_NEAR(dy, 2.0);
 }
 
-CTEST(HCContour, CreateNoCopy) {
-    HCContourCurve contour[] = {
-        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
-        {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
-        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
-        {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
-    };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
-    ASSERT_TRUE(HCContourIsClosed(contour));
-    ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[0], HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[1], HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[2], HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[3], HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
-}
-
-CTEST(HCContour, CreateElements) {
+CTEST(HCContour, CreateWithCurves) {
     HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
@@ -237,21 +219,21 @@ CTEST(HCContour, Equality) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    HCContourInitWithCurvesNoCopy(a, sizeof(a) / sizeof(HCContourCurve), true);
+    a[0] = HCContourAtlasMake(a[0].p, sizeof(a) / sizeof(HCContourCurve), true).curve;
     HCContourCurve b[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    HCContourInitWithCurvesNoCopy(b, sizeof(b) / sizeof(HCContourCurve), true);
+    b[0] = HCContourAtlasMake(a[0].p, sizeof(b) / sizeof(HCContourCurve), true).curve;
     HCContourCurve c[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    HCContourInitWithCurvesNoCopy(c, sizeof(c) / sizeof(HCContourCurve), false);
+    c[0] = HCContourAtlasMake(a[0].p, sizeof(c) / sizeof(HCContourCurve), false).curve;
     
     ASSERT_TRUE(HCContourIsEqual(a, a));
     ASSERT_TRUE(HCContourHashValue(a) == HCContourHashValue(a));
@@ -269,6 +251,6 @@ CTEST(HCContour, Print) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
+    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
     HCContourPrint(contour, stdout); // TODO: Not to stdout
 }

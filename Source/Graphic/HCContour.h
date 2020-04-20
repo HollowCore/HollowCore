@@ -20,6 +20,17 @@ typedef struct HCContourCurve {
     HCPoint p;
 } HCContourCurve;
 
+typedef union HCContourAtlas {
+    HCContourCurve curve;
+    struct {
+        HCInteger count;
+        HCReal invalidMarker1;
+        HCReal invalidMarker2;
+        HCBoolean closed;
+        HCPoint start;
+    };
+} HCContourAtlas;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Curve Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -69,7 +80,7 @@ void HCContourLineLineIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourInitWithCurvesNoCopy(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
+HCContourAtlas HCContourAtlasMake(HCPoint startPoint, HCInteger curveCount, HCBoolean isClosed);
 void HCContourInitWithCurves(void* memory, HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed);
 void HCContourInitWithPolyquadratic(void* memory, HCPoint startPoint, HCPoint* points, HCInteger pointCount, HCBoolean closed);

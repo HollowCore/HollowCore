@@ -663,12 +663,11 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
     // Add element to path
     HCDataAddBytes(self->elementData, sizeof(element), (const HCByte*)&element);
     
-    // Add element data to current contour
+    // Add curve data from element to current contour
     switch (element.command) {
         case HCPathCommandMove: {
-            HCContourCurve contourCurve = HCContourCurveMakeLinear(element.points[0]);
-            HCContourInitWithCurvesNoCopy(&contourCurve, 1, false);
-            HCDataRef contourData = HCDataCreateWithBytes(sizeof(contourCurve), (HCByte*)&contourCurve);
+            HCContourAtlas contourAtlas = HCContourAtlasMake(element.points[0], 1, false);
+            HCDataRef contourData = HCDataCreateWithBytes(sizeof(contourAtlas), (HCByte*)&contourAtlas);
             HCListAddObjectReleased(self->contours, contourData);
         } break;
         case HCPathCommandAddLine: {
@@ -679,7 +678,9 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeLinear(element.points[0]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCContourInitWithCurvesNoCopy((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
+            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
         } break;
         case HCPathCommandAddQuadraticCurve: {
             HCDataRef contourData = HCPathCurrentContour(self);
@@ -689,7 +690,9 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeQuadratic(element.points[0], element.points[1]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCContourInitWithCurvesNoCopy((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
+            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
         } break;
         case HCPathCommandAddCubicCurve: {
             HCDataRef contourData = HCPathCurrentContour(self);
@@ -699,11 +702,15 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeCubic(element.points[0], element.points[1], element.points[2]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCContourInitWithCurvesNoCopy((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
+            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
         } break;
         case HCPathCommandCloseContour: {
             HCDataRef contourData = HCPathCurrentContour(self);
-            HCContourInitWithCurvesNoCopy((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), true);
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
+            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, true);
         } break;
     }
     
@@ -755,31 +762,41 @@ void HCPathRemoveElement(HCPathRef self) {
         return;
     }
     
-    // Remove element
+    // Find the element to be removed
     HCPathElement element = HCPathElementAt(self, elementCount - 1);
-    if (element.points != NULL) {
-        free(element.points);
-    }
-    HCDataRemoveBytes(self->elementData, sizeof(HCPathElement));
     
-    // Remove element from contour
-    HCDataRef contourData = HCListLastObject(self->contours);
-    if (contourData != NULL && HCDataSize(contourData) == 0) {
-        HCListRemoveObjectAtIndex(self->contours, HCListCount(self->contours) - 1);
-        contourData = HCListLastObject(self->contours);
-    }
-    if (contourData != NULL && HCDataSize(contourData) != 0) {
-        HCDataRemoveBytes(contourData, sizeof(HCContourCurve));
-        if (HCDataSize(contourData) != 0) {
-            HCContourCurve* contour = (HCContourCurve*)HCDataBytes(contourData);
-            HCContourInitWithCurvesNoCopy(contour, HCPathContourCurveCount(self, HCListCount(self->contours) - 1), false);
-        }
+    // Remove corresponding property from contour
+    switch (element.command) {
+        case HCPathCommandMove: {
+            HCListRemoveObject(self->contours);
+        } break;
+        case HCPathCommandAddLine:
+        case HCPathCommandAddQuadraticCurve:
+        case HCPathCommandAddCubicCurve:
+        case HCPathCommandCloseContour: {
+            HCDataRef contourData = HCPathCurrentContour(self);
+            if (element.command != HCPathCommandCloseContour) {
+                HCDataRemoveBytes(contourData, sizeof(HCContourCurve));
+            }
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            if (curveCount == 0) {
+                HCListRemoveObject(self->contours);
+            }
+            else {
+                HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
+                *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
+            }
+        } break;
     }
     
     // Remove element polyline data
     HCListRemoveObject(self->polylines);
     
-    // Update count
+    // Remove element
+    if (element.points != NULL) {
+        free(element.points);
+    }
+    HCDataRemoveBytes(self->elementData, sizeof(HCPathElement));
     elementCount = HCPathElementCount(self);
     
     // Re-calculate bounds to exclude the element polylines
