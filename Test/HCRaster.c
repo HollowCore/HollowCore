@@ -305,7 +305,7 @@ CTEST(HCRaster, DrawLinearContour) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
     };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
+    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
     
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
@@ -319,7 +319,7 @@ CTEST(HCRaster, DrawQuadraticContour) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
         {.c0 = {.x = 50.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
     };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), false);
+    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), false).curve;
     
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
@@ -334,7 +334,7 @@ CTEST(HCRaster, DrawCubicContour) {
         {.c0 = {.x = 32.5, .y = 10.0}, .c1 = {.x = 62.5, .y = 10.0}, .p = {.x = 75.0, .y = 75.0}},
         {.c0 = {.x = 62.5, .y = 50.0}, .c1 = {.x = 32.5, .y = 50.0}, .p = {.x = 25.0, .y = 75.0}},
     };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
+    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
        
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);

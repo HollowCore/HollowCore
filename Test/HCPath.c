@@ -815,7 +815,7 @@ CTEST(HCPath, PathFromContour) {
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    HCContourInitWithCurvesNoCopy(contour, sizeof(contour) / sizeof(HCContourCurve), true);
+    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
     HCPathRef path = HCPathCreateWithContourCurves(contour, HCContourCurveCount(contour));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
@@ -897,7 +897,7 @@ CTEST(HCPath, ContourIndexFromElement) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 5.0, .y = 5.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 0.0, .y = 5.0}},
     };
-    HCContourInitWithCurvesNoCopy(contourA, sizeof(contourA) / sizeof(HCContourCurve), true);
+    contourA[0] = HCContourAtlasMake(contourA[0].p, sizeof(contourA) / sizeof(HCContourCurve), true).curve;
     HCPathRef pathA = HCPathCreateWithContourCurves(contourA, HCContourCurveCount(contourA));
     HCListAddObject(subPaths, pathA);
     HCContourCurve contourB[] = {
@@ -906,7 +906,7 @@ CTEST(HCPath, ContourIndexFromElement) {
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    HCContourInitWithCurvesNoCopy(contourB, sizeof(contourB) / sizeof(HCContourCurve), true);
+    contourB[0] = HCContourAtlasMake(contourB[0].p, sizeof(contourB) / sizeof(HCContourCurve), true).curve;
     HCPathRef pathB = HCPathCreateWithContourCurves(contourB, HCContourCurveCount(contourB));
     HCListAddObject(subPaths, pathB);
     HCPathRef path = HCPathCreateWithSubpaths(subPaths);
