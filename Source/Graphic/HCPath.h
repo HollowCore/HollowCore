@@ -48,7 +48,8 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 HCPathRef HCPathCreateEmpty(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
-HCPathRef HCPathCreateWithContourCurves(HCContourCurve* contourCurves, HCInteger contourCurveCount);
+HCPathRef HCPathCreateWithContour(const HCContour* contour);
+HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -69,15 +70,15 @@ HCRectangle HCPathBounds(HCPathRef self);
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathContourCount(HCPathRef self);
+HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex);
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex);
 HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
-const HCContourCurve* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
+const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour / Path Element Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathIndexOfContourContainingElement(HCPathRef self, HCInteger elementIndex);
-HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
 HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
 HCPathRef HCPathContourPathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
 HCListRef HCPathContourPathsRetained(HCPathRef self);

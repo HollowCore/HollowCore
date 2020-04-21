@@ -298,14 +298,57 @@ CTEST(HCRaster, Gradient) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+CTEST(HCRaster, DrawPolyline) {
+    HCPoint startPoint = {.x = 25.0, .y = 25.0};
+    HCPoint points[] = {
+        {.x = 75.0, .y = 25.0},
+        {.x = 75.0, .y = 75.0},
+        {.x = 50.0, .y = 50.0},
+    };
+    
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawPolyline(raster, startPoint, points, sizeof(points) / sizeof(HCPoint), true, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "polyline.bmp");
+    HCRasterSavePPM(raster, "polyline.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawPolyquadratic) {
+    HCPoint startPoint = {.x = 25.0, .y = 75.0};
+    HCPoint points[] = {
+        {.x = 50.0, .y = 0.0}, {.x = 75.0, .y = 75.0},
+        {.x = 62.5, .y = 100.0}, {.x = 50.0, .y = 75.0},
+    };
+    
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawPolyquadratic(raster, startPoint, points, sizeof(points) / sizeof(HCPoint) / 2, false, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "polyquadratic.bmp");
+    HCRasterSavePPM(raster, "polyquadratic.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawPolycubic) {
+    HCPoint startPoint = {.x = 25.0, .y = 75.0};
+    HCPoint points[] = {
+        {.x = 32.5, .y = 10.0}, {.x = 62.5, .y = 10.0}, {.x = 75.0, .y = 75.0},
+        {.x = 62.5, .y = 50.0}, {.x = 32.5, .y = 50.0}, {.x = 25.0, .y = 75.0},
+    };
+       
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawPolycubic(raster, startPoint, points, sizeof(points) / sizeof(HCPoint) / 3, true, HCRasterColorRotating);
+    HCRasterSaveBMP(raster, "polycubic.bmp");
+    HCRasterSavePPM(raster, "polycubic.ppm");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawLinearContour) {
-    HCContourCurve contour[] = {
+    HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 25.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 25.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
-        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 50.0, .y = 50.0}},
     };
-    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
+    HCContour* contour = HCContourInitInCurves(curves, sizeof(curves) / sizeof(HCContourCurve), false);
     
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
@@ -315,11 +358,12 @@ CTEST(HCRaster, DrawLinearContour) {
 }
 
 CTEST(HCRaster, DrawQuadraticContour) {
-    HCContourCurve contour[] = {
+    HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
         {.c0 = {.x = 50.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 75.0, .y = 75.0}},
+        {.c0 = {.x = 62.5, .y = 100.0}, .c1 = HCPointInvalidStatic, .p = {.x = 50.0, .y = 75.0}},
     };
-    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), false).curve;
+    HCContour* contour = HCContourInitInCurves(curves, sizeof(curves) / sizeof(HCContourCurve), false);
     
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
@@ -329,12 +373,12 @@ CTEST(HCRaster, DrawQuadraticContour) {
 }
 
 CTEST(HCRaster, DrawCubicContour) {
-    HCContourCurve contour[] = {
+    HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 25.0, .y = 75.0}},
         {.c0 = {.x = 32.5, .y = 10.0}, .c1 = {.x = 62.5, .y = 10.0}, .p = {.x = 75.0, .y = 75.0}},
         {.c0 = {.x = 62.5, .y = 50.0}, .c1 = {.x = 32.5, .y = 50.0}, .p = {.x = 25.0, .y = 75.0}},
     };
-    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
+    HCContour* contour = HCContourInitInCurves(curves, sizeof(curves) / sizeof(HCContourCurve), true);
        
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);

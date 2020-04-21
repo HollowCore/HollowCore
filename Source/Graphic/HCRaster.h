@@ -11,8 +11,6 @@
 
 #include "../Core/HCObject.h"
 #include "HCColor.h"
-#include "HCPath.h"
-#include "HCPath+SVG.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type

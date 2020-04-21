@@ -809,19 +809,19 @@ CTEST(HCPath, Size) {
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, PathFromContour) {
-    HCContourCurve contour[] = {
+    HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 10.0}},
         {.c0 = {.x = 15.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 20.0, .y = 10.0}},
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
-    HCPathRef path = HCPathCreateWithContourCurves(contour, HCContourCurveCount(contour));
+    HCContour* contour = HCContourInitInCurves(curves, sizeof(curves) / sizeof(HCContourCurve), true);
+    HCPathRef path = HCPathCreateWithContour(contour);
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourCurveCount(contour)));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourCurveCount((HCContour*)contour)));
     for (HCInteger elementIndex = 0; elementIndex < HCContourCurveCount(contour); elementIndex++) {
-        ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, elementIndex), contour[elementIndex]));
+        ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, elementIndex), HCContourCurveAt(contour, elementIndex)));
     }
     
     HCRelease(path);
@@ -891,23 +891,23 @@ CTEST(HCPath, ContourFromCubic) {
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, ContourIndexFromElement) {
     HCListRef subPaths = HCListCreate();
-    HCContourCurve contourA[] = {
+    HCContourCurve a[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 0.0, .y = 0.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 5.0, .y = 0.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 5.0, .y = 5.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 0.0, .y = 5.0}},
     };
-    contourA[0] = HCContourAtlasMake(contourA[0].p, sizeof(contourA) / sizeof(HCContourCurve), true).curve;
-    HCPathRef pathA = HCPathCreateWithContourCurves(contourA, HCContourCurveCount(contourA));
+    HCContour* contourA = HCContourInitInCurves(a, sizeof(a) / sizeof(HCContourCurve), true);
+    HCPathRef pathA = HCPathCreateWithContour(contourA);
     HCListAddObject(subPaths, pathA);
-    HCContourCurve contourB[] = {
+    HCContourCurve b[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 10.0}},
         {.c0 = {.x = 15.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 20.0, .y = 10.0}},
         {.c0 = {.x = 30.0, .y = 22.5}, .c1 = {.x = 30.0, .y = 27.5}, .p = {.x = 20.0, .y = 20.0}},
         {.c0 = {.x = 15.0, .y = 30.0}, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
     };
-    contourB[0] = HCContourAtlasMake(contourB[0].p, sizeof(contourB) / sizeof(HCContourCurve), true).curve;
-    HCPathRef pathB = HCPathCreateWithContourCurves(contourB, HCContourCurveCount(contourB));
+    HCContour* contourB = HCContourInitInCurves(b, sizeof(b) / sizeof(HCContourCurve), true);
+    HCPathRef pathB = HCPathCreateWithContour(contourB);
     HCListAddObject(subPaths, pathB);
     HCPathRef path = HCPathCreateWithSubpaths(subPaths);
     HCRelease(subPaths);

@@ -10,6 +10,9 @@
 #define HCRaster_Draw_h
 
 #include "HCRaster.h"
+#include "HCContour.h"
+#include "HCPath.h"
+#include "HCPath+SVG.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions
@@ -39,7 +42,11 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterDrawContour(HCRasterRef self, HCContourCurve* contour, HCColor color);
+void HCRasterDrawPolyline(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed, HCColor color);
+void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed, HCColor color);
+void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed, HCColor color);
+void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, HCInteger count, HCBoolean closed, HCColor color);
+void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Drawing Operations

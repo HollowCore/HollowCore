@@ -409,18 +409,102 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCRasterDrawContour(HCRasterRef self, HCContourCurve* contour, HCColor color) {
-    // Draw each contour curve
+void HCRasterDrawPolyline(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed, HCColor color) {
+    // Drawing empty polylines does nothing
+    if (points == NULL || pointCount <= 0) {
+        return;
+    }
+    
+    // Draw each polyline segment
     HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
-    HCPoint currentPoint = HCContourStartPoint(contour);
-    for (HCInteger curveIndex = 1; curveIndex < HCContourCurveCount(contour); curveIndex++) {
+    HCPoint currentPoint = startPoint;
+    for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex++) {
         // When the rotating color is requested, change the color with each segment
         if (rotatingColor) {
             color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
         }
         
+        // Draw the segment
+        HCPoint p = points[pointIndex];
+        HCRasterDrawLine(self, currentPoint.x, currentPoint.y, p.x, p.y, color, color);
+        currentPoint = p;
+    }
+}
+
+void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed, HCColor color) {
+    // Drawing empty polylines does nothing
+    if (points == NULL || quadraticCount <= 0) {
+        return;
+    }
+    
+    // Draw each quadratic curve
+    HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
+    HCPoint currentPoint = startPoint;
+    for (HCInteger quadraticIndex = 0; quadraticIndex < quadraticCount; quadraticIndex++) {
+        // When the rotating color is requested, change the color with each segment
+        if (rotatingColor) {
+            color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
+        }
+        
+        // Draw the quadratic curve
+        HCPoint c = points[quadraticIndex * 2];
+        HCPoint p = points[quadraticIndex * 2 + 1];
+        if (HCPointIsInvalid(c)) {
+            c = p;
+        }
+        HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, c.x, c.y, p.x, p.y, color, color);
+        currentPoint = p;
+    }
+}
+
+void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed, HCColor color) {
+    // Drawing empty polylines does nothing
+    if (points == NULL || cubicCount <= 0) {
+        return;
+    }
+    
+    // Draw each cubic curve
+    HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
+    HCPoint currentPoint = startPoint;
+    for (HCInteger cubicIndex = 0; cubicIndex < cubicCount; cubicIndex++) {
+        // When the rotating color is requested, change the color with each segment
+        if (rotatingColor) {
+            color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
+        }
+        
+        // Draw the cubic curve
+        HCPoint c0 = points[cubicIndex * 3];
+        HCPoint c1 = points[cubicIndex * 3 + 1];
+        HCPoint p = points[cubicIndex * 3 + 2];
+        if (HCPointIsInvalid(c0)) {
+            c0 = p;
+        }
+        if (HCPointIsInvalid(c1)) {
+            c1 = c0;
+        }
+        HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, c0.x, c0.y, c1.x, c1.y, p.x, p.y, color, color);
+        currentPoint = p;
+    }
+}
+
+void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed, HCColor color) {
+    // Drawing empty contours does nothing
+    if (curves == NULL || curveCount <= 0) {
+        return;
+    }
+    
+    // Draw each contour curve
+    HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
+    HCPoint startPoint = curves[0].p;
+    HCPoint currentPoint = startPoint;
+    for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
+        // When the rotating color is requested, change the color with each curve
+        if (rotatingColor) {
+            color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
+        }
+        
         // Draw the curve
-        HCContourCurve curve = contour[curveIndex];
+        HCContourCurve curve = curves[curveIndex];
         if (HCContourCurveIsLinear(curve)) {
             HCRasterDrawLine(self, currentPoint.x, currentPoint.y, curve.p.x, curve.p.y, color, color);
         }
@@ -432,9 +516,16 @@ void HCRasterDrawContour(HCRasterRef self, HCContourCurve* contour, HCColor colo
         }
         currentPoint = curve.p;
     }
-    if (HCContourIsClosed(contour) && !HCPointIsEqual(currentPoint, HCContourEndPoint(contour))) {
-        HCRasterDrawLine(self, currentPoint.x, currentPoint.y, HCContourEndPoint(contour).x, HCContourEndPoint(contour).y, color, color);
+    
+    // Close the curve, if requested and required
+    HCPoint endPoint = currentPoint;
+    if (closed && !HCPointIsEqual(endPoint, startPoint)) {
+        HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
     }
+}
+
+void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
+    HCRasterDrawContourCurves(self, HCContourCurves(contour), HCContourCurveCount(contour), HCContourIsClosed(contour), color);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

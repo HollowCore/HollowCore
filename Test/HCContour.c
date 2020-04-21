@@ -136,25 +136,6 @@ CTEST(HCContourCurve, ElementEvaluation) {
     ASSERT_DBL_NEAR(dy, 2.0);
 }
 
-CTEST(HCContour, CreateWithCurves) {
-    HCContourCurve curves[] = {
-        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
-        {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
-        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
-        {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
-    };
-    HCContourCurve contour[4];
-    HCContourInitWithCurves(contour, curves, sizeof(curves) / sizeof(HCContourCurve), true);
-    ASSERT_TRUE(HCContourIsClosed(contour));
-    ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[0], HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[1], HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[2], HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[3], HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
-}
-
 CTEST(HCContour, CreatePolyline) {
     HCPoint startPoint = {.x = 1.0, .y = 1.0};
     HCPoint polyline[] = {
@@ -162,16 +143,16 @@ CTEST(HCContour, CreatePolyline) {
         {.x = 3.0, .y = 3.0},
         {.x = 1.0, .y = 3.0},
     };
-    HCContourCurve contour[4];
+    HCContour contour[4];
     HCContourInitWithPolyline(contour, startPoint, polyline, sizeof(polyline) / sizeof(HCPoint), true);
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[0], HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[1], HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[2], HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[3], HCContourCurveMakeLinear(HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeLinear(HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, CreatePolyquadratic) {
@@ -181,16 +162,16 @@ CTEST(HCContour, CreatePolyquadratic) {
         HCPointInvalidStatic, {.x = 3.0, .y = 3.0},
         {.x = 3.0, .y = 4.0}, {.x = 1.0, .y = 3.0},
     };
-    HCContourCurve contour[4];
-    HCContourInitWithPolyquadratic(contour, startPoint, polyquadratic, sizeof(polyquadratic) / sizeof(HCPoint), true);
+    HCContour contour[4];
+    HCContourInitWithPolyquadratic(contour, startPoint, polyquadratic, sizeof(polyquadratic) / (sizeof(HCPoint) * 2), true);
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[0], HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[1], HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[2], HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[3], HCContourCurveMakeQuadratic(HCPointMake(3.0, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeQuadratic(HCPointMake(3.0, 4.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, CreatePolycubic) {
@@ -200,16 +181,35 @@ CTEST(HCContour, CreatePolycubic) {
         HCPointInvalidStatic, HCPointInvalidStatic, {.x = 3.0, .y = 3.0},
         {.x = 2.5, .y = 4.0}, {.x = 1.5, .y = 4.0}, {.x = 1.0, .y = 3.0},
     };
-    HCContourCurve contour[4];
-    HCContourInitWithPolycubic(contour, startPoint, polycubic, sizeof(polycubic) / sizeof(HCPoint), true);
+    HCContour contour[4];
+    HCContourInitWithPolycubic(contour, startPoint, polycubic, sizeof(polycubic) / (sizeof(HCPoint) * 3), true);
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[0], HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[1], HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[2], HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(contour[3], HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+}
+
+CTEST(HCContour, CreateWithCurves) {
+    HCContourCurve curves[] = {
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
+        {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
+        {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
+    };
+    HCContour contour[4];
+    HCContourInitWithCurves(contour, curves, sizeof(curves) / sizeof(HCContourCurve), true);
+    ASSERT_TRUE(HCContourIsClosed(contour));
+    ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
+    ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
+    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, Equality) {
@@ -219,38 +219,38 @@ CTEST(HCContour, Equality) {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    a[0] = HCContourAtlasMake(a[0].p, sizeof(a) / sizeof(HCContourCurve), true).curve;
+    HCContour* contourA = HCContourInitInCurves(a, sizeof(a) / sizeof(HCContourCurve), true);
     HCContourCurve b[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    b[0] = HCContourAtlasMake(a[0].p, sizeof(b) / sizeof(HCContourCurve), true).curve;
+    HCContour* contourB = HCContourInitInCurves(b, sizeof(b) / sizeof(HCContourCurve), true);
     HCContourCurve c[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    c[0] = HCContourAtlasMake(a[0].p, sizeof(c) / sizeof(HCContourCurve), false).curve;
+    HCContour* contourC = HCContourInitInCurves(c, sizeof(c) / sizeof(HCContourCurve), false);
     
-    ASSERT_TRUE(HCContourIsEqual(a, a));
-    ASSERT_TRUE(HCContourHashValue(a) == HCContourHashValue(a));
-    ASSERT_TRUE(HCContourIsEqual(a, b));
-    ASSERT_TRUE(HCContourHashValue(a) == HCContourHashValue(b));
-    ASSERT_TRUE(HCContourIsEqual(b, a));
-    ASSERT_TRUE(HCContourHashValue(b) == HCContourHashValue(a));
-    ASSERT_TRUE(!HCContourIsEqual(a, c));
+    ASSERT_TRUE(HCContourIsEqual(contourA, contourA));
+    ASSERT_TRUE(HCContourHashValue(contourA) == HCContourHashValue(contourA));
+    ASSERT_TRUE(HCContourIsEqual(contourA, contourB));
+    ASSERT_TRUE(HCContourHashValue(contourA) == HCContourHashValue(contourB));
+    ASSERT_TRUE(HCContourIsEqual(contourB, contourA));
+    ASSERT_TRUE(HCContourHashValue(contourB) == HCContourHashValue(contourA));
+    ASSERT_TRUE(!HCContourIsEqual(contourA, contourC));
 }
 
 CTEST(HCContour, Print) {
-    HCContourCurve contour[] = {
+    HCContourCurve curves[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
         {.c0 = {.x = 2.0, .y = 0.0}, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 1.0}},
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 3.0, .y = 3.0}},
         {.c0 = {.x = 2.5, .y = 4.0}, .c1 = {.x = 1.5, .y = 4.0}, .p = {.x = 1.0, .y = 3.0}},
     };
-    contour[0] = HCContourAtlasMake(contour[0].p, sizeof(contour) / sizeof(HCContourCurve), true).curve;
+    HCContour* contour = HCContourInitInCurves(curves, sizeof(curves) / sizeof(HCContourCurve), true);
     HCContourPrint(contour, stdout); // TODO: Not to stdout
 }

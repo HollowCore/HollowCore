@@ -72,14 +72,18 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
     return self;
 }
 
-HCPathRef HCPathCreateWithContourCurves(HCContourCurve* contourCurves, HCInteger contourCurveCount) {
+HCPathRef HCPathCreateWithContour(const HCContour* contour) {
+    return HCPathCreateWithContourCurves(HCContourCurves(contour), HCContourCurveCount(contour), HCContourIsClosed(contour));
+}
+
+HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
     HCPathRef self = HCPathCreateEmpty();
-    if (contourCurveCount <= 0) {
+    if (curveCount <= 0) {
         return self;
     }
-    HCPathMove(self, contourCurves[0].p.x, contourCurves[0].p.y);
-    for (HCInteger contourCurveIndex = 1; contourCurveIndex < contourCurveCount; contourCurveIndex++) {
-        HCContourCurve contourCurve = contourCurves[contourCurveIndex];
+    HCPathMove(self, curves[0].p.x, curves[0].p.y);
+    for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
+        HCContourCurve contourCurve = curves[curveIndex];
         if (HCContourCurveIsLinear(contourCurve)) {
             HCPathAddLine(self, contourCurve.p.x, contourCurve.p.y);
         }
@@ -91,7 +95,7 @@ HCPathRef HCPathCreateWithContourCurves(HCContourCurve* contourCurves, HCInteger
         }
 
     }
-    if (HCContourIsClosed(contourCurves)) {
+    if (closed) {
         HCPathClose(self);
     }
     return self;
@@ -212,6 +216,10 @@ HCInteger HCPathContourCount(HCPathRef self) {
     return HCListCount(self->contours);
 }
 
+HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex) {
+    return HCContourIsClosed(HCPathContourAt(self, contourIndex));
+}
+
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex) {
     HCDataRef contourData = HCListObjectAtIndex(self->contours, contourIndex);
     return HCDataSize(contourData) / sizeof(HCContourCurve);
@@ -223,8 +231,8 @@ HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCIn
     return curves[curveIndex];
 }
 
-const HCContourCurve* HCPathContourAt(HCPathRef self, HCInteger contourIndex) {
-    return (HCContourCurve*)HCDataBytes(HCListObjectAtIndex(self->contours, contourIndex));
+const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex) {
+    return (HCContour*)HCDataBytes(HCListObjectAtIndex(self->contours, contourIndex));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -236,13 +244,13 @@ HCInteger HCPathIndexOfContourContainingElement(HCPathRef self, HCInteger elemen
     HCInteger contourIndex = -1;
     HCInteger endIndex = 0;
     while (elementIndex >= endIndex) {
-        HCPathContourContainingElementIsOpen(self, endIndex, NULL, &endIndex);
+        HCPathContourContainingElementIsClosed(self, endIndex, NULL, &endIndex);
         contourIndex++;
     }
     return contourIndex;
 }
 
-HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
+HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
     // Search for contour start element, if requested (not needed to determine if contour is open)
     if (startIndex != NULL) {
         *startIndex = 0;
@@ -264,14 +272,14 @@ HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger element
             if (endIndex != NULL) {
                 *endIndex = contourEndSearchIndex;
             }
-            return true;
+            return false;
         }
         if (command == HCPathCommandCloseContour) {
             // Contour ends with a close-contour, so it is closed
             if (endIndex != NULL) {
                 *endIndex = contourEndSearchIndex + 1;
             }
-            return false;
+            return true;
         }
     }
     
@@ -279,91 +287,87 @@ HCBoolean HCPathContourContainingElementIsOpen(HCPathRef self, HCInteger element
     if (endIndex != NULL) {
         *endIndex = elementCount;
     }
-    return true;
+    return false;
 }
 
-HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex) {
-    return !HCPathContourContainingElementIsOpen(self, elementIndex, startIndex, endIndex);
-}
-
-HCPathRef HCPathContourPathContainingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen) {
+HCPathRef HCPathContourPathContainingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* closed) {
     // Determine contour indices
     HCInteger contourStartIndex = 0;
     HCInteger contourEndIndex = 0;
-    HCBoolean open = HCPathContourContainingElementIsOpen(self, elementIndex, &contourStartIndex, &contourEndIndex);
+    HCBoolean isClosed = HCPathContourContainingElementIsClosed(self, elementIndex, &contourStartIndex, &contourEndIndex);
     if (startIndex != NULL) {
         *startIndex = contourStartIndex;
     }
     if (endIndex != NULL) {
         *endIndex = contourEndIndex;
     }
-    if (isOpen != NULL) {
-        *isOpen = open;
+    if (closed != NULL) {
+        *closed = isClosed;
     }
     
-    // Create the contour with the elements from start to end
+    // Create the contour path with the elements from start to end
     HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-    HCPathRef contour = HCPathCreateWithElements(elements + contourStartIndex, contourEndIndex - contourStartIndex);
-    return contour;
+    HCPathRef contourPath = HCPathCreateWithElements(elements + contourStartIndex, contourEndIndex - contourStartIndex);
+    return contourPath;
 }
 
 HCListRef HCPathContourPathsRetained(HCPathRef self) {
-    HCListRef contours = HCListCreate();
+    HCListRef contourPaths = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
-        HCPathRef contour = HCPathContourPathContainingElementRetained(self, elementIndex, NULL, &elementIndex, NULL);
-        if (!HCPathIsEmpty(contour)) {
-            HCListAddObjectReleased(contours, contour);
+        HCPathRef contourPath = HCPathContourPathContainingElementRetained(self, elementIndex, NULL, &elementIndex, NULL);
+        if (!HCPathIsEmpty(contourPath)) {
+            HCListAddObjectReleased(contourPaths, contourPath);
         }
     }
-    return contours;
+    return contourPaths;
 }
 
 HCListRef HCPathOpenContourPathsRetained(HCPathRef self) {
-    HCListRef openContours = HCListCreate();
+    HCListRef openContourPaths = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
         // Find the contour start, end, and openness
         HCInteger startIndex;
         HCInteger endIndex;
-        HCBoolean isOpen = HCPathContourContainingElementIsOpen(self, elementIndex, &startIndex, &endIndex);
+        HCBoolean closed = HCPathContourContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
         elementIndex = endIndex;
         
-        // If open, create the contour with the elements from start to end
-        if (isOpen) {
+        // If open, create the contour path with the elements from start to end
+        if (!closed) {
             HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-            HCPathRef contour = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
-            if (!HCPathIsEmpty(contour)) {
-                HCListAddObjectReleased(openContours, contour);
+            HCPathRef contourPath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(contourPath)) {
+                HCListAddObjectReleased(openContourPaths, contourPath);
             }
         }
     }
-    return openContours;
+    return openContourPaths;
 }
 
 HCListRef HCPathClosedContourPathsRetained(HCPathRef self) {
-    HCListRef closedContours = HCListCreate();
+    HCListRef closedContourPaths = HCListCreate();
     HCInteger elementCount = HCPathElementCount(self);
     HCInteger elementIndex = 0;
     while (elementIndex < elementCount) {
         // Find the contour start, end, and openness
         HCInteger startIndex;
         HCInteger endIndex;
-        HCBoolean isClosed = HCPathContourContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
+        HCBoolean closed = HCPathContourContainingElementIsClosed(self, elementIndex, &startIndex, &endIndex);
         elementIndex = endIndex;
         
-        // If closed, create the contour with the elements from start to end
-        if (isClosed) {
+        // If closed, create the contour path with the elements from start to end
+        if (closed) {
             HCPathElement* elements = (HCPathElement*)HCDataBytes(self->elementData);
-            HCPathRef contour = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
-            if (!HCPathIsEmpty(contour)) {
-                HCListAddObjectReleased(closedContours, contour);
+            HCPathRef contourPath = HCPathCreateWithElements(elements + startIndex, endIndex - startIndex);
+            if (!HCPathIsEmpty(contourPath)) {
+                HCListAddObjectReleased(closedContourPaths, contourPath);
             }
         }
     }
-    return closedContours;
+    return closedContourPaths;
 }
 
 HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self) {
@@ -428,8 +432,8 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     while (elementIndex < elementCount) {
         // Determine if the current contour is open, and skip it if it is
         HCInteger endIndex = 0;
-        HCBoolean isOpen = HCPathContourContainingElementIsOpen(self, elementIndex, NULL, &endIndex);
-        if (isOpen) {
+        HCBoolean closed = HCPathContourContainingElementIsClosed(self, elementIndex, NULL, &endIndex);
+        if (!closed) {
             // Move to the next contour
             elementIndex = endIndex;
             continue;
@@ -666,8 +670,9 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
     // Add curve data from element to current contour
     switch (element.command) {
         case HCPathCommandMove: {
-            HCContourAtlas contourAtlas = HCContourAtlasMake(element.points[0], 1, false);
-            HCDataRef contourData = HCDataCreateWithBytes(sizeof(contourAtlas), (HCByte*)&contourAtlas);
+            HCContourCurve start = HCContourCurveMakeLinear(element.points[0]);
+            HCDataRef contourData = HCDataCreateWithBytes(sizeof(start), (HCByte*)&start);
+            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
             HCListAddObjectReleased(self->contours, contourData);
         } break;
         case HCPathCommandAddLine: {
@@ -678,9 +683,7 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeLinear(element.points[0]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
-            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
-            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
+            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
         } break;
         case HCPathCommandAddQuadraticCurve: {
             HCDataRef contourData = HCPathCurrentContour(self);
@@ -690,9 +693,7 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeQuadratic(element.points[0], element.points[1]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
-            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
-            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
+            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
         } break;
         case HCPathCommandAddCubicCurve: {
             HCDataRef contourData = HCPathCurrentContour(self);
@@ -702,15 +703,11 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             }
             HCContourCurve contourCurve = HCContourCurveMakeCubic(element.points[0], element.points[1], element.points[2]);
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
-            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
-            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
-            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
+            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
         } break;
         case HCPathCommandCloseContour: {
             HCDataRef contourData = HCPathCurrentContour(self);
-            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
-            HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
-            *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, true);
+            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), true);
         } break;
     }
     
@@ -783,8 +780,7 @@ void HCPathRemoveElement(HCPathRef self) {
                 HCListRemoveObject(self->contours);
             }
             else {
-                HCContourAtlas* contourAtlas = (HCContourAtlas*)HCDataBytes(contourData);
-                *contourAtlas = HCContourAtlasMake(contourAtlas->start, curveCount, false);
+                HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), curveCount, false);
             }
         } break;
     }
