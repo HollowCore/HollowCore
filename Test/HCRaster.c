@@ -307,7 +307,7 @@ CTEST(HCRaster, DrawPolyline) {
     };
     
     HCRasterRef raster = HCRasterCreate(100, 100);
-    HCRasterDrawPolyline(raster, startPoint, points, sizeof(points) / sizeof(HCPoint), true, HCRasterColorRotating);
+    HCRasterDrawPolyline(raster, startPoint, points, sizeof(points) / sizeof(HCPoint), false, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "polyline.bmp");
     HCRasterSavePPM(raster, "polyline.ppm");
     HCRelease(raster);

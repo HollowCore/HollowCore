@@ -429,6 +429,12 @@ void HCRasterDrawPolyline(HCRasterRef self, HCPoint startPoint, const HCPoint* p
         HCRasterDrawLine(self, currentPoint.x, currentPoint.y, p.x, p.y, color, color);
         currentPoint = p;
     }
+    
+    // Close the polyline, if requested and required
+    HCPoint endPoint = currentPoint;
+    if (closed && !HCPointIsEqual(endPoint, startPoint)) {
+        HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
+    }
 }
 
 void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed, HCColor color) {
@@ -454,6 +460,12 @@ void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoi
         }
         HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, c.x, c.y, p.x, p.y, color, color);
         currentPoint = p;
+    }
+    
+    // Close the polyquadratic, if requested and required
+    HCPoint endPoint = currentPoint;
+    if (closed && !HCPointIsEqual(endPoint, startPoint)) {
+        HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
     }
 }
 
@@ -484,6 +496,12 @@ void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* 
         }
         HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, c0.x, c0.y, c1.x, c1.y, p.x, p.y, color, color);
         currentPoint = p;
+    }
+    
+    // Close the polycubic, if requested and required
+    HCPoint endPoint = currentPoint;
+    if (closed && !HCPointIsEqual(endPoint, startPoint)) {
+        HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
     }
 }
 
