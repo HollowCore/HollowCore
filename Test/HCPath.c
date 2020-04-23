@@ -18,7 +18,7 @@ const char* dinosaur = "m 134.51827,42.745763 c -16.01255,0 -29.04048,13.025256 
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, Creation) {
-    HCPathRef path = HCPathCreateEmpty();
+    HCPathRef path = HCPathCreate();
     ASSERT_EQUAL(HCPathElementCount(path), 0);
     HCRelease(path);
 }
@@ -797,7 +797,7 @@ void HCPathPrintSVGPathData(HCPathRef self, FILE* stream);
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, Size) {
-    HCPathRef emptyPath = HCPathCreateEmpty();
+    HCPathRef emptyPath = HCPathCreate();
     ASSERT_TRUE(HCRectangleIsEqual(HCPathBounds(emptyPath), HCRectangleZero));
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 10 L 30 10 30 20 10 20 Z");
     ASSERT_TRUE(HCRectangleIsEqual(HCPathBounds(path), HCRectangleMake(HCPointMake(10.0, 10.0), HCSizeMake(20.0, 10.0))));
@@ -1006,6 +1006,96 @@ CTEST(HCPath, ClosedContoursAsPath) {
     HCRelease(closed);
 }
 
+CTEST(HCPath, ContourStrangePaths) {
+    HCPathRef empty = HCPathCreate();
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(empty), 0));
+    HCPathRemoveElement(empty);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(empty), 0));
+    HCRelease(empty);
+    
+    HCPathRef singleMove = HCPathCreateWithSVGPathData("M 1 2");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleMove), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleMove, 0), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(singleMove, 0));
+    HCPathRemoveElement(singleMove);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleMove), 0));
+    HCRelease(singleMove);
+    
+    HCPathRef singleLine = HCPathCreateWithSVGPathData("L 1 2");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleLine), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleLine, 0), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleLine, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleLine, 0, 1), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(singleLine, 0));
+    HCPathRemoveElement(singleLine);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleLine), 0));
+    HCRelease(singleLine);
+    
+    HCPathRef singleQuadratic = HCPathCreateWithSVGPathData("Q 1 2 3 4");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleQuadratic), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleQuadratic, 0), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleQuadratic, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleQuadratic, 0, 1), HCContourCurveMakeQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(singleQuadratic, 0));
+    HCPathRemoveElement(singleQuadratic);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleQuadratic), 0));
+    HCRelease(singleQuadratic);
+    
+    HCPathRef singleCubic = HCPathCreateWithSVGPathData("C 1 2 3 4 5 6");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleCubic), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleCubic, 0), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleCubic, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleCubic, 0, 1), HCContourCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(singleCubic, 0));
+    HCPathRemoveElement(singleCubic);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleCubic), 0));
+    HCRelease(singleCubic);
+    
+    HCPathRef singleClose = HCPathCreateWithSVGPathData("Z");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleClose), 0));
+    HCPathRemoveElement(singleClose);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleClose), 0));
+    HCRelease(singleClose);
+    
+    HCPathRef doubleMove = HCPathCreateWithSVGPathData("M 1 2 M 3 4");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 2));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 1), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 1, 0), HCContourCurveMakeLinear(HCPointMake(3.0, 4.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 1));
+    HCPathRemoveElement(doubleMove);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 0));
+    HCPathRemoveElement(doubleMove);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 0));
+    HCRelease(doubleMove);
+    
+    HCPathRef doubleClose = HCPathCreateWithSVGPathData("Z Z");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleClose), 0));
+    HCPathRemoveElement(doubleClose);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleClose), 0));
+    HCRelease(doubleClose);
+    
+    HCPathRef moveClose = HCPathCreateWithSVGPathData("M 1 2 Z");
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(moveClose, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCPathContourIsClosed(moveClose, 0));
+    HCPathRemoveElement(moveClose);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(moveClose, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCPathContourIsClosed(moveClose, 0));
+    HCPathRemoveElement(moveClose);
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 0));
+    HCRelease(moveClose);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Polylines
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1160,7 +1250,7 @@ CTEST(HCPath, ContainsPointNonZero) {
 // MARK: - Path Manipulation
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCPath, MutabilityAndCurrentPoint) {
-    HCPathRef path = HCPathCreateEmpty();
+    HCPathRef path = HCPathCreate();
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
     HCPathMove(path, 5.0, 10.0);
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointMake(5.0, 10.0)));
@@ -1186,7 +1276,7 @@ CTEST(HCPath, MutabilityAndCurrentPoint) {
 }
 
 CTEST(HCPath, MutabilityAndContours) {
-    HCPathRef path = HCPathCreateEmpty();
+    HCPathRef path = HCPathCreate();
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 0));
     HCPathAddLine(path, 50.0, 100.0);
@@ -1211,7 +1301,7 @@ CTEST(HCPath, MutabilityAndContours) {
 }
 
 CTEST(HCPath, MutabilityAndPolylines) {
-    HCPathRef path = HCPathCreateEmpty();
+    HCPathRef path = HCPathCreate();
     ASSERT_TRUE(HCPointIsEqual(HCPathCurrentPoint(path), HCPointZero));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathPolylineCount(path), 0));
     HCPathAddLine(path, 50.0, 100.0);

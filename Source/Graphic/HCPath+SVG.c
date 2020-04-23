@@ -12,7 +12,7 @@
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreateWithSVGPathData(const char* path) {
-    HCPathRef self = HCPathCreateEmpty();
+    HCPathRef self = HCPathCreate();
     HCPathParseSVGPathData(self, path);
     return self;
 }

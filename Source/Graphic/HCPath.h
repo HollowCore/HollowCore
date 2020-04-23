@@ -45,7 +45,7 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPathRef HCPathCreateEmpty(void);
+HCPathRef HCPathCreate(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 HCPathRef HCPathCreateWithContour(const HCContour* contour);
@@ -112,7 +112,7 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
 // MARK: - Path Manipulation
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCPathCurrentPoint(HCPathRef self);
-HCDataRef HCPathCurrentContour(HCPathRef self);
+const HCContour* HCPathCurrentContour(HCPathRef self);
 void HCPathMove(HCPathRef self, HCReal x, HCReal y);
 void HCPathAddLine(HCPathRef self, HCReal x, HCReal y);
 void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y);

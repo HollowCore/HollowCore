@@ -12,7 +12,7 @@
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreateRectangle(HCRectangle rectangle) {
-    HCPathRef self = HCPathCreateEmpty();
+    HCPathRef self = HCPathCreate();
     HCPathMove(self, HCRectangleMinX(rectangle), HCRectangleMinY(rectangle));
     HCPathAddLine(self, HCRectangleMaxX(rectangle), HCRectangleMinY(rectangle));
     HCPathAddLine(self, HCRectangleMaxX(rectangle), HCRectangleMaxY(rectangle));
@@ -23,7 +23,7 @@ HCPathRef HCPathCreateRectangle(HCRectangle rectangle) {
 
 HCPathRef HCPathCreateEllipse(HCRectangle ellipseBounds) {
     static HCReal controlAdjustment = 0.552284749830793; //4.0 / 3.0 * (tan(M_PI * 0.5) * 0.25);
-    HCPathRef self = HCPathCreateEmpty();
+    HCPathRef self = HCPathCreate();
     
     HCReal p0x = HCRectangleMaxX(ellipseBounds);
     HCReal p0y = HCRectangleMidY(ellipseBounds);
