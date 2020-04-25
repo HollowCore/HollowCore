@@ -1,10 +1,11 @@
-//
-//  HCNumber_Internal.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 12/28/18.
-//  Copyright © 2018 HollowCore. All rights reserved.
-//
+///
+/// @file HCNumber_Internal.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 12/28/18
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCNumber_Internal_h
 #define HCNumber_Internal_h

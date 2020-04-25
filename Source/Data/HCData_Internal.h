@@ -1,10 +1,11 @@
-//
-//  HCData_Internal.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCData_Internal.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCData_Internal_h
 #define HCData_Internal_h

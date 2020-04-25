@@ -1,10 +1,11 @@
-//
-//  HCRectangle.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCRectangle.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCRectangle_h
 #define HCRectangle_h

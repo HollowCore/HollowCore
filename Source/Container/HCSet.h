@@ -1,10 +1,11 @@
-//
-//  HCSet.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/23/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCSet.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/23/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCSet_h
 #define HCSet_h

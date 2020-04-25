@@ -1,10 +1,11 @@
-//
-//  HCColor.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 3/6/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCColor.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 3/6/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCColor.h"
 #include <math.h>

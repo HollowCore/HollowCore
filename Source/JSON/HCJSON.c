@@ -1,10 +1,11 @@
-//
-//  HCJSON.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 2/17/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCJSON.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 2/17/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCJSON_Internal.h"
 #include <string.h>

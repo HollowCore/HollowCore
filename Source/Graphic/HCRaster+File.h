@@ -1,10 +1,11 @@
-//
-//  HCRaster+File.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 4/18/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCRaster+File.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 4/18/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCRaster_File_h
 #define HCRaster_File_h
@@ -14,6 +15,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - File Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+// TODO: Make these work with streams instead of files directly
 HCRasterRef HCRasterCreateByLoadingPPM(const char* path);
 void HCRasterSavePPM(HCRasterRef self, const char* path);
 void HCRasterSavePPMWithOptions(HCRasterRef self, const char* path, HCBoolean binary);

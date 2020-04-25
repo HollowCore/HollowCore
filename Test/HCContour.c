@@ -1,10 +1,11 @@
-//
-//  HCContour.c
-//  Test
-//
-//  Created by Matt Stoker on 2/11/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCContour.c
+/// @package Test
+///
+/// @author Matt Stoker
+/// @date 2/11/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

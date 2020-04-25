@@ -1,10 +1,11 @@
-//
-//  HCSize.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCSize.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCSize_h
 #define HCSize_h

@@ -1,10 +1,11 @@
-//
-//  HCRaster+Draw.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 4/18/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCRaster+Draw.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 4/18/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCRaster+Draw.h"
 

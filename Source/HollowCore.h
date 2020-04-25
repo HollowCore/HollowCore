@@ -1,10 +1,11 @@
-//
-//  HollowCore.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/17/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HollowCore.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/17/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HollowCore_h
 #define HollowCore_h

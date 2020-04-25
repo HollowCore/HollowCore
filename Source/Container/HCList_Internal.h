@@ -1,10 +1,11 @@
-//
-//  HCList_Internal.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/21/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCList_Internal.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/21/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCList_Internal_h
 #define HCList_Internal_h

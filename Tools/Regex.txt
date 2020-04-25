@@ -1,0 +1,12 @@
+# Xcode File Header Template to Oxygen File Template
+
+// *\n// +([a-zA-Z\_\+]+)\.([a-zA-Z]+) *\n// +([a-zA-Z]+) ?\n// *\n// +Created by ([a-zA-Z0-9 \./]+) on ([0-9/]+)\. ?\n// +Copyright ([a-zA-Z0-9 \./©]+) *\n// *\n
+
+///
+/// @file $1\.$2
+/// @package $3
+///
+/// @author $4
+/// @date $5
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///

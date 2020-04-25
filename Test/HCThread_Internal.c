@@ -1,10 +1,11 @@
-//
-//  HCThread_Internal.c
-//  Test
-//
-//  Created by Braden Scothern on 6/26/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCThread_Internal.c
+/// @package Test
+///
+/// @author Braden Scothern
+/// @date 6/26/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include <unistd.h>

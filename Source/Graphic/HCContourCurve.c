@@ -1,10 +1,11 @@
-//
-//  HCContourCurve.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 2/11/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCContourCurve.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 2/11/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCContour.h"
 #include <string.h>

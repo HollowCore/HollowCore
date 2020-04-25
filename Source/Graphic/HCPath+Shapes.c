@@ -1,10 +1,11 @@
-//
-//  HCPath+Shapes.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 4/15/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath+Shapes.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 4/15/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCPath+Shapes.h"
 

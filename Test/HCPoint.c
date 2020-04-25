@@ -1,10 +1,11 @@
-//
-//  HCPoint.c
-//  Test
-//
-//  Created by Matt Stoker on 10/20/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCPoint.c
+/// @package Test
+///
+/// @author Matt Stoker
+/// @date 10/20/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

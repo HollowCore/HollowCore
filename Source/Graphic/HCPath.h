@@ -1,10 +1,11 @@
-//
-//  HCPath.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 12/28/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 12/28/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCPath_h
 #define HCPath_h

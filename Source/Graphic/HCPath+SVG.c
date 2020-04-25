@@ -1,10 +1,11 @@
-//
-//  HCPath+SVG.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 3/21/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath+SVG.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 3/21/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCPath+SVG.h"
 

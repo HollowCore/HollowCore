@@ -1,10 +1,11 @@
-//
-//  HCMap_Internal.c
-//  Test
-//
-//  Created by Braden Scothern on 6/25/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCMap_Internal.c
+/// @package Test
+///
+/// @author Braden Scothern
+/// @date 6/25/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

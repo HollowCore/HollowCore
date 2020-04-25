@@ -1,10 +1,11 @@
-//
-//  HCString.c
-//  Test
-//
-//  Created by Matt Stoker on 1/17/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCString.c
+/// @package Test
+///
+/// @author Matt Stoker
+/// @date 1/17/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCString_Internal.h"
 #include <inttypes.h>

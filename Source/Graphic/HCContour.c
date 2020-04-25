@@ -1,10 +1,11 @@
-//
-//  HCContour+Atlas.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 4/21/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCContour+Atlas.c
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 4/21/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCContour.h"
 #include <string.h>

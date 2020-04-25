@@ -1,10 +1,11 @@
-//
-//  HCCore.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 12/28/18.
-//  Copyright © 2018 HollowCore. All rights reserved.
-//
+///
+/// @file HCCore.h
+/// @package HollowCore
+///
+/// @author Matt Stoker
+/// @date 12/28/18
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCCore_h
 #define HCCore_h

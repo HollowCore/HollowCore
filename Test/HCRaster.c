@@ -1,10 +1,11 @@
-//
-//  HCRaster.c
-//  Test
-//
-//  Created by Matt Stoker on 2/3/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCRaster.c
+/// @package Test
+///
+/// @author Matt Stoker
+/// @date 2/3/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

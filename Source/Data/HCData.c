@@ -1,10 +1,11 @@
-//
-//  HCData.c
-//  Test
-//
-//  Created by Matt Stoker on 1/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCData.c
+/// @package Test
+///
+/// @author Matt Stoker
+/// @date 1/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCData_Internal.h"
 #include <string.h>
