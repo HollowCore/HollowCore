@@ -1,6 +1,6 @@
 ///
 /// @file HCSize.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 10/19/19

@@ -1,6 +1,6 @@
 ///
 /// @file HCRaster.h
-/// @package Test
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 2/3/19

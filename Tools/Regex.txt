@@ -4,7 +4,7 @@
 
 ///
 /// @file $1\.$2
-/// @package $3
+/// @ingroup $3
 ///
 /// @author $4
 /// @date $5

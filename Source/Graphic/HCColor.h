@@ -1,6 +1,6 @@
 ///
 /// @file HCColor.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 3/6/19

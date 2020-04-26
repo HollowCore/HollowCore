@@ -1,6 +1,6 @@
 ///
 /// @file HCLock_Internal.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Braden Scothern
 /// @date 4/12/19

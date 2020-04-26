@@ -1,6 +1,6 @@
 ///
 /// @file HCMap.c
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 2/2/19
@@ -257,7 +257,7 @@ HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger _HCMapIteratorMinimumSizeRequiredForState() {
+HCInteger HCMapIteratorMinimumSizeRequiredForState() {
     return sizeof(HCSetIterator);
 }
 

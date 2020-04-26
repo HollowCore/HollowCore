@@ -1,6 +1,6 @@
 ///
 /// @file HCList.c
-/// @package Test
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 1/21/19

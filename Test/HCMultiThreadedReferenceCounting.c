@@ -1,6 +1,6 @@
 ///
 /// @file HCMultiThreadedReferenceCounting.c
-/// @package Test
+/// @ingroup HollowCore
 ///
 /// @author Braden Scothern
 /// @date 3/26/20

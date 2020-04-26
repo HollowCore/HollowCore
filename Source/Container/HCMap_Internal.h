@@ -1,6 +1,6 @@
 ///
 /// @file HCMap_Internal.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 2/2/19
@@ -56,6 +56,6 @@ HCInteger HCMapPairHashValue(HCMapPairRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger _HCMapIteratorMinimumSizeRequiredForState(void);
+HCInteger HCMapIteratorMinimumSizeRequiredForState(void);
 
 #endif /* HCMap_Internal_h */

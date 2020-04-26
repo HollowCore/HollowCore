@@ -1,6 +1,6 @@
 ///
 /// @file HCThread.c
-/// @package Test
+/// @ingroup HollowCore
 ///
 /// @author Braden Scothern
 /// @date 3/20/19

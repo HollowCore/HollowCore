@@ -1,6 +1,6 @@
 ///
 /// @file HCPath_Internal.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 12/28/19

@@ -1,6 +1,6 @@
 ///
 /// @file HCContour.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 4/21/20

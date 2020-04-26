@@ -1,6 +1,6 @@
 ///
 /// @file HCJSON_Internal.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 2/18/19

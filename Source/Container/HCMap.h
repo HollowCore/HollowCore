@@ -1,6 +1,6 @@
 ///
 /// @file HCMap.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 2/2/19

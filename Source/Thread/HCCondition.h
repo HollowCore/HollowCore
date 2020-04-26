@@ -1,6 +1,6 @@
 ///
 /// @file HCCondition.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Braden Scothern
 /// @date 3/27/20

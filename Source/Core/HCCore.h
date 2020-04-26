@@ -1,6 +1,6 @@
 ///
 /// @file HCCore.h
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 12/28/18

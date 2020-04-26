@@ -1,6 +1,6 @@
 ///
 /// @file HCPath+SVG.c
-/// @package HollowCore
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 3/21/20

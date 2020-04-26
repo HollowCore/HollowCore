@@ -1,9 +1,10 @@
 ///
 /// @file HollowCore.h
-/// @package HollowCore
+/// @defgroup HollowCore
 ///
 /// @author Matt Stoker
-/// @date 1/17/19
+/// @author Braden Scothern
+/// @date 12/28/18
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
 

@@ -1,6 +1,6 @@
 ///
 /// @file main.c
-/// @package Test
+/// @ingroup HollowCore
 ///
 /// @author Matt Stoker
 /// @date 1/14/19
