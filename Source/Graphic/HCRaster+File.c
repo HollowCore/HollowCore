@@ -79,13 +79,18 @@ HCRasterRef HCRasterCreateByLoadingPPM(const char* path) {
             int r = 0;
             int g = 0;
             int b = 0;
+            HCBoolean success = true;
             if (!binary) {
-                fscanf(f, "%i %i %i", &r, &g, &b);
+                success &= fscanf(f, "%i %i %i", &r, &g, &b) == 3;
             }
             else {
-                fread(&r, 1, 1, f);
-                fread(&g, 1, 1, f);
-                fread(&b, 1, 1, f);
+                success &= fread(&r, 1, 1, f) == 1;
+                success &= fread(&g, 1, 1, f) == 1;
+                success &= fread(&b, 1, 1, f) == 1;
+            }
+            if (!success) {
+                HCRelease(self);
+                return NULL;
             }
             HCColor color = HCColorMake(1.0, (HCReal)r / (HCReal)channelMax, (HCReal)g / (HCReal)channelMax, (HCReal)b / (HCReal)channelMax);
             HCRasterSetPixelAt(self, xIndex, yIndex, color);
