@@ -24,8 +24,8 @@ typedef struct HCPoint {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCPointInvalidStatic   {.x = NAN, .y = NAN}
-#define HCPointZeroStatic      {.x = 0.0, .y = 0.0}
+#define HCPointInvalidStatic   ((HCPoint){.x = NAN, .y = NAN})
+#define HCPointZeroStatic      ((HCPoint){.x = 0.0, .y = 0.0})
 
 static const HCPoint HCPointInvalid = HCPointInvalidStatic;
 static const HCPoint HCPointZero = HCPointZeroStatic;

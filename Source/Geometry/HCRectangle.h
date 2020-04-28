@@ -24,8 +24,8 @@ typedef struct HCRectangle {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCRectangleInvalidStatic   {.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic}
-#define HCRectangleZeroStatic      {.origin = HCPointZeroStatic, .size = HCSizeZeroStatic}
+#define HCRectangleInvalidStatic   ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
+#define HCRectangleZeroStatic      ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
 
 static const HCRectangle HCRectangleInvalid = HCRectangleInvalidStatic;
 static const HCRectangle HCRectangleZero = HCRectangleZeroStatic;

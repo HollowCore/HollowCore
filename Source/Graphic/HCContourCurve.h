@@ -24,8 +24,8 @@ typedef struct HCContourCurve {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Curve Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCContourCurveInvalidStatic {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic}
-#define HCContourCurveZeroStatic    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic}
+#define HCContourCurveInvalidStatic ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic})
+#define HCContourCurveZeroStatic    ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic})
 
 static const HCContourCurve HCContourCurveInvalid = HCContourCurveInvalidStatic;
 static const HCContourCurve HCContourCurveZero = HCContourCurveZeroStatic;

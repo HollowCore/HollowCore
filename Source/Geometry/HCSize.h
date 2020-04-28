@@ -24,8 +24,8 @@ typedef struct HCSize {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCSizeInvalidStatic   {.width = NAN, .height = NAN}
-#define HCSizeZeroStatic      {.width = 0.0, .height = 0.0}
+#define HCSizeInvalidStatic   ((HCSize){.width = NAN, .height = NAN})
+#define HCSizeZeroStatic      ((HCSize){.width = 0.0, .height = 0.0})
 
 static const HCSize HCSizeInvalid = HCSizeInvalidStatic;
 static const HCSize HCSizeZero = HCSizeZeroStatic;

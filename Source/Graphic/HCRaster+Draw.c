@@ -17,132 +17,29 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
-    // Draw using direct evaluation informed by derivitive
-    HCReal dx = x1 - x0;
-    HCReal dy = y1 - y0;
-    for (HCReal t = 0.0; t <= 1.0;) {
-        HCReal tc = 1.0 - t;
-        HCReal a = tc;
-        HCReal b = t;
-        HCReal x = a * x0 + b * x1;
-        HCReal y = a * y0 + b * y1;
-        
-        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-        t += fmax(0.00001, 1.00000 / fmax(fabs(dx), fabs(dy)));
+    // Draw using Bresenham's Algorithm with color interpolation
+    HCInteger ix0 = round(x0);
+    HCInteger iy0 = round(y0);
+    HCInteger ix1 = round(x1);
+    HCInteger iy1 = round(y1);
+    HCInteger dx = llabs(ix1-ix0), sx = ix0<ix1 ? 1 : -1;
+    HCInteger dy = llabs(iy1-iy0), sy = iy0<iy1 ? 1 : -1;
+    HCInteger err = (dx>dy ? dx : -dy)/2, e2;
+    HCReal xspaninv = 1.0 / (x1 - x0);
+    HCReal yspaninv = 1.0 / (y1 - y0);
+    while (true) {
+        HCReal tx = isfinite(xspaninv) ? ((double)ix0 - x0) * xspaninv : NAN;
+        HCReal ty = isfinite(yspaninv) ? ((double)iy0 - y0) * yspaninv : NAN;
+        HCReal t = (!isnan(tx) && !isnan(ty)) ? ((tx + ty) * 0.5) : !isnan(tx) ? tx : !isnan(ty) ? ty : 0.0;
+        HCRasterSetPixelAt(self, ix0, iy0, HCColorCombine(c0, c1, t));
+        if (ix0==ix1 && iy0==iy1) break;
+        e2 = err;
+        if (e2 >-dx) { err -= dy; ix0 += sx; }
+        if (e2 < dy) { err += dx; iy0 += sy; }
     }
-    
-    // Draw using Bresenham's Algorithm
-//    HCReal dx = x1 - x0;
-//    HCReal dy = y1 - y0;
-//    HCReal step = fmaxf(fabs(dx), fabs(dy));
-//    dx = dx / step;
-//    dy = dy / step;
-//    HCReal x = x0;
-//    HCReal y = y0;
-//    HCInteger i = 1;
-//    do {
-//        HCRasterSetPixelAt(self, round(x), round(y), c0);
-//        x = x + dx;
-//        y = y + dy;
-//        i++;
-//    } while (i <= step);
-    
-//    int ix0 = round(x0);
-//    int iy0 = round(y0);
-//    int ix1 = round(x1);
-//    int iy1 = round(y1);
-//    int dx = abs(ix1-ix0), sx = ix0<ix1 ? 1 : -1;
-//    int dy = abs(iy1-iy0), sy = iy0<iy1 ? 1 : -1;
-//    int err = (dx>dy ? dx : -dy)/2, e2;
-//
-//    while (true) {
-//        HCRasterSetPixelAt(self, ix0, iy0, c0);
-//        if (ix0==ix1 && iy0==iy1) break;
-//        e2 = err;
-//        if (e2 >-dx) { err -= dy; ix0 += sx; }
-//        if (e2 < dy) { err += dx; iy0 += sy; }
-//    }
-
-    // Draw using Xiaolin Wu's Algorithm
-//#define fswap(x0, x1) { HCReal t = x0; x0 = x1; x1 = t; }
-//#define fpart(x) (x - floor(x))
-//#define rfpart(x) (1 - fpart(x))
-//
-//    HCBoolean steep = fabs(y1 - y0) > fabs(x1 - x0);
-//
-//    if (steep) {
-//        fswap(x0, y0);
-//        fswap(x1, y1);
-//    }
-//    if (x0 > x1) {
-//        fswap(x0, x1);
-//        fswap(y0, y1);
-//    }
-//
-//    HCReal dx = x1 - x0;
-//    HCReal dy = y1 - y0;
-//    HCReal gradient = dy / dx;
-//    if (dx == 0.0) {
-//        gradient = 1.0;
-//    }
-//
-//    // Handle first endpoint
-//    HCReal xend = round(x0);
-//    HCReal yend = y0 + gradient * (xend - x0);
-//    HCReal xgap = rfpart(x0 + 0.5);
-//    HCReal xpxl1 = xend;
-//    HCReal ypxl1 = floor(yend);
-//    if (steep) {
-//        HCRasterSetPixelAt(self, ypxl1,   xpxl1, HCColorCombine(HCColorBlack, c1, rfpart(yend) * xgap));
-//        HCRasterSetPixelAt(self, ypxl1+1, xpxl1, HCColorCombine(HCColorBlack, c1,  fpart(yend) * xgap));
-//    }
-//    else {
-//        HCRasterSetPixelAt(self, xpxl1, ypxl1  , HCColorCombine(HCColorBlack, c1, rfpart(yend) * xgap));
-//        HCRasterSetPixelAt(self, xpxl1, ypxl1+1, HCColorCombine(HCColorBlack, c1,  fpart(yend) * xgap));
-//    }
-//    HCReal intery = yend + gradient;
-//
-//    // Handle second endpoint
-//    xend = round(x1);
-//    yend = y1 + gradient * (xend - x1);
-//    xgap = fpart(x1 + 0.5);
-//    HCReal xpxl2 = xend; //this will be used in the main loop
-//    HCReal ypxl2 = floor(yend);
-//    if (steep) {
-//        HCRasterSetPixelAt(self, ypxl2  , xpxl2, HCColorCombine(HCColorBlack, c1, rfpart(yend) * xgap));
-//        HCRasterSetPixelAt(self, ypxl2+1, xpxl2, HCColorCombine(HCColorBlack, c1,  fpart(yend) * xgap));
-//    }
-//    else {
-//        HCRasterSetPixelAt(self, xpxl2, ypxl2,   HCColorCombine(HCColorBlack, c1, rfpart(yend) * xgap));
-//        HCRasterSetPixelAt(self, xpxl2, ypxl2+1, HCColorCombine(HCColorBlack, c1,  fpart(yend) * xgap));
-//    }
-//
-//    // Main loop
-//    if (steep) {
-//        for (HCReal x = xpxl1 + 1.0; x < xpxl2 - 1.0; x += 1.0) {
-//            HCRasterSetPixelAt(self, floor(intery)  , x, HCColorCombine(HCColorBlack, c1, rfpart(intery)));
-//            HCRasterSetPixelAt(self, floor(intery)+1, x, HCColorCombine(HCColorBlack, c1,  fpart(intery)));
-//            intery = intery + gradient;
-//        }
-//    }
-//    else {
-//        for (HCReal x = xpxl1 + 1.0; x < xpxl2 - 1.0; x += 1.0) {
-//            HCRasterSetPixelAt(self, x, floor(intery),   HCColorCombine(HCColorBlack, c1, rfpart(intery)));
-//            HCRasterSetPixelAt(self, x, floor(intery)+1, HCColorCombine(HCColorBlack, c1,  fpart(intery)));
-//            intery = intery + gradient;
-//        }
-//    }
 }
 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
-    // Draw using direct evaluation informed by derivitive
-//    HCReal x, y, dx, dy;
-//    for (HCReal t = 0.0; t <= 1.0;) {
-//        HCRasterEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
-//        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-//        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
-//    }
-    
     // Draw using De Casteljau's Algorithm
     HCReal flatness =
        (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
@@ -165,14 +62,6 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
 }
 
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
-    // Draw using direct evaluation informed by derivitive
-//    HCReal x, y, dx, dy;
-//    for (HCReal t = 0.0; t <= 1.0;) {
-//        HCRasterEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
-//        HCRasterDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-//        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
-//    }
-    
     // Draw using De Casteljau's Algorithm
     HCReal flatness =
        (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +

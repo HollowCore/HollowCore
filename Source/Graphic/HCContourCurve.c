@@ -153,11 +153,6 @@ HCPoint HCContourEvaluateLinearCurve(HCReal t, HCPoint p0, HCPoint p1, HCReal* d
     HCReal x = p0.x * tc + p1.x * t;
     HCReal y = p0.y * tc + p1.y * t;
         
-//    HCReal a = tc;
-//    HCReal b = t;
-//    HCReal x = a * p0.x + b * p1.x;
-//    HCReal y = a * p0.y + b * p1.y;
-    
     if (dx != NULL) {
         *dx = p1.x - p0.x;
     }
@@ -176,28 +171,6 @@ HCPoint HCContourEvaluateQuadraticCurve(HCReal t, HCPoint p0, HCPoint c, HCPoint
     HCReal s1y = c.y * tc + p1.y * t;
     HCReal x = s0x * tc + s1x * t;
     HCReal y = s0y * tc + s1y * t;
-    
-//    HCReal x = (x0 * tc + c.x * t) * tc + (cx * tc + p1.x * t) * t;
-//    HCReal y = (y0 * tc + c.y * t) * tc + (cy * tc + p1.y * t) * t;
-
-//    HCReal x = p0.x * tc * tc + c.x * t * tc + c.x * tc * t + p1.x * t * t;
-//    HCReal y = p0.y * tc * tc + c.y * t * tc + c.y * tc * t + p1.y * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = p0.x * tc2 + c.x * t * tc + c.x * tc * t + p1.x * t2;
-//    HCReal y = p0.y * tc2 + c.y * t * tc + c.y * tc * t + p1.y * t2;
-    
-//    HCReal t2 = t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal x = p0.x * tc2 + (2.0 * c.x) * t * tc + p1.x * t2;
-//    HCReal y = p0.y * tc2 + (2.0 * c.y) * t * tc + p1.y * t2;
-    
-//    HCReal a = tc * tc;
-//    HCReal b = 2.0 * t * tc;
-//    HCReal c = t * t;
-//    HCReal x = a * p0.x + b * c.x + c * p1.x;
-//    HCReal y = a * p0.y + b * c.y + c * p1.y;
     
     if (dx != NULL) {
         *dx = s1x - s0x;
@@ -223,43 +196,6 @@ HCPoint HCContourEvaluateCubicCurve(HCReal t, HCPoint p0, HCPoint c0, HCPoint c1
     HCReal ss1y = scy * tc + s1y * t;
     HCReal x = ss0x * tc + ss1x * t;
     HCReal y = ss0y * tc + ss1y * t;
-
-//    HCReal ss0x = (x0 * tc + c0.x * t) * tc + (cx0 * tc + c1.x * t) * t;
-//    HCReal ss0y = (y0 * tc + c0.y * t) * tc + (cy0 * tc + c1.y * t) * t;
-//    HCReal ss1x = (cx0 * tc + c1.x * t) * tc + (cx1 * tc + p1.x * t) * t;
-//    HCReal ss1y = (cy0 * tc + c1.y * t) * tc + (cy1 * tc + p1.y * t) * t;
-//    HCReal x = ss0x * tc + ss1x * t;
-//    HCReal y = ss0y * tc + ss1y * t;
-
-//    HCReal x = ((x0 * tc + c0.x * t) * tc + (cx0 * tc + c1.x * t) * t) * tc + ((cx0 * tc + c1.x * t) * tc + (cx1 * tc + p1.x * t) * t) * t;
-//    HCReal y = ((y0 * tc + c0.y * t) * tc + (cy0 * tc + c1.y * t) * t) * tc + ((cy0 * tc + c1.y * t) * tc + (cy1 * tc + p1.y * t) * t) * t;
-
-//    HCReal x = (x0 * tc + c0.x * t) * tc * tc + (cx0 * tc + c1.x * t) * t * tc + (cx0 * tc + c1.x * t) * t * tc + (cx1 * tc + p1.x * t) * t * t;
-//    HCReal y = (y0 * tc + c0.y * t) * tc * tc + (cy0 * tc + c1.y * t) * t * tc + (cy0 * tc + c1.y * t) * t * tc + (cy1 * tc + p1.y * t) * t * t;
-
-//    HCReal x = p0.x * tc * tc * tc + c0.x * tc * tc * t + c0.x * t * tc * tc + c1.x * t * t * tc + c0.x * t * tc * tc + c1.x * t * t * tc + c1.x * t * t * tc + p1.x * t * t * t;
-//    HCReal y = p0.y * tc * tc * tc + c0.y * tc * tc * t + c0.y * t * tc * tc + c1.y * t * t * tc + c0.y * t * tc * tc + c1.y * t * t * tc + c1.y * t * t * tc + p1.y * t * t * t;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = p0.x * tc3 + c0.x * t * tc2 + c0.x * t * tc2 + c1.x * t2 * tc + c0.x * t * tc2 + c1.x * t2 * tc + c1.x * t2 * tc + p1.x * t3;
-//    HCReal y = p0.y * tc3 + c0.y * t * tc2 + c0.y * t * tc2 + c1.y * t2 * tc + c0.y * t * tc2 + c1.y * t2 * tc + c1.y * t2 * tc + p1.y * t3;
-
-//    HCReal t2 = t * t;
-//    HCReal t3 = t * t * t;
-//    HCReal tc2 = tc * tc;
-//    HCReal tc3 = tc * tc * tc;
-//    HCReal x = p0.x * tc3 + (3.0 * c0.x) * t * tc2 + (3.0 * c1.x) * t2 * tc + p1.x * t3;
-//    HCReal y = p0.y * tc3 + (3.0 * c0.y) * t * tc2 + (3.0 * c1.y) * t2 * tc + p1.y * t3;
-    
-//    HCReal a = tc * tc * tc;
-//    HCReal b = 3.0 * t * tc * tc;
-//    HCReal c = 3.0 * t * t * tc;
-//    HCReal d = t * t * t;
-//    HCReal x = a * p0.x + b * c0.x + c * c1.x + d * p1.x;
-//    HCReal y = a * p0.y + b * c0.y + c * c1.y + d * p1.y;
     
     if (dx != NULL) {
         *dx = ss1x - ss0x;

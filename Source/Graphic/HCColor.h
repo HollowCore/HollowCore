@@ -27,19 +27,19 @@ typedef struct HCColor {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCColorInvalidStatic    {.a = NAN, .r = NAN, .g = NAN, .b = NAN}
-#define HCColorClearStatic      {.a = 0.0, .r = 0.0, .g = 0.0, .b = 0.0}
-#define HCColorBlackStatic      {.a = 1.0, .r = 0.0, .g = 0.0, .b = 0.0}
-#define HCColorWhiteStatic      {.a = 1.0, .r = 1.0, .g = 1.0, .b = 1.0}
-#define HCColorGrayStatic       {.a = 1.0, .r = 0.5, .g = 0.5, .b = 0.5}
-#define HCColorLightGrayStatic  {.a = 1.0, .r = 0.8, .g = 0.8, .b = 0.8}
-#define HCColorDarkGrayStatic   {.a = 1.0, .r = 0.2, .g = 0.2, .b = 0.2}
-#define HCColorRedStatic        {.a = 1.0, .r = 1.0, .g = 0.0, .b = 0.0}
-#define HCColorGreenStatic      {.a = 1.0, .r = 0.0, .g = 1.0, .b = 0.0}
-#define HCColorBlueStatic       {.a = 1.0, .r = 0.0, .g = 0.0, .b = 1.0}
-#define HCColorCyanStatic       {.a = 1.0, .r = 0.0, .g = 1.0, .b = 1.0}
-#define HCColorMagentaStatic    {.a = 1.0, .r = 1.0, .g = 0.0, .b = 1.0}
-#define HCColorYellowStatic     {.a = 1.0, .r = 1.0, .g = 1.0, .b = 0.0}
+#define HCColorInvalidStatic    ((HCColor){.a = NAN, .r = NAN, .g = NAN, .b = NAN})
+#define HCColorClearStatic      ((HCColor){.a = 0.0, .r = 0.0, .g = 0.0, .b = 0.0})
+#define HCColorBlackStatic      ((HCColor){.a = 1.0, .r = 0.0, .g = 0.0, .b = 0.0})
+#define HCColorWhiteStatic      ((HCColor){.a = 1.0, .r = 1.0, .g = 1.0, .b = 1.0})
+#define HCColorGrayStatic       ((HCColor){.a = 1.0, .r = 0.5, .g = 0.5, .b = 0.5})
+#define HCColorLightGrayStatic  ((HCColor){.a = 1.0, .r = 0.8, .g = 0.8, .b = 0.8})
+#define HCColorDarkGrayStatic   ((HCColor){.a = 1.0, .r = 0.2, .g = 0.2, .b = 0.2})
+#define HCColorRedStatic        ((HCColor){.a = 1.0, .r = 1.0, .g = 0.0, .b = 0.0})
+#define HCColorGreenStatic      ((HCColor){.a = 1.0, .r = 0.0, .g = 1.0, .b = 0.0})
+#define HCColorBlueStatic       ((HCColor){.a = 1.0, .r = 0.0, .g = 0.0, .b = 1.0})
+#define HCColorCyanStatic       ((HCColor){.a = 1.0, .r = 0.0, .g = 1.0, .b = 1.0})
+#define HCColorMagentaStatic    ((HCColor){.a = 1.0, .r = 1.0, .g = 0.0, .b = 1.0})
+#define HCColorYellowStatic     ((HCColor){.a = 1.0, .r = 1.0, .g = 1.0, .b = 0.0})
 
 static const HCColor HCColorInvalid = HCColorInvalidStatic;
 static const HCColor HCColorClear = HCColorClearStatic;
