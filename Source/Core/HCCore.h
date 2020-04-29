@@ -6,6 +6,8 @@
 /// @date 12/28/18
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Definitions for the basic types provided by @c HollowCore and operations on those types.
+///
 
 #ifndef HCCore_h
 #define HCCore_h
@@ -131,7 +133,6 @@ typedef uint8_t HCByte;
 HCBoolean HCBooleanIsEqual(HCBoolean self, HCBoolean other);
 
 /// Provides a hashing value corresponding to a boolean value.
-///
 /// @param self Boolean value to hash.
 /// @returns A value suitable to use as a hash value to represent @c self or to combine with other values to form an aggregate hash value.
 HCInteger HCBooleanHashValue(HCBoolean self);
@@ -155,7 +156,6 @@ void HCBooleanPrint(HCBoolean self, FILE* stream);
 HCBoolean HCIntegerIsEqual(HCInteger self, HCInteger other);
 
 /// Provides a hashing value corresponding to an integer value.
-///
 /// @param self An integer value to hash.
 /// @returns A value suitable to use as a hash value to represent @c self or to combine with other values to form an aggregate hash value.
 HCInteger HCIntegerHashValue(HCInteger self);
@@ -170,25 +170,21 @@ void HCIntegerPrint(HCInteger self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 
 /// Determines if a real value contains a value that does not represent a number.
-///
 /// @param self A real value to examine.
 /// @param @c true if @c self contains @c HCRealInvalid or any other value that does not represent a number. @c HCRealInfinity and @c HCRealNegativeInfinity are considered valid real values.
 HCBoolean HCRealIsInvalid(HCReal self);
 
 /// Determines if a real value contains an infinite value.
-///
 /// @param self A real value to examine.
 /// @param @c true if @c self contains @c HCRealInfinity or @c HCRealNegativeInfinity.
 HCBoolean HCRealIsInfinite(HCReal self);
 
 /// Determines if a real value contains a finite value.
-///
 /// @param self A real value to examine.
 /// @param @c true if @c self is not @c HCRealInfinity or @c HCRealNegativeInfinity and @c HCRealIsInvalid() returns @c false.
 HCBoolean HCRealIsFinite(HCReal self);
 
 /// Determines approximate equality of a pair of real values.
-///
 /// @param self A real value to equate.
 /// @param other Another real value to equate.
 /// @param dissimilarity The distance @c self can be from @c other before they are considered dissimilar.
@@ -206,7 +202,6 @@ HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity);
 HCBoolean HCRealIsEqual(HCReal self, HCReal other);
 
 /// Provides a hashing value corresponding to a real value.
-///
 /// @param self A real value to hash.
 /// @returns A value suitable to use as a hash value to represent @c self or to combine with other values to form an aggregate hash value. In addition, for values of @c self exactly representing the same value as an @c HCInteger value, this will be the same value as returned from @c HCIntegerHashValue().
 HCInteger HCRealHashValue(HCReal self);
@@ -221,17 +216,14 @@ void HCRealPrint(HCReal self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 
 /// The name of a type.
-///
 /// Contains the same value for all instances of a type.
 typedef const char* const HCTypeName;
 
 /// Information about a specific type.
-///
 /// Contains the same value for all instances of a type.
 typedef const struct HCTypeData* HCType;
 
 /// Information related to a type common to all instances of that type.
-///
 /// Includes identifying information for a type and the ancestors of that type.
 typedef const struct HCTypeData {
     HCTypeName name;
@@ -239,7 +231,6 @@ typedef const struct HCTypeData {
 } HCTypeData;
 
 /// A reference to an instance of an object.
-///
 /// Used when the specific reference type of an object cannot be used.
 typedef void* HCRef;
 
