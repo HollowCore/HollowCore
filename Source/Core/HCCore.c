@@ -44,6 +44,18 @@ void HCIntegerPrint(HCInteger self, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Real Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCRealIsInvalid(HCReal self) {
+    return isnan(self);
+}
+
+HCBoolean HCRealIsInfinite(HCReal self) {
+    return isinf(self);
+}
+
+HCBoolean HCRealIsFinite(HCReal self) {
+    return isfinite(self);
+}
+
 HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity) {
     return fabs(self - other) < dissimilarity;
 }

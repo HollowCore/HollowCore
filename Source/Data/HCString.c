@@ -355,10 +355,10 @@ HCBoolean HCStringIsInteger(HCStringRef self) {
     char* end = (char*)string;
     long long integer = strtoll(string, &end, 10);
     if (sizeof(long long) != sizeof(HCInteger)) {
-        if (integer > HCIntegerMax) {
+        if (integer > HCIntegerMaximum) {
             return false;
         }
-        if (integer < HCIntegerMin) {
+        if (integer < HCIntegerMinimum) {
             return false;
         }
     }
@@ -371,11 +371,11 @@ HCInteger HCStringAsInteger(HCStringRef self) {
     if (sizeof(long long) == sizeof(HCInteger)) {
         return integer;
     }
-    if (integer > HCIntegerMax) {
-        return HCIntegerMax;
+    if (integer > HCIntegerMaximum) {
+        return HCIntegerMaximum;
     }
-    if (integer < HCIntegerMin) {
-        return HCIntegerMin;
+    if (integer < HCIntegerMinimum) {
+        return HCIntegerMinimum;
     }
     return integer;
 }

@@ -41,25 +41,74 @@ typedef int64_t HCInteger;
 typedef double HCReal;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Extents
+// MARK: - Boolean Constants
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// The false boolean value.
+///
+/// Provided only for use where @c false is unavailable. Prefer using the value @c false over this value.
+#define HCBooleanFalse ((HCBoolean)0)
+
+/// The true boolean value.
+///
+/// Provided only for use where @c true is unavailable. Prefer using the value @c true over this value.
+#define HCBooleanTrue ((HCBoolean)1)
+
+/// The number of bits used to represent a boolean value.
+#define HCBooleanBitWidth ((HCInteger)(sizeof(HCBoolean) * 8))
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Integer Constants
+//----------------------------------------------------------------------------------------------------------------------------------
+
+/// The zero integer value.
+#define HCIntegerZero ((HCInteger)0)
+
 /// The minimum value an integer may contain. Is guaranteed negative.
-#define HCIntegerMinimum (INT64_MIN)
+#define HCIntegerMinimum ((HCInteger)INT64_MIN)
 
 /// The maximum value an integer may contain. Is guaranteed positive.
-#define HCIntegerMaximum (INT64_MAX)
+#define HCIntegerMaximum ((HCInteger)INT64_MAX)
+
+/// The number of bits used to represent an integer value.
+#define HCIntegerBitWidth ((HCInteger)(sizeof(HCInteger) * 8))
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Real Constants
+//----------------------------------------------------------------------------------------------------------------------------------
+
+/// The zero real value.
+#define HCRealZero ((HCReal)0.0)
 
 /// The minimum finite negative value a real may contain. Adjacent to negative infinity.
-#define HCRealMinimumNegative (-DBL_MAX)
+#define HCRealMinimumNegative ((HCReal)-DBL_MAX)
 
 /// The maximum finite negative value a real may contain. Adjacent to zero.
-#define HCRealMaximumNegative (-DBL_TRUE_MIN)
+#define HCRealMaximumNegative ((HCReal)-DBL_TRUE_MIN)
 
 /// The maximum finite positive value a real may contain. Adjacent to zero.
-#define HCRealMinimumPositive (DBL_TRUE_MIN)
+#define HCRealMinimumPositive ((HCReal)DBL_TRUE_MIN)
 
 /// The maximum finite positive value a real may contain. Adjacent to positive infinity.
-#define HCRealMaximumPositive (DBL_MAX)
+#define HCRealMaximumPositive ((HCReal)DBL_MAX)
+
+/// The real value corresponding to positive infinity.
+#define HCRealInfinity ((HCReal)INFINITY)
+
+/// The real value corresponding to negative infinity.
+#define HCRealNegativeInfinity ((HCReal)-INFINITY)
+
+/// An invalid real value that does not correspond to a number.
+#define HCRealInvalid ((HCReal)NAN)
+
+/// The smallest real value for which @c 1.0 plus the value is not equal to @c 1.0.
+#define HCRealEpsilon ((HCReal)DBL_EPSILON)
+
+/// The number of significant digits in a real value
+#define HCRealSignificantDigits ((HCInteger)DBL_DIG)
+
+/// The number of bits used to represent a real value.
+#define HCRealBitWidth ((HCInteger)(sizeof(HCReal) * 8))
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Types
@@ -119,6 +168,24 @@ void HCIntegerPrint(HCInteger self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Real Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// Determines if a real value contains a value that does not represent a number.
+///
+/// @param self A real value to examine.
+/// @param @c true if @c self contains @c HCRealInvalid or any other value that does not represent a number. @c HCRealInfinity and @c HCRealNegativeInfinity are considered valid real values.
+HCBoolean HCRealIsInvalid(HCReal self);
+
+/// Determines if a real value contains an infinite value.
+///
+/// @param self A real value to examine.
+/// @param @c true if @c self contains @c HCRealInfinity or @c HCRealNegativeInfinity.
+HCBoolean HCRealIsInfinite(HCReal self);
+
+/// Determines if a real value contains a finite value.
+///
+/// @param self A real value to examine.
+/// @param @c true if @c self is not @c HCRealInfinity or @c HCRealNegativeInfinity and @c HCRealIsInvalid() returns @c false.
+HCBoolean HCRealIsFinite(HCReal self);
 
 /// Determines approximate equality of a pair of real values.
 ///
