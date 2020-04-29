@@ -1,22 +1,21 @@
 ///
-/// @file HCJSON_Internal.h
+/// @file HCPath+Shapes.h
 /// @ingroup HollowCore
 ///
 /// @author Matt Stoker
-/// @date 2/18/19
+/// @date 4/15/20
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
 
-#ifndef HCJSON_Internal_h
-#define HCJSON_Internal_h
+#ifndef HCPath_Shapes_h
+#define HCPath_Shapes_h
 
-#include "HCJSON.h"
-#include "json-parser/json.h"
+#include "HCPath.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Conversion
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCJSONValueRef HCJSONValueCreateWithJSONParserValue(json_value* jsonParserValue);
-void HCJSONValueAppendToData(HCJSONValueRef value, HCDataRef data);
+HCPathRef HCPathCreateRectangle(HCRectangle rectangle);
+HCPathRef HCPathCreateEllipse(HCRectangle ellipseBounds);
 
-#endif /* HCJSON_Internal_h */
+#endif /* HCPath_Shapes_h */

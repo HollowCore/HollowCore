@@ -1,10 +1,11 @@
-//
-//  HCThread.c
-//  Test
-//
-//  Created by Braden Scothern on 3/20/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCThread.c
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 3/20/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

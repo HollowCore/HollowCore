@@ -1,10 +1,12 @@
-//
-//  HollowCore.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/17/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HollowCore.h
+/// @defgroup HollowCore
+///
+/// @author Matt Stoker
+/// @author Braden Scothern
+/// @date 12/28/18
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HollowCore_h
 #define HollowCore_h
@@ -22,8 +24,11 @@
 #include "Geometry/HCRectangle.h"
 #include "Graphic/HCColor.h"
 #include "Graphic/HCRaster.h"
+#include "Graphic/HCRaster+Draw.h"
+#include "Graphic/HCRaster+File.h"
 #include "Graphic/HCContour.h"
 #include "Graphic/HCPath.h"
+#include "Graphic/HCPath+Shapes.h"
 #include "Graphic/HCPath+SVG.h"
 #include "JSON/HCJSON.h"
 #include "Thread/HCCondition.h"

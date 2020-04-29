@@ -1,10 +1,11 @@
-//
-//  HCRectangle.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCRectangle.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCRectangle_h
 #define HCRectangle_h
@@ -13,7 +14,7 @@
 #include "HCSize.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Type
+// MARK: - Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef struct HCRectangle {
     HCPoint origin;
@@ -23,8 +24,8 @@ typedef struct HCRectangle {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCRectangleInvalidStatic   {.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic}
-#define HCRectangleZeroStatic      {.origin = HCPointZeroStatic, .size = HCSizeZeroStatic}
+#define HCRectangleInvalidStatic   ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
+#define HCRectangleZeroStatic      ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
 
 static const HCRectangle HCRectangleInvalid = HCRectangleInvalidStatic;
 static const HCRectangle HCRectangleZero = HCRectangleZeroStatic;

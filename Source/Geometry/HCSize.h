@@ -1,10 +1,11 @@
-//
-//  HCSize.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCSize.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCSize_h
 #define HCSize_h
@@ -13,7 +14,7 @@
 #include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Type
+// MARK: - Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef struct HCSize {
     HCReal width;
@@ -23,8 +24,8 @@ typedef struct HCSize {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCSizeInvalidStatic   {.width = NAN, .height = NAN}
-#define HCSizeZeroStatic      {.width = 0.0, .height = 0.0}
+#define HCSizeInvalidStatic   ((HCSize){.width = NAN, .height = NAN})
+#define HCSizeZeroStatic      ((HCSize){.width = 0.0, .height = 0.0})
 
 static const HCSize HCSizeInvalid = HCSizeInvalidStatic;
 static const HCSize HCSizeZero = HCSizeZeroStatic;

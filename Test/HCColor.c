@@ -1,10 +1,11 @@
-//
-//  HCColor.c
-//  Test
-//
-//  Created by Matt Stoker on 3/6/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCColor.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 3/6/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

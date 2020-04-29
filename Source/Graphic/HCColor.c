@@ -1,10 +1,11 @@
-//
-//  HCColor.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 3/6/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCColor.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 3/6/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCColor.h"
 #include <math.h>
@@ -131,4 +132,32 @@ HCColor HCColorClamp(HCColor color) {
 HCColor HCColorInterpolate(HCColor color, HCColor other, HCReal t) {
     HCReal tc = 1.0 - t;
     return HCColorMake(tc * color.a + t * other.a, tc * color.r + t * other.r, tc * color.g + t * other.g, tc * color.b + t * other.b);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Combinations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCColor HCColorCombine(HCColor c0, HCColor c1, HCReal t) {
+    HCReal tc = 1.0 - t;
+    HCReal a = tc * c0.a + t * c1.a;
+    HCReal r = tc * c0.r + t * c1.r;
+    HCReal g = tc * c0.g + t * c1.g;
+    HCReal b = tc * c0.b + t * c1.b;
+    return HCColorMake(a, r, g, b);
+}
+
+HCColor HCColorCombine3(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc) {
+    HCReal a = ta * ca.a + tb * cb.a + tc * cc.a;
+    HCReal r = ta * ca.r + tb * cb.r + tc * cc.r;
+    HCReal g = ta * ca.g + tb * cb.g + tc * cc.g;
+    HCReal b = ta * ca.b + tb * cb.b + tc * cc.b;
+    return HCColorMake(a, r, g, b);
+}
+
+HCColor HCColorCombine4(HCColor ca, HCReal ta, HCColor cb, HCReal tb, HCColor cc, HCReal tc, HCColor cd, HCReal td) {
+    HCReal a = ta * ca.a + tb * cb.a + tc * cc.a + td * cd.a;
+    HCReal r = ta * ca.r + tb * cb.r + tc * cc.r + td * cd.r;
+    HCReal g = ta * ca.g + tb * cb.g + tc * cc.g + td * cd.g;
+    HCReal b = ta * ca.b + tb * cb.b + tc * cc.b + td * cd.b;
+    return HCColorMake(a, r, g, b);
 }

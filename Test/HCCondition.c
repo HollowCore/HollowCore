@@ -1,10 +1,11 @@
-//
-//  HCCondition.c
-//  Test
-//
-//  Created by Braden Scothern on 4/1/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCCondition.c
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 4/1/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

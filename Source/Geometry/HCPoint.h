@@ -1,10 +1,11 @@
-//
-//  HCPoint.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCPoint.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCPoint_h
 #define HCPoint_h
@@ -13,7 +14,7 @@
 #include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Object Type
+// MARK: - Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef struct HCPoint {
     HCReal x;
@@ -23,8 +24,8 @@ typedef struct HCPoint {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCPointInvalidStatic   {.x = NAN, .y = NAN}
-#define HCPointZeroStatic      {.x = 0.0, .y = 0.0}
+#define HCPointInvalidStatic   ((HCPoint){.x = NAN, .y = NAN})
+#define HCPointZeroStatic      ((HCPoint){.x = 0.0, .y = 0.0})
 
 static const HCPoint HCPointInvalid = HCPointInvalidStatic;
 static const HCPoint HCPointZero = HCPointZeroStatic;

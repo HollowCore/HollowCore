@@ -11,6 +11,9 @@ CTestTestfile.cmake
 xcuserdata/
 *.swp
 build/
+.build/
+html/
+latex/
 hollowcoretest
 libhollowcore.a
 

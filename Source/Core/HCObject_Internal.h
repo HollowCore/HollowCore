@@ -1,10 +1,11 @@
-//
-//  HCObject_Internal.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 12/28/18.
-//  Copyright © 2018 HollowCore. All rights reserved.
-//
+///
+/// @file HCObject_Internal.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 12/28/18
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCObject_Internal_h
 #define HCObject_Internal_h

@@ -1,10 +1,11 @@
-//
-//  HCThread_Internal.h
-//  HollowCore
-//
-//  Created by Braden Scothern on 2/14/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCThread_Internal.h
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 2/14/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCThread_Internal_h
 #define HCThread_Internal_h

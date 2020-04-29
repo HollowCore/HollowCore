@@ -1,10 +1,11 @@
-//
-//  HCMultiThreadedReferenceCounting.c
-//  Test
-//
-//  Created by Braden Scothern on 3/26/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCMultiThreadedReferenceCounting.c
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 3/26/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

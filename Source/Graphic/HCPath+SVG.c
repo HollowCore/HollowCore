@@ -1,10 +1,11 @@
-//
-//  HCPath+SVG.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 3/21/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath+SVG.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 3/21/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCPath+SVG.h"
 
@@ -12,23 +13,41 @@
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreateWithSVGPathData(const char* path) {
-    HCPathRef self = HCPathCreateEmpty();
-    HCPathParse(self, path);
+    HCPathRef self = HCPathCreate();
+    HCPathParseSVGPathData(self, path);
     return self;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Conversion
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCPathPrintSVGPathData(HCPathRef self, FILE* stream) {
+    // Print SVG command for each element
+    HCInteger elementCount = HCPathElementCount(self);
+    for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+        HCPathElement element = HCPathElementAt(self, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: fprintf(stream, "M %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddLine: fprintf(stream, "L %f %f ", element.points[0].x, element.points[0].y); break;
+            case HCPathCommandAddQuadraticCurve: fprintf(stream, "Q %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y); break;
+            case HCPathCommandAddCubicCurve: fprintf(stream, "C %f %f %f %f %f %f ", element.points[0].x, element.points[0].y, element.points[1].x, element.points[1].y, element.points[2].x, element.points[2].y); break;
+            case HCPathCommandCloseContour: fprintf(stream, "Z "); break;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Parsing
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathParse(HCPathRef self, const char* path) {
+void HCPathParseSVGPathData(HCPathRef self, const char* path) {
     // Define state data for parsing the SVG path string
     char type = '\0';
-    HCReal subpathStartX = 0.0;
-    HCReal subpathStartY = 0.0;
-    HCReal subpathEndX = subpathStartX;
-    HCReal subpathEndY = subpathStartY;
-    HCReal currentX = subpathEndX;
-    HCReal currentY = subpathEndY;
+    HCReal contourStartX = 0.0;
+    HCReal contourStartY = 0.0;
+    HCReal contourEndX = contourStartX;
+    HCReal contourEndY = contourStartY;
+    HCReal currentX = contourEndX;
+    HCReal currentY = contourEndY;
     HCReal previousControlX = currentX;
     HCReal previousControlY = currentY;
     HCInteger argumentsExpected = 0;
@@ -44,32 +63,32 @@ void HCPathParse(HCPathRef self, const char* path) {
             case '\r': // Fallthrough
             case ',': // Fallthrough
             case ' ': current++; break;
-            case 'M': type = 'M'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'm': type = 'm'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'L': type = 'L'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'l': type = 'l'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'H': type = 'H'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'h': type = 'h'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'V': type = 'V'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'v': type = 'v'; argumentsExpected = 1; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'Q': type = 'Q'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'q': type = 'q'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'T': type = 'T'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 't': type = 't'; argumentsExpected = 2; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'C': type = 'C'; argumentsExpected = 6; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'c': type = 'c'; argumentsExpected = 6; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'S': type = 'S'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 's': type = 's'; argumentsExpected = 4; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'A': type = 'A'; argumentsExpected = 7; currentX = subpathEndX; currentY = subpathEndY; current++; break;
-            case 'a': type = 'a'; argumentsExpected = 7; currentX = subpathEndX; currentY = subpathEndY; current++; break;
+            case 'M': type = 'M'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'm': type = 'm'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'L': type = 'L'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'l': type = 'l'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'H': type = 'H'; argumentsExpected = 1; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'h': type = 'h'; argumentsExpected = 1; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'V': type = 'V'; argumentsExpected = 1; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'v': type = 'v'; argumentsExpected = 1; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'Q': type = 'Q'; argumentsExpected = 4; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'q': type = 'q'; argumentsExpected = 4; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'T': type = 'T'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 't': type = 't'; argumentsExpected = 2; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'C': type = 'C'; argumentsExpected = 6; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'c': type = 'c'; argumentsExpected = 6; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'S': type = 'S'; argumentsExpected = 4; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 's': type = 's'; argumentsExpected = 4; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'A': type = 'A'; argumentsExpected = 7; currentX = contourEndX; currentY = contourEndY; current++; break;
+            case 'a': type = 'a'; argumentsExpected = 7; currentX = contourEndX; currentY = contourEndY; current++; break;
             case 'Z': // Fallthrough
             case 'z':
                 // Close path has no arguments, so just perform the action and move on
                 HCPathClose(self);
-                subpathEndX = subpathStartX;
-                subpathEndY = subpathStartY;
-                currentX = subpathEndX;
-                currentY = subpathEndY;
+                contourEndX = contourStartX;
+                contourEndY = contourStartY;
+                currentX = contourEndX;
+                currentY = contourEndY;
                 current++;
                 break;
             default: {
@@ -94,95 +113,95 @@ void HCPathParse(HCPathRef self, const char* path) {
                     // Execute the command
                     switch (type) {
                         case 'm':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
                             // Fallthrough
                         case 'M': {
-                            subpathStartX = arguments[0];
-                            subpathStartY = arguments[1];
-                            subpathEndX = subpathStartX;
-                            subpathEndY = subpathStartY;
+                            contourStartX = arguments[0];
+                            contourStartY = arguments[1];
+                            contourEndX = contourStartX;
+                            contourEndY = contourStartY;
                             previousControlX = currentX;
                             previousControlY = currentY;
-                            HCPathMove(self, subpathStartX, subpathStartY);
+                            HCPathMove(self, contourStartX, contourStartY);
                             type = type == 'm' ? 'l' : 'L';
                         } break;
                         case 'l':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
                             // Fallthrough
                         case 'L': {
                             HCReal x = arguments[0];
                             HCReal y = arguments[1];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCPathAddLine(self, x, y);
                         } break;
                         case 'h':
-                            arguments[0] += subpathEndX;
+                            arguments[0] += contourEndX;
                             // Fallthrough
                         case 'H': {
                             HCReal x = arguments[0];
-                            HCReal y = subpathEndY;
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            HCReal y = contourEndY;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCPathAddLine(self, x, y);
                         } break;
                         case 'v':
-                            arguments[0] += subpathEndY;
+                            arguments[0] += contourEndY;
                             // Fallthrough
                         case 'V': {
-                            HCReal x = subpathEndX;
+                            HCReal x = contourEndX;
                             HCReal y = arguments[0];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCPathAddLine(self, x, y);
                         } break;
                         case 'q':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
-                            arguments[2] += subpathEndX;
-                            arguments[3] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
+                            arguments[2] += contourEndX;
+                            arguments[3] += contourEndY;
                             // Fallthrough
                         case 'Q': {
                             HCReal cx = arguments[0];
                             HCReal cy = arguments[1];
                             HCReal x = arguments[2];
                             HCReal y = arguments[3];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = cx;
                             previousControlY = cy;
                             HCPathAddQuadraticCurve(self, cx, cy, x, y);
                         } break;
                         case 't':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
                             // Fallthrough
                         case 'T': {
-                            HCReal cx = 2.0 * subpathEndX - previousControlX;
-                            HCReal cy = 2.0 * subpathEndY - previousControlY;
+                            HCReal cx = 2.0 * contourEndX - previousControlX;
+                            HCReal cy = 2.0 * contourEndY - previousControlY;
                             HCReal x = arguments[0];
                             HCReal y = arguments[1];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = cx;
                             previousControlY = cy;
                             HCPathAddQuadraticCurve(self, cx, cy, x, y);
                         } break;
                         case 'c':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
-                            arguments[2] += subpathEndX;
-                            arguments[3] += subpathEndY;
-                            arguments[4] += subpathEndX;
-                            arguments[5] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
+                            arguments[2] += contourEndX;
+                            arguments[3] += contourEndY;
+                            arguments[4] += contourEndX;
+                            arguments[5] += contourEndY;
                             // Fallthrough
                         case 'C': {
                             HCReal c0x = arguments[0];
@@ -191,34 +210,34 @@ void HCPathParse(HCPathRef self, const char* path) {
                             HCReal c1y = arguments[3];
                             HCReal x = arguments[4];
                             HCReal y = arguments[5];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = c1x;
                             previousControlY = c1y;
                             HCPathAddCubicCurve(self, c0x, c0y, c1x, c1y, x, y);
                         } break;
                         case 's':
-                            arguments[0] += subpathEndX;
-                            arguments[1] += subpathEndY;
-                            arguments[2] += subpathEndX;
-                            arguments[3] += subpathEndY;
+                            arguments[0] += contourEndX;
+                            arguments[1] += contourEndY;
+                            arguments[2] += contourEndX;
+                            arguments[3] += contourEndY;
                             // Fallthrough
                         case 'S': {
-                            HCReal c0x = 2.0 * subpathEndX - previousControlX;
-                            HCReal c0y = 2.0 * subpathEndY - previousControlY;
+                            HCReal c0x = 2.0 * contourEndX - previousControlX;
+                            HCReal c0y = 2.0 * contourEndY - previousControlY;
                             HCReal c1x = arguments[0];
                             HCReal c1y = arguments[1];
                             HCReal x = arguments[2];
                             HCReal y = arguments[3];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = c1x;
                             previousControlY = c1y;
                             HCPathAddCubicCurve(self, c0x, c0y, c1x, c1y, x, y);
                         } break;
                         case 'a':
-                            arguments[5] += subpathEndX;
-                            arguments[6] += subpathEndY;
+                            arguments[5] += contourEndX;
+                            arguments[6] += contourEndY;
                             // Fallthrough
                         case 'A': {
                             HCReal xr = arguments[0];
@@ -228,8 +247,8 @@ void HCPathParse(HCPathRef self, const char* path) {
                             HCBoolean sweep = arguments[4] == 0.0 ? false : true;
                             HCReal x = arguments[5];
                             HCReal y = arguments[6];
-                            subpathEndX = x;
-                            subpathEndY = y;
+                            contourEndX = x;
+                            contourEndY = y;
                             previousControlX = currentX;
                             previousControlY = currentY;
                             HCPathAddCubicCurvesApproximatingArc(self, xr, yr, rotation, largeArc, sweep, x, y);
@@ -257,14 +276,14 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     if (HCPointIsEqual(p0, p1)) {
         return;
     }
-    HCReal cosPhi = cos(rotation);
-    HCReal sinPhi = sin(rotation);
+    HCReal cosRotation = cos(rotation);
+    HCReal sinRotation = sin(rotation);
     
     // Convert from arc end-point parameterization to arc center parameterization and ensure passed radii can span the gap between p0 and p1
     HCReal midX = 0.5 * (p0.x - p1.x);
     HCReal midY = 0.5 * (p0.y - p1.y);
-    HCReal x1p = +cosPhi * midX + +sinPhi * midY;
-    HCReal y1p = -sinPhi * midX + +cosPhi * midY;
+    HCReal x1p = +cosRotation * midX + +sinRotation * midY;
+    HCReal y1p = -sinRotation * midX + +cosRotation * midY;
     HCReal radiiAdjustmentSquared = (x1p * x1p) / (xr * xr) + (y1p * y1p) / (yr * yr);
     if (radiiAdjustmentSquared > 1.0) {
         HCReal radiiAdjustment = sqrt(radiiAdjustmentSquared);
@@ -277,8 +296,8 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
     cc = (largeArc == sweep) ? -cc : cc;
     HCReal cxp = cc * +((xr / yr) * y1p);
     HCReal cyp = cc * -((yr / xr) * x1p);
-    HCReal cx = +cosPhi * cxp + -sinPhi * cyp + (0.5 * (p0.x + p1.x));
-    HCReal cy = +sinPhi * cxp + +cosPhi * cyp + (0.5 * (p0.y + p1.y));
+    HCReal cx = +cosRotation * cxp + -sinRotation * cyp + (0.5 * (p0.x + p1.x));
+    HCReal cy = +sinRotation * cxp + +cosRotation * cyp + (0.5 * (p0.y + p1.y));
     HCReal arcStartX = (x1p - cxp) / xr;
     HCReal arcStartY = (y1p - cyp) / yr;
     HCReal arcEndX = (-x1p - cxp) / xr;
@@ -325,8 +344,6 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         HCReal py1p = yr * (sinAngle * xRotated + cosAngle * yRotated);
         
         // Rotate the ellipse by the desired rotation angle
-        HCReal cosRotation = cos(rotation);
-        HCReal sinRotation = sin(rotation);
         HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;
         HCReal cy0 = sinRotation * cx0p + cosRotation * cy0p + cy;
         HCReal cx1 = cosRotation * cx1p - sinRotation * cy1p + cx;

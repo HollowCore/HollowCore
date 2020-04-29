@@ -1,10 +1,11 @@
-//
-//  HCSet.c
-//  Test
-//
-//  Created by Matt Stoker on 1/23/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCSet.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/23/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "ctest.h"
 #include "../Source/HollowCore.h"

@@ -1,10 +1,11 @@
-//
-//  HCPath.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 12/28/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 12/28/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCPath_h
 #define HCPath_h
@@ -13,6 +14,7 @@
 #include "../Geometry/HCRectangle.h"
 #include "../Data/HCData.h"
 #include "../Container/HCList.h"
+#include "HCContour.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type
@@ -28,7 +30,7 @@ typedef enum HCPathCommand {
     HCPathCommandAddLine,
     HCPathCommandAddQuadraticCurve,
     HCPathCommandAddCubicCurve,
-    HCPathCommandCloseSubpath,
+    HCPathCommandCloseContour,
 } HCPathCommand;
 
 typedef struct HCPathElement {
@@ -44,11 +46,11 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPathRef HCPathCreateEmpty(void);
+HCPathRef HCPathCreate(void);
 HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
-HCPathRef HCPathCreateRectangle(HCRectangle rectangle);
-HCPathRef HCPathCreateEllipse(HCRectangle ellipseBounds);
+HCPathRef HCPathCreateWithContour(const HCContour* contour);
+HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions
@@ -60,41 +62,44 @@ void HCPathPrint(HCPathRef self, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathIsEmpty(HCPathRef self);
 HCInteger HCPathElementCount(HCPathRef self);
 HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
-HCDataRef HCPathElementPolylineData(HCPathRef self, HCInteger elementIndex);
-HCInteger HCPathElementPolylinePointCount(HCPathRef self, HCInteger elementIndex);
-HCPoint HCPathElementPolylinePointAt(HCPathRef self, HCInteger elementIndex, HCInteger pointIndex);
-HCPoint HCPathCurrentPoint(HCPathRef self);
 HCRectangle HCPathBounds(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Manipulation
+// MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathMove(HCPathRef self, HCReal x, HCReal y);
-void HCPathAddLine(HCPathRef self, HCReal x, HCReal y);
-void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y);
-void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x, HCReal y);
-void HCPathClose(HCPathRef self);
-void HCPathAddElement(HCPathRef self, HCPathCommand command, const HCPoint* points);
-void HCPathRemoveLastElement(HCPathRef self);
+HCInteger HCPathContourCount(HCPathRef self);
+HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex);
+HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex);
+HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
+const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Conversion
+// MARK: - Contour / Path Element Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCPathPrintData(HCPathRef self, FILE* stream);
+HCInteger HCPathIndexOfContourContainingElement(HCPathRef self, HCInteger elementIndex);
+HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
+HCPathRef HCPathContourPathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
+HCListRef HCPathContourPathsRetained(HCPathRef self);
+HCListRef HCPathOpenContourPathsRetained(HCPathRef self);
+HCListRef HCPathClosedContourPathsRetained(HCPathRef self);
+HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self);
+HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Subpaths
+// MARK: - Polylines
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCPathSubpathContainingElementIsOpen(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
-HCBoolean HCPathSubpathContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
-HCPathRef HCPathSubpathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
-HCListRef HCPathSubpathsRetained(HCPathRef self);
-HCListRef HCPathOpenSubpathsRetained(HCPathRef self);
-HCListRef HCPathClosedSubpathsRetained(HCPathRef self);
-HCPathRef HCPathOpenSubpathsAsPathRetained(HCPathRef self);
-HCPathRef HCPathClosedSubpathsAsPathRetained(HCPathRef self);
+HCInteger HCPathPolylineCount(HCPathRef self);
+HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex);
+HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex);
+const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polyline / Path Element Correspondence
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Intersection
@@ -103,5 +108,18 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point);
 HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point);
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
 void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Path Manipulation
+//----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCPathCurrentPoint(HCPathRef self);
+const HCContour* HCPathCurrentContour(HCPathRef self);
+void HCPathMove(HCPathRef self, HCReal x, HCReal y);
+void HCPathAddLine(HCPathRef self, HCReal x, HCReal y);
+void HCPathAddQuadraticCurve(HCPathRef self, HCReal cx, HCReal cy, HCReal x, HCReal y);
+void HCPathAddCubicCurve(HCPathRef self, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x, HCReal y);
+void HCPathClose(HCPathRef self);
+void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* points);
+void HCPathRemoveElement(HCPathRef self);
 
 #endif /* HCPath_h */

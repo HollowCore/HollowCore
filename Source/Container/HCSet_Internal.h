@@ -1,10 +1,11 @@
-//
-//  HCSet_Internal.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 1/23/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCSet_Internal.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/23/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCSet_Internal_h
 #define HCSet_Internal_h

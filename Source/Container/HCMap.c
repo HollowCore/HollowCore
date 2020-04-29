@@ -1,10 +1,11 @@
-//
-//  HCMap.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 2/2/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCMap.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 2/2/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCMap_Internal.h"
 #include <string.h>
@@ -256,7 +257,7 @@ HCRef HCMapRemoveObjectRetainedForCStringKey(HCMapRef self, const char* key) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger _HCMapIteratorMinimumSizeRequiredForState() {
+HCInteger HCMapIteratorMinimumSizeRequiredForState() {
     return sizeof(HCSetIterator);
 }
 

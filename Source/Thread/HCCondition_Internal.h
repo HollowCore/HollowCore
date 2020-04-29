@@ -1,10 +1,11 @@
-//
-//  HCCondition_Internal.h
-//  HollowCore
-//
-//  Created by Braden Scothern on 3/27/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCCondition_Internal.h
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 3/27/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCCondition_Internal_h
 #define HCCondition_Internal_h

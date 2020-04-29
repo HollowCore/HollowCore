@@ -1,10 +1,11 @@
-//
-//  HCList.c
-//  Test
-//
-//  Created by Matt Stoker on 1/21/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCList.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 1/21/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCList_Internal.h"
 #include <string.h>

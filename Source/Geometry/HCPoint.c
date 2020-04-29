@@ -1,10 +1,11 @@
-//
-//  HCPoint.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 10/19/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCPoint.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 10/19/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCPoint.h"
 #include <math.h>

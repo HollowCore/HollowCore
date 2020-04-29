@@ -1,10 +1,11 @@
-//
-//  HCMap.h
-//  HollowCore
-//
-//  Created by Matt Stoker on 2/2/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCMap.h
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 2/2/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #ifndef HCMap_h
 #define HCMap_h

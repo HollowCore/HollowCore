@@ -1,10 +1,11 @@
-//
-//  HCLock.c
-//  HollowCore
-//
-//  Created by Braden Scothern on 4/12/19.
-//  Copyright © 2019 HollowCore. All rights reserved.
-//
+///
+/// @file HCLock.c
+/// @ingroup HollowCore
+///
+/// @author Braden Scothern
+/// @date 4/12/19
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCLock_Internal.h"
 #include <errno.h>
