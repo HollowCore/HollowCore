@@ -6,6 +6,8 @@
 /// @date 12/28/18
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Type for representing boolean, integer, or real numbers as an object.
+///
 
 #ifndef HCNumber_h
 #define HCNumber_h
@@ -16,7 +18,7 @@
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 
-/// Type of @c HCObject instances.
+/// Type of @c HCNumber instances.
 extern HCType HCNumberType;
 
 /// A reference to an @c HCNumber instance.

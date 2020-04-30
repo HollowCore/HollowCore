@@ -155,7 +155,8 @@ void HCStringDestroy(HCStringRef self) {
 // MARK: - Object Polymorphic Functions
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEqual(HCStringRef self, HCStringRef other) {
-    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit)) == 0;
+    // TODO: This does not comply with the rules of Unicode string equivalence for e.g. constructions of equivalent glyphs using combinational code points.
+    return HCStringContainsSameCodeUnits(self, other);
 }
 
 HCInteger HCStringHashValue(HCStringRef self) {
@@ -311,13 +312,10 @@ void HCStringConvertCodeUnits(HCStringRef self, HCStringCodeUnit** sourceStart, 
 }
 
 HCBoolean HCStringIsCString(HCStringRef self) {
-    // NOTE: Direct conversion is guaranteed by HCStringInit()
-    // TODO: Should check if string is valid UTF-8 as well?
-    return self->codeUnitCount == (HCInteger)strlen(HCStringAsCString(self));
+    return HCStringIsEqualToCString(self, HCStringAsCString(self));
 }
 
 const char* HCStringAsCString(HCStringRef self) {
-    // NOTE: Direct conversion is guaranteed by HCStringInit()
     return (char*)self->codeUnits;
 }
 
@@ -395,5 +393,16 @@ HCReal HCStringAsReal(HCStringRef self) {
 // MARK: - Comparison
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCStringIsEqualToCString(HCStringRef self, const char* string) {
-    return strncmp(HCStringAsCString(self), string, self->codeUnitCount) == 0 && string[self->codeUnitCount] == '\0';
+    HCStringRef other = HCStringCreateWithCString(string);
+    HCBoolean result = HCStringIsEqual(self, other);
+    HCRelease(other);
+    return result;
+}
+
+HCBoolean HCStringContainsSameCodeUnits(HCStringRef self, HCStringRef other) {
+    return self->codeUnitCount == other->codeUnitCount && memcmp(self->codeUnits, other->codeUnits, self->codeUnitCount * sizeof(HCStringCodeUnit)) == 0;
+}
+
+HCBoolean HCStringContainsSameCodeUnitsAsCString(HCStringRef self, const char* string) {
+    return self->codeUnitCount == (HCInteger)strlen(string) && memcmp(self->codeUnits, string, self->codeUnitCount * sizeof(HCStringCodeUnit)) == 0;
 }

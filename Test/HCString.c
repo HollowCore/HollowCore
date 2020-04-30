@@ -216,8 +216,35 @@ CTEST(HCString, RealConversion) {
         HCRelease(realString);
     }
     
-    HCStringRef pie = HCStringCreateWithCString("3.14159 is just about as good as pi");
-    ASSERT_FALSE(HCStringIsReal(pie));
-    ASSERT_DBL_NEAR(HCStringAsReal(pie), 3.14159);
-    HCRelease(pie);
+    HCStringRef pi = HCStringCreateWithReal(M_PI);
+    ASSERT_TRUE(HCStringIsReal(pi));
+    ASSERT_TRUE(HCStringAsReal(pi) == M_PI);
+    
+    HCStringRef almostPI = HCStringCreateWithCString("3.14159 is just about as good as pi");
+    ASSERT_FALSE(HCStringIsReal(almostPI));
+    ASSERT_DBL_NEAR(HCStringAsReal(almostPI), 3.14159);
+    HCRelease(almostPI);
+}
+
+CTEST(HCString, Comparison) {
+    const char* resumePreCombinedAccent = "resum\u00E9";
+    const char* resumeWithCombiningAccent = "resume\u0301";
+    HCStringRef resumePreCombinedAccentString = HCStringCreateWithCString(resumePreCombinedAccent);
+    HCStringRef resumeWithCombiningAccentString = HCStringCreateWithCString(resumeWithCombiningAccent);
+    
+    ASSERT_TRUE(HCStringContainsSameCodeUnits(resumePreCombinedAccentString, resumePreCombinedAccentString));
+    ASSERT_TRUE(HCStringContainsSameCodeUnits(resumeWithCombiningAccentString, resumeWithCombiningAccentString));
+    ASSERT_FALSE(HCStringContainsSameCodeUnits(resumePreCombinedAccentString, resumeWithCombiningAccentString));
+    
+    ASSERT_TRUE(HCStringContainsSameCodeUnitsAsCString(resumePreCombinedAccentString, resumePreCombinedAccent));
+    ASSERT_TRUE(HCStringContainsSameCodeUnitsAsCString(resumeWithCombiningAccentString, resumeWithCombiningAccent));
+    ASSERT_FALSE(HCStringContainsSameCodeUnitsAsCString(resumePreCombinedAccentString, resumeWithCombiningAccent));
+    ASSERT_FALSE(HCStringContainsSameCodeUnitsAsCString(resumeWithCombiningAccentString, resumePreCombinedAccent));
+    
+    // TODO: Negate this when Unicode Canonical Equivalence is available in HCStringIsEqual()
+    ASSERT_FALSE(HCStringIsEqual(resumePreCombinedAccentString, resumeWithCombiningAccentString));
+    ASSERT_FALSE(HCStringIsEqualToCString(resumeWithCombiningAccentString, resumePreCombinedAccent));
+    
+    HCRelease(resumePreCombinedAccentString);
+    HCRelease(resumeWithCombiningAccentString);
 }

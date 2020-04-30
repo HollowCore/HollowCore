@@ -23,7 +23,7 @@ HCInteger HCBooleanHashValue(HCBoolean self) {
 }
 
 void HCBooleanPrint(HCBoolean self, FILE* stream) {
-    fprintf(stream, "%s", self ? "true" : "false");
+    fprintf(stream, "%s", self ? "⊨" : "⊭");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
