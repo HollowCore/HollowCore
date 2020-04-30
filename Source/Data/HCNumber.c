@@ -74,19 +74,19 @@ HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other) {
             switch (other->type) {
                 case HCNumberValueTypeBoolean: return HCBooleanIsEqual(self->value.boolean, other->value.boolean);
                 case HCNumberValueTypeInteger: return !self->value.boolean ? (other->value.integer == 0) : (other->value.integer == 1);
-                case HCNumberValueTypeReal: return !self->value.boolean ? (other->value.real == 0.0) : (other->value.real == 1.0); // TODO: Hash matches for this?
+                case HCNumberValueTypeReal: return !self->value.boolean ? (other->value.real == 0.0) : (other->value.real == 1.0);
             }
         case HCNumberValueTypeInteger:
             switch (other->type) {
                 case HCNumberValueTypeBoolean: return !other->value.boolean ? (self->value.integer == 0) : (self->value.integer == 1);
                 case HCNumberValueTypeInteger: return HCIntegerIsEqual(self->value.integer, other->value.integer);
-                case HCNumberValueTypeReal: return self->value.integer == (HCInteger)floor(other->value.real); // TODO: Hash matches for this?
+                case HCNumberValueTypeReal: return self->value.integer == (HCInteger)floor(other->value.real) && (HCInteger)floor(other->value.real) - other->value.real == 0;
             }
         case HCNumberValueTypeReal:
             switch (other->type) {
-                case HCNumberValueTypeBoolean: return !other->value.boolean ? (self->value.real == 0.0) : (self->value.real == 1.0); // TODO: Hash matches for this?
-                case HCNumberValueTypeInteger: return other->value.integer == (HCInteger)floor(self->value.real); // TODO: Hash matches for this?
-                case HCNumberValueTypeReal: return HCRealIsEqual(self->value.real, other->value.real); // TODO: Hash matches for this?
+                case HCNumberValueTypeBoolean: return !other->value.boolean ? (self->value.real == 0.0) : (self->value.real == 1.0);
+                case HCNumberValueTypeInteger: return other->value.integer == (HCInteger)floor(self->value.real) && (HCInteger)floor(self->value.real) - self->value.real == 0;
+                case HCNumberValueTypeReal: return HCRealIsEqual(self->value.real, other->value.real);
             }
     }
     

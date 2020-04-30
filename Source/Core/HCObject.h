@@ -18,7 +18,7 @@
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 
-/// Type of all @c HCObject instances.
+/// Type of @c HCObject instances.
 extern HCType HCObjectType;
 
 /// Function providing object equality comparison.
