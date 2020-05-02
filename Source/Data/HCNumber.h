@@ -70,7 +70,7 @@ HCNumberRef HCNumberCreateWithReal(HCReal value);
 /// All other pairings are not equal.
 ///
 /// @param self A reference to the number.
-/// @param other The number to evaluate equality against.
+/// @param other The other number to evaluate equality against.
 /// @returns The return value of the type corresponding equality function @c HCBooleanIsEqual(), @c HCIntegerIsEqual(), or @c HCRealIsEqual() in the case both numbers contain values of the same type, or as described above if they are of mixed type.
 HCBoolean HCNumberIsEqual(HCNumberRef self, HCNumberRef other);
 

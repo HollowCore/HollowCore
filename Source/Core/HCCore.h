@@ -128,7 +128,7 @@ typedef uint8_t HCByte;
 /// If @c HCBooleanIsEqual() returns @c true for a pair of boolean values, @c HCBooleanHashValue() will return the same value for them.
 ///
 /// @param self A boolean value to equate.
-/// @param other Another boolean value to equate.
+/// @param other The other boolean value to compare against.
 /// @returns @c true if @c self and @c other both contain @c false or both do not contain @c false. Returns @c false otherwise.
 HCBoolean HCBooleanIsEqual(HCBoolean self, HCBoolean other);
 
@@ -151,7 +151,7 @@ void HCBooleanPrint(HCBoolean self, FILE* stream);
 /// If @c HCIntegerIsEqual() returns @c true for a pair of integer values, @c HCIntegerHashValue() will return the same value for them.
 ///
 /// @param self An integer value to equate.
-/// @param other Another integer value to equate.
+/// @param other The other integer value to compare against.
 /// @returns @c true if @c self and @c other both contain the same integer value. Returns @c false otherwise.
 HCBoolean HCIntegerIsEqual(HCInteger self, HCInteger other);
 
@@ -196,7 +196,7 @@ HCBoolean HCRealIsSimilar(HCReal self, HCReal other, HCReal dissimilarity);
 /// If @c HCRealIsEqual() returns @c true for a pair of real values, @c HCRealHashValue() will return the same value for them.
 ///
 /// @param self A real value to equate.
-/// @param other Another real value to equate.
+/// @param other The other real value to compare against.
 /// @returns @c true if @c self and @c other  are finite and contain the same real value. Returns @c false otherwise.
 /// @todo What about @c NAN? @c +Inf? @c -Inf?
 HCBoolean HCRealIsEqual(HCReal self, HCReal other);

@@ -159,7 +159,7 @@ void HCPrint(HCRef self, FILE* stream);
 
 /// Determines if a pair of references reference the same object instance.
 /// @param self The object to examine.
-/// @param other An object to compare against.
+/// @param other The other object to compare against.
 /// @returns @c true if @c self references the same object as @c other.
 HCBoolean HCObjectIsEqual(HCObjectRef self, HCObjectRef other);
 

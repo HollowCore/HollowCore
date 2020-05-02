@@ -88,7 +88,7 @@ HCStringRef HCStringCreateWithReal(HCReal value);
 
 /// Determines if a string is equal to another string.
 /// @param self A reference to the string.
-/// @param other The string to evaluate equality against.
+/// @param other The other string to evaluate equality against.
 /// @returns @c true if @c self and @c other contain exactly the same UTF-8 code units.
 /// @todo Should return @c true if the contained Unicode strings in @c self and @c other are equal according to the Unicode 13.0 standard for Canonical Equivalence. Do not rely on the results of this function for canonically equivalent string comparison, as its results will change in a future version. For a stable exact equivalence relation, see @c HCStringContainsSameCodeUnits().
 HCBoolean HCStringIsEqual(HCStringRef self, HCStringRef other);
