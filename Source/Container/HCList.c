@@ -239,6 +239,13 @@ void HCListRemoveLastObjectEqualToObject(HCListRef self, HCRef object) {
     HCListRemoveObjectEqualToObject(self, self->count, true, object);
 }
 
+void HCListRemoveObjectEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object) {
+    HCInteger index = HCListIndexOfObject(self, searchIndex, reverseSearch, object);
+    if (HCListContainsIndex(self, index)) {
+        HCListRemoveObjectAtIndex(self, index);
+    }
+}
+
 void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object) {
     // Remove all objects equal to the requested object, back to front
     // TODO: Deque better for speed?
@@ -246,13 +253,6 @@ void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object) {
         if (HCIsEqual(object, HCListObjectAtIndex(self, index))) {
             HCListRemoveObjectAtIndex(self, index);
         }
-    }
-}
-
-void HCListRemoveObjectEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object) {
-    HCInteger index = HCListIndexOfObject(self, searchIndex, reverseSearch, object);
-    if (HCListContainsIndex(self, index)) {
-        HCListRemoveObjectAtIndex(self, index);
     }
 }
 

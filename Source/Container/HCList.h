@@ -155,28 +155,135 @@ HCRef HCListObjectAtIndex(HCListRef self, HCInteger index);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// Clears a list of contents such that it is emtpy.
+/// @param self A reference to the list to modify.
 void HCListClear(HCListRef self);
 
+/// Appends an element to the end of a list.
+///
+/// When the object is added to the list, the list retains the object as part of the operation and will release it when it is removed from the list.
+/// The caller is still required to release the object when it finishes with the object.
+/// For a call that releases the object after adding it to the list in one operation, see @c HCListAddObjectReleased().
+///
+/// @param self A reference to the list to modify.
+/// @param object The object to append as an element to the list.
 void HCListAddObject(HCListRef self, HCRef object);
+
+/// Removes an element from the end of a list.
+///
+/// When the object is removed from the list, the list releases the object as part of the operation.
+/// Since the object is released when it is removed from the list, the caller cannot receive the removed object for other use.
+/// For a call that retains the object before removing it from the list and returns it, see @c HCListRemoveObjectRetained().
+///
+/// If the index does not exist in the list, the list is left unmodified.
+///
+/// @param self A reference to the list to modify.
 void HCListRemoveObject(HCListRef self);
+
+/// Inserts an element into a list at an index.
+///
+/// When the object is added to the list, the list retains the object as part of the operation and will release it when it is removed from the list.
+/// The caller is still required to release the object when it finishes with the object.
+/// For a call that releases the object after adding it to the list in one operation, see @c HCListAddObjectReleasedAtIndex().
+///
+/// @param self A reference to the list to modify.
+/// @param index The index in the list the object should occupy.
+/// @param object The object to add as an element into the list.
 void HCListAddObjectAtIndex(HCListRef self, HCInteger index, HCRef object);
+
+/// Removes an element from a list at an index.
+///
+/// When the object is removed from the list, the list releases the object as part of the operation.
+/// Since the object is released when it is removed from the list, the caller cannot receive the removed object or other use.
+/// For a call that retains the object before removing it from the list and returns it, see @c HCListRemoveObjectRetainedAtIndex().
+///
+/// @param self A reference to the list to modify.
+/// @param index The index of the object to remove. If the index does not exist in the list, the list is left unmodified.
 void HCListRemoveObjectAtIndex(HCListRef self, HCInteger index);
 
+/// Searches for and removes an object from the start of a list.
+/// @param self A reference to the list to modify.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified.
 void HCListRemoveFirstObjectEqualToObject(HCListRef self, HCRef object);
+
+/// Searches for and removes an object from the end of a list.
+/// @param self A reference to the list to modify.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified.
 void HCListRemoveLastObjectEqualToObject(HCListRef self, HCRef object);
-void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object);
+
+/// Searches for and removes an object from a list starting at a specified index.
+/// @param self A reference to the list to modify.
+/// @param searchIndex The index in the list to start looking for the object.
+/// @param reverseSearch If @c false, searches forward from @c searchIndex for the object. If @c true, searches backward from @c searchIndex for the object.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified.
 void HCListRemoveObjectEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object);
+
+/// Searches for and removes all objects equal to an object from a list.
+/// @param self A reference to the list to modify.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified.
+void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Memory Convenience Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// Appends an element to the end of a list and then releases it.
+///
+/// When the object is added to the list, the list releases it after adding it to its element collection.
+/// The caller is no longer required to release the object as the list now owns it.
+/// For a call that keeps the object retained by both the caller and the list, see @c HCListAddObject().
+///
+/// @param self A reference to the list to modify.
+/// @param object The object to append as an element to the list.
 void HCListAddObjectReleased(HCListRef self, HCRef object);
+
+/// Removes an element from the end of a list after retaining it.
+///
+/// When the object is removed from the list, the list retains it prior to removing it.
+/// This allows the caller to receive the removed object for other use, but the caller must later release it.
+/// For a call that does not require the caller to release the removed object, see @c HCListRemoveObject().
+///
+/// @param self A reference to the list to modify.
+/// @returns The last object in the list. If the list is empty, the list is left unmodified and the function returns @c NULL.
 HCRef HCListRemoveObjectRetained(HCListRef self);
+
+/// Inserts an element into a list at an index.
+///
+/// When the object is added to the list, the list releases it after adding it to its element collection.
+/// The caller is no longer required to release the object as the list now owns it.
+/// For a call that keeps the object retained by both the caller and the list, see @c HCListAddObjectAtIndex().
+///
+/// @param self A reference to the list to modify.
+/// @param index The index in the list the object should occupy.
+/// @param object The object to insert as an element into the list.
 void HCListAddObjectReleasedAtIndex(HCListRef self, HCInteger index, HCRef object);
+
+/// Removes an element from a list at an index after retaining it.
+///
+/// When the object is removed from the list, the list retains it prior to removing it.
+/// This allows the caller to receive the removed object for other use, but the caller must later release it.
+/// For a call that does not require the caller to release the removed object, see @c HCListRemoveObjectAtIndex().
+///
+/// @param self A reference to the list to modify.
+/// @param index The index of the object to remove. If the index does not exist in the list, the list is left unmodified.
 HCRef HCListRemoveObjectRetainedAtIndex(HCListRef self, HCInteger index);
 
+/// Searches for and removes an object from the start of a list after retaining it.
+/// @param self A reference to the list to modify.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified and the function returns @c NULL.
 HCRef HCListRemoveFirstObjectRetainedEqualToObject(HCListRef self, HCRef object);
+
+/// Searches for and removes all objects equal to an object from a list after retaining it.
+/// @param self A reference to the list to modify.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified and the function returns @c NULL.
 HCRef HCListRemoveLastObjectRetainedEqualToObject(HCListRef self, HCRef object);
+
+/// Searches for and removes an object from a list starting at a specified index.
+/// @param self A reference to the list to modify.
+/// @param searchIndex The index in the list to start looking for the object.
+/// @param reverseSearch If @c false, searches forward from @c searchIndex for the object. If @c true, searches backward from @c searchIndex for the object.
+/// @param object The object to search for. Uses @c HCIsEqual() to determine when the object has been found. If no element is equal to @c object, the list is left unmodified and the function returns @c NULL.
 HCRef HCListRemoveObjectRetainedEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object);
 
 //----------------------------------------------------------------------------------------------------------------------------------
