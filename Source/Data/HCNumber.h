@@ -6,7 +6,7 @@
 /// @date 12/28/18
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
-/// @brief Type for representing boolean, integer, or real numbers as an object.
+/// @brief Object representing boolean, integer, or real numbers.
 ///
 
 #ifndef HCNumber_h

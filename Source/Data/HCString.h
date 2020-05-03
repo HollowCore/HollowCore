@@ -6,7 +6,7 @@
 /// @date 1/17/19
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
-/// @brief Type for storing Unicode-compliant string data.
+/// @brief Object storing Unicode-compliant string data.
 ///
 
 #ifndef HCString_h

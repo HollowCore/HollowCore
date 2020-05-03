@@ -6,6 +6,8 @@
 /// @date 1/19/19
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Object that manages a byte buffer.
+///
 
 #ifndef HCData_h
 #define HCData_h

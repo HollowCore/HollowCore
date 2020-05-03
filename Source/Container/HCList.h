@@ -6,6 +6,8 @@
 /// @date 1/21/19
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Collection of ordered, non-exclusive object elements.
+///
 
 #ifndef HCList_h
 #define HCList_h
@@ -29,13 +31,22 @@ typedef struct HCList* HCListRef;
 /// An index value indicating an unsuccessful search.
 extern const HCInteger HCListNotFound;
 
-/// Object used to track iteration over the contents of a list.
+/// Structure used to track iteration over the contents of a list.
 typedef struct HCListIterator {
+    /// The list over which the iterator is configured to iterate.
     HCListRef list;
+    
+    /// The current index of iteration.
     HCInteger index;
+    
+    /// A reference to the object at the current index of iteration.
     HCRef object;
-    void* state; // Private
+    
+    /// Private state for tracking iteration.
+    void* state;
 } HCListIterator;
+
+/// An iterator not configured to iterate over a list.
 extern const HCListIterator HCListIteratorInvalid;
 
 /// Function operating on a value of a list during a for-each iteration over the list.
@@ -58,7 +69,6 @@ typedef HCRef (*HCListReduceFunction)(void* context, HCRef aggregate, HCRef valu
 /// @returns A reference to the created list.
 ///     When finished with the reference, call @c HCRelease() on the reference to decrement the referenced object's reference count and destroy it when all references to are released.
 HCListRef HCListCreate(void);
-
 
 /// Creates an empty list with an initial capacity.
 /// @param capacity The initial capacity of the created list.
@@ -149,7 +159,7 @@ HCRef HCListLastObject(HCListRef self);
 /// Obtains a object in a list.
 /// @param self A reference to the list.
 /// @param index The index of the desired list element. Should be in the range @code [0, HCListCount()) @endcode.
-/// @returns The element found at the first index in the list. If the list does not contain @c index, returns @c NULL.
+/// @returns The element found at the index in the list. If the list does not contain @c index, returns @c NULL.
 HCRef HCListObjectAtIndex(HCListRef self, HCInteger index);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +186,7 @@ void HCListAddObject(HCListRef self, HCRef object);
 /// Since the object is released when it is removed from the list, the caller cannot receive the removed object for other use.
 /// For a call that retains the object before removing it from the list and returns it, see @c HCListRemoveObjectRetained().
 ///
-/// If the index does not exist in the list, the list is left unmodified.
+/// If the list is empty, this function does nothing.
 ///
 /// @param self A reference to the list to modify.
 void HCListRemoveObject(HCListRef self);
@@ -231,7 +241,7 @@ void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object);
 /// Appends an element to the end of a list and then releases it.
 ///
 /// When the object is added to the list, the list releases it after adding it to its element collection.
-/// The caller is no longer required to release the object as the list now owns it.
+/// The caller is no longer required to release the object and the list has retained it.
 /// For a call that keeps the object retained by both the caller and the list, see @c HCListAddObject().
 ///
 /// @param self A reference to the list to modify.
@@ -251,7 +261,7 @@ HCRef HCListRemoveObjectRetained(HCListRef self);
 /// Inserts an element into a list at an index.
 ///
 /// When the object is added to the list, the list releases it after adding it to its element collection.
-/// The caller is no longer required to release the object as the list now owns it.
+/// The caller is no longer required to release the object and the list has retained it.
 /// For a call that keeps the object retained by both the caller and the list, see @c HCListAddObjectAtIndex().
 ///
 /// @param self A reference to the list to modify.
