@@ -190,15 +190,15 @@ HCRef HCSetRemoveObjectRetained(HCSetRef self, HCRef object);
 /// Initiates an iteration over a set's elements.
 ///
 /// Iteration over the set is controlled using the returned iterator and can be queried for liveness using @c HCSetIterationHasBegun() and @c HCSetIterationHasEnded().
-/// The iterator tracks iteration over the set elements and provides the current element of iteration.
+/// The iterator tracks iteration over the set elements and provides the current index of iteration and its assoicated object reference.
 /// Use @c HCSetIterationHasNext() to determine if there are more elements to iterate over.
 /// Calling @c HCSetInterationNext() moves to the next element in the set.
 /// If set iteration proceeds past the end of the set, the resources used by the iterator are deallocated and the iterator marked as finished, which can be queried using @c HCSetIterationHasEnded().
-/// If iteration over the set elements must be terminated before reaching one of the ends of the set, call @c HCSetIterationEnd() to mark the iteration complete.
+/// If iteration over the set elements must be terminated before reaching the end of the set, call @c HCSetIterationEnd() to mark the iteration complete.
 ///
 /// Iteration over a set @c set using a @c for loop should use the following form:
 /// @code
-/// for (HCSetIterator i = HCSetIterationBeginAtIndex(set, startIndex); !HCSetIterationHasEnded(&i); HCSetIterationNext(&i)) { /*...*/ }
+/// for (HCSetIterator i = HCSetIterationBegin(set, startIndex); !HCSetIterationHasEnded(&i); HCSetIterationNext(&i)) { /*...*/ }
 /// @endcode
 ///
 /// @param self A reference to the set.
@@ -214,7 +214,7 @@ void HCSetIterationNext(HCSetIterator* iterator);
 
 /// Ends iteration over a set by marking the iteration ended.
 ///
-/// This function should be called on an iterator if iteration over a set's elements is terminated before reaching one of the ends of the set.
+/// This function should be called on an iterator if iteration over a set's elements is terminated before reaching the end of the set.
 ///
 /// @param iterator An iterator.
 void HCSetIterationEnd(HCSetIterator* iterator);
@@ -231,7 +231,7 @@ HCBoolean HCSetIterationHasNext(HCSetIterator* iterator);
 
 /// Determines if the iterator is referencing a valid element in its referenced set.
 /// @param iterator An iterator.
-/// @returns @c true if iteration has been started on a set and has not yet reached one of the ends of the set or had @c HCSetIterationEnd() called on the iterator. Returns @c false if iteration has not begun or if the iterator is currently referencing a valid element in its referenced set.
+/// @returns @c true if iteration has been started on a set and has not yet reached the end of the set or had @c HCSetIterationEnd() called on the iterator. Returns @c false if iteration has not begun or if the iterator is currently referencing a valid element in its referenced set.
 HCBoolean HCSetIterationHasEnded(HCSetIterator* iterator);
 
 #endif /* HCSet_h */

@@ -327,7 +327,7 @@ HCListIterator HCListIterationBeginAtLast(HCListRef self);
 /// Initiates an iteration over a list's elements starting at a specified index.
 ///
 /// Iteration over the list is controlled using the returned iterator and can be queried for liveness using @c HCListIterationHasBegun() and @c HCListIterationHasEnded().
-/// The iterator tracks iteration over the list elements and provides the current element of iteration.
+/// The iterator tracks iteration over the list elements and provides the current index of iteration and its assoicated object reference.
 /// Iteration can proceed forward or backward from the current element without restarting iteration.
 /// Use @c HCListIterationHasNext() and @c HCListIterationHasPrevious to determine if there are more elements to iterate over in the forward and reverse directions, repectively.
 /// Calling @c HCListInterationNext() moves forward to the next element in the list, while calling @c HCListIterationPrevious() moves backward to the previous element.
