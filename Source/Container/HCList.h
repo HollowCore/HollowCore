@@ -289,23 +289,122 @@ HCRef HCListRemoveObjectRetainedEqualToObject(HCListRef self, HCInteger searchIn
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// Initiates an iteration over a list's elements starting at the first element in the list.
+///
+/// /// Iteration over a list @c list using a @c for loop starting at the first element and proceeding forward to the last element should use the following form:
+/// @code
+/// for (HCListIterator i = HCListIterationBegin(list); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) { /*...*/ }
+/// @endcode
+///
+/// @see @c HCListIterationBeginAtIndex();
+/// @param self A reference to the list.
+/// @returns An iterator configured to track the iteration.
 HCListIterator HCListIterationBegin(HCListRef self);
+
+/// Initiates an iteration over a list's elements starting at the last element in the list.
+///
+/// Iteration over a list @c list using a @c for loop starting at the last element and proceeding backward to the first element should use the following form:
+/// @code
+/// for (HCListIterator i = HCListIterationBeginAtLast(list); !HCListIterationHasEnded(&i); HCListIterationPrevious(&i)) { /*...*/ }
+/// @endcode
+///
+/// @see @c HCListIterationBeginAtIndex();
+/// @param self A reference to the list.
+/// @returns An iterator configured to track the iteration.
 HCListIterator HCListIterationBeginAtLast(HCListRef self);
+
+/// Initiates an iteration over a list's elements starting at a specified index.
+///
+/// Iteration over the list is controlled using the returned iterator and can be queried for liveness using @c HCListIterationHasBegun() and @c HCListIterationHasEnded().
+/// The iterator tracks iteration over the list elements and provides the current element of iteration.
+/// Iteration can proceed forward or backward from the current element without restarting iteration.
+/// Use @c HCListIterationHasNext() and @c HCListIterationHasPrevious to determine if there are more elements to iterate over in the forward and reverse directions, repectively.
+/// Calling @c HCListInterationNext() moves forward to the next element in the list, while calling @c HCListIterationPrevious() moves backward to the previous element.
+/// If list iteration proceeds past the start or end of the list, the resources used by the iterator are deallocated and the iterator marked as finished, which can be queried using @c HCListIterationHasEnded().
+/// If iteration over the list elements must be terminated before reaching one of the ends of the list, call @c HCListIterationEnd() to mark the iteration complete.
+///
+/// Iteration over a list @c list using a @c for loop starting at @c startIndex and proceeding forward to the last element should use the following form:
+/// @code
+/// for (HCListIterator i = HCListIterationBeginAtIndex(list, startIndex); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) { /*...*/ }
+/// @endcode
+///
+/// @param self A reference to the list.
+/// @param index The index of the element the returned iterator should reference after the call to the function completes.
+/// @returns An iterator configured to track the iteration.
 HCListIterator HCListIterationBeginAtIndex(HCListRef self, HCInteger index);
+
+/// Moves backward one element during a list iteration.
+///
+/// If the iterator is referencing the first element in the list when the function is called, iteration is ended as if @c HCListIterationEnd() were called.
+///
+/// @param iterator An iterator.
 void HCListIterationPrevious(HCListIterator* iterator);
+
+/// Moves forward one element during a list iteration.
+///
+/// If the iterator is referencing the last element in the list when the function is called, iteration is ended as if @c HCListIterationEnd() were called.
+///
+/// @param iterator An iterator.
 void HCListIterationNext(HCListIterator* iterator);
+
+/// Ends iteration over a list by marking the iteration ended.
+///
+/// This function should be called on an iterator if iteration over a list's elements is terminated before reaching one of the ends of the list.
+///
+/// @param iterator An iterator.
 void HCListIterationEnd(HCListIterator* iterator);
+
+/// Determines if iteration using an iterator has begun.
+/// @param iterator An iterator.
+/// @returns @c true if the iterator was returned from a call to @c HCListIterationBeginAtIndex() or a related call. Will continue to return @c true even after iteration ends. Returns @c false if the iterator was not created in this way.
 HCBoolean HCListIterationHasBegun(HCListIterator* iterator);
+
+/// Determines if there is an element preceeding the current element in the list referenced by the iterator.
+/// @param iterator An iterator.
+/// @returns @c true if a call to @c HCListIterationPrevious() will result in @c iterator referencing a valid element.
 HCBoolean HCListIterationHasPrevious(HCListIterator* iterator);
+
+/// Determines if there is an element following the current element in the list referenced by the iterator.
+/// @param iterator An iterator.
+/// @returns @c true if a call to @c HCListIterationNext() will result in @c iterator referencing a valid element.
 HCBoolean HCListIterationHasNext(HCListIterator* iterator);
+
+/// Determines if the iterator is referencing a valid element in its referenced list.
+/// @param iterator An iterator.
+/// @returns @c true if iteration has been started on a list and has not yet reached one of the ends of the list or had @c HCListIterationEnd() called on the iterator. Returns @c false if iteration has not begun or if the iterator is currently referencing a valid element in its referenced list.
 HCBoolean HCListIterationHasEnded(HCListIterator* iterator);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Iteration Convenience Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+
+/// Iterates over the elements of a list calling a function on each.
+/// @param self A reference to the list.
+/// @param forEachFunction The function to be called on each element in turn.
+/// @param context A value passed unmodified to @c forEachFunction.
 void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction, void* context);
+
+/// Filters the elements in a list into a new list.
+/// @param self A reference to the list.
+/// @param isIncluded A function called on each element in the list to determine if it should be included in the returned list.
+/// @param context A value passed unmodified to @c isIncluded.
+/// @returns A reference to a list created to hold the filtered elements. If no elements are selected to be included, an empty list will be returned. Must be released by the caller.
 HCListRef HCListFilterRetained(HCListRef self, HCListFilterFunction isIncluded, void* context);
+
+/// Maps the elements in a list to new values in a new list.
+/// @param self A reference to the list.
+/// @param transform A function called on each element to create a representative in the new list.
+/// @param context A value passed unmodified to @c transform.
+/// @returns A reference to a list created to hold the mapped elements. Must be released by the caller.
 HCListRef HCListMapRetained(HCListRef self, HCListMapFunction transform, void* context);
+
+/// Reduces the elements in a list to a single value.
+/// @param self A reference to the list.
+/// @param initialValue The initial value passed to @c nextPartialResult.
+/// @param nextPartialResult A function called on each element to aggregate the element's content into the result value.
+/// @param context A value passed unmodified to @c nextPartialResult.
+/// @returns A reference to the object from the last call to nextPartialResult. Must be released by the caller.
 HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunction nextPartialResult, void* context);
 
 #endif /* HCList_h */
