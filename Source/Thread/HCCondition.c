@@ -42,6 +42,8 @@ void HCConditionInit(void* memory) {
     
     self->lock = HCLockCreate();
     pthread_cond_init(&self->condition, NULL);
+    
+    HCObjectSetType(self, HCConditionType);
 }
 
 void HCConditionDestroy(HCConditionRef self) {

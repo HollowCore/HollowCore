@@ -131,6 +131,24 @@ CTEST(HCData, Clear) {
     HCRelease(data);
 }
 
+CTEST(HCData, ChangeBytes) {
+    HCByte bytes[] = { 0x01, 0x02, 0x03, 0x04, 0x05 };
+    HCByte changedBytes[] = { 0xFE, 0xFD, 0xFC };
+    HCDataRef data = HCDataCreateWithBytes(sizeof(bytes), bytes);
+    ASSERT_TRUE(HCDataBytes(data)[0] == bytes[0]);
+    ASSERT_TRUE(HCDataBytes(data)[1] == bytes[1]);
+    ASSERT_TRUE(HCDataBytes(data)[2] == bytes[2]);
+    ASSERT_TRUE(HCDataBytes(data)[3] == bytes[3]);
+    ASSERT_TRUE(HCDataBytes(data)[4] == bytes[4]);
+    HCDataChangeBytes(data, 1, sizeof(changedBytes), changedBytes);
+    ASSERT_TRUE(HCDataBytes(data)[0] == bytes[0]);
+    ASSERT_TRUE(HCDataBytes(data)[1] == changedBytes[0]);
+    ASSERT_TRUE(HCDataBytes(data)[2] == changedBytes[1]);
+    ASSERT_TRUE(HCDataBytes(data)[3] == changedBytes[2]);
+    ASSERT_TRUE(HCDataBytes(data)[4] == bytes[4]);
+    HCRelease(data);
+}
+
 CTEST(HCData, AddBytes) {
     HCByte bytes[] = { 0x05, 0x04, 0x03 };
     HCDataRef data = HCDataCreateWithBytes(sizeof(bytes), bytes);

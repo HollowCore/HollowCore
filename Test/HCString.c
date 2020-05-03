@@ -219,6 +219,7 @@ CTEST(HCString, RealConversion) {
     HCStringRef pi = HCStringCreateWithReal(M_PI);
     ASSERT_TRUE(HCStringIsReal(pi));
     ASSERT_TRUE(HCStringAsReal(pi) == M_PI);
+    HCRelease(pi);
     
     HCStringRef almostPI = HCStringCreateWithCString("3.14159 is just about as good as pi");
     ASSERT_FALSE(HCStringIsReal(almostPI));
