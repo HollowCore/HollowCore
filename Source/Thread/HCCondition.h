@@ -16,7 +16,7 @@
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 
-/// The @c HCType that describes a @c HCCondition.
+/// The @c HCType that describes an @c HCCondition.
 extern HCType HCConditionType;
 
 /// The Ref type of @c HCCondition.

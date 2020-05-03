@@ -28,7 +28,7 @@ typedef struct HCThread {
 
     HCAtomicBoolean isExecuting;
     HCAtomicBoolean isFinished;
-    HCAtomicBoolean isCanceled;
+    HCAtomicBoolean isCancelled;
     HCAtomicBoolean isJoined;
 } HCThread;
 

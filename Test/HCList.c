@@ -558,9 +558,12 @@ CTEST(HCList, IterationLoopBackward) {
     HCRelease(list);
 }
 
-void HCListForEachTestFunction(void* context, HCRef value) {
+void HCListForEachTestFunction(void* context, HCListRef list, HCInteger index, HCRef object) {
     HCInteger* counter = (HCInteger*)context;
-    ASSERT_TRUE(HCNumberAsInteger(value) == *counter);
+    ASSERT_NOT_NULL(list);
+    ASSERT_TRUE(index >= 0 && index < HCListCount(list));
+    ASSERT_TRUE(HCIsEqual(object, HCListObjectAtIndex(list, index)));
+    ASSERT_TRUE(HCNumberAsInteger(object) == *counter);
     *counter += 1;
 }
 
@@ -580,9 +583,12 @@ CTEST(HCList, ForEach) {
     HCRelease(list);
 }
 
-HCBoolean HCListFilterTestFunction(void* context, HCRef value) {
+HCBoolean HCListFilterTestFunction(void* context, HCListRef list, HCInteger index, HCRef object) {
     ASSERT_TRUE(context == (void*)0xDEADBEEF);
-    return HCNumberAsInteger(value) >= 2;
+    ASSERT_NOT_NULL(list);
+    ASSERT_TRUE(index >= 0 && index < HCListCount(list));
+    ASSERT_TRUE(HCIsEqual(object, HCListObjectAtIndex(list, index)));
+    return HCNumberAsInteger(object) >= 2;
 }
 
 CTEST(HCList, Filter) {
@@ -603,9 +609,12 @@ CTEST(HCList, Filter) {
     HCRelease(filtered);
 }
 
-HCRef HCListMapTestFunction(void* context, HCRef value) {
+HCRef HCListMapTestFunction(void* context, HCListRef list, HCInteger index, HCRef object) {
     ASSERT_TRUE(context == (void*)0xDEADBEEF);
-    return HCNumberCreateWithInteger(HCNumberAsInteger(value) * -1);
+    ASSERT_NOT_NULL(list);
+    ASSERT_TRUE(index >= 0 && index < HCListCount(list));
+    ASSERT_TRUE(HCIsEqual(object, HCListObjectAtIndex(list, index)));
+    return HCNumberCreateWithInteger(HCNumberAsInteger(object) * -1);
 }
 
 HCInteger HCListMapTestFunctionCounter = 0;
@@ -630,9 +639,12 @@ CTEST(HCList, Map) {
     HCRelease(transformed);
 }
 
-HCRef HCListReduceTestFunction(void* context, HCRef aggregate, HCRef value) {
+HCRef HCListReduceTestFunction(void* context, HCRef aggregate, HCListRef list, HCInteger index, HCRef object) {
     ASSERT_TRUE(context == (void*)0xDEADBEEF);
-    return HCNumberCreateWithInteger(HCNumberAsInteger(aggregate) + HCNumberAsInteger(value));
+    ASSERT_NOT_NULL(list);
+    ASSERT_TRUE(index >= 0 && index < HCListCount(list));
+    ASSERT_TRUE(HCIsEqual(object, HCListObjectAtIndex(list, index)));
+    return HCNumberCreateWithInteger(HCNumberAsInteger(aggregate) + HCNumberAsInteger(object));
 }
 
 HCInteger HCListReduceTestFunctionCounter = 0;

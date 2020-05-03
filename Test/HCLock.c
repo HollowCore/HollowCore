@@ -85,7 +85,7 @@ CTEST(HCLock, MultiThreadedAcquiredAndRelinquish) {
     }
 
     for (HCListIterator i = HCListIterationBegin(threads); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        HCThreadStart(i.object);
+        HCThreadExecute(i.object);
     }
     HCRelease(threads);
     

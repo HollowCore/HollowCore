@@ -16,7 +16,7 @@
 // MARK: - Object Type
 //----------------------------------------------------------------------------------------------------------------------------------
 
-/// The @c HCType that describes a @c HCLock.
+/// The @c HCType that describes an @c HCLock.
 extern HCType HCLockType;
 
 /// The Ref type of @c HCLock.

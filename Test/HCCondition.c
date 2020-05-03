@@ -106,7 +106,7 @@ CTEST(HCCondition, MultiThreadedAcquiredAndRelinquish) {
     }
 
     for (HCListIterator i = HCListIterationBegin(threads); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        HCThreadStart(i.object);
+        HCThreadExecute(i.object);
     }
     HCRelease(threads);
     
@@ -130,8 +130,8 @@ CTEST(HCCondition, RaisingEventSignal) {
     
     HCThreadRef thread1 = HCThreadCreate(HCConditionTestRanDataFunction, &data[0]);
     HCThreadRef thread2 = HCThreadCreate(HCConditionTestRanDataFunction, &data[1]);
-    HCThreadStart(thread1);
-    HCThreadStart(thread2);
+    HCThreadExecute(thread1);
+    HCThreadExecute(thread2);
     
     usleep(1000);
     HCConditionAquire(condition);
@@ -164,8 +164,8 @@ CTEST(HCCondition, RaisingEventBroadcast) {
     
     HCThreadRef thread1 = HCThreadCreate(HCConditionTestRanDataFunction, &data[0]);
     HCThreadRef thread2 = HCThreadCreate(HCConditionTestRanDataFunction, &data[1]);
-    HCThreadStart(thread1);
-    HCThreadStart(thread2);
+    HCThreadExecute(thread1);
+    HCThreadExecute(thread2);
     
     usleep(1000);
     HCConditionRaiseEventAcquired(condition, HCConditionEventBroadcast);
@@ -192,7 +192,7 @@ CTEST(HCCondition, ExecuteRaisingEventAcquired) {
     };
     HCBoolean ran = false;
     HCThreadRef thread = HCThreadCreate(HCConditionTestRanDataFunction, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     HCConditionExecuteRaisingEventAcquired(condition, HCConditionExecuteRaisingEventAcquiredTest, &ran, HCConditionEventSignal);
@@ -212,7 +212,7 @@ CTEST(HCCondition, Signal) {
         .ran = false
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestRanDataFunction, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     HCConditionAquire(condition);
@@ -239,8 +239,8 @@ CTEST(HCCondition, Broadcast) {
     };
     HCThreadRef thread1 = HCThreadCreate(HCConditionTestRanDataFunction, &data[0]);
     HCThreadRef thread2 = HCThreadCreate(HCConditionTestRanDataFunction, &data[1]);
-    HCThreadStart(thread1);
-    HCThreadStart(thread2);
+    HCThreadExecute(thread1);
+    HCThreadExecute(thread2);
     
     usleep(1000);
     HCConditionAquire(condition);
@@ -262,7 +262,7 @@ CTEST(HCCondition, RaiseEventSignal) {
         .ran = false
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestRanDataFunction, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     HCConditionAquire(condition);
@@ -289,8 +289,8 @@ CTEST(HCCondition, RaiseEventBroadcast) {
     };
     HCThreadRef thread1 = HCThreadCreate(HCConditionTestRanDataFunction, &data[0]);
     HCThreadRef thread2 = HCThreadCreate(HCConditionTestRanDataFunction, &data[1]);
-    HCThreadStart(thread1);
-    HCThreadStart(thread2);
+    HCThreadExecute(thread1);
+    HCThreadExecute(thread2);
     
     usleep(1000);
     HCConditionAquire(condition);
@@ -312,7 +312,7 @@ CTEST(HCCondition, RaiseEventSignalAcquired) {
         .ran = false
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestRanDataFunction, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
@@ -337,8 +337,8 @@ CTEST(HCCondition, RaiseEventBroadcastAcquired) {
     };
     HCThreadRef thread1 = HCThreadCreate(HCConditionTestRanDataFunction, &data[0]);
     HCThreadRef thread2 = HCThreadCreate(HCConditionTestRanDataFunction, &data[1]);
-    HCThreadStart(thread1);
-    HCThreadStart(thread2);
+    HCThreadExecute(thread1);
+    HCThreadExecute(thread2);
     
     usleep(1000);
     HCConditionRaiseEventAcquired(condition, HCConditionEventBroadcast);
@@ -358,7 +358,7 @@ CTEST(HCCondition, Wait) {
         .ran = false
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestRanDataFunction2, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
@@ -394,7 +394,7 @@ CTEST(HCCondition, WaitThenExecute) {
         .didTimeout = false,
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestWaitThenExecuteDataFunctionRunner, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     ASSERT_FALSE(data.ran);
@@ -425,7 +425,7 @@ CTEST(HCCondition, WaitTimeoutThenExecute1) {
         .didTimeout = false,
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestWaitTimeoutThenExecuteDataFunctionRunner, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     ASSERT_FALSE(data.ran);
@@ -447,7 +447,7 @@ CTEST(HCCondition, WaitTimeoutThenExecute2) {
         .didTimeout = false,
     };
     HCThreadRef thread = HCThreadCreate(HCConditionTestWaitTimeoutThenExecuteDataFunctionRunner, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     sleep(1);
     HCConditionRaiseEventAcquired(condition, HCConditionEventSignal);
@@ -490,7 +490,7 @@ CTEST(HCCondition, WaitWhileThenExecute) {
         .wait = true,
     };
     HCThreadRef thread = HCThreadCreate(HCConditionWaitWhileThenExecuteDataFunctionRunner, &data);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     
     usleep(1000);
     ASSERT_FALSE(data.ran);

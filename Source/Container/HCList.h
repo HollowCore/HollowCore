@@ -50,16 +50,32 @@ typedef struct HCListIterator {
 extern const HCListIterator HCListIteratorInvalid;
 
 /// Function operating on a value of a list during a for-each iteration over the list.
-typedef void (*HCListForEachFunction)(void* context, HCRef value);
+/// @param context The unmodified context value provided to @c HCListForEach().
+/// @param list The subject list of the iteration.
+/// @param index The current iteration index of the iteration.
+/// @param object The object at the current iteration index.
+typedef void (*HCListForEachFunction)(void* context, HCListRef list, HCInteger index, HCRef object);
 
 /// Function used to categorize a value of a list during a filter iteration over the list.
-typedef HCBoolean (*HCListFilterFunction)(void* context, HCRef value);
+/// @param context The unmodified context value provided to @c HCListFilterRetained().
+/// @param list The subject list of the iteration.
+/// @param index The current iteration index of the iteration.
+/// @param object The object at the current iteration index.
+typedef HCBoolean (*HCListFilterFunction)(void* context, HCListRef list, HCInteger index, HCRef object);
 
 /// Function used to map a value of a list to another value during a map iteration over the list.
-typedef HCRef (*HCListMapFunction)(void* context, HCRef value);
+/// @param context The unmodified context value provided to @c HCListMapRetained().
+/// @param list The subject list of the iteration.
+/// @param index The current iteration index of the iteration.
+/// @param object The object at the current iteration index.
+typedef HCRef (*HCListMapFunction)(void* context, HCListRef list, HCInteger index, HCRef object);
 
 /// Function used to reduce a value of a list into an aggregate value during a reduce iteration over the list.
-typedef HCRef (*HCListReduceFunction)(void* context, HCRef aggregate, HCRef value);
+/// @param context The unmodified context value provided to @c HCListReduceRetained().
+/// @param list The subject list of the iteration.
+/// @param index The current iteration index of the iteration.
+/// @param object The object at the current iteration index.
+typedef HCRef (*HCListReduceFunction)(void* context, HCRef aggregate, HCListRef list, HCInteger index, HCRef object);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction

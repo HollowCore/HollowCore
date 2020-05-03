@@ -37,7 +37,7 @@ CTEST(HCMultiThreadedReferenceCounting, SafeRandomRetainOrReleaseFavoringRetain)
             };
             HCThreadRef thread = HCThreadCreate(HCMultiThreadedReferenceCountingThreadFunction, &contexts[i]);
             HCListAddObjectReleased(threads, thread);
-            HCThreadStart(thread);
+            HCThreadExecute(thread);
         }
 
         // Give the threads time to hammer on stuff
@@ -69,7 +69,7 @@ void HCMultiThreadedReferenceCountingThreadFunction(void* _context) {
     HCMultiThreadedReferenceCountingContext* context = _context;
     HCThreadRef thread = HCThreadGetCurrent();
     
-    while (!HCThreadIsCanceled(thread)) {
+    while (!HCThreadIsCancelled(thread)) {
         time_t finishIteration = time(NULL) + 1;
         while (time(NULL) < finishIteration) {
             if (rand() % 5 >= 3 && context->retainCount > 0) {
