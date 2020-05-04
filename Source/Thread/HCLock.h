@@ -6,6 +6,8 @@
 /// @date 4/12/19
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Thread mutex for data access control.
+///
 
 #ifndef HCLock_h
 #define HCLock_h
@@ -77,7 +79,7 @@ HCBoolean HCLockTryAquire(HCLockRef self);
 /// @param self A reference to the lock.
 void HCLockRelinquish(HCLockRef self);
 
-/// Acquires a lock, blocking until it is available, executes a function, then relinquishes the lock.
+/// Acquires a lock blocking until it is available, executes a function, then relinquishes the lock.
 /// @param self A reference to the lock.
 /// @param function The function to execute when the lock is acquired.
 /// @param context A context value to pass unmodified to @c function.

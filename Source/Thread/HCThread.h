@@ -6,6 +6,8 @@
 /// @date 2/14/19
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
+/// @brief Execution primitive for multi-threaded programs.
+///
 
 #ifndef HCThread_h
 #define HCThread_h
