@@ -103,7 +103,7 @@ CTEST(HCContourCurve, Conversion) {
 CTEST(HCContourCurve, LineEvaluation) {
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourEvaluateLinearCurve(0.5, HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), &dx, &dy);
+    HCPoint s = HCContourCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
@@ -112,7 +112,7 @@ CTEST(HCContourCurve, LineEvaluation) {
 CTEST(HCContourCurve, QuadraticEvaluation) {
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourEvaluateQuadraticCurve(0.5, HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), &dx, &dy);
+    HCPoint s = HCContourCurveEvaluateQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), 0.5, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 4.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
@@ -121,7 +121,7 @@ CTEST(HCContourCurve, QuadraticEvaluation) {
 CTEST(HCContourCurve, CubicEvaluation) {
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourEvaluateCubicCurve(0.5, HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0), &dx, &dy);
+    HCPoint s = HCContourCurveEvaluateCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0), 0.5, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(4.0, 5.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
@@ -131,7 +131,7 @@ CTEST(HCContourCurve, ElementEvaluation) {
     HCContourCurve cubic = HCContourCurveMakeCubic(HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0));
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourEvaluateCurve(0.5, HCPointMake(1.0, 2.0), cubic, &dx, &dy);
+    HCPoint s = HCContourCurveEvaluate(HCPointMake(1.0, 2.0), cubic, 0.5, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(4.0, 5.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);

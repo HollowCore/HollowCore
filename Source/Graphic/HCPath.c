@@ -458,7 +458,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             // TODO: Could performance be improved using a simpler intersection function that is for line-segment to ray?
             HCReal t = 0.0;
             HCReal u = 0.0;
-            HCContourLineLineIntersection(p0, p1, q0, q1, &t, &u);
+            HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &t, &u);
             
             // Determine if they intersect within the bounds of the segments
             HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
@@ -524,7 +524,7 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
                     // Find the intersection parameters for the lines formed by the line segment points
                     HCReal t = 0.0;
                     HCReal u = 0.0;
-                    HCContourLineLineIntersection(p0, p1, q0, q1, &t, &u);
+                    HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &t, &u);
                     
                     // Determine if they intersect within the bounds of the segments
                     HCBoolean segmentsIntersect = t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0;
@@ -841,14 +841,6 @@ void HCPathAddLineSegmentPolylineData(HCPathRef self, HCReal x0, HCReal y0, HCRe
 }
 
 void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData) {
-    // Calculate using direct evaluation informed by derivitive
-//    HCReal x, y, dx, dy;
-//    for (HCReal t = 0.0; t <= 1.0;) {
-//        HCPathEvaluateQuadraticCurve(t, x0, y0, cx, cy, x1, y1, &x, &y, &dx, &dy);
-//        HCPathDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-//        t += fmax(0.00001, 0.50000 / fmax(fabs(dx), fabs(dy)));
-//    }
-    
     // Calculate the curve polyline using De Casteljau's Algorithm
     
     // Determine quadratic curve flatness
@@ -874,14 +866,6 @@ void HCPathAddQuadraticCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, H
 }
 
 void HCPathAddCubicCurvePolylineData(HCPathRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCReal flatnessThreshold, HCDataRef polylineData) {
-    // Calculate using direct evaluation informed by derivitive
-//    HCReal x, y, dx, dy;
-//    for (HCReal t = 0.0; t <= 1.0;) {
-//        HCPathEvaluateCubicCurve(t, x0, y0, cx0, cy0, cx1, cy1, x1, y1, &x, &y, &dx, &dy);
-//        HCPathDrawPoint(self, x, y, HCColorCombine(c0, c1, t));
-//        t += fmax(0.00001, 0.33333 / fmax(fabs(dx), fabs(dy)));
-//    }
-    
     // Calculate the curve polyline using De Casteljau's Algorithm
     
     // Determine cubic curve flatness
