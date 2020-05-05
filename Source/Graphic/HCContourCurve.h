@@ -71,20 +71,20 @@ HCContourCurve HCContourCurveAsQuadratic(HCContourCurve curve);
 HCContourCurve HCContourCurveAsCubic(HCContourCurve curve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Evaluation
+// MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourCurveEvaluate(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* dx, HCReal* dy);
-HCPoint HCContourCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* dx, HCReal* dy);
-HCPoint HCContourCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* dx, HCReal* dy);
-HCPoint HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* dx, HCReal* dy);
+HCPoint HCContourCurveValue(HCPoint p0, HCContourCurve curve, HCReal t);
+HCPoint HCContourCurveValueLinear(HCPoint p0, HCPoint p1, HCReal t);
+HCPoint HCContourCurveValueQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
+HCPoint HCContourCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Normal
+// MARK: - Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveNormal(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* tangentX, HCReal* tangentY, HCReal* normalX, HCReal* normalY);
-void HCContourCurveNormalLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tangentX, HCReal* tangentY, HCReal* normalX, HCReal* normalY);
-void HCContourCurveNormalQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* tangentX, HCReal* tangentY, HCReal* normalX, HCReal* normalY);
-void HCContourCurveNormalCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* tangentX, HCReal* tangentY, HCReal* normalX, HCReal* normalY);
+void HCContourCurveEvaluate(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
+void HCContourCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y);
+void HCContourCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy);
+void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema

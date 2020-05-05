@@ -101,40 +101,47 @@ CTEST(HCContourCurve, Conversion) {
 }
 
 CTEST(HCContourCurve, LineEvaluation) {
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCPoint s = HCContourCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &dx, &dy);
+    HCPoint s = HCPointInvalid;
+    HCContourCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &s.x, &s.y);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
-    ASSERT_DBL_NEAR(dx, 2.0);
-    ASSERT_DBL_NEAR(dy, 2.0);
 }
 
 CTEST(HCContourCurve, QuadraticEvaluation) {
+    HCPoint s = HCPointInvalid;
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourCurveEvaluateQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), 0.5, &dx, &dy);
+    HCContourCurveEvaluateQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), 0.5, &s.x, &s.y, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 4.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
 }
 
 CTEST(HCContourCurve, CubicEvaluation) {
+    HCPoint s = HCPointInvalid;
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourCurveEvaluateCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0), 0.5, &dx, &dy);
+    HCReal ddx = NAN;
+    HCReal ddy = NAN;
+    HCContourCurveEvaluateCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0), 0.5, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(4.0, 5.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
+    ASSERT_DBL_NEAR(ddx, 10.0);
+    ASSERT_DBL_NEAR(ddy, 4.0);
 }
 
 CTEST(HCContourCurve, ElementEvaluation) {
-    HCContourCurve cubic = HCContourCurveMakeCubic(HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0));
+    HCPoint s = HCPointInvalid;
     HCReal dx = NAN;
     HCReal dy = NAN;
-    HCPoint s = HCContourCurveEvaluate(HCPointMake(1.0, 2.0), cubic, 0.5, &dx, &dy);
+    HCReal ddx = NAN;
+    HCReal ddy = NAN;
+    HCContourCurveEvaluate(HCPointMake(1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0)), 0.5, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(4.0, 5.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 2.0);
+    ASSERT_DBL_NEAR(ddx, 10.0);
+    ASSERT_DBL_NEAR(ddy, 4.0);
 }
 
 CTEST(HCContour, CreatePolyline) {
