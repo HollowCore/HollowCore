@@ -87,12 +87,22 @@ void HCContourCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t
 void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Curvature
+//----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
+HCPoint HCContourCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
+HCPoint HCContourCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
+HCPoint HCContourCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCContourCurveExtrema(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
 void HCContourCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
 void HCContourCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
 void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
+
+void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
@@ -105,10 +115,38 @@ HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve);
-HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1);
-HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
-HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve, HCReal t);
+HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1, HCReal t);
+HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
+HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Parameterization by Arc Length
+//----------------------------------------------------------------------------------------------------------------------------------
+HCReal HCContourCurveParameter(HCPoint p0, HCContourCurve curve, HCReal d);
+HCReal HCContourCurveParameterLinear(HCPoint p0, HCPoint p1, HCReal d);
+HCReal HCContourCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d);
+HCReal HCContourCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Parameter Given Point
+//----------------------------------------------------------------------------------------------------------------------------------
+HCReal HCContourCurveParameterNearestPoint(HCPoint p0, HCContourCurve curve, HCPoint p);
+HCReal HCContourCurveParameterNearestPointLinear(HCPoint p0, HCPoint p1, HCPoint p);
+HCReal HCContourCurveParameterNearestPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p);
+HCReal HCContourCurveParameterNearestPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Parameter Given Axis
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCContourCurveParametersFromXAxis(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersFromYAxis(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersLinearFromXAxis(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersLinearFromYAxis(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersQuadraticFromXAxis(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersQuadraticFromYAxis(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersCubicFromXAxis(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCContourCurveParametersCubicFromYAxis(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
@@ -128,6 +166,42 @@ void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, 
 HCContourCurve HCContourCurveAlign(HCPoint p0, HCContourCurve curve);
 HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve);
 HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Projectioon
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCPoint HCContourCurveProjection(HCPoint p0, HCContourCurve curve);
+HCPoint HCContourCurveProjectionLinear(HCPoint p0, HCPoint p1);
+HCPoint HCContourCurveProjectionQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCPoint HCContourCurveProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Moulding
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveMouldLinear(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Interpolation
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCContourCurve HCContourCurveInterpolating(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveInterpolatingLinear(HCPoint p0, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveInterpolatingQuadratic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
+HCContourCurve HCContourCurveInterpolatingCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Fitting
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCContourCurve HCContourCurveFitting(HCInteger count, HCPoint* points);
+HCContourCurve HCContourCurveFittingLinear(HCInteger count, HCPoint* points);
+HCContourCurve HCContourCurveFittingQuadratic(HCInteger count, HCPoint* points);
+HCContourCurve HCContourCurveFittingCubic(HCInteger count, HCPoint* points);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Split

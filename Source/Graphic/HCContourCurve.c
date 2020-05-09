@@ -371,25 +371,25 @@ HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve) {
+HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve, HCReal t) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            return HCContourCurveLengthLinear(p0, curve.p);
+            return HCContourCurveLengthLinear(p0, curve.p, t);
         }
-        return HCContourCurveLengthQuadratic(p0, curve.c0, curve.p);
+        return HCContourCurveLengthQuadratic(p0, curve.c0, curve.p, t);
     }
-    return HCContourCurveLengthCubic(p0, curve.c0, curve.c1, curve.p);
+    return HCContourCurveLengthCubic(p0, curve.c0, curve.c1, curve.p, t);
 }
 
-HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1) {
+HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1, HCReal t) {
     return NAN;
 }
 
-HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
     return NAN;
 }
 
-HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t) {
     return NAN;
 }
 

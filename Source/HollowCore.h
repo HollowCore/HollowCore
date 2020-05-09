@@ -29,6 +29,7 @@
 #include "Graphic/HCContour.h"
 #include "Graphic/HCPath.h"
 #include "Graphic/HCPath+Shapes.h"
+#include "Graphic/HCPath+BooleanOperations.h"
 #include "Graphic/HCPath+SVG.h"
 #include "JSON/HCJSON.h"
 #include "Thread/HCCondition.h"
