@@ -84,15 +84,16 @@ HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger 
     }
     HCPathMove(self, curves[0].p.x, curves[0].p.y);
     for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
-        HCContourCurve contourCurve = curves[curveIndex];
-        if (HCContourCurveIsLinear(contourCurve)) {
-            HCPathAddLine(self, contourCurve.p.x, contourCurve.p.y);
+        HCPoint p0 = curves[curveIndex - 1].p;
+        HCContourCurve curve = curves[curveIndex];
+        if (HCContourCurveIsLinear(p0, curve)) {
+            HCPathAddLine(self, curve.p.x, curve.p.y);
         }
-        else if (HCContourCurveIsQuadratic(contourCurve)) {
-            HCPathAddQuadraticCurve(self, contourCurve.c0.x, contourCurve.c0.y, contourCurve.p.x, contourCurve.p.y);
+        else if (HCContourCurveIsQuadratic(p0, curve)) {
+            HCPathAddQuadraticCurve(self, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y);
         }
-        else if (HCContourCurveIsCubic(contourCurve)) {
-            HCPathAddCubicCurve(self, contourCurve.c0.x, contourCurve.c0.y, contourCurve.c1.x, contourCurve.c1.y, contourCurve.p.x, contourCurve.p.y);
+        else if (HCContourCurveIsCubic(p0, curve)) {
+            HCPathAddCubicCurve(self, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y);
         }
 
     }

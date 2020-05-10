@@ -22,25 +22,30 @@ typedef struct HCContourCurve {
 } HCContourCurve;
 
 typedef enum HCContourCurveType {
-    HCContourCurveTypePoint,
-    HCContourCurveTypeLinear,
-    HCContourCurveTypeSimple,
-    HCContourCurveTypeSingleInflection,
-    HCContourCurveTypeDoubleInflection,
-    HCContourCurveTypeLoop,
-    HCContourCurveTypeLoopAtStart,
-    HCContourCurveTypeLoopAtEnd,
-    HCContourCurveTypeCusp,
+    HCContourCurveTypeInvalid                   = 0b0000000000,
+    HCContourCurveTypePoint                     = 0b0000000001,
+    HCContourCurveTypeLinear                    = 0b0000000010,
+    HCContourCurveTypeQuadratic                 = 0b0000000100,
+    HCContourCurveTypeCubicSimple               = 0b0000001000,
+    HCContourCurveTypeCubicSingleInflection     = 0b0000011000,
+    HCContourCurveTypeCubicDoubleInflection     = 0b0000111000,
+    HCContourCurveTypeCubicLoop                 = 0b0001001000,
+    HCContourCurveTypeCubicLoopAtStart          = 0b0011001000,
+    HCContourCurveTypeCubicLoopAtEnd            = 0b0101001000,
+    HCContourCurveTypeCubicLoopClosed           = 0b0111001000,
+    HCContourCurveTypeCubicLoopCusp             = 0b1001001000,
 } HCContourCurveType;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour Curve Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCContourCurveInvalidStatic ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic})
-#define HCContourCurveZeroStatic    ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic})
 
+#define HCContourCurveInvalidStatic ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic})
 static const HCContourCurve HCContourCurveInvalid = HCContourCurveInvalidStatic;
+#define HCContourCurveZeroStatic    ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic})
 static const HCContourCurve HCContourCurveZero = HCContourCurveZeroStatic;
+#define HCContourCurvePointAxisDissimilarityStatic (DBL_EPSILON)
+static const HCReal HCContourCurvePointAxisDissimilarity = HCContourCurvePointAxisDissimilarityStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
@@ -53,9 +58,6 @@ HCContourCurve HCContourCurveMakeCubic(HCPoint c0, HCPoint c1, HCPoint p);
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourCurveIsInvalid(HCContourCurve curve);
-HCBoolean HCContourCurveIsLinear(HCContourCurve curve);
-HCBoolean HCContourCurveIsQuadratic(HCContourCurve curve);
-HCBoolean HCContourCurveIsCubic(HCContourCurve curve);
 HCBoolean HCContourCurveIsSimilar(HCContourCurve curve, HCContourCurve other, HCReal axisDissimilarity);
 HCBoolean HCContourCurveIsZero(HCContourCurve curve);
 HCBoolean HCContourCurveIsInfinite(HCContourCurve curve);
@@ -64,11 +66,18 @@ HCInteger HCContourCurveHashValue(HCContourCurve curve);
 void HCContourCurvePrint(HCContourCurve curve, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Conversion
+// MARK: - Order / Conversion
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourCurve HCContourCurveAsLinear(HCContourCurve curve);
-HCContourCurve HCContourCurveAsQuadratic(HCContourCurve curve);
-HCContourCurve HCContourCurveAsCubic(HCContourCurve curve);
+HCBoolean HCContourCurveIsLinear(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveAsLinear(HCPoint p0, HCContourCurve curve);
+HCBoolean HCContourCurveIsQuadratic(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveAsQuadratic(HCPoint p0, HCContourCurve curve);
+HCBoolean HCContourCurveIsCubic(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveAsCubic(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
+HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve);
+HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value
@@ -160,14 +169,6 @@ void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1
 void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCReal* t, HCReal* u);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Canonical Forms
-//----------------------------------------------------------------------------------------------------------------------------------
-
-HCContourCurve HCContourCurveAlign(HCPoint p0, HCContourCurve curve);
-HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve);
-HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve);
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Projectioon
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -198,14 +199,14 @@ HCContourCurve HCContourCurveInterpolatingCubic(HCPoint p0, HCPoint p1, HCPoint 
 // MARK: - Fitting
 //----------------------------------------------------------------------------------------------------------------------------------
 
-HCContourCurve HCContourCurveFitting(HCInteger count, HCPoint* points);
-HCContourCurve HCContourCurveFittingLinear(HCInteger count, HCPoint* points);
-HCContourCurve HCContourCurveFittingQuadratic(HCInteger count, HCPoint* points);
-HCContourCurve HCContourCurveFittingCubic(HCInteger count, HCPoint* points);
+void HCContourCurveFitting(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve);
+void HCContourCurveFittingLinear(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve);
+void HCContourCurveFittingQuadratic(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve);
+void HCContourCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Split
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCContourCurve* sCurve, HCContourCurve* eCurve);
+void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve);
 
 #endif /* HCContourCurve_h */

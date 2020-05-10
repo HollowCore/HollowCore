@@ -412,14 +412,15 @@ void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, H
         }
         
         // Draw the curve
+        HCPoint p0 = curves[curveIndex - 1].p;
         HCContourCurve curve = curves[curveIndex];
-        if (HCContourCurveIsLinear(curve)) {
+        if (HCContourCurveIsLinear(p0, curve)) {
             HCRasterDrawLine(self, currentPoint.x, currentPoint.y, curve.p.x, curve.p.y, color, color);
         }
-        else if (HCContourCurveIsQuadratic(curve)) {
+        else if (HCContourCurveIsQuadratic(p0, curve)) {
             HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y, color, color);
         }
-        else if (HCContourCurveIsCubic(curve)) {
+        else if (HCContourCurveIsCubic(p0, curve)) {
             HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y, color, color);
         }
         currentPoint = curve.p;

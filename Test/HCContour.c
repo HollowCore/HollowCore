@@ -46,58 +46,126 @@ CTEST(HCContourCurve, Print) {
 CTEST(HCContourCurve, Queries) {
     HCContourCurve invalid = HCContourCurveInvalid;
     ASSERT_TRUE(HCContourCurveIsInvalid(invalid));
-    ASSERT_FALSE(HCContourCurveIsLinear(invalid));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(invalid));
-    ASSERT_FALSE(HCContourCurveIsCubic(invalid));
     ASSERT_FALSE(HCContourCurveIsZero(invalid));
     ASSERT_FALSE(HCContourCurveIsInfinite(invalid));
     
     HCContourCurve zero = HCContourCurveZero;
     ASSERT_FALSE(HCContourCurveIsInvalid(zero));
-    ASSERT_TRUE(HCContourCurveIsLinear(zero));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(zero));
-    ASSERT_FALSE(HCContourCurveIsCubic(zero));
     ASSERT_TRUE(HCContourCurveIsZero(zero));
     ASSERT_FALSE(HCContourCurveIsInfinite(zero));
-    
+}
+
+CTEST(HCContourCurve, Order) {
     HCContourCurve linear = HCContourCurveMakeLinear(HCPointMake(-1.0, 2.0));
     ASSERT_FALSE(HCContourCurveIsInvalid(linear));
-    ASSERT_TRUE(HCContourCurveIsLinear(linear));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(linear));
-    ASSERT_FALSE(HCContourCurveIsCubic(linear));
     ASSERT_FALSE(HCContourCurveIsZero(linear));
     ASSERT_FALSE(HCContourCurveIsInfinite(linear));
+    ASSERT_TRUE(HCContourCurveIsLinear(HCPointZero, linear));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, linear));
+    ASSERT_FALSE(HCContourCurveIsCubic(HCPointZero, linear));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(HCPointZero, linear), linear, 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(HCPointZero, linear), HCContourCurveMakeQuadratic(linear.p, linear.p), 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(HCPointZero, linear), HCContourCurveMakeCubic(linear.p, linear.p, linear.p), 0.000001));
     
     HCContourCurve quadratic = HCContourCurveMakeQuadratic(HCPointMake(-1.0, 2.0), HCPointMake(-3.0, 4.0));
     ASSERT_FALSE(HCContourCurveIsInvalid(quadratic));
-    ASSERT_FALSE(HCContourCurveIsLinear(quadratic));
-    ASSERT_TRUE(HCContourCurveIsQuadratic(quadratic));
-    ASSERT_FALSE(HCContourCurveIsCubic(quadratic));
     ASSERT_FALSE(HCContourCurveIsZero(quadratic));
     ASSERT_FALSE(HCContourCurveIsInfinite(quadratic));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, quadratic));
+    ASSERT_TRUE(HCContourCurveIsQuadratic(HCPointZero, quadratic));
+    ASSERT_FALSE(HCContourCurveIsCubic(HCPointZero, quadratic));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(HCPointZero, quadratic), HCContourCurveMakeLinear(quadratic.p), 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(HCPointZero, quadratic), quadratic, 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(HCPointZero, quadratic), HCContourCurveMakeCubic(quadratic.c0, quadratic.c0, quadratic.p), 0.000001));
     
     HCContourCurve cubic = HCContourCurveMakeCubic(HCPointMake(-1.0, 2.0), HCPointMake(-3.0, 4.0), HCPointMake(-5.0, 6.0));
     ASSERT_FALSE(HCContourCurveIsInvalid(cubic));
-    ASSERT_FALSE(HCContourCurveIsLinear(cubic));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(cubic));
-    ASSERT_TRUE(HCContourCurveIsCubic(cubic));
     ASSERT_FALSE(HCContourCurveIsZero(cubic));
     ASSERT_FALSE(HCContourCurveIsInfinite(cubic));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, cubic));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, cubic));
+    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, cubic));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(HCPointZero, cubic), HCContourCurveMakeLinear(cubic.p), 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(HCPointZero, cubic), HCContourCurveMakeQuadratic(HCPointInterpolate(cubic.c0, cubic.c1, 0.5), cubic.p), 0.000001));
+    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(HCPointZero, cubic), cubic, 0.000001));
 }
 
-CTEST(HCContourCurve, Conversion) {
-    HCContourCurve linear = HCContourCurveMakeLinear(HCPointMake(-1.0, 2.0));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(linear), linear, 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(linear), HCContourCurveMakeQuadratic(linear.p, linear.p), 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(linear), HCContourCurveMakeCubic(linear.p, linear.p, linear.p), 0.000001));
-    HCContourCurve quadratic = HCContourCurveMakeQuadratic(HCPointMake(-1.0, 2.0), HCPointMake(-3.0, 4.0));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(quadratic), HCContourCurveMakeLinear(quadratic.p), 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(quadratic), quadratic, 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(quadratic), HCContourCurveMakeCubic(quadratic.c0, quadratic.c0, quadratic.p), 0.000001));
-    HCContourCurve cubic = HCContourCurveMakeCubic(HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0), HCPointMake(7.0, 8.0));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsLinear(cubic), HCContourCurveMakeLinear(cubic.p), 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsQuadratic(cubic), HCContourCurveMakeQuadratic(HCPointInterpolate(cubic.c0, cubic.c1, 0.5), cubic.p), 0.000001));
-    ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveAsCubic(cubic), cubic, 0.000001));
+CTEST(HCContourCurve, AxisAligned) {
+    HCContourCurve xAxisAligned = HCContourCurveXAxisAligned(HCPointMake(-1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(-3.0, 4.0), HCPointMake(-5.0, 6.0), HCPointMake(-7.0, 8.0)));
+    ASSERT_FALSE(HCContourCurveIsInvalid(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsZero(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsInfinite(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, xAxisAligned));
+    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, xAxisAligned));
+    ASSERT_DBL_NEAR(xAxisAligned.p.y, 0.0);
+    
+    HCContourCurve yAxisAligned = HCContourCurveYAxisAligned(HCPointMake(-1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(-3.0, 4.0), HCPointMake(-5.0, 6.0), HCPointMake(-7.0, 8.0)));
+    ASSERT_FALSE(HCContourCurveIsInvalid(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsZero(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsInfinite(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, yAxisAligned));
+    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, yAxisAligned));
+    ASSERT_DBL_NEAR(yAxisAligned.p.x, 0.0);
+}
+
+CTEST(HCContourCurve, Canonical) {
+    HCPoint p0Invalid = HCPointInvalid;
+    HCContourCurve curveInvalid = HCContourCurveInvalid;
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Invalid, curveInvalid) == HCContourCurveTypeInvalid);
+    
+    HCPoint p0Point = HCPointMake(1.0, 1.0);
+    HCContourCurve curvePoint = HCContourCurveMakeCubic(p0Point, p0Point, p0Point);
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Point, curvePoint) == HCContourCurveTypePoint);
+    
+    HCPoint p0Linear = HCPointMake(1.0, 1.0);
+    HCContourCurve curveLinear = HCContourCurveMakeLinear(HCPointMake(2.0, 2.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Linear, curveLinear) == HCContourCurveTypeLinear);
+    
+    HCPoint p0Quadratic = HCPointMake(1.0, 1.0);
+    HCContourCurve curveQuadratic = HCContourCurveMakeQuadratic(HCPointMake(2.0, 2.0), HCPointMake(3.0, 1.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Quadratic, curveQuadratic) == HCContourCurveTypeQuadratic);
+    
+    HCPoint p0Simple = HCPointMake(0.0, 0.0);
+    HCContourCurve curveSimple = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Simple, curveSimple) == HCContourCurveTypeCubicSimple);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0Simple, curveSimple), HCPointMake(1.0, 0.0), 0.0000001));
+    
+    HCPoint p0SingleInflection = HCPointMake(0.0, 0.0);
+    HCContourCurve curveSingleInflection = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(50.0, 200.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0SingleInflection, curveSingleInflection) == HCContourCurveTypeCubicSingleInflection);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0SingleInflection, curveSingleInflection), HCPointMake(0.5, 2.0), 0.0000001));
+    
+    HCPoint p0DoubleInflection = HCPointMake(0.0, 0.0);
+    HCContourCurve curveDoubleInflection = HCContourCurveMakeCubic(HCPointMake(125.0, 75.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0DoubleInflection, curveDoubleInflection) == HCContourCurveTypeCubicDoubleInflection);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0DoubleInflection, curveDoubleInflection), HCPointMake(-1.5, 0.5), 0.0000001));
+    
+    HCPoint p0Loop = HCPointMake(25.0, 0.0);
+    HCContourCurve curveLoop = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 0.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Loop, curveLoop) == HCContourCurveTypeCubicLoop);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0Loop, curveLoop), HCPointMake(-0.75, 0.0), 0.0000001));
+    
+//    HCPoint p0LoopAtStart = HCPointMake(50.0, 0.0);
+//    HCContourCurve curveLoopAtStart = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(40.0, 25.0));
+//    ASSERT_TRUE(HCContourCurveCanonicalType(p0LoopAtStart, curveLoopAtStart) == HCContourCurveTypeCubicLoopAtStart);
+//    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0LoopAtStart, curveLoopAtStart), HCPointMake(-0.75, 0.75), 0.0000001));
+//
+//    HCPoint p0LoopAtEnd = HCPointMake(60.0, 25.0);
+//    HCContourCurve curveLoopAtEnd = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
+//    ASSERT_TRUE(HCContourCurveCanonicalType(p0LoopAtEnd, curveLoopAtEnd) == HCContourCurveTypeCubicLoopAtEnd);
+//    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0LoopAtEnd, curveLoopAtEnd), HCPointMake(0.1, 0.5), 0.0000001));
+    
+    HCPoint p0LoopClosed = HCPointMake(50.0, 0.0);
+    HCContourCurve curveLoopClosed = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0LoopClosed, curveLoopClosed) == HCContourCurveTypeCubicLoopClosed);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0LoopClosed, curveLoopClosed), HCPointMake(0.0, 0.0), 0.0000001));
+    
+    HCPoint p0Cusp = HCPointMake(0.0, 0.0);
+    HCContourCurve curveCusp = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 0.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0Cusp, curveCusp) == HCContourCurveTypeCubicLoopCusp);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0Cusp, curveCusp), HCPointMake(-1.0, 0.0), 0.0000001));
 }
 
 CTEST(HCContourCurve, LineEvaluation) {
