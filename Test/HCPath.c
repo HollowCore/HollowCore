@@ -1325,3 +1325,15 @@ CTEST(HCPath, MutabilityAndPolylines) {
     ASSERT_TRUE(HCIntegerIsEqual(HCPathPolylineCount(path), 0));
     HCRelease(path);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Boolean Operations
+// HCPath+BooleanOperations.h
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCPath, Union) {
+    HCPathRef a = HCPathCreateWithSVGPathData("M 10 0 C 30 25 70 25 90 0 C 100 15 100 35 90 50 C 70 25 30 25 10 50 C 0 35 0 15 10 0 Z");
+    HCPathRef b = HCPathCreateByTranslatingPath(a, 20.0, 10.0);
+    HCPathRef c = HCPathCombine(a, b, HCPathCombineOperationUnion);
+    ASSERT_TRUE(!HCPathIsEmpty(c));
+}

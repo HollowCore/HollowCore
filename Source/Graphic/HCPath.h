@@ -52,6 +52,7 @@ HCPathRef HCPathCreateWithElements(const HCPathElement* elements, HCInteger elem
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 HCPathRef HCPathCreateWithContour(const HCContour* contour);
 HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
+HCPathRef HCPathCreateByTranslatingPath(HCPathRef path, HCReal tx, HCReal ty);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions

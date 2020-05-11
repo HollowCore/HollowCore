@@ -107,6 +107,21 @@ HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger 
     return self;
 }
 
+HCPathRef HCPathCreateByTranslatingPath(HCPathRef path, HCReal tx, HCReal ty) {
+    HCPathRef self = HCPathCreate();
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(path); elementIndex++) {
+        HCPathElement element = HCPathElementAt(path, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: HCPathMove(self, element.points[0].x + tx, element.points[0].y + ty); break;
+            case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x + tx, element.points[0].y + ty); break;
+            case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x + tx, element.points[0].y + ty, element.points[1].x + tx, element.points[1].y + ty); break;
+            case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x + tx, element.points[0].y + ty, element.points[1].x + tx, element.points[1].y + ty, element.points[2].x + tx, element.points[2].y + ty); break;
+            case HCPathCommandCloseContour: HCPathClose(self); break;
+        }
+    }
+    return self;
+}
+
 void HCPathInit(void* memory) {
     // Construct path object
     HCObjectInit(memory);
