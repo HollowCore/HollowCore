@@ -13,10 +13,18 @@
 // MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
-    HCRasterSetPixelAt(self, round(x), round(y), color);
+    HCInteger xIndex = round(x);
+    HCInteger yIndex = round(y);
+    HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+    pixel = HCColorCombine(pixel, color, color.a);
+    HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
+    if (!isfinite(x0) || !isfinite(y0) || !isfinite(x1) || !isfinite(y1)) {
+        return;
+    }
+    
     // Draw using Bresenham's Algorithm with color interpolation
     HCInteger ix0 = round(x0);
     HCInteger iy0 = round(y0);
@@ -31,7 +39,10 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
         HCReal tx = isfinite(xspaninv) ? ((double)ix0 - x0) * xspaninv : NAN;
         HCReal ty = isfinite(yspaninv) ? ((double)iy0 - y0) * yspaninv : NAN;
         HCReal t = (!isnan(tx) && !isnan(ty)) ? ((tx + ty) * 0.5) : !isnan(tx) ? tx : !isnan(ty) ? ty : 0.0;
-        HCRasterSetPixelAt(self, ix0, iy0, HCColorCombine(c0, c1, t));
+        HCColor color = HCColorCombine(c0, c1, t);
+        HCColor pixel = HCRasterPixelAt(self, ix0, iy0);
+        pixel = HCColorCombine(pixel, color, color.a);
+        HCRasterSetPixelAt(self, ix0, iy0, pixel);
         if (ix0==ix1 && iy0==iy1) break;
         e2 = err;
         if (e2 >-dx) { err -= dy; ix0 += sx; }
@@ -239,7 +250,9 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
             // Fill the pixel if it is covered
             if (lambdaA >= 0.0 && lambdaB >= 0.0 && lambdaC >= 0.0) {
                 HCColor color = HCColorCombine3(ca, lambdaA, cb, lambdaB, cc, lambdaC);
-                HCRasterSetPixelAt(self, xIndex, yIndex, color);
+                HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+                pixel = HCColorCombine(pixel, color, color.a);
+                HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
             }
         }
     }
@@ -273,7 +286,9 @@ void HCRasterFillTexturedTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal
                 HCReal tx = lambdaA * tax + lambdaB * tbx + lambdaC * tcx;
                 HCReal ty = lambdaA * tay + lambdaB * tby + lambdaC * tcy;
                 HCColor color = HCRasterPixelFiltered(texture, tx, ty);
-                HCRasterSetPixelAt(self, xIndex, yIndex, color);
+                HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+                pixel = HCColorCombine(pixel, color, color.a);
+                HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
             }
         }
     }

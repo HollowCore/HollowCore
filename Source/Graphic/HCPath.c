@@ -39,7 +39,11 @@ HCPathRef HCPathCreate() {
     return self;
 }
 
-HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount) {
+HCPathRef HCPathCreateCopy(HCPathRef path) {
+    return HCPathCreateWithElements((const HCPathElement*)HCDataBytes(path->elementData), HCPathElementCount(path));
+}
+
+HCPathRef HCPathCreateWithElements(const HCPathElement* elements, HCInteger elementCount) {
     HCPathRef self = HCPathCreate();
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
         HCPathElement element = elements[elementIndex];

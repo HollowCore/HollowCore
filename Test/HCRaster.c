@@ -827,6 +827,121 @@ CTEST(HCRaster, DrawDinosaur) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, DrawCanonical) {
+    // Define curve whose canonical representation is to be drawn
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
+    HCPoint canonical = HCContourCurveCanonical(p0, curve);
+    
+    // Configure raster
+    HCReal w = 1000.0;
+    HCReal h = 1000.0;
+    HCRasterRef raster = HCRasterCreate((HCInteger)w, (HCInteger)h);
+    
+    // Draw background
+    HCColor backgroundColor = HCColorMake(1.0, 1.0, 1.0, 1.0);
+    HCRasterFillQuad(raster, 0.0, 0.0, w, 0.0, w, h, 0.0, h, backgroundColor, backgroundColor, backgroundColor, backgroundColor);
+    
+    // Draw axes
+    HCColor axisColor = HCColorMake(1.0, 0.0, 0.0, 0.0);
+    HCRasterDrawLine(raster, w * 0.5, 0.0, w * 0.5, h, axisColor, axisColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.5, w, h * 0.5, axisColor, axisColor);
+    
+    // Draw grid
+    HCColor gridColor = HCColorMake(0.25, 0.0, 0.0, 0.0);
+    HCRasterDrawLine(raster, w * 0.1, 0.0, w * 0.1, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.2, 0.0, w * 0.2, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.3, 0.0, w * 0.3, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.4, 0.0, w * 0.4, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.5, 0.0, w * 0.5, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.6, 0.0, w * 0.6, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.7, 0.0, w * 0.7, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.8, 0.0, w * 0.8, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, w * 0.9, 0.0, w * 0.9, h, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.1, w, h * 0.1, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.2, w, h * 0.2, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.3, w, h * 0.3, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.4, w, h * 0.4, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.5, w, h * 0.5, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.6, w, h * 0.6, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.7, w, h * 0.7, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.8, w, h * 0.8, gridColor, gridColor);
+    HCRasterDrawLine(raster, 0.0, h * 0.9, w, h * 0.9, gridColor, gridColor);
+    
+    // Draw single inflection region
+    HCColor singleInflectionColor = HCColorMake(0.5, 0.0, 1.0, 0.0);
+    HCRasterFillQuad(raster, 0.0, h * 0.7, w, h * 0.7, w, h, 0.0, h, singleInflectionColor, singleInflectionColor, singleInflectionColor, singleInflectionColor);
+    
+    // Draw double inflection region
+    HCColor doubleInflectionColor = HCColorMake(0.5, 1.0, 1.0, 0.0);
+    HCPathRef cuspPath = HCPathCreate();
+    for (HCReal x = -2.5; x <= 1.0; x += 1.0 / (w * 0.7)) {
+        HCReal cuspEdge = (-1.0 * x * x + 2.0 * x + 3.0) * 0.25;
+        HCReal xImage = w * 0.5 + x * w / 5.0;
+        HCReal yImage = h * 0.5 + cuspEdge * h / 5.0;
+        x == -2.5 ? HCPathMove(cuspPath, xImage, yImage) : HCPathAddLine(cuspPath, xImage, yImage);
+    }
+    HCPathRef doubleInflectionPath = HCPathCreateCopy(cuspPath);
+    HCPathAddLine(doubleInflectionPath, 0.0, 700.0);
+    HCPathClose(doubleInflectionPath);
+    HCRasterDrawPath(raster, doubleInflectionPath, doubleInflectionColor);
+    
+    // Draw loop region
+    HCColor loopColor = HCColorMake(0.5, 1.0, 0.0, 0.0);
+    HCPathRef t0LoopPath = HCPathCreate();
+    for (HCReal x = -2.5; x <= 0.0; x += 1.0 / (w * 0.5)) {
+        HCReal t0LoopEdge = (-1.0 * x * x + 3.0 * x) * (1.0 / 3.0);
+        HCReal xImage = w * 0.5 + x * w / 5.0;
+        HCReal yImage = h * 0.5 + t0LoopEdge * h / 5.0;
+        x == -2.5 ? HCPathMove(t0LoopPath, xImage, yImage) : HCPathAddLine(t0LoopPath, xImage, yImage);
+    }
+    HCPathRef t1LoopPath = HCPathCreate();
+    for (HCReal x = 0.0; x <= 1.0; x += 1.0 / (w * 0.2)) {
+        HCReal t1LoopEdge = (sqrt(-3.0 * x * x + 12.0 * x) - x) * 0.5;
+        HCReal xImage = w * 0.5 + x * w / 5.0;
+        HCReal yImage = h * 0.5 + t1LoopEdge * h / 5.0;
+        x == 0.0 ? HCPathMove(t1LoopPath, xImage, yImage) : HCPathAddLine(t1LoopPath, xImage, yImage);
+    }
+    HCPathRef loopPath = HCPathCreate();
+    HCPathMove(loopPath, HCPathCurrentPoint(cuspPath).x, HCPathCurrentPoint(cuspPath).y);
+    for (HCInteger elementIndex = HCPathElementCount(cuspPath) - 1; elementIndex >= 0; elementIndex--) {
+        HCPoint p = HCPathElementAt(cuspPath, elementIndex).points[0];
+        HCPathAddLine(loopPath, p.x, p.y);
+    }
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(t0LoopPath); elementIndex++) {
+        HCPoint p = HCPathElementAt(t0LoopPath, elementIndex).points[0];
+        HCPathAddLine(loopPath, p.x, p.y);
+    }
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(t1LoopPath); elementIndex++) {
+        HCPoint p = HCPathElementAt(t1LoopPath, elementIndex).points[0];
+        HCPathAddLine(loopPath, p.x, p.y);
+    }
+    HCPathClose(loopPath);
+    HCRasterDrawPath(raster, loopPath, loopColor);
+    
+    // Draw canonical curve
+    HCColor curveColor = HCColorMake(0.5, 0.0, 0.0, 1.0);
+    HCReal p0x = w * 0.5 + 0.0 * w / 5.0;
+    HCReal p0y = h * 0.5 + 0.0 * h / 5.0;
+    HCReal c0x = w * 0.5 + 0.0 * w / 5.0;
+    HCReal c0y = h * 0.5 + 1.0 * h / 5.0;
+    HCReal c1x = w * 0.5 + 1.0 * w / 5.0;
+    HCReal c1y = h * 0.5 + 1.0 * h / 5.0;
+    HCReal p1x = w * 0.5 + canonical.x * w / 5.0;
+    HCReal p1y = h * 0.5 + canonical.y * h / 5.0;
+    HCRasterDrawCubicCurve(raster, p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, curveColor, curveColor);
+    
+    HCRasterSaveBMP(raster, "path_canonical.bmp");
+    HCRasterSavePPM(raster, "path_canonical.ppm");
+    
+    HCRelease(doubleInflectionPath);
+    HCRelease(loopPath);
+    HCRelease(t0LoopPath);
+    HCRelease(t1LoopPath);
+    HCRelease(cuspPath);
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawIntersection) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(

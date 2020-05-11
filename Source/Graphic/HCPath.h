@@ -47,7 +47,8 @@ typedef void (*HCPathIntersectionFunction)(void* context, HCBoolean* continueSea
 // MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPathRef HCPathCreate(void);
-HCPathRef HCPathCreateWithElements(HCPathElement* elements, HCInteger elementCount);
+HCPathRef HCPathCreateCopy(HCPathRef path);
+HCPathRef HCPathCreateWithElements(const HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 HCPathRef HCPathCreateWithContour(const HCContour* contour);
 HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
