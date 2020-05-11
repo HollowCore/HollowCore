@@ -1332,8 +1332,21 @@ CTEST(HCPath, MutabilityAndPolylines) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCPath, Union) {
-    HCPathRef a = HCPathCreateWithSVGPathData("M 10 0 C 30 25 70 25 90 0 C 100 15 100 35 90 50 C 70 25 30 25 10 50 C 0 35 0 15 10 0 Z");
-    HCPathRef b = HCPathCreateByTranslatingPath(a, 20.0, 10.0);
+    HCPathRef a = HCPathCreateWithSVGPathData("M 10 0 C 30 15 70 15 90 0 C 100 15 100 35 90 50 C 70 35 30 35 10 50 C 0 35 0 15 10 0 Z");
+    HCPathRef b = HCPathCreateByTranslatingPath(a, 20.0, 5.0);
     HCPathRef c = HCPathCombine(a, b, HCPathCombineOperationUnion);
     ASSERT_TRUE(!HCPathIsEmpty(c));
+    
+    HCRasterRef raster = HCRasterCreate(160.0, 90.0);
+    HCRasterDrawPath(raster, a, HCColorRed);
+    HCRasterDrawPath(raster, b, HCColorGreen);
+    HCRasterDrawPath(raster, c, HCColorBlue);
+    
+    HCRasterSaveBMP(raster, "union.bmp");
+    HCRasterSavePPM(raster, "union.ppm");
+    
+    HCRelease(a);
+    HCRelease(b);
+    HCRelease(c);
+    HCRelease(raster);
 }

@@ -25,8 +25,16 @@ HCPathRef HCPathCombine(HCPathRef self, HCPathRef other, HCPathCombineOperation 
     // TODO: Discard path segments according to containment in the overlaps according to the operation
     // TODO: Build resultant path from remaining path segments
     
+    // Visualize intersections
+    HCPathRef path = HCPathCreate();
+    for (HCListIterator i = HCListIterationBegin(intersections); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
+        HCPoint p = *(HCPoint*)HCDataBytes(i.object);
+        HCPathIsEmpty(path) ? HCPathMove(path, p.x, p.y) : HCPathAddLine(path, p.x, p.y);
+    }
+    HCPathClose(path);
+    
     HCRelease(intersections);
-    return HCPathCreate();
+    return path;
 }
 
 void HCPathCombineIntersectionFunction(void* context, HCBoolean* continueSearching, HCPathRef path, HCPathRef otherPath, HCPoint point) {
