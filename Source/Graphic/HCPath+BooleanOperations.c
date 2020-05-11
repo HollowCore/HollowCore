@@ -7,3 +7,14 @@
 //
 
 #include "HCPath+BooleanOperations.h"
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Boolean Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCPathRef HCPathCombine(HCPathRef self, HCPathRef other, HCPathCombineOperation operation) {
+    // TODO: Find intersections between paths
+    // TODO: Segment paths at intersection points
+    // TODO: Discard path segments according to containment in the overlaps according to the operation
+    // TODO: Build resultant path from remaining path segments
+    return NULL;
+}

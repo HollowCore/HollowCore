@@ -15,9 +15,13 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Boolean Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPathRef HCPathUnion(HCPathRef self, HCPathRef other);
-HCPathRef HCPathIntersection(HCPathRef self, HCPathRef other);
-HCPathRef HCPathSubtraction(HCPathRef self, HCPathRef other);
-HCPathRef HCPathExclusion(HCPathRef self, HCPathRef other);
+typedef enum HCPathCombineOperation {
+    HCPathCombineOperationUnion,
+    HCPathCombineOperationIntersection,
+    HCPathCombineOperationSubtraction,
+    HCPathCombineOperationExclusion
+} HCPathCombineOperation;
+
+HCPathRef HCPathCombine(HCPathRef self, HCPathRef other, HCPathCombineOperation operation);
 
 #endif /* HCPath_BooleanOperations_h */
