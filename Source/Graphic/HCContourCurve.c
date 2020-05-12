@@ -92,8 +92,34 @@ HCBoolean HCContourCurveIsLinear(HCPoint p0, HCContourCurve curve) {
     if (HCPointIsInvalid(curve.c0) && HCPointIsInvalid(curve.c1)) {
         return true;
     }
-    // TODO: Determine if co-linear
-    return false;
+    
+    // Determine if control points are co-anchor
+    if ((HCPointIsEqual(curve.c0, p0) || HCPointIsEqual(curve.c0, curve.p)) && (HCPointIsEqual(curve.c0, p0) || HCPointIsEqual(curve.c0, curve.p))) {
+        return true;
+    }
+    
+    // Determine if co-linear
+    HCPoint c0 = HCPointIsInvalid(curve.c0) ? curve.c1 : curve.c0;
+    HCPoint c1 = HCPointIsInvalid(curve.c1) ? curve.c0 : curve.c1;
+    HCPoint p1 = curve.p;
+    HCBoolean xOrdered = (p0.x <= c0.x && c0.x <= c1.x && c1.x <= p1.x) || (p0.x >= c0.x && c0.x >= c1.x && c1.x >= p1.x);
+    if (!xOrdered) {
+        return false;
+    }
+    HCBoolean yOrdered = (p0.y <= c0.y && c0.y <= c1.y && c1.y <= p1.y) || (p0.y >= c0.y && c0.y >= c1.y && c1.y >= p1.y);
+    if (!yOrdered) {
+        return false;
+    }
+    HCReal p0p1Slope = (p1.y - p0.y) / (p1.x - p0.x);
+    HCReal p0c0Slope = (c0.y - p0.y) / (c0.x - p0.x);
+    if (p0c0Slope != p0p1Slope) {
+        return false;
+    }
+    HCReal c1p1Slope = (p1.y - c1.y) / (p1.x - c1.x);
+    if (c1p1Slope != p0p1Slope) {
+        return false;
+    }
+    return true;
 }
 
 HCContourCurve HCContourCurveAsLinear(HCPoint p0, HCContourCurve curve) {
@@ -107,7 +133,12 @@ HCBoolean HCContourCurveIsQuadratic(HCPoint p0, HCContourCurve curve) {
     if (HCPointIsInvalid(curve.c1)) {
         return true;
     }
-    // TODO: Determine if control points form quadratic curve
+    
+    // Determine if control points form quadratic curve
+    HCPoint cqc0 = HCPointMake((2.0/3.0) * (cqc.x - cqp0.x), (2.0/3.0) * (cqc.y - cqp0.y));
+    HCPoint cqc1 = HCPointMake((2.0/3.0) * (cqc.x - cqp1.x), (2.0/3.0) * (cqc.y - cqp1.y));
+    
+    
     return false;
 }
 
@@ -153,8 +184,8 @@ HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve) {
     HCReal angle = atan2(translated.p.y, translated.p.x);
     
     // Rotate curve by negated angle to align the end point to the x-axis
-    HCReal cosAngle = cos(angle);
-    HCReal sinAngle = sin(angle);
+    HCReal cosAngle = cos(-angle);
+    HCReal sinAngle = sin(-angle);
     HCReal c0x = cosAngle * translated.c0.x - sinAngle * translated.c0.y;
     HCReal c0y = sinAngle * translated.c0.x + cosAngle * translated.c0.y;
     HCReal c1x = cosAngle * translated.c1.x - sinAngle * translated.c1.y;
@@ -255,21 +286,6 @@ HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve) {
     HCReal p1x = (translated.p.x - translated.c0.x * ypc) / (translated.c1.x - translated.c0.x * ycc);
     HCReal p1y = p1x * (1.0 - ycc) + ypc;
     return HCPointMake(p1x, p1y);
-    
-//    HCPoint p1 = p0;
-//    HCPoint p2 = curve.c0;
-//    HCPoint p3 = curve.c1;
-//    HCPoint p4 = curve.p;
-//    HCReal xn = -p1.x + p4.x - (-p1.x+p2.x)*(-p1.y+p4.y)/(-p1.y+p2.y);
-//    HCReal xd = -p1.x + p3.x - (-p1.x+p2.x)*(-p1.y+p3.y)/(-p1.y+p2.y);
-//    HCReal np4x = xn/xd;
-//
-//    HCReal yt1 = (-p1.y+p4.y) / (-p1.y+p2.y);
-//    HCReal yt2 = 1.0 - (-p1.y+p3.y)/(-p1.y+p2.y);
-//    HCReal yp = yt2 * xn / xd;
-//    HCReal np4y = yt1 + yp;
-//
-//    return HCPointMake(np4x, np4y);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
