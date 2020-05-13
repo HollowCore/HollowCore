@@ -45,6 +45,7 @@ typedef enum HCRectangleEdge {
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleMake(HCPoint origin, HCSize size);
 HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height);
+HCRectangle HCRectangleMakeWithExtrema(HCReal minX, HCReal minY, HCReal maxX, HCReal maxY);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality

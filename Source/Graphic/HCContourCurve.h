@@ -116,10 +116,10 @@ void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* coun
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
 //----------------------------------------------------------------------------------------------------------------------------------
-HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
-HCRectangle HCContourCurveBoundsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
-HCRectangle HCContourCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
-HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
+HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve);
+HCRectangle HCContourCurveBoundsLinear(HCPoint p0, HCPoint p1);
+HCRectangle HCContourCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Length

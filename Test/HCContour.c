@@ -147,11 +147,13 @@ CTEST(HCContourCurve, Canonical) {
     ASSERT_TRUE(HCContourCurveCanonicalType(p0Loop, curveLoop) == HCContourCurveTypeCubicLoop);
     ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0Loop, curveLoop), HCPointMake(-0.75, 0.0), 0.0000001));
     
+    // TODO: Loop-at-start does not evaluate well
 //    HCPoint p0LoopAtStart = HCPointMake(50.0, 0.0);
 //    HCContourCurve curveLoopAtStart = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(40.0, 25.0));
 //    ASSERT_TRUE(HCContourCurveCanonicalType(p0LoopAtStart, curveLoopAtStart) == HCContourCurveTypeCubicLoopAtStart);
 //    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(p0LoopAtStart, curveLoopAtStart), HCPointMake(-0.75, 0.75), 0.0000001));
-//
+
+    // TODO: Loop-at-end does not evaluate well
 //    HCPoint p0LoopAtEnd = HCPointMake(60.0, 25.0);
 //    HCContourCurve curveLoopAtEnd = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
 //    ASSERT_TRUE(HCContourCurveCanonicalType(p0LoopAtEnd, curveLoopAtEnd) == HCContourCurveTypeCubicLoopAtEnd);
@@ -188,7 +190,7 @@ CTEST(HCContourCurve, Canonical) {
 //    ASSERT_TRUE(HCContourCurveCanonicalType(cqp0, coquadratic) == HCContourCurveTypeQuadratic);
 }
 
-CTEST(HCContourCurve, LineEvaluation) {
+CTEST(HCContourCurve, LinearEvaluation) {
     HCPoint s = HCPointInvalid;
     HCContourCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &s.x, &s.y);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
@@ -231,6 +233,60 @@ CTEST(HCContourCurve, ElementEvaluation) {
     ASSERT_DBL_NEAR(ddx, 3.0);
     ASSERT_DBL_NEAR(ddy, 0.0);
 }
+
+CTEST(HCContourCurve, LinearExtrema) {
+    HCInteger count = 0;
+    HCReal extrema[2];
+    HCContourCurveExtremaLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0), &count, extrema);
+    ASSERT_TRUE(count == 2);
+    ASSERT_TRUE(extrema[0] == 0.0);
+    ASSERT_TRUE(extrema[1] == 1.0);
+}
+
+CTEST(HCContourCurve, QuadraticExtrema) {
+    // TODO: This!
+}
+
+CTEST(HCContourCurve, CubicExtrema) {
+    // TODO: This!
+}
+
+CTEST(HCContourCurve, Extrema) {
+    // TODO: This!
+}
+
+CTEST(HCContourCurve, LinearBounds) {
+    HCRectangle bounds = HCContourCurveBoundsLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(-1.0, -4.0, 3.0, 2.0)));
+}
+
+CTEST(HCContourCurve, QuadraticBounds) {
+    HCRectangle bounds = HCContourCurveBoundsQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 2.0));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.0)));
+}
+
+CTEST(HCContourCurve, CubicBounds) {
+    HCRectangle bounds = HCContourCurveBoundsCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.5)));
+}
+
+CTEST(HCContourCurve, Bounds) {
+    HCRectangle bounds = HCContourCurveBounds(HCPointMake(1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.5)));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CTEST(HCContour, CreatePolyline) {
     HCPoint startPoint = {.x = 1.0, .y = 1.0};

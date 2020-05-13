@@ -20,6 +20,10 @@ HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCRe
     return HCRectangleMake(HCPointMake(x, y), HCSizeMake(width, height));
 }
 
+HCRectangle HCRectangleMakeWithExtrema(HCReal minX, HCReal minY, HCReal maxX, HCReal maxY) {
+    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
