@@ -33,7 +33,7 @@ typedef enum HCContourCurveType {
     HCContourCurveTypeCubicLoopAtStart          = 0b0011001000,
     HCContourCurveTypeCubicLoopAtEnd            = 0b0101001000,
     HCContourCurveTypeCubicLoopClosed           = 0b0111001000,
-    HCContourCurveTypeCubicLoopCusp             = 0b1001001000,
+    HCContourCurveTypeCubicCusp             = 0b1001001000,
 } HCContourCurveType;
 
 //----------------------------------------------------------------------------------------------------------------------------------
