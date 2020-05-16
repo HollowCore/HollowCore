@@ -180,6 +180,10 @@ CTEST(HCContourCurve, Canonical) {
     HCContourCurve colinear = HCContourCurveMakeCubic(HCPointMake(2.0, 2.0), HCPointMake(3.0, 3.0), HCPointMake(4.0, 4.0));
     ASSERT_TRUE(HCContourCurveCanonicalType(colinearP0, colinear) == HCContourCurveTypeLinear);
     
+    HCPoint colinearQuadraticP0 = HCPointMake(1.0, 1.0);
+    HCContourCurve colinearQuadratic = HCContourCurveMakeQuadratic(HCPointMake(2.0, 2.0), HCPointMake(3.0, 3.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(colinearQuadraticP0, colinearQuadratic) == HCContourCurveTypeLinear);
+    
     // TODO: Co-quadratic does not evaluate well
 //    HCPoint cqp0 = HCPointMake(20.0, 30.0);
 //    HCPoint cqc = HCPointMake(25.0, 60.0);
