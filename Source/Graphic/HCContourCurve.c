@@ -504,7 +504,7 @@ void HCContourCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger
     HCPoint p1d = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
     
     // Calculate zero crossing of derivative in x and add as extrema if in range
-    HCReal ax = 1.0 * p0d.x;
+    HCReal ax = 1.0 * p0d.x - 1.0 * p1d.x;
     HCReal bx = 1.0 * p1d.x;
     HCReal xt = -bx / ax;
     if (xt >= 0.0 && xt <= 1.0) {
@@ -512,7 +512,7 @@ void HCContourCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if in range
-    HCReal ay = 1.0 * p0d.y;
+    HCReal ay = 1.0 * p0d.y - 1.0 * p1d.y;
     HCReal by = 1.0 * p1d.y;
     HCReal yt = -by / ay;
     if (yt >= 0.0 && yt <= 1.0) {
@@ -530,9 +530,9 @@ void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, 
     HCPoint p1d = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
     
     // Calculate zero crossing of derivative in x add as extrema if real and in range
-    HCReal ax = +1.0 * p0d.x - 2.0 * cd.x + 1.0 * p1d.x;
-    HCReal bx = -2.0 * p0d.x + 2.0 * cd.x;
-    HCReal cx = +1.0 * p0d.x;
+    HCReal ax = +1.0 * p0d.x - 2.0 *  cd.x + 1.0 * p1d.x;
+    HCReal bx = -2.0 *  cd.x + 2.0 * p1d.x;
+    HCReal cx = +1.0 * p1d.x;
     HCReal discriminantX = bx * bx - 4.0 * ax * cx;
     if (discriminantX >= 0.0) {
         HCReal sqrtDiscriminantX = sqrt(discriminantX);
@@ -548,9 +548,9 @@ void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, 
     }
     
     // Calculate zero crossing of derivative in y add as extrema if real and in range
-    HCReal ay = -3.0 * p0.y +  9.0 * c0.y - 9.0 * c1.y + 3.0 * p1.y;
-    HCReal by = +6.0 * p0.y - 12.0 * c0.y + 6.0 * c1.y;
-    HCReal cy = -3.0 * p0.y +  3.0 * c0.y;
+    HCReal ay = +1.0 * p0d.y - 2.0 *  cd.y + 1.0 * p1d.y;
+    HCReal by = -2.0 *  cd.y + 2.0 * p1d.y;
+    HCReal cy = +1.0 * p1d.y;
     HCReal discriminantY = by * by - 4.0 * ay * cy;
     if (discriminantY >= 0.0) {
         HCReal sqrtDiscriminantY = sqrt(discriminantY);

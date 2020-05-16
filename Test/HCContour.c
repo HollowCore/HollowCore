@@ -275,19 +275,6 @@ CTEST(HCContourCurve, Bounds) {
     ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.5)));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 CTEST(HCContour, CreatePolyline) {
     HCPoint startPoint = {.x = 1.0, .y = 1.0};
     HCPoint polyline[] = {
