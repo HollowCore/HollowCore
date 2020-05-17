@@ -474,16 +474,9 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             // Determine the end point of the line segment from the polyline
             HCPoint p1 = HCPathPolylinePointAt(self, elementIndex, pointIndex);
             
-            // Find the intersection parameters for the lines formed by the line segment points
-            // TODO: Could performance be improved using a simpler intersection function that is for line-segment to ray?
-            HCInteger tCount = 0;
-            HCReal t = 0.0;
-            HCInteger uCount = 0;
-            HCReal u = 0.0;
-            HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &tCount, &t, &uCount, &u);
-            
             // Determine if they intersect within the bounds of the segments
-            HCBoolean segmentsIntersect = tCount > 0 && uCount > 0;
+            HCBoolean segmentsIntersect = false;
+            HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, (HCInteger*)&segmentsIntersect, NULL, NULL);
             if (segmentsIntersect) {
                 intersectionCount++;
             }
@@ -543,15 +536,10 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
                     // Determine the end point of the line segment from the other polyline
                     HCPoint q1 = HCPathPolylinePointAt(other, otherElementIndex, otherPointIndex);
                     
-                    // Find the intersection parameters for the lines formed by the line segment points
-                    HCInteger tCount = 0;
-                    HCReal t = 0.0;
-                    HCInteger uCount = 0;
-                    HCReal u = 0.0;
-                    HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &tCount, &t, &uCount, &u);
-                    
                     // Determine if they intersect within the bounds of the segments
-                    HCBoolean segmentsIntersect = tCount > 0 && uCount > 0;
+                    HCBoolean segmentsIntersect = false;
+                    HCReal t = NAN;
+                    HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, (HCInteger*)&segmentsIntersect, &t, NULL);
                     if (segmentsIntersect) {
                         // Calculate the intersection point and call the intersection function
                         HCReal tc = 1.0 - t;

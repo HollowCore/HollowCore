@@ -470,16 +470,12 @@ void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1,
     if (y != NULL) {
         *y = sp.y;
     }
-    // TODO: Correct?
-    //3((1−t)2(C0−A0)+2(1−t)t(C1−C0)+t2(A1−C1))
     if (dx != NULL) {
         *dx = rp1.x - rp0.x;
     }
     if (dy != NULL) {
         *dy = rp1.y - rp0.y;
     }
-    // TODO: Correct?
-    //6((1−t)(C1−2C0+A0)+t(A1−2C1+C0))
     if (ddx != NULL) {
         *ddx = qp1.x - qp0.x;
     }
@@ -904,58 +900,54 @@ void HCContourCurveParametersCubicFromYAxis(HCPoint p0, HCPoint c0, HCPoint c1, 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* count, HCReal* t, HCReal* u) {
     if (HCContourCurveIsLinear(p0, pCurve)) {
         if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCContourCurveLinearLinearIntersection(p0, pCurve.p, q0, qCurve.p, tCount, t, uCount, u);
+            HCContourCurveLinearLinearIntersection(p0, pCurve.p, q0, qCurve.p, count, t, u);
         }
         if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCContourCurveLinearQuadraticIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.p, tCount, t, uCount, u);
+            HCContourCurveLinearQuadraticIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.p, count, t, u);
         }
-        HCContourCurveLinearCubicIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
+        HCContourCurveLinearCubicIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
     }
     if (HCContourCurveIsQuadratic(p0, pCurve)) {
         if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCContourCurveLinearQuadraticIntersection(q0, qCurve.p, p0, pCurve.c0, pCurve.p, tCount, t, uCount, u);
+            HCContourCurveLinearQuadraticIntersection(q0, qCurve.p, p0, pCurve.c0, pCurve.p, count, t, u);
         }
         if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCContourCurveQuadraticQuadraticIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.p, tCount, t, uCount, u);
+            HCContourCurveQuadraticQuadraticIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.p, count, t, u);
         }
-        return HCContourCurveQuadraticCubicIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
+        return HCContourCurveQuadraticCubicIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
     }
-    return HCContourCurveCubicCubicIntersection(p0, pCurve.c0, pCurve.c1, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
+    return HCContourCurveCubicCubicIntersection(p0, pCurve.c0, pCurve.c1, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
 }
 
-void HCContourCurveLinearLinearIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveLinearLinearIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Find intersection of lines formed by linear curve anchor points
     HCReal d = (p0.x - p1.x) * (q0.y - q1.y) - (p0.y - p1.y) * (q0.x - q1.x);
-    if (tCount != NULL && t != NULL) {
-        HCReal intersectionT = ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
+    HCReal intersectionT = ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
+    HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
         
-        // Report the intersection only if it is in range
-        if (intersectionT < 0.0 || intersectionT > 1.0) {
-            *tCount = 0;
-        }
-        else {
-            *tCount = 1;
-            *t = intersectionT;
+    // Determine if the intersection is in range and report
+    if (intersectionT < 0.0 || intersectionT > 1.0 || intersectionU < 0.0 || intersectionU > 1.0) {
+        if (count != NULL) {
+            *count = 0;
         }
     }
-    if (u != NULL) {
-        HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
-        
-        // Report the intersection only if it is in range
-        if (intersectionU < 0.0 || intersectionU > 1.0) {
-            *uCount = 0;
+    else {
+        if (count != NULL) {
+            *count = 1;
         }
-        else {
-            *uCount = 1;
+        if (t != NULL) {
+            *t = intersectionT;
+        }
+        if (u != NULL) {
             *u = intersectionU;
         }
     }
 }
 
-void HCContourCurveLinearQuadraticIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveLinearQuadraticIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Translate points so the linear curve t0 anchor point is at the origin
     q0 = HCPointOffset(q0, -p0.x, -p0.y);
     qc = HCPointOffset(qc, -p0.x, -p0.y);
@@ -980,10 +972,37 @@ void HCContourCurveLinearQuadraticIntersection(HCPoint p0, HCPoint p1, HCPoint q
     q1 = HCPointMake(q1x, q1y);
     
     // Find the extrema of the quadratic curve, as these are the intersection points between them now that they are aligned
-    HCContourCurveExtremaQuadratic(q0, qc, q1, uCount, u);
+    if (t == NULL) {
+        // Linear curve intersection parameters not requested, so just provide the quadratic ones
+        HCContourCurveExtremaQuadratic(q0, qc, q1, count, u);
+    }
+    else {
+        // Find the curve extrema
+        HCInteger extremaCount = 0;
+        HCReal extrema[2];
+        HCContourCurveExtremaQuadratic(q0, qc, q1, &extremaCount, extrema);
+        if (count != NULL) {
+            *count = extremaCount;
+        }
+        if (u != NULL) {
+            memcpy(u, extrema, extremaCount * sizeof(HCReal));
+        }
+        
+        // Actually rotate p1 to the x-axis so its value can be used to scale intersection points to parameter values
+        HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+        HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+        p1 = HCPointMake(p1x, p1y);
+        
+        // Calculate the linear curve intersection parameters from the quadratic curve
+        for (HCInteger extremaIndex = 0; extremaIndex < extremaCount; extremaIndex++) {
+            HCReal intersectionU = extrema[extremaIndex];
+            HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, intersectionU);
+            t[extremaIndex] = intersection.x / p1.x;
+        }
+    }
 }
 
-void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Translate points so the linear curve t0 anchor point is at the origin
     q0 = HCPointOffset(q0, -p0.x, -p0.y);
     qc0 = HCPointOffset(qc0, -p0.x, -p0.y);
@@ -1012,22 +1031,49 @@ void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, H
     q1 = HCPointMake(q1x, q1y);
     
     // Find the extrema of the cubic curve, as these are the intersection points between them now that they are aligned
-    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, uCount, u);
+    if (t == NULL) {
+        // Linear curve intersection parameters not requested, so just provide the cubic ones
+        HCContourCurveExtremaCubic(q0, qc0, qc1, q1, count, u);
+    }
+    else {
+        // Find the curve extrema
+        HCInteger extremaCount = 0;
+        HCReal extrema[6];
+        HCContourCurveExtremaCubic(q0, qc0, qc1, q1, &extremaCount, extrema);
+        if (count != NULL) {
+            *count = extremaCount;
+        }
+        if (u != NULL) {
+            memcpy(u, extrema, extremaCount * sizeof(HCReal));
+        }
+        
+        // Actually rotate p1 to the x-axis so its value can be used to scale intersection points to parameter values
+        HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+        HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+        p1 = HCPointMake(p1x, p1y);
+        
+        // Calculate the linear curve intersection parameters from the cubic curve
+        for (HCInteger extremaIndex = 0; extremaIndex < extremaCount; extremaIndex++) {
+            HCReal intersectionU = extrema[extremaIndex];
+            HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU);
+            t[extremaIndex] = intersection.x / p1.x;
+        }
+    }
 }
 
-void HCContourCurveQuadraticQuadraticIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveQuadraticQuadraticIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
 }
 
-void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
 }
 
-void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
