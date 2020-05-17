@@ -475,9 +475,9 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             HCPoint p1 = HCPathPolylinePointAt(self, elementIndex, pointIndex);
             
             // Determine if they intersect within the bounds of the segments
-            HCBoolean segmentsIntersect = false;
-            HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, (HCInteger*)&segmentsIntersect, NULL, NULL);
-            if (segmentsIntersect) {
+            HCInteger count = 0;
+            HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &count, NULL, NULL);
+            if (count > 0) {
                 intersectionCount++;
             }
             
@@ -537,10 +537,10 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
                     HCPoint q1 = HCPathPolylinePointAt(other, otherElementIndex, otherPointIndex);
                     
                     // Determine if they intersect within the bounds of the segments
-                    HCBoolean segmentsIntersect = false;
+                    HCInteger count = 0;
                     HCReal t = NAN;
-                    HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, (HCInteger*)&segmentsIntersect, &t, NULL);
-                    if (segmentsIntersect) {
+                    HCContourCurveLinearLinearIntersection(p0, p1, q0, q1, &count, &t, NULL);
+                    if (count > 0) {
                         // Calculate the intersection point and call the intersection function
                         HCReal tc = 1.0 - t;
                         HCPoint point = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);

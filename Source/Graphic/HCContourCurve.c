@@ -1063,20 +1063,17 @@ void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, H
 
 void HCContourCurveQuadraticQuadraticIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
-    *t = NAN;
-    *u = NAN;
+    *count = 0;
 }
 
 void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
-    *t = NAN;
-    *u = NAN;
+    *count = 0;
 }
 
 void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // TODO: This!
-    *t = NAN;
-    *u = NAN;
+    *count = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
