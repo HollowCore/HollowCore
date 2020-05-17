@@ -1,10 +1,11 @@
-//
-//  HCPath+BooleanOperations.c
-//  HollowCore
-//
-//  Created by Matt Stoker on 5/9/20.
-//  Copyright © 2020 HollowCore. All rights reserved.
-//
+///
+/// @file HCPath+BooleanOperations.c
+/// @ingroup HollowCore
+///
+/// @author Matt Stoker
+/// @date 5/9/20
+/// @copyright © 2020 HollowCore Contributors. MIT License.
+///
 
 #include "HCPath+BooleanOperations.h"
 

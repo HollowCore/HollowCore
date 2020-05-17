@@ -33,7 +33,7 @@ typedef enum HCContourCurveType {
     HCContourCurveTypeCubicLoopAtStart          = 0b0011001000,
     HCContourCurveTypeCubicLoopAtEnd            = 0b0101001000,
     HCContourCurveTypeCubicLoopClosed           = 0b0111001000,
-    HCContourCurveTypeCubicCusp             = 0b1001001000,
+    HCContourCurveTypeCubicCusp                 = 0b1001001000,
 } HCContourCurveType;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,10 +98,15 @@ void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1,
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
-HCPoint HCContourCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
-HCPoint HCContourCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
-HCPoint HCContourCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
+HCReal HCContourCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
+HCReal HCContourCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
+HCReal HCContourCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Derivative
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCContourCurveDerivative(HCPoint p0, HCContourCurve curve, HCPoint* dP0, HCContourCurve* dCurve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema
@@ -169,7 +174,7 @@ void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1
 void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCReal* t, HCReal* u);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Projectioon
+// MARK: - Projection
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCPoint HCContourCurveProjection(HCPoint p0, HCContourCurve curve);
@@ -208,5 +213,8 @@ void HCContourCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint*
 // MARK: - Split
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve);
+void HCContourCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1);
+void HCContourCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1);
+void HCContourCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1);
 
 #endif /* HCContourCurve_h */

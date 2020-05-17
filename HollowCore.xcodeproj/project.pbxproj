@@ -35,6 +35,7 @@
 /* Begin PBXBuildFile section */
 		C917F7162426C9830074F3B1 /* HCPath+SVG.h in Headers */ = {isa = PBXBuildFile; fileRef = C917F7142426C9830074F3B1 /* HCPath+SVG.h */; };
 		C917F7172426C9830074F3B1 /* HCPath+SVG.c in Sources */ = {isa = PBXBuildFile; fileRef = C917F7152426C9830074F3B1 /* HCPath+SVG.c */; };
+		C91C7CB82470DDE400D889C6 /* HCContourCurve.c in Sources */ = {isa = PBXBuildFile; fileRef = C91C7CB72470DDE400D889C6 /* HCContourCurve.c */; };
 		C929AEC721F97F5200E44898 /* HCSet.h in Headers */ = {isa = PBXBuildFile; fileRef = C929AEC521F97F5200E44898 /* HCSet.h */; };
 		C929AEC821F97F5200E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AEC621F97F5200E44898 /* HCSet.c */; };
 		C929AECE21F9800300E44898 /* HCSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C929AECD21F9800300E44898 /* HCSet.c */; };
@@ -137,6 +138,7 @@
 /* Begin PBXFileReference section */
 		C917F7142426C9830074F3B1 /* HCPath+SVG.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HCPath+SVG.h"; sourceTree = "<group>"; };
 		C917F7152426C9830074F3B1 /* HCPath+SVG.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "HCPath+SVG.c"; sourceTree = "<group>"; };
+		C91C7CB72470DDE400D889C6 /* HCContourCurve.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCContourCurve.c; sourceTree = "<group>"; };
 		C929AEC521F97F5200E44898 /* HCSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet.h; sourceTree = "<group>"; };
 		C929AEC621F97F5200E44898 /* HCSet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HCSet.c; sourceTree = "<group>"; };
 		C929AEC921F97F6400E44898 /* HCSet_Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCSet_Internal.h; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 				C9F8AF02235C3E72002E7D64 /* HCRectangle.c */,
 				C954170E2230DEFD00E461A5 /* HCColor.c */,
 				C9CF5C6523F347E90044D752 /* HCContour.c */,
+				C91C7CB72470DDE400D889C6 /* HCContourCurve.c */,
 				C9AF8D4C23B860900007C4D2 /* HCPath.c */,
 				C97FDB332207F1C9002B17FB /* HCRaster.c */,
 				C9E7FB42221AAF0F002991B9 /* HCJSON.c */,
@@ -712,6 +715,7 @@
 				C9AF8D4D23B860900007C4D2 /* HCPath.c in Sources */,
 				C97FDB342207F1C9002B17FB /* HCRaster.c in Sources */,
 				C9E7FB43221AAF0F002991B9 /* HCJSON.c in Sources */,
+				C91C7CB82470DDE400D889C6 /* HCContourCurve.c in Sources */,
 				F81C7F0F2242F393000E8A72 /* HCThread.c in Sources */,
 				F84FF0FD242DC72E00B27F39 /* HCMultiThreadedReferenceCounting.c in Sources */,
 				F86BCC9B22C4766000180C12 /* HCThread_Internal.c in Sources */,
