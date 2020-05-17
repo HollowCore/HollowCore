@@ -240,61 +240,50 @@ CTEST(HCContourCurve, ElementEvaluation) {
 
 CTEST(HCContourCurve, LinearExtrema) {
     HCInteger count = 0;
-    HCReal extrema[2];
-    HCContourCurveExtremaLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0), &count, extrema);
-    ASSERT_TRUE(count == 2);
-    ASSERT_TRUE(extrema[0] == 0.0);
-    ASSERT_TRUE(extrema[1] == 1.0);
+    HCContourCurveExtremaLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0), &count, NULL);
+    ASSERT_TRUE(count == 0);
 }
 
 CTEST(HCContourCurve, QuadraticExtrema) {
     HCInteger count = 0;
-    HCReal extrema[4];
+    HCReal extrema[2];
     HCContourCurveExtremaQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 2.0), &count, extrema);
-    ASSERT_TRUE(count == 3);
+    ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
-    ASSERT_TRUE(extrema[1] == 0.0);
-    ASSERT_TRUE(extrema[2] == 1.0);
 }
 
 CTEST(HCContourCurve, CubicExtrema) {
     HCInteger count = 0;
-    HCReal extrema[8];
+    HCReal extrema[6];
     HCContourCurveExtremaCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0), &count, extrema);
-    ASSERT_TRUE(count == 4);
-    ASSERT_TRUE(extrema[0] == 0.366025403784438652099453292976249940693378448486328125);
-    ASSERT_TRUE(extrema[1] == 0.5);
-    ASSERT_TRUE(extrema[2] == 0.0);
-    ASSERT_TRUE(extrema[3] == 1.0);
+    ASSERT_TRUE(count == 1);
+    ASSERT_TRUE(extrema[0] == 0.5);
 }
 
 CTEST(HCContourCurve, Extrema) {
     HCInteger count = 0;
-    HCReal extrema[8];
+    HCReal extrema[6];
     HCContourCurveExtrema(HCPointMake(1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0)), &count, extrema);
-    ASSERT_TRUE(count == 4);
-    ASSERT_TRUE(extrema[0] == 0.366025403784438652099453292976249940693378448486328125);
-    ASSERT_TRUE(extrema[1] == 0.5);
-    ASSERT_TRUE(extrema[2] == 0.0);
-    ASSERT_TRUE(extrema[3] == 1.0);
+    ASSERT_TRUE(count == 1);
+    ASSERT_TRUE(extrema[0] == 0.5);
 }
 
 CTEST(HCContourCurve, LinearBounds) {
     HCRectangle bounds = HCContourCurveBoundsLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(-1.0, -4.0, 3.0, 2.0)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(-1.0, -4.0, 3.0, 2.0)));
 }
 
 CTEST(HCContourCurve, QuadraticBounds) {
     HCRectangle bounds = HCContourCurveBoundsQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 2.0));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.0)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.0)));
 }
 
 CTEST(HCContourCurve, CubicBounds) {
     HCRectangle bounds = HCContourCurveBoundsCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.5)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
 }
 
 CTEST(HCContourCurve, Bounds) {
     HCRectangle bounds = HCContourCurveBounds(HCPointMake(1.0, 2.0), HCContourCurveMakeCubic(HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0)));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithExtrema(1.0, 2.0, 5.0, 3.5)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
 }

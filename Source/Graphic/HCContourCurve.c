@@ -148,11 +148,11 @@ HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve) {
     translated.p.y -= p0.y;
     
     // Calculate angle of end point
-    HCReal angle = atan2(translated.p.y, translated.p.x);
+    HCReal angle = -atan2(translated.p.y, translated.p.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
     
-    // Rotate curve by negated angle to align the end point to the x-axis
-    HCReal cosAngle = cos(-angle);
-    HCReal sinAngle = sin(-angle);
+    // Rotate curve by angle to align the end point to the x-axis
     HCReal c0x = cosAngle * translated.c0.x - sinAngle * translated.c0.y;
     HCReal c0y = sinAngle * translated.c0.x + cosAngle * translated.c0.y;
     HCReal c1x = cosAngle * translated.c1.x - sinAngle * translated.c1.y;
@@ -502,8 +502,8 @@ HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t) {
 }
 
 HCReal HCContourCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t) {
-    // Linear curve has infinite curvature
-    return INFINITY;
+    // Linear curve has zero curvature
+    return 0.0;
 }
 
 HCReal HCContourCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
@@ -607,80 +607,102 @@ void HCContourCurveExtrema(HCPoint p0, HCContourCurve curve, HCInteger* count, H
 }
 
 void HCContourCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema) {
-    // Add end points as extrema
-    extrema[(*count)++] = 0.0;
-    extrema[(*count)++] = 1.0;
+    // Linear curve has no extrema
+    if (count != NULL) {
+        *count = 0;
+    }
 }
 
 void HCContourCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    HCInteger tCount = 0;
+    HCReal t[2];
+    
     // Calculate quadratic derivative weights
     HCPoint p0d = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
     HCPoint p1d = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
     
     // Calculate zero crossing of derivative in x and add as extrema if in range
-    HCReal ax = 1.0 * p0d.x - 1.0 * p1d.x;
-    HCReal bx = 1.0 * p1d.x;
+    HCReal ax = +1.0 * p0d.x - 1.0 * p1d.x;
+    HCReal bx = -1.0 * p0d.x;
     HCReal xt = -bx / ax;
     if (xt >= 0.0 && xt <= 1.0) {
-        extrema[(*count)++] = xt;
+        t[tCount++] = xt;
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if in range
-    HCReal ay = 1.0 * p0d.y - 1.0 * p1d.y;
-    HCReal by = 1.0 * p1d.y;
+    HCReal ay = +1.0 * p0d.y - 1.0 * p1d.y;
+    HCReal by = -1.0 * p0d.y;
     HCReal yt = -by / ay;
     if (yt >= 0.0 && yt <= 1.0) {
-        extrema[(*count)++] = yt;
+        t[tCount++] = yt;
     }
     
-    // Add extrema of second derivative
-    HCContourCurveExtremaLinear(p0d, p1d, count, extrema);
+    // Deliver results
+    if (count != NULL) {
+        *count = tCount;
+    }
+    if (extrema != NULL) {
+        memcpy(extrema, t, tCount * sizeof(HCReal));
+    }
 }
 
 void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    HCInteger tCount = 0;
+    HCReal t[6];
+    
     // Calculate cubic derivative weights
     HCPoint p0d = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
     HCPoint  cd = HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
     HCPoint p1d = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
     
     // Calculate zero crossing of derivative in x and add as extrema if real and in range
-    HCReal ax = +1.0 * p0d.x - 2.0 *  cd.x + 1.0 * p1d.x;
-    HCReal bx = -2.0 *  cd.x + 2.0 * p1d.x;
-    HCReal cx = +1.0 * p1d.x;
+    HCReal ax = +1.0 * p0d.x - 2.0 * cd.x + 1.0 * p1d.x;
+    HCReal bx = -2.0 * p0d.x + 2.0 * cd.x;
+    HCReal cx = +1.0 * p0d.x;
     HCReal discriminantX = bx * bx - 4.0 * ax * cx;
     if (discriminantX >= 0.0) {
-        HCReal sqrtDiscriminantX = sqrt(discriminantX);
+        HCReal sqrtDiscriminant = sqrt(discriminantX);
         HCReal denominatorInverse = 1.0 / (2.0 * ax);
-        HCReal xt0 = (-bx + sqrtDiscriminantX) * denominatorInverse;
+        HCReal xt0 = (-bx + sqrtDiscriminant) * denominatorInverse;
         if (xt0 >= 0.0 && xt0 <= 1.0) {
-            extrema[(*count)++] = xt0;
+            t[tCount++] = xt0;
         }
-        HCReal xt1 = (-bx - sqrtDiscriminantX) * denominatorInverse;
+        HCReal xt1 = (-bx - sqrtDiscriminant) * denominatorInverse;
         if (xt1 >= 0.0 && xt1 <= 1.0) {
-            extrema[(*count)++] = xt1;
+            t[tCount++] = xt1;
         }
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if real and in range
-    HCReal ay = +1.0 * p0d.y - 2.0 *  cd.y + 1.0 * p1d.y;
-    HCReal by = -2.0 *  cd.y + 2.0 * p1d.y;
-    HCReal cy = +1.0 * p1d.y;
+    HCReal ay = +1.0 * p0d.y - 2.0 * cd.y + 1.0 * p1d.y;
+    HCReal by = -2.0 * p0d.y + 2.0 * cd.y;
+    HCReal cy = +1.0 * p0d.y;
     HCReal discriminantY = by * by - 4.0 * ay * cy;
     if (discriminantY >= 0.0) {
-        HCReal sqrtDiscriminantY = sqrt(discriminantY);
+        HCReal sqrtDiscriminant = sqrt(discriminantY);
         HCReal denominatorInverse = 1.0 / (2.0 * ay);
-        HCReal yt0 = (-by + sqrtDiscriminantY) * denominatorInverse;
+        HCReal yt0 = (-by + sqrtDiscriminant) * denominatorInverse;
         if (yt0 >= 0.0 && yt0 <= 1.0) {
-            extrema[(*count)++] = yt0;
+            t[tCount++] = yt0;
         }
-        HCReal yt1 = (-by - sqrtDiscriminantY) * denominatorInverse;
+        HCReal yt1 = (-by - sqrtDiscriminant) * denominatorInverse;
         if (yt1 >= 0.0 && yt1 <= 1.0) {
-            extrema[(*count)++] = yt1;
+            t[tCount++] = yt1;
         }
     }
     
     // Add extrema of second derivative
-    HCContourCurveExtremaQuadratic(p0d, cd, p1d, count, extrema);
+    HCInteger quadraticCount = 0;
+    HCContourCurveExtremaQuadratic(p0d, cd, p1d, &quadraticCount, &t[tCount]);
+    tCount += quadraticCount;
+    
+    // Deliver results
+    if (count != NULL) {
+        *count = tCount;
+    }
+    if (extrema != NULL) {
+        memcpy(extrema, t, tCount * sizeof(HCReal));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -697,27 +719,27 @@ HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve) {
 }
 
 HCRectangle HCContourCurveBoundsLinear(HCPoint p0, HCPoint p1) {
-    // Find min/max of linear extrema (always p0 and p1)
+    // Find min/max of end points
     HCReal minX = fmin(p0.x, p1.x);
     HCReal minY = fmin(p0.y, p1.y);
     HCReal maxX = fmax(p0.x, p1.x);
     HCReal maxY = fmax(p0.y, p1.y);
     
-    // Calculate bounding rectangle from min/max of extrema
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    // Calculate bounding rectangle from min/max of end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
 }
 
 HCRectangle HCContourCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
     // Calculate quadratic curve extrema
-    HCReal extrema[4];
+    HCReal extrema[2];
     HCInteger count = 0;
     HCContourCurveExtremaQuadratic(p0, c, p1, &count, extrema);
     
-    // Find min/max of extrema
-    HCReal minX = DBL_MAX;
-    HCReal minY = DBL_MAX;
-    HCReal maxX = -DBL_MAX;
-    HCReal maxY = -DBL_MAX;
+    // Find min/max of extrema and end points
+    HCReal minX = fmin(p0.x, p1.x);
+    HCReal minY = fmin(p0.y, p1.y);
+    HCReal maxX = fmax(p0.x, p1.x);
+    HCReal maxY = fmax(p0.y, p1.y);
     for (HCInteger i = 0; i < count; i++) {
         HCReal t = extrema[i];
         HCPoint p = HCContourCurveValueQuadratic(p0, c, p1, t);
@@ -727,21 +749,21 @@ HCRectangle HCContourCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
         maxY = fmax(maxY, p.y);
     }
     
-    // Calculate bounding rectangle from min/max of extrema
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    // Calculate bounding rectangle from min/max of extrema and end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
 }
 
 HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     // Calculate cubic curve extrema
-    HCReal extrema[8];
+    HCReal extrema[6];
     HCInteger count = 0;
     HCContourCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
     
-    // Find min/max of extrema
-    HCReal minX = DBL_MAX;
-    HCReal minY = DBL_MAX;
-    HCReal maxX = -DBL_MAX;
-    HCReal maxY = -DBL_MAX;
+    // Find min/max of extrema and end points
+    HCReal minX = fmin(p0.x, p1.x);
+    HCReal minY = fmin(p0.y, p1.y);
+    HCReal maxX = fmax(p0.x, p1.x);
+    HCReal maxY = fmax(p0.y, p1.y);
     for (HCInteger i = 0; i < count; i++) {
         HCReal t = extrema[i];
         HCPoint p = HCContourCurveValueCubic(p0, c0, c1, p1, t);
@@ -751,8 +773,8 @@ HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
         maxY = fmax(maxY, p.y);
     }
     
-    // Calculate bounding rectangle from min/max of extrema
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    // Calculate bounding rectangle from min/max of extrema and end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -882,63 +904,130 @@ void HCContourCurveParametersCubicFromYAxis(HCPoint p0, HCPoint c0, HCPoint c1, 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCReal* t, HCReal* u) {
+void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
     if (HCContourCurveIsLinear(p0, pCurve)) {
         if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCContourCurveLinearLinearIntersection(p0, pCurve.p, q0, qCurve.p, t, u);
+            HCContourCurveLinearLinearIntersection(p0, pCurve.p, q0, qCurve.p, tCount, t, uCount, u);
         }
         if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCContourCurveLinearQuadraticIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.p, t, u);
+            HCContourCurveLinearQuadraticIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.p, tCount, t, uCount, u);
         }
-        HCContourCurveLinearCubicIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, t, u);
+        HCContourCurveLinearCubicIntersection(p0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
     }
     if (HCContourCurveIsQuadratic(p0, pCurve)) {
         if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCContourCurveLinearQuadraticIntersection(q0, qCurve.p, p0, pCurve.c0, pCurve.p, u, t);
+            HCContourCurveLinearQuadraticIntersection(q0, qCurve.p, p0, pCurve.c0, pCurve.p, tCount, t, uCount, u);
         }
         if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCContourCurveQuadraticQuadraticIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.p, t, u);
+            HCContourCurveQuadraticQuadraticIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.p, tCount, t, uCount, u);
         }
-        return HCContourCurveQuadraticCubicIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, t, u);
+        return HCContourCurveQuadraticCubicIntersection(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
     }
-    return HCContourCurveCubicCubicIntersection(p0, pCurve.c0, pCurve.c1, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, t, u);
+    return HCContourCurveCubicCubicIntersection(p0, pCurve.c0, pCurve.c1, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, tCount, t, uCount, u);
 }
 
-void HCContourCurveLinearLinearIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCReal* t, HCReal* u) {
+void HCContourCurveLinearLinearIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+    // Find intersection of lines formed by linear curve anchor points
     HCReal d = (p0.x - p1.x) * (q0.y - q1.y) - (p0.y - p1.y) * (q0.x - q1.x);
-    if (t != NULL) {
-        *t =  ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
+    if (tCount != NULL && t != NULL) {
+        HCReal intersectionT = ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
+        
+        // Report the intersection only if it is in range
+        if (intersectionT < 0.0 || intersectionT > 1.0) {
+            *tCount = 0;
+        }
+        else {
+            *tCount = 1;
+            *t = intersectionT;
+        }
     }
     if (u != NULL) {
-        *u = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
+        HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
+        
+        // Report the intersection only if it is in range
+        if (intersectionU < 0.0 || intersectionU > 1.0) {
+            *uCount = 0;
+        }
+        else {
+            *uCount = 1;
+            *u = intersectionU;
+        }
     }
 }
 
-void HCContourCurveLinearQuadraticIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCReal* t, HCReal* u) {
+void HCContourCurveLinearQuadraticIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+    // Translate points so the linear curve t0 anchor point is at the origin
+    q0 = HCPointOffset(q0, -p0.x, -p0.y);
+    qc = HCPointOffset(qc, -p0.x, -p0.y);
+    q1 = HCPointOffset(q1, -p0.x, -p0.y);
+    p1 = HCPointOffset(p1, -p0.x, -p0.y);
+    p0 = HCPointZero;
+    
+    // Find the angle that rotates the linear curve to the x-axis
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate the quadratic curve by the angle to align it to the linear curve
+    HCReal q0x = cosAngle * q0.x - sinAngle * q0.y;
+    HCReal q0y = sinAngle * q0.x + cosAngle * q0.y;
+    q0 = HCPointMake(q0x, q0y);
+    HCReal qcx = cosAngle * qc.x - sinAngle * qc.y;
+    HCReal qcy = sinAngle * qc.x + cosAngle * qc.y;
+    qc = HCPointMake(qcx, qcy);
+    HCReal q1x = cosAngle * q1.x - sinAngle * q1.y;
+    HCReal q1y = sinAngle * q1.x + cosAngle * q1.y;
+    q1 = HCPointMake(q1x, q1y);
+    
+    // Find the extrema of the quadratic curve, as these are the intersection points between them now that they are aligned
+    HCContourCurveExtremaQuadratic(q0, qc, q1, uCount, u);
+}
+
+void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
+    // Translate points so the linear curve t0 anchor point is at the origin
+    q0 = HCPointOffset(q0, -p0.x, -p0.y);
+    qc0 = HCPointOffset(qc0, -p0.x, -p0.y);
+    qc1 = HCPointOffset(qc0, -p0.x, -p0.y);
+    q1 = HCPointOffset(q1, -p0.x, -p0.y);
+    p1 = HCPointOffset(p1, -p0.x, -p0.y);
+    p0 = HCPointZero;
+    
+    // Find the angle that rotates the linear curve to the x-axis
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate the cubic curve by the angle to align it to the linear curve
+    HCReal q0x = cosAngle * q0.x - sinAngle * q0.y;
+    HCReal q0y = sinAngle * q0.x + cosAngle * q0.y;
+    q0 = HCPointMake(q0x, q0y);
+    HCReal qc0x = cosAngle * qc0.x - sinAngle * qc0.y;
+    HCReal qc0y = sinAngle * qc0.x + cosAngle * qc0.y;
+    qc0 = HCPointMake(qc0x, qc0y);
+    HCReal qc1x = cosAngle * qc1.x - sinAngle * qc1.y;
+    HCReal qc1y = sinAngle * qc1.x + cosAngle * qc1.y;
+    qc1 = HCPointMake(qc1x, qc1y);
+    HCReal q1x = cosAngle * q1.x - sinAngle * q1.y;
+    HCReal q1y = sinAngle * q1.x + cosAngle * q1.y;
+    q1 = HCPointMake(q1x, q1y);
+    
+    // Find the extrema of the cubic curve, as these are the intersection points between them now that they are aligned
+    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, uCount, u);
+}
+
+void HCContourCurveQuadraticQuadraticIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
 }
 
-void HCContourCurveLinearCubicIntersection(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCReal* t, HCReal* u) {
+void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
 }
 
-void HCContourCurveQuadraticQuadraticIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCReal* t, HCReal* u) {
-    // TODO: This!
-    *t = NAN;
-    *u = NAN;
-}
-
-void HCContourCurveQuadraticCubicIntersection(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCReal* t, HCReal* u) {
-    // TODO: This!
-    *t = NAN;
-    *u = NAN;
-}
-
-void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCReal* t, HCReal* u) {
+void HCContourCurveCubicCubicIntersection(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* tCount, HCReal* t, HCInteger* uCount, HCReal* u) {
     // TODO: This!
     *t = NAN;
     *u = NAN;
