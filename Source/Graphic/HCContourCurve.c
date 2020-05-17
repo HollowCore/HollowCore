@@ -702,6 +702,79 @@ void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Inflection
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCContourCurveInflectionsLinear(p0, curve.p, count, inflections);
+        }
+        HCContourCurveInflectionsQuadratic(p0, curve.c0, curve.p, count, inflections);
+    }
+    HCContourCurveInflectionsCubic(p0, curve.c0, curve.c1, curve.p, count, inflections);
+}
+
+void HCContourCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Linear curves have no inflections
+    if (count != NULL) {
+        *count = 0;
+    }
+}
+
+void HCContourCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Quadratic curves have no inflections
+    if (count != NULL) {
+        *count = 0;
+    }
+}
+
+void HCContourCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Axis-align the curve to make computation of inflections more straightforward
+    HCContourCurve aligned = HCContourCurveXAxisAligned(p0, HCContourCurveMakeCubic(c0, c1, p1));
+    p0 = HCPointZero;
+    c0 = aligned.c0;
+    c1 = aligned.c1;
+    p1 = aligned.p;
+    
+    // Compute zero-crossings of curvature given curve is axis-aligned
+    HCReal a = c1.x * c0.y;
+    HCReal b = p1.x * c0.y;
+    HCReal c = c0.x * c1.y;
+    HCReal d = p1.x * c1.y;
+    HCReal x = 18.0 * (-3.0 * a + 2.0 * b + 3.0 * c - d);
+    HCReal y = 18.0 * (+3.0 * a - 1.0 * b - 3.0 * c);
+    HCReal z = 18.0 * (-1.0 * a + 0.0 * b + 1.0 * c);
+    HCReal determinant = y * y - 4.0 * x * z;
+    if (determinant < 0.0) {
+        if (count != NULL) {
+            *count = 0;
+        }
+    }
+    HCReal sqrtDeterminant = sqrt(determinant);
+    HCReal denominatorInverse = 1.0 / (2.0 * x);
+    HCReal inflection0 = (-y + sqrtDeterminant) * denominatorInverse;
+    HCReal inflection1 = (-y - sqrtDeterminant) * denominatorInverse;
+    
+    // Determine if inflections occur in-range and deliver them
+    HCInteger inflectionCount = 0;
+    if (inflection0 >= 0.0 && inflection0 <= 1.0) {
+        if (inflections != NULL) {
+            inflections[inflectionCount] = inflection0;
+        }
+        inflectionCount++;
+    }
+    if (inflection1 >= 0.0 && inflection1 <= 1.0) {
+        if (inflections != NULL) {
+            inflections[inflectionCount] = inflection1;
+        }
+        inflectionCount++;
+    }
+    if (count != NULL) {
+        *count = inflectionCount;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve) {

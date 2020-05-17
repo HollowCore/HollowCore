@@ -116,7 +116,13 @@ void HCContourCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCRea
 void HCContourCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
 void HCContourCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Inflection
+//----------------------------------------------------------------------------------------------------------------------------------
 void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections);
+void HCContourCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections);
+void HCContourCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections);
+void HCContourCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds

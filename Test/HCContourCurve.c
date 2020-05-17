@@ -10,6 +10,9 @@
 #include "ctest.h"
 #include "../Source/HollowCore.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Construction
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContourCurve, Creation) {
     HCContourCurve linear = HCContourCurveMakeLinear(HCPointMake(-1.0, 2.0));
     ASSERT_DBL_NEAR(linear.p.x, -1.0);
@@ -30,6 +33,9 @@ CTEST(HCContourCurve, Creation) {
     ASSERT_DBL_NEAR(cubic.p.y, 6.0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Equality
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContourCurve, Equality) {
     ASSERT_TRUE(HCContourCurveIsSimilar(HCContourCurveMakeLinear(HCPointMake(1.0, 2.0)), HCContourCurveMakeLinear(HCPointMake(1.5, 2.5)), 0.6));
     ASSERT_FALSE(HCContourCurveIsSimilar(HCContourCurveMakeLinear(HCPointMake(1.0, 2.0)), HCContourCurveMakeLinear(HCPointMake(1.5, 2.5)), 0.4));
@@ -55,6 +61,9 @@ CTEST(HCContourCurve, Queries) {
     ASSERT_FALSE(HCContourCurveIsInfinite(zero));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Order / Conversion
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContourCurve, Order) {
     HCContourCurve linear = HCContourCurveMakeLinear(HCPointMake(-1.0, 2.0));
     ASSERT_FALSE(HCContourCurveIsInvalid(linear));
@@ -194,6 +203,15 @@ CTEST(HCContourCurve, Canonical) {
 //    ASSERT_TRUE(HCContourCurveCanonicalType(cqp0, coquadratic) == HCContourCurveTypeQuadratic);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Value
+//----------------------------------------------------------------------------------------------------------------------------------
+
+// TODO: Tests
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Evaluation
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContourCurve, LinearEvaluation) {
     HCPoint s = HCPointInvalid;
     HCContourCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &s.x, &s.y);
@@ -224,7 +242,7 @@ CTEST(HCContourCurve, CubicEvaluation) {
     ASSERT_DBL_NEAR(ddy, 0.0);
 }
 
-CTEST(HCContourCurve, ElementEvaluation) {
+CTEST(HCContourCurve, Evaluation) {
     HCPoint s = HCPointInvalid;
     HCReal dx = NAN;
     HCReal dy = NAN;
@@ -237,6 +255,22 @@ CTEST(HCContourCurve, ElementEvaluation) {
     ASSERT_DBL_NEAR(ddx, 3.0);
     ASSERT_DBL_NEAR(ddy, 0.0);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Curvature
+//----------------------------------------------------------------------------------------------------------------------------------
+
+// TODO: Tests
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Derivative
+//----------------------------------------------------------------------------------------------------------------------------------
+
+// TODO: Tests
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Extrema
+//----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCContourCurve, LinearExtrema) {
     HCInteger count = 0;
