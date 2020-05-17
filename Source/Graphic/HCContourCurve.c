@@ -485,6 +485,111 @@ void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Split
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCPoint sp1 = HCPointZero;
+            HCPoint ep1 = HCPointZero;
+            HCContourCurveSplitLinear(p0, curve.p, t, sp0, &sp1, ep0, &ep1);
+            if (sCurve != NULL) {
+                *sCurve = HCContourCurveMakeLinear(sp1);
+            }
+            if (eCurve != NULL) {
+                *eCurve = HCContourCurveMakeLinear(ep1);
+            }
+        }
+        else {
+            HCPoint sc = HCPointZero;
+            HCPoint sp1 = HCPointZero;
+            HCPoint ec = HCPointZero;
+            HCPoint ep1 = HCPointZero;
+            HCContourCurveSplitQuadratic(p0, curve.c0, curve.p, t, sp0, &sc, &sp1, ep0, &ec, &ep1);
+            if (sCurve != NULL) {
+                *sCurve = HCContourCurveMakeQuadratic(sc, sp1);
+            }
+            if (eCurve != NULL) {
+                *eCurve = HCContourCurveMakeQuadratic(ec, ep1);
+            }
+        }
+    }
+    else {
+        HCPoint sc0 = HCPointZero;
+        HCPoint sc1 = HCPointZero;
+        HCPoint sp1 = HCPointZero;
+        HCPoint ec0 = HCPointZero;
+        HCPoint ec1 = HCPointZero;
+        HCPoint ep1 = HCPointZero;
+        HCContourCurveSplitCubic(p0, curve.c0, curve.c1, curve.p, t, sp0, &sc0, &sc1, &sp1, ep0, &ec0, &ec1, &ep1);
+        if (sCurve != NULL) {
+            *sCurve = HCContourCurveMakeCubic(sc0, sc1, sp1);
+        }
+        if (eCurve != NULL) {
+            *eCurve = HCContourCurveMakeCubic(ec0, ec1, ep1);
+        }
+    }
+}
+
+void HCContourCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along linear curve at t
+    HCPoint  sp = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ep1 = p1;
+}
+
+void HCContourCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
+    HCPoint qp0 = HCPointMake(tc *  p0.x + t *   c.x, tc *  p0.y + t *   c.y);
+    HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
+    HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sc = qp0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ec = qp1;
+    *ep1 = p1;
+}
+
+void HCContourCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along cubic curve anchor and control point polyline at t
+    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
+    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
+    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
+    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
+    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
+    HCPoint  sp = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sc0 = qp0;
+    *sc1 = rp0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ec0 = rp1;
+    *ec1 = qp1;
+    *ep1 = p1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t) {
@@ -1247,109 +1352,4 @@ void HCContourCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint*
     // TODO: This!
     *p0 = HCPointInvalid;
     *curve = HCContourCurveInvalid;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Split
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint sp1 = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCContourCurveSplitLinear(p0, curve.p, t, sp0, &sp1, ep0, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCContourCurveMakeLinear(sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCContourCurveMakeLinear(ep1);
-            }
-        }
-        else {
-            HCPoint sc = HCPointZero;
-            HCPoint sp1 = HCPointZero;
-            HCPoint ec = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCContourCurveSplitQuadratic(p0, curve.c0, curve.p, t, sp0, &sc, &sp1, ep0, &ec, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCContourCurveMakeQuadratic(sc, sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCContourCurveMakeQuadratic(ec, ep1);
-            }
-        }
-    }
-    else {
-        HCPoint sc0 = HCPointZero;
-        HCPoint sc1 = HCPointZero;
-        HCPoint sp1 = HCPointZero;
-        HCPoint ec0 = HCPointZero;
-        HCPoint ec1 = HCPointZero;
-        HCPoint ep1 = HCPointZero;
-        HCContourCurveSplitCubic(p0, curve.c0, curve.c1, curve.p, t, sp0, &sc0, &sc1, &sp1, ep0, &ec0, &ec1, &ep1);
-        if (sCurve != NULL) {
-            *sCurve = HCContourCurveMakeCubic(sc0, sc1, sp1);
-        }
-        if (eCurve != NULL) {
-            *eCurve = HCContourCurveMakeCubic(ec0, ec1, ep1);
-        }
-    }
-}
-
-void HCContourCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along linear curve at t
-    HCPoint  sp = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ep1 = p1;
-}
-
-void HCContourCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *   c.x, tc *  p0.y + t *   c.y);
-    HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
-    HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sc = qp0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ec = qp1;
-    *ep1 = p1;
-}
-
-void HCContourCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along cubic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
-    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
-    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
-    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
-    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
-    HCPoint  sp = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sc0 = qp0;
-    *sc1 = rp0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ec0 = rp1;
-    *ec1 = qp1;
-    *ep1 = p1;
 }
