@@ -33,7 +33,7 @@ typedef enum HCContourCurveType {
     HCContourCurveTypeCubicLoopAtStart          = 0b0011001000,
     HCContourCurveTypeCubicLoopAtEnd            = 0b0101001000,
     HCContourCurveTypeCubicLoopClosed           = 0b0111001000,
-    HCContourCurveTypeCubicCusp                 = 0b1001001000,
+    HCContourCurveTypeCubicCusp                 = 0b1000001000,
 } HCContourCurveType;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ typedef enum HCContourCurveType {
 
 #define HCContourCurveInvalidStatic ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointInvalidStatic})
 static const HCContourCurve HCContourCurveInvalid = HCContourCurveInvalidStatic;
-#define HCContourCurveZeroStatic    ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic})
+#define HCContourCurveZeroStatic ((HCContourCurve){.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = HCPointZeroStatic})
 static const HCContourCurve HCContourCurveZero = HCContourCurveZeroStatic;
 #define HCContourCurvePointAxisDissimilarityStatic (DBL_EPSILON)
 static const HCReal HCContourCurvePointAxisDissimilarity = HCContourCurvePointAxisDissimilarityStatic;
@@ -75,9 +75,6 @@ HCContourCurve HCContourCurveAsQuadratic(HCPoint p0, HCContourCurve curve);
 HCBoolean HCContourCurveIsCubic(HCPoint p0, HCContourCurve curve);
 HCContourCurve HCContourCurveAsCubic(HCPoint p0, HCContourCurve curve);
 
-HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
-HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Canonical Type
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -85,7 +82,6 @@ HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve)
 HCContourCurveType HCContourCurveCanonicalTypeLinear(HCPoint p0, HCPoint p1);
 HCContourCurveType HCContourCurveCanonicalTypeQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
 HCContourCurveType HCContourCurveCanonicalTypeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
-
 HCPoint HCContourCurveCanonical(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -103,6 +99,18 @@ void HCContourCurveEvaluate(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* 
 void HCContourCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y);
 void HCContourCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy);
 void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Axis Alignment
+//----------------------------------------------------------------------------------------------------------------------------------
+HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
+void HCContourCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
+void HCContourCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
+void HCContourCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
+HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
+void HCContourCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
+void HCContourCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
+void HCContourCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Split

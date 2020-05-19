@@ -83,7 +83,7 @@ void HCContourCurvePrint(HCContourCurve curve, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Order / Conversion
+// MARK: - Order
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourCurveIsLinear(HCPoint p0, HCContourCurve curve) {
     if (HCPointIsInvalid(p0) || HCPointIsInvalid(curve.p)) {
@@ -131,50 +131,18 @@ HCContourCurve HCContourCurveAsCubic(HCPoint p0, HCContourCurve curve) {
         return curve;
     }
     if (HCContourCurveIsQuadratic(p0, curve)) {
-        // TODO: Does this match curvature with the original cubic?
-        return HCContourCurveMakeCubic(curve.c0, curve.c0, curve.p);
+        HCPoint c = curve.c0;
+        HCPoint p1 = curve.p;
+        HCPoint c0 = HCPointMake(p0.x + (2.0/3.0) * (c.x - p0.x), p0.y + (2.0/3.0) * (c.y - p0.y));
+        HCPoint c1 = HCPointMake(p1.x + (2.0/3.0) * (c.x - p1.x), p1.y + (2.0/3.0) * (c.y - p1.y));
+        return HCContourCurveMakeCubic(c0, c1, p1);
     }
-    return HCContourCurveMakeCubic(curve.p, curve.p, curve.p);
+    return HCContourCurveMakeCubic(p0, curve.p, curve.p);
 }
 
-HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve) {
-    // Translate curve to origin
-    HCContourCurve translated = curve;
-    translated.c0.x -= p0.x;
-    translated.c0.y -= p0.y;
-    translated.c1.x -= p0.x;
-    translated.c1.y -= p0.y;
-    translated.p.x -= p0.x;
-    translated.p.y -= p0.y;
-    
-    // Calculate angle of end point
-    HCReal angle = -atan2(translated.p.y, translated.p.x);
-    HCReal cosAngle = cos(angle);
-    HCReal sinAngle = sin(angle);
-    
-    // Rotate curve by angle to align the end point to the x-axis
-    HCReal c0x = cosAngle * translated.c0.x - sinAngle * translated.c0.y;
-    HCReal c0y = sinAngle * translated.c0.x + cosAngle * translated.c0.y;
-    HCReal c1x = cosAngle * translated.c1.x - sinAngle * translated.c1.y;
-    HCReal c1y = sinAngle * translated.c1.x + cosAngle * translated.c1.y;
-    HCReal p1x = cosAngle * translated.p.x - sinAngle * translated.p.y;
-    HCReal p1y = sinAngle * translated.p.x + cosAngle * translated.p.y;
-
-    return HCContourCurveMakeCubic(HCPointMake(c0x, c0y), HCPointMake(c1x, c1y), HCPointMake(p1x, p1y));
-}
-
-HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve) {
-    // Align to x-axis then rotate PI/2 to y-axis
-    HCContourCurve xAligned = HCContourCurveXAxisAligned(p0, curve);
-    HCReal c0x = -xAligned.c0.y;
-    HCReal c0y = +xAligned.c0.x;
-    HCReal c1x = -xAligned.c1.y;
-    HCReal c1y = +xAligned.c1.x;
-    HCReal p1x = -xAligned.p.y;
-    HCReal p1y = +xAligned.p.x;
-    return HCContourCurveMakeCubic(HCPointMake(c0x, c0y), HCPointMake(c1x, c1y), HCPointMake(p1x, p1y));
-}
-
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Canonical Type
+//----------------------------------------------------------------------------------------------------------------------------------
 HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve) {
     // Determine curve type based on provided information
     if (HCPointIsInvalid(p0) || HCPointIsInvalid(curve.p) || (HCPointIsInvalid(curve.c0) && !HCPointIsInvalid(curve.c1))) {
@@ -485,6 +453,203 @@ void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1,
     }
     if (ddy != NULL) {
         *ddy = qp1.y - qp0.y;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Axis Alignment
+//----------------------------------------------------------------------------------------------------------------------------------
+HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+       if (HCPointIsInvalid(curve.c0)) {
+           HCPoint ap1 = HCPointInvalid;
+           HCContourCurveXAxisAlignedLinear(p0, curve.p, NULL, &ap1);
+           return HCContourCurveMakeLinear(ap1);
+       }
+        HCPoint ac = HCPointInvalid;
+        HCPoint ap1 = HCPointInvalid;
+        HCContourCurveXAxisAlignedQuadratic(p0, curve.c0, curve.p, NULL, &ac, &ap1);
+        return HCContourCurveMakeQuadratic(ac, ap1);
+    }
+    HCPoint ac0 = HCPointInvalid;
+    HCPoint ac1 = HCPointInvalid;
+    HCPoint ap1 = HCPointInvalid;
+    HCContourCurveXAxisAlignedCubic(p0, curve.c0, curve.c1, curve.p, NULL, &ac0, &ac1, &ap1);
+    return HCContourCurveMakeCubic(ac0, ac1, ap1);
+}
+
+void HCContourCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
+    // Translate curve to origin
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCContourCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
+    // Translate curve to origin
+    c.x -= p0.x;
+    c.y -= p0.y;
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal cx = cosAngle * c.x - sinAngle * c.y;
+    HCReal cy = sinAngle * c.x + cosAngle * c.y;
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac != NULL) {
+        *ac = HCPointMake(cx, cy);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCContourCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
+    // Translate curve to origin
+    c0.x -= p0.x;
+    c0.y -= p0.y;
+    c1.x -= p0.x;
+    c1.y -= p0.y;
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal c0x = cosAngle * c0.x - sinAngle * c0.y;
+    HCReal c0y = sinAngle * c0.x + cosAngle * c0.y;
+    HCReal c1x = cosAngle * c1.x - sinAngle * c1.y;
+    HCReal c1y = sinAngle * c1.x + cosAngle * c1.y;
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac0 != NULL) {
+        *ac0 = HCPointMake(c0x, c0y);
+    }
+    if (ac1 != NULL) {
+        *ac1 = HCPointMake(c1x, c1y);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+       if (HCPointIsInvalid(curve.c0)) {
+           HCPoint ap1 = HCPointInvalid;
+           HCContourCurveYAxisAlignedLinear(p0, curve.p, NULL, &ap1);
+           return HCContourCurveMakeLinear(ap1);
+       }
+        HCPoint ac = HCPointInvalid;
+        HCPoint ap1 = HCPointInvalid;
+        HCContourCurveYAxisAlignedQuadratic(p0, curve.c0, curve.p, NULL, &ac, &ap1);
+        return HCContourCurveMakeQuadratic(ac, ap1);
+    }
+    HCPoint ac0 = HCPointInvalid;
+    HCPoint ac1 = HCPointInvalid;
+    HCPoint ap1 = HCPointInvalid;
+    HCContourCurveYAxisAlignedCubic(p0, curve.c0, curve.c1, curve.p, NULL, &ac0, &ac1, &ap1);
+    return HCContourCurveMakeCubic(ac0, ac1, ap1);
+}
+
+void HCContourCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCContourCurveXAxisAlignedLinear(p0, p1, NULL, &xAlignedP1);
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCContourCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedC = HCPointInvalid;
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCContourCurveXAxisAlignedQuadratic(p0, c, p1, NULL, &xAlignedC, &xAlignedP1);
+    HCReal cx = -xAlignedC.y;
+    HCReal cy = +xAlignedC.x;
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac != NULL) {
+        *ac = HCPointMake(cx, cy);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCContourCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedC0 = HCPointInvalid;
+    HCPoint xAlignedC1 = HCPointInvalid;
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCContourCurveXAxisAlignedCubic(p0, c0, c1, p1, NULL, &xAlignedC0, &xAlignedC1, &xAlignedP1);
+    HCReal c0x = -xAlignedC0.y;
+    HCReal c0y = +xAlignedC0.x;
+    HCReal c1x = -xAlignedC1.y;
+    HCReal c1y = +xAlignedC1.x;
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac0 != NULL) {
+        *ac0 = HCPointMake(c0x, c0y);
+    }
+    if (ac1 != NULL) {
+        *ac1 = HCPointMake(c1x, c1y);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
     }
 }
 
