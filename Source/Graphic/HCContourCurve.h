@@ -66,7 +66,7 @@ HCInteger HCContourCurveHashValue(HCContourCurve curve);
 void HCContourCurvePrint(HCContourCurve curve, FILE* stream);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Order / Conversion
+// MARK: - Order
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourCurveIsLinear(HCPoint p0, HCContourCurve curve);
 HCContourCurve HCContourCurveAsLinear(HCPoint p0, HCContourCurve curve);
@@ -74,10 +74,19 @@ HCBoolean HCContourCurveIsQuadratic(HCPoint p0, HCContourCurve curve);
 HCContourCurve HCContourCurveAsQuadratic(HCPoint p0, HCContourCurve curve);
 HCBoolean HCContourCurveIsCubic(HCPoint p0, HCContourCurve curve);
 HCContourCurve HCContourCurveAsCubic(HCPoint p0, HCContourCurve curve);
+
 HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
 HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Canonical Type
+//----------------------------------------------------------------------------------------------------------------------------------
 HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve);
-HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve);
+HCContourCurveType HCContourCurveCanonicalTypeLinear(HCPoint p0, HCPoint p1);
+HCContourCurveType HCContourCurveCanonicalTypeQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCContourCurveType HCContourCurveCanonicalTypeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+HCPoint HCContourCurveCanonical(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value

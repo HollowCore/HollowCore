@@ -829,9 +829,7 @@ CTEST(HCRaster, DrawDinosaur) {
 
 CTEST(HCRaster, DrawCanonical) {
     // Define curve whose canonical representation is to be drawn
-    HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCContourCurve curve = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
-    HCPoint canonical = HCContourCurveCanonical(p0, curve);
+    HCPoint canonical = HCContourCurveCanonical(HCPointMake(0.0, 0.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
     
     // Configure raster
     HCReal w = 1000.0;

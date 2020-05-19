@@ -178,156 +178,160 @@ HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve) {
 HCContourCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve) {
     // Determine curve type based on provided information
     if (HCPointIsInvalid(p0) || HCPointIsInvalid(curve.p) || (HCPointIsInvalid(curve.c0) && !HCPointIsInvalid(curve.c1))) {
-        // Provided curve data has invalid anchor points or control point 1 but not control point 0
+        // Provided curve data has invalid anchor points or has control point 1 but not control point 0
         return HCContourCurveTypeInvalid;
     }
     else if (HCPointIsInvalid(curve.c0)) {
         // Linear curve data provided
-        // Determine if linear curve is a point or a line segment
-        return HCPointIsEqual(p0, curve.p) ? HCContourCurveTypePoint : HCContourCurveTypeLinear;
+        return HCContourCurveCanonicalTypeLinear(p0, curve.p);
     }
     else if (HCPointIsInvalid(curve.c1)) {
         // Quadratic curve data provided
-        
-        // Determine if quadratic curve has degenerate points
-        HCBoolean p0p1 = HCPointIsEqual(p0, curve.p);
-        HCBoolean p0c = HCPointIsEqual(p0, curve.c0);
-        HCBoolean p1c = HCPointIsEqual(curve.p, curve.c0);
-        if (p0p1 && p0c) {
-            return HCContourCurveTypePoint;
+        return HCContourCurveCanonicalTypeQuadratic(p0, curve.c0, curve.p);
+    }
+    else {
+        // Cubic curve data provided
+        return HCContourCurveCanonicalTypeCubic(p0, curve.c0, curve.c1, curve.p);
+    }
+}
+
+HCContourCurveType HCContourCurveCanonicalTypeLinear(HCPoint p0, HCPoint p1) {
+    // Determine if linear curve is a point or a line segment
+    return HCPointIsEqual(p0, p1) ? HCContourCurveTypePoint : HCContourCurveTypeLinear;
+}
+
+HCContourCurveType HCContourCurveCanonicalTypeQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+    // Determine if quadratic curve has degenerate points
+    HCBoolean p0p1 = HCPointIsEqual(p0, p1);
+    HCBoolean p0c = HCPointIsEqual(p0, c);
+    HCBoolean p1c = HCPointIsEqual(p1, c);
+    if (p0p1 && p0c) {
+        return HCContourCurveTypePoint;
+    }
+    if (p0c || p1c) {
+        return HCContourCurveTypeLinear;
+    }
+    
+    // Determine if quadratic curve points are co-linear
+    HCBoolean xOrdered = (p0.x <= c.x && c.x <= p1.x) || (p0.x >= c.x && c.x >= p1.x);
+    if (xOrdered) {
+        HCBoolean yOrdered = (p0.y <= c.y && c.y <= p1.y) || (p0.y >= c.y && c.y >= p1.y);
+        if (yOrdered) {
+            HCReal p0p1Slope = (p1.y - p0.y) / (p1.x - p0.x);
+            HCReal p0cSlope = (c.y - p0.y) / (c.x - p0.x);
+            if (p0cSlope == p0p1Slope) {
+                return HCContourCurveTypeLinear;
+            }
         }
-        if (p0c || p1c) {
-            return HCContourCurveTypeLinear;
-        }
-        
-        // Determine if quadratic curve points are co-linear
-        HCPoint c = curve.c0;
-        HCPoint p1 = curve.p;
-        HCBoolean xOrdered = (p0.x <= c.x && c.x <= p1.x) || (p0.x >= c.x && c.x >= p1.x);
-        if (xOrdered) {
-            HCBoolean yOrdered = (p0.y <= c.y && c.y <= p1.y) || (p0.y >= c.y && c.y >= p1.y);
-            if (yOrdered) {
-                HCReal p0p1Slope = (p1.y - p0.y) / (p1.x - p0.x);
-                HCReal p0cSlope = (c.y - p0.y) / (c.x - p0.x);
-                if (p0cSlope == p0p1Slope) {
+    }
+    
+    // Curve is quadratic
+    return HCContourCurveTypeQuadratic;
+}
+
+HCContourCurveType HCContourCurveCanonicalTypeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+    // Determine if cubic curve has degenerate points
+    HCBoolean p0p1 = HCPointIsEqual(p0, p1);
+    HCBoolean p0c0 = HCPointIsEqual(p0, c0);
+    HCBoolean p0c1 = HCPointIsEqual(p0, c1);
+    HCBoolean p1c0 = HCPointIsEqual(p1, c0);
+    HCBoolean p1c1 = HCPointIsEqual(p1, c1);
+    HCBoolean c0c1 = HCPointIsEqual(c0, c1);
+    if (p0p1 && p0c0 && p0c1) {
+        return HCContourCurveTypePoint;
+    }
+    if ((p0c0 && p1c1) || (p0c1 && p1c0)) {
+        return HCContourCurveTypeLinear;
+    }
+    if (p0c1 || p1c0) {
+        return HCContourCurveTypeCubicSimple;
+    }
+    if (c0c1) {
+        return HCContourCurveTypeCubicSimple;
+    }
+    
+    // Determine if cubic curve points are co-linear
+    HCBoolean xOrdered = (p0.x <= c0.x && c0.x <= c1.x && c1.x <= p1.x) || (p0.x >= c0.x && c0.x >= c1.x && c1.x >= p1.x);
+    if (xOrdered) {
+        HCBoolean yOrdered = (p0.y <= c0.y && c0.y <= c1.y && c1.y <= p1.y) || (p0.y >= c0.y && c0.y >= c1.y && c1.y >= p1.y);
+        if (yOrdered) {
+            HCReal p0p1Slope = (p1.y - p0.y) / (p1.x - p0.x);
+            HCReal p0c0Slope = (c0.y - p0.y) / (c0.x - p0.x);
+            if (p0c0Slope == p0p1Slope) {
+                HCReal c1p1Slope = (p1.y - c1.y) / (p1.x - c1.x);
+                if (c1p1Slope == p0p1Slope) {
                     return HCContourCurveTypeLinear;
                 }
             }
         }
-        
-        // Curve is quadratic
+    }
+    
+    // Determine if control points form quadratic curve
+    if (p0.x + 1.5 * (c0.x - p0.x) == p1.x + 1.5 * (c1.x - p1.x) && p0.y + 1.5 * (c0.y - p0.y) == p1.y + 1.5 * (c1.y - p1.y)) {
         return HCContourCurveTypeQuadratic;
     }
-    else {
-        // Determine if cubic curve has degenerate points
-        HCBoolean p0p1 = HCPointIsEqual(p0, curve.p);
-        HCBoolean p0c0 = HCPointIsEqual(p0, curve.c0);
-        HCBoolean p0c1 = HCPointIsEqual(p0, curve.c1);
-        HCBoolean p1c0 = HCPointIsEqual(curve.p, curve.c0);
-        HCBoolean p1c1 = HCPointIsEqual(curve.p, curve.c1);
-        HCBoolean c0c1 = HCPointIsEqual(curve.c0, curve.c1);
-        if (p0p1 && p0c0 && p0c1) {
-            return HCContourCurveTypePoint;
-        }
-        if ((p0c0 && p1c1) || (p0c1 && p1c0)) {
-            return HCContourCurveTypeLinear;
-        }
-        if (p0c1 || p1c0) {
-            // TODO: Is quadratic?
-            return HCContourCurveTypeCubicSimple;
-        }
-        if (c0c1) {
-            return HCContourCurveTypeCubicSimple;
-        }
-        
-        // Determine if cubic curve points are co-linear
-        HCPoint c0 = curve.c0;
-        HCPoint c1 = curve.c1;
-        HCPoint p1 = curve.p;
-        HCBoolean xOrdered = (p0.x <= c0.x && c0.x <= c1.x && c1.x <= p1.x) || (p0.x >= c0.x && c0.x >= c1.x && c1.x >= p1.x);
-        if (xOrdered) {
-            HCBoolean yOrdered = (p0.y <= c0.y && c0.y <= c1.y && c1.y <= p1.y) || (p0.y >= c0.y && c0.y >= c1.y && c1.y >= p1.y);
-            if (yOrdered) {
-                HCReal p0p1Slope = (p1.y - p0.y) / (p1.x - p0.x);
-                HCReal p0c0Slope = (c0.y - p0.y) / (c0.x - p0.x);
-                if (p0c0Slope == p0p1Slope) {
-                    HCReal c1p1Slope = (p1.y - c1.y) / (p1.x - c1.x);
-                    if (c1p1Slope == p0p1Slope) {
-                        return HCContourCurveTypeLinear;
-                    }
-                }
-            }
-        }
-        
-        // Determine if control points form quadratic curve
-        // TODO: Care about co-quadratic curves? Can use canonical curve coordinates for this?
-//        if ((curve.c0.x == (3.0/2.0) * curve.p.x + curve.c1.x) && (curve.c0.y == (3.0/2.0) * curve.p.y + curve.c1.y)) {
-//            return HCContourCurveTypeQuadratic;
-//        }
-        
-        // Calculate canonical curve end point (other points are p0: (0, 0), c0: (0, 1), c1: (1,1))
-        HCPoint p = HCContourCurveCanonical(p0, curve);
-        
-        // Determine cubic curve type based on canonical curve end point
-        // See http://graphics.pixar.com/people/derose/publications/CubicClassification/paper.pdf
-        if (p.x == 1.0 && p.y == 1.0) {
-            return HCContourCurveTypeCubicSimple;
-        }
-        if (p.x == 0.0 && p.y == 0.0) {
-            return HCContourCurveTypeCubicLoopClosed;
-        }
-        if (p.y > 1.0) {
-            return HCContourCurveTypeCubicSingleInflection;
-        }
-        if (p.x > 1.0) {
-            return HCContourCurveTypeCubicSimple;
-        }
-        HCReal cuspEdge = (-1.0 * p.x * p.x + 2.0 * p.x + 3.0) * 0.25;
-        if (p.y == cuspEdge) {
-            return HCContourCurveTypeCubicCusp;
-        }
-        if (p.y > cuspEdge) {
-            return HCContourCurveTypeCubicDoubleInflection;
-        }
-        if (p.x > 0.0) {
-            HCReal t1LoopEdge = (sqrt(-3.0 * p.x * p.x + 12.0 * p.x) - p.x) * 0.5;
-            if (p.y > t1LoopEdge) {
-                return HCContourCurveTypeCubicLoop;
-            }
-            if (p.y == t1LoopEdge) {
-                return HCContourCurveTypeCubicLoopAtEnd;
-            }
-        }
-        else {
-            HCReal t0LoopEdge = (-1.0 * p.x * p.x + 3.0 * p.x) * (1.0 / 3.0);
-            if (p.y > t0LoopEdge) {
-                return HCContourCurveTypeCubicLoop;
-            }
-            if (p.y == t0LoopEdge) {
-                return HCContourCurveTypeCubicLoopAtStart;
-            }
-        }
+    
+    // Calculate canonical curve end point (other points are p0: (0, 0), c0: (0, 1), c1: (1,1))
+    HCPoint p = HCContourCurveCanonical(p0, c0, c1, p1);
+    
+    // Determine cubic curve type based on canonical curve end point
+    // See http://graphics.pixar.com/people/derose/publications/CubicClassification/paper.pdf
+    if (p.x == 1.0 && p.y == 1.0) {
         return HCContourCurveTypeCubicSimple;
     }
+    if (p.x == 0.0 && p.y == 0.0) {
+        return HCContourCurveTypeCubicLoopClosed;
+    }
+    if (p.y > 1.0) {
+        return HCContourCurveTypeCubicSingleInflection;
+    }
+    if (p.x > 1.0) {
+        return HCContourCurveTypeCubicSimple;
+    }
+    HCReal cuspEdge = (-1.0 * p.x * p.x + 2.0 * p.x + 3.0) * 0.25;
+    if (p.y == cuspEdge) {
+        return HCContourCurveTypeCubicCusp;
+    }
+    if (p.y > cuspEdge) {
+        return HCContourCurveTypeCubicDoubleInflection;
+    }
+    if (p.x > 0.0) {
+        HCReal t1LoopEdge = (sqrt(-3.0 * p.x * p.x + 12.0 * p.x) - p.x) * 0.5;
+        if (p.y > t1LoopEdge) {
+            return HCContourCurveTypeCubicLoop;
+        }
+        if (p.y == t1LoopEdge) {
+            return HCContourCurveTypeCubicLoopAtEnd;
+        }
+    }
+    else {
+        HCReal t0LoopEdge = (-1.0 * p.x * p.x + 3.0 * p.x) * (1.0 / 3.0);
+        if (p.y > t0LoopEdge) {
+            return HCContourCurveTypeCubicLoop;
+        }
+        if (p.y == t0LoopEdge) {
+            return HCContourCurveTypeCubicLoopAtStart;
+        }
+    }
+    return HCContourCurveTypeCubicSimple;
 }
 
-HCPoint HCContourCurveCanonical(HCPoint p0, HCContourCurve curve) {
+HCPoint HCContourCurveCanonical(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     // Translate curve to origin
-    HCContourCurve translated = curve;
-    translated.c0.x -= p0.x;
-    translated.c0.y -= p0.y;
-    translated.c1.x -= p0.x;
-    translated.c1.y -= p0.y;
-    translated.p.x -= p0.x;
-    translated.p.y -= p0.y;
+    c0.x -= p0.x;
+    c0.y -= p0.y;
+    c1.x -= p0.x;
+    c1.y -= p0.y;
+    p1.x -= p0.x;
+    p1.y -= p0.y;
 
     // Calculate ratio of curve y coordinates
-    HCReal yci = 1.0 / translated.c0.y;
-    HCReal ycc = translated.c1.y * yci;
-    HCReal ypc = translated.p.y * yci;
+    HCReal yci = 1.0 / c0.y;
+    HCReal ycc = c1.y * yci;
+    HCReal ypc = p1.y * yci;
 
     // Calculate canonical curve end point given p0: (0, 0), c0: (0, 1), c1: (1,1)
-    HCReal p1x = (translated.p.x - translated.c0.x * ypc) / (translated.c1.x - translated.c0.x * ycc);
+    HCReal p1x = (p1.x - c0.x * ypc) / (c1.x - c0.x * ycc);
     HCReal p1y = p1x * (1.0 - ycc) + ypc;
     return HCPointMake(p1x, p1y);
 }
