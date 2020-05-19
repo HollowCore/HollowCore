@@ -449,9 +449,11 @@ void HCContourCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1,
         *dy = rp1.y - rp0.y;
     }
     if (ddx != NULL) {
+        // TODO: Correct?
         *ddx = qp1.x - qp0.x;
     }
     if (ddy != NULL) {
+        // TODO: Correct?
         *ddy = qp1.y - qp0.y;
     }
 }
@@ -822,7 +824,7 @@ void HCContourCurveDerivative(HCPoint p0, HCContourCurve curve, HCPoint* dP0, HC
                 *dP0 = pd;
             }
             if (dCurve != NULL) {
-                *dCurve = HCContourCurveInvalid;
+                *dCurve = HCContourCurveMakeLinear(pd);
             }
         } break;
         case HCContourCurveTypeQuadratic: {
