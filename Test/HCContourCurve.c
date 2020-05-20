@@ -378,7 +378,113 @@ CTEST(HCContourCurve, Bounds) {
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCContourCurve, IntersectionLinearLinear) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint p1 = HCPointMake(4.0, 4.0);
+    HCPoint q0 = HCPointMake(4.0, 0.0);
+    HCPoint q1 = HCPointMake(0.0, 4.0);
+    HCInteger count = 0;
+    HCReal t = NAN;
+    HCReal u = NAN;
+    HCContourCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, &u);
+    ASSERT_TRUE(count == 1);
+    ASSERT_DBL_NEAR(t, 0.5);
+    ASSERT_DBL_NEAR(u, 0.5);
+}
+
+CTEST(HCContourCurve, IntersectionLinearQuadratic) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint p1 = HCPointMake(4.0, 0.0);
+    HCPoint q0 = HCPointMake(0.0, -2.0);
+    HCPoint qc = HCPointMake(2.0, 2.0);
+    HCPoint q1 = HCPointMake(4.0, -2.0);
+    HCInteger count = 0;
+    HCReal t[2] = {NAN, NAN};
+    HCReal u[2] = {NAN, NAN};
+    HCContourCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &count, t, u);
+    ASSERT_TRUE(count == 2);
+    ASSERT_DBL_NEAR(t[0], 0.25);
+    ASSERT_DBL_NEAR(t[1], 0.75);
+    ASSERT_DBL_NEAR(u[0], 0.25);
+    ASSERT_DBL_NEAR(u[1], 0.75);
+}
+
+CTEST(HCContourCurve, IntersectionLinearCubic) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint p1 = HCPointMake(4.0, 0.0);
+    HCPoint q0 = HCPointMake(0.0, -2.0);
+    HCPoint qc0 = HCPointMake(1.0, 2.0);
+    HCPoint qc1 = HCPointMake(3.0, -2.0);
+    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCInteger count = 0;
+    HCReal t[3] = {NAN, NAN};
+    HCReal u[3] = {NAN, NAN};
+    HCContourCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &count, t, u);
+    ASSERT_TRUE(count == 3);
+    ASSERT_DBL_NEAR(t[0], 0.25);
+    ASSERT_DBL_NEAR(t[1], 0.50);
+    ASSERT_DBL_NEAR(t[2], 0.75);
+    ASSERT_DBL_NEAR(u[0], 0.25);
+    ASSERT_DBL_NEAR(u[1], 0.50);
+    ASSERT_DBL_NEAR(u[2], 0.75);
+}
+
+CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
+    HCPoint p0 = HCPointMake(0.0, 2.0);
+    HCPoint pc = HCPointMake(2.0, -4.0);
+    HCPoint p1 = HCPointMake(4.0, 2.0);
+    HCPoint q0 = HCPointMake(0.0, -2.0);
+    HCPoint qc = HCPointMake(2.0, 4.0);
+    HCPoint q1 = HCPointMake(4.0, -2.0);
+    HCInteger count = 0;
+    HCReal t[2] = {NAN, NAN};
+    HCReal u[2] = {NAN, NAN};
+    HCContourCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &count, t, u);
+    ASSERT_TRUE(count == 2);
+    ASSERT_DBL_NEAR(t[0], 0.25);
+    ASSERT_DBL_NEAR(t[1], 0.75);
+    ASSERT_DBL_NEAR(u[0], 0.25);
+    ASSERT_DBL_NEAR(u[1], 0.75);
+}
+
+CTEST(HCContourCurve, IntersectionQuadraticCubic) {
+    HCPoint p0 = HCPointMake(0.0, 2.0);
+    HCPoint pc = HCPointMake(2.0, -2.0);
+    HCPoint p1 = HCPointMake(4.0, 2.0);
+    HCPoint q0 = HCPointMake(0.0, -2.0);
+    HCPoint qc0 = HCPointMake(1.0, 2.0);
+    HCPoint qc1 = HCPointMake(3.0, -2.0);
+    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCInteger count = 0;
+    HCReal t[6] = {NAN, NAN};
+    HCReal u[6] = {NAN, NAN};
+    HCContourCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &count, t, u);
+    ASSERT_TRUE(count == 2);
+    ASSERT_DBL_NEAR(t[0], 0.25);
+    ASSERT_DBL_NEAR(t[1], 0.75);
+    ASSERT_DBL_NEAR(u[0], 0.25);
+    ASSERT_DBL_NEAR(u[1], 0.75);
+}
+
+CTEST(HCContourCurve, IntersectionCubicCubic) {
+    HCPoint p0 = HCPointMake(0.0, 2.0);
+    HCPoint pc0 = HCPointMake(1.0, -2.0);
+    HCPoint pc1 = HCPointMake(3.0, 2.0);
+    HCPoint p1 = HCPointMake(4.0, -2.0);
+    HCPoint q0 = HCPointMake(0.0, -2.0);
+    HCPoint qc0 = HCPointMake(1.0, 2.0);
+    HCPoint qc1 = HCPointMake(3.0, -2.0);
+    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCInteger count = 0;
+    HCReal t[6] = {NAN, NAN};
+    HCReal u[6] = {NAN, NAN};
+    HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &count, t, u);
+    ASSERT_TRUE(count == 2);
+    ASSERT_DBL_NEAR(t[0], 0.25);
+    ASSERT_DBL_NEAR(t[1], 0.75);
+    ASSERT_DBL_NEAR(u[0], 0.25);
+    ASSERT_DBL_NEAR(u[1], 0.75);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Projection

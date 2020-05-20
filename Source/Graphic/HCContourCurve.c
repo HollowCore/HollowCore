@@ -1410,9 +1410,77 @@ void HCContourCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, H
     }
 }
 
+void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint pc, HCPoint p1, HCReal pt, HCPoint q0, HCPoint qc, HCPoint q1, HCReal qt, HCInteger* count, HCReal* t, HCReal* u) {
+    // Determine if quadratic curve bounds rectangles overlap
+    HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
+    HCRectangle qr = HCContourCurveBoundsQuadratic(q0, qc, q1);
+    HCRectangle intersection = HCRectangleIntersection(pr, qr);
+    if (HCRectangleIsEmpty(intersection)) {
+        return;
+    }
+    
+    // When the intersection rectangle is very small, consider it an intersection
+    // TODO: How small?
+    HCReal area = HCRectangleWidth(intersection) * HCRectangleHeight(intersection);
+    if (area < 0.01) {
+        t[*count] = pt;
+        u[*count] = qt;
+        *count = *count + 1;
+        return;
+    }
+    
+    // Split the curves
+    HCPoint psp0 = HCPointInvalid;
+    HCPoint psc = HCPointInvalid;
+    HCPoint psp1 = HCPointInvalid;
+    HCPoint pep0 = HCPointInvalid;
+    HCPoint pec = HCPointInvalid;
+    HCPoint pep1 = HCPointInvalid;
+    HCContourCurveSplitQuadratic(p0, pc, p1, 0.5, &psp0, &psc, &psp1, &pep0, &pec, &pep1);
+    HCPoint qsp0 = HCPointInvalid;
+    HCPoint qsc = HCPointInvalid;
+    HCPoint qsp1 = HCPointInvalid;
+    HCPoint qep0 = HCPointInvalid;
+    HCPoint qec = HCPointInvalid;
+    HCPoint qep1 = HCPointInvalid;
+    HCContourCurveSplitQuadratic(p0, pc, p1, 0.5, &qsp0, &qsc, &qsp1, &qep0, &qec, &qep1);
+    
+    // Search for overlaps between splits
+    // TODO: Broken
+//    HCContourCurveIntersectionQuadraticQuadraticRecursive(psp0, psc, psp1, pt * 0.5, qsp0, qsc, qsp1, qt * 0.5, count, t, u);
+//    HCContourCurveIntersectionQuadraticQuadraticRecursive(psp0, psc, psp1, pt * 0.5, qep0, qec, qep1, 1.0 - (1.0 - qt) * 0.5, count, t, u);
+//    HCContourCurveIntersectionQuadraticQuadraticRecursive(pep0, pec, pep1, 1.0 - (1.0 - pt) * 0.5, qsp0, qsc, qsp1, qt * 0.5, count, t, u);
+//    HCContourCurveIntersectionQuadraticQuadraticRecursive(pep0, pec, pep1, 1.0 - (1.0 - pt) * 0.5, qep0, qec, qep1, 1.0 - (1.0 - qt) * 0.5, count, t, u);
+}
+
 void HCContourCurveIntersectionQuadraticQuadratic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
-    // TODO: This!
-    *count = 0;
+    // Determine if quadratic curve bounds rectangles overlap at all
+    HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
+    HCRectangle qr = HCContourCurveBoundsQuadratic(q0, qc, q1);
+    HCRectangle intersection = HCRectangleIntersection(pr, qr);
+    if (HCRectangleIsEmpty(intersection)) {
+        if (count != NULL) {
+            *count = 0;
+        }
+        return;
+    }
+    
+    // Search for intersections
+    HCInteger intersectionCount = 0;
+    HCReal ts[9];
+    HCReal us[9];
+    HCContourCurveIntersectionQuadraticQuadraticRecursive(p0, pc, p1, 0.5, q0, qc, q1, 0.5, &intersectionCount, ts, us);
+    
+    // Deliver results
+    if (count != NULL) {
+        *count = intersectionCount;
+    }
+    if (t != NULL) {
+        memcpy(t, ts, intersectionCount * sizeof(HCReal));
+    }
+    if (u != NULL) {
+        memcpy(u, us, intersectionCount * sizeof(HCReal));
+    }
 }
 
 void HCContourCurveIntersectionQuadraticCubic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
