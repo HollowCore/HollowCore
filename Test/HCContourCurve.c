@@ -154,7 +154,7 @@ CTEST(HCContourCurve, Canonical) {
     HCPoint loopAtEndP0 = HCPointMake(0.0, 0.0);
     HCContourCurve loopAtEnd = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(50.0, ((sqrt(5.25) - 0.5) * 0.5) * 100.0));
     ASSERT_TRUE(HCContourCurveCanonicalType(loopAtEndP0, loopAtEnd) == HCContourCurveTypeCubicLoopAtEnd);
-    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtEndP0, loopAtEnd.c0, loopAtEnd.c1, loopAtEnd.p), HCPointMake(0.1, 0.5), 0.0000001));
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtEndP0, loopAtEnd.c0, loopAtEnd.c1, loopAtEnd.p), HCPointMake(0.5, ((sqrt(5.25) - 0.5) * 0.5)), 0.0000001));
     
     HCPoint loopClosedP0 = HCPointMake(50.0, 0.0);
     HCContourCurve loopClosed = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
@@ -439,10 +439,10 @@ CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
     HCReal u[2] = {NAN, NAN};
     HCContourCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
-    ASSERT_DBL_NEAR(t[0], 0.25);
-    ASSERT_DBL_NEAR(t[1], 0.75);
-    ASSERT_DBL_NEAR(u[0], 0.25);
-    ASSERT_DBL_NEAR(u[1], 0.75);
+    ASSERT_DBL_NEAR(t[0], 0.35302734375);
+    ASSERT_DBL_NEAR(t[1], 0.64697265625);
+    ASSERT_DBL_NEAR(u[0], 0.35302734375);
+    ASSERT_DBL_NEAR(u[1], 0.64697265625);
 }
 
 CTEST(HCContourCurve, IntersectionQuadraticCubic) {
