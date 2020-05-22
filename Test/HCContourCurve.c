@@ -146,17 +146,15 @@ CTEST(HCContourCurve, Canonical) {
     ASSERT_TRUE(HCContourCurveCanonicalType(loopP0, loop) == HCContourCurveTypeCubicLoop);
     ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopP0, loop.c0, loop.c1, loop.p), HCPointMake(-0.75, 0.0), 0.0000001));
     
-    // TODO: Loop-at-start does not evaluate well
-//    HCPoint loopAtStartP0 = HCPointMake(50.0, 0.0);
-//    HCContourCurve loopAtStart = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(40.0, 25.0));
-//    ASSERT_TRUE(HCContourCurveCanonicalType(loopAtStartP0, loopAtStart) == HCContourCurveTypeCubicLoopAtStart);
-//    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtStartP0, loopAtStart.c0, loopAtStart.c1, loopAtStart.p), HCPointMake(-0.75, 0.75), 0.0000001));
+    HCPoint loopAtStartP0 = HCPointMake(0.0, 0.0);
+    HCContourCurve loopAtStart = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(-300.0, -600.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(loopAtStartP0, loopAtStart) == HCContourCurveTypeCubicLoopAtStart);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtStartP0, loopAtStart.c0, loopAtStart.c1, loopAtStart.p), HCPointMake(-3.0, -6.0), 0.0000001));
 
-    // TODO: Loop-at-end does not evaluate well
-//    HCPoint loopAtEndP0 = HCPointMake(60.0, 25.0);
-//    HCContourCurve loopAtEnd = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
-//    ASSERT_TRUE(HCContourCurveCanonicalType(loopAtEndP0, loopAtEnd) == HCContourCurveTypeCubicLoopAtEnd);
-//    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtEndP0, loopAtEnd.c0, loopAtEnd.c1, loopAtEnd.p), HCPointMake(0.1, 0.5), 0.0000001));
+    HCPoint loopAtEndP0 = HCPointMake(0.0, 0.0);
+    HCContourCurve loopAtEnd = HCContourCurveMakeCubic(HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(50.0, ((sqrt(5.25) - 0.5) * 0.5) * 100.0));
+    ASSERT_TRUE(HCContourCurveCanonicalType(loopAtEndP0, loopAtEnd) == HCContourCurveTypeCubicLoopAtEnd);
+    ASSERT_TRUE(HCPointIsSimilar(HCContourCurveCanonical(loopAtEndP0, loopAtEnd.c0, loopAtEnd.c1, loopAtEnd.p), HCPointMake(0.1, 0.5), 0.0000001));
     
     HCPoint loopClosedP0 = HCPointMake(50.0, 0.0);
     HCContourCurve loopClosed = HCContourCurveMakeCubic(HCPointMake(100.0, 100.0), HCPointMake(0.0, 100.0), HCPointMake(50.0, 0.0));
