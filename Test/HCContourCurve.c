@@ -378,9 +378,9 @@ CTEST(HCContourCurve, Bounds) {
 
 CTEST(HCContourCurve, IntersectionLinearLinear) {
     HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCPoint p1 = HCPointMake(4.0, 4.0);
-    HCPoint q0 = HCPointMake(4.0, 0.0);
-    HCPoint q1 = HCPointMake(0.0, 4.0);
+    HCPoint p1 = HCPointMake(100.0, 100.0);
+    HCPoint q0 = HCPointMake(100.0, 0.0);
+    HCPoint q1 = HCPointMake(0.0, 100.0);
     HCInteger count = 0;
     HCReal t = NAN;
     HCReal u = NAN;
@@ -392,28 +392,28 @@ CTEST(HCContourCurve, IntersectionLinearLinear) {
 
 CTEST(HCContourCurve, IntersectionLinearQuadratic) {
     HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCPoint p1 = HCPointMake(4.0, 0.0);
-    HCPoint q0 = HCPointMake(0.0, -2.0);
-    HCPoint qc = HCPointMake(2.0, 2.0);
-    HCPoint q1 = HCPointMake(4.0, -2.0);
+    HCPoint p1 = HCPointMake(100.0, 0.0);
+    HCPoint q0 = HCPointMake(0.0, -50.0);
+    HCPoint qc = HCPointMake(50.0, 100.0);
+    HCPoint q1 = HCPointMake(100.0, -50.0);
     HCInteger count = 0;
     HCReal t[2] = {NAN, NAN};
     HCReal u[2] = {NAN, NAN};
     HCContourCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
-    ASSERT_DBL_NEAR(t[0], 0.25);
-    ASSERT_DBL_NEAR(t[1], 0.75);
-    ASSERT_DBL_NEAR(u[0], 0.25);
-    ASSERT_DBL_NEAR(u[1], 0.75);
+    ASSERT_DBL_NEAR(t[0], 0.21132486540518713);
+    ASSERT_DBL_NEAR(t[1], 0.78867513459481287);
+    ASSERT_DBL_NEAR(u[0], 0.21132486540518713);
+    ASSERT_DBL_NEAR(u[1], 0.78867513459481287);
 }
 
 CTEST(HCContourCurve, IntersectionLinearCubic) {
     HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCPoint p1 = HCPointMake(4.0, 0.0);
-    HCPoint q0 = HCPointMake(0.0, -2.0);
-    HCPoint qc0 = HCPointMake(1.0, 2.0);
-    HCPoint qc1 = HCPointMake(3.0, -2.0);
-    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCPoint p1 = HCPointMake(150.0, 0.0);
+    HCPoint q0 = HCPointMake(0.0, 50.0);
+    HCPoint qc0 = HCPointMake(50.0, -100.0);
+    HCPoint qc1 = HCPointMake(100.0, 100.0);
+    HCPoint q1 = HCPointMake(150.0, -50.0);
     HCInteger count = 0;
     HCReal t[3] = {NAN, NAN};
     HCReal u[3] = {NAN, NAN};
@@ -428,12 +428,12 @@ CTEST(HCContourCurve, IntersectionLinearCubic) {
 }
 
 CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
-    HCPoint p0 = HCPointMake(0.0, 2.0);
-    HCPoint pc = HCPointMake(2.0, -4.0);
-    HCPoint p1 = HCPointMake(4.0, 2.0);
-    HCPoint q0 = HCPointMake(0.0, -2.0);
-    HCPoint qc = HCPointMake(2.0, 4.0);
-    HCPoint q1 = HCPointMake(4.0, -2.0);
+    HCPoint p0 = HCPointMake(0.0, 50.0);
+    HCPoint pc = HCPointMake(50.0, -100.0);
+    HCPoint p1 = HCPointMake(100.0, 50.0);
+    HCPoint q0 = HCPointMake(0.0, -50.0);
+    HCPoint qc = HCPointMake(50.0, 100.0);
+    HCPoint q1 = HCPointMake(100.0, -50.0);
     HCInteger count = 0;
     HCReal t[2] = {NAN, NAN};
     HCReal u[2] = {NAN, NAN};
@@ -446,13 +446,13 @@ CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
 }
 
 CTEST(HCContourCurve, IntersectionQuadraticCubic) {
-    HCPoint p0 = HCPointMake(0.0, 2.0);
-    HCPoint pc = HCPointMake(2.0, -2.0);
-    HCPoint p1 = HCPointMake(4.0, 2.0);
-    HCPoint q0 = HCPointMake(0.0, -2.0);
-    HCPoint qc0 = HCPointMake(1.0, 2.0);
-    HCPoint qc1 = HCPointMake(3.0, -2.0);
-    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCPoint p0 = HCPointMake(0.0, 50.0);
+    HCPoint pc = HCPointMake(100.0, -100.0);
+    HCPoint p1 = HCPointMake(150.0, 50.0);
+    HCPoint q0 = HCPointMake(0.0, -50.0);
+    HCPoint qc0 = HCPointMake(50.0, 100.0);
+    HCPoint qc1 = HCPointMake(100.0, -100.0);
+    HCPoint q1 = HCPointMake(150.0, 50.0);
     HCInteger count = 0;
     HCReal t[6] = {NAN, NAN};
     HCReal u[6] = {NAN, NAN};
@@ -465,23 +465,25 @@ CTEST(HCContourCurve, IntersectionQuadraticCubic) {
 }
 
 CTEST(HCContourCurve, IntersectionCubicCubic) {
-    HCPoint p0 = HCPointMake(0.0, 2.0);
-    HCPoint pc0 = HCPointMake(1.0, -2.0);
-    HCPoint pc1 = HCPointMake(3.0, 2.0);
-    HCPoint p1 = HCPointMake(4.0, -2.0);
-    HCPoint q0 = HCPointMake(0.0, -2.0);
-    HCPoint qc0 = HCPointMake(1.0, 2.0);
-    HCPoint qc1 = HCPointMake(3.0, -2.0);
-    HCPoint q1 = HCPointMake(4.0, 2.0);
+    HCPoint p0 = HCPointMake(0.0, -50.0);
+    HCPoint pc0 = HCPointMake(50.0, 100.0);
+    HCPoint pc1 = HCPointMake(100.0, -100.0);
+    HCPoint p1 = HCPointMake(150.0, 50.0);
+    HCPoint q0 = HCPointMake(0.0, 50.0);
+    HCPoint qc0 = HCPointMake(50.0, -100.0);
+    HCPoint qc1 = HCPointMake(100.0, 100.0);
+    HCPoint q1 = HCPointMake(150.0, -50.0);
     HCInteger count = 0;
-    HCReal t[6] = {NAN, NAN};
-    HCReal u[6] = {NAN, NAN};
+    HCReal t[9] = {NAN, NAN};
+    HCReal u[9] = {NAN, NAN};
     HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &count, t, u);
-    ASSERT_TRUE(count == 2);
-    ASSERT_DBL_NEAR(t[0], 0.25);
-    ASSERT_DBL_NEAR(t[1], 0.75);
-    ASSERT_DBL_NEAR(u[0], 0.25);
-    ASSERT_DBL_NEAR(u[1], 0.75);
+    ASSERT_TRUE(count == 3);
+    ASSERT_DBL_NEAR(t[0], 0.32080078125);
+    ASSERT_DBL_NEAR(t[1], 0.67919921875);
+    ASSERT_DBL_NEAR(t[2], 0.67919921875);
+    ASSERT_DBL_NEAR(u[0], 0.32080078125);
+    ASSERT_DBL_NEAR(u[1], 0.67919921875);
+    ASSERT_DBL_NEAR(u[2], 0.67919921875);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
