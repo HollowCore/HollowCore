@@ -1,5 +1,5 @@
 ///
-/// @file HCPath+BooleanOperations.c
+/// @file HCPath+SetOperations.c
 /// @ingroup HollowCore
 ///
 /// @author Matt Stoker
@@ -7,7 +7,7 @@
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
 
-#include "HCPath+BooleanOperations.h"
+#include "HCPath+SetOperations.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Private Interface

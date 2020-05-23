@@ -87,10 +87,19 @@ $ firefox html/index.html
 
 ## Documentation Generation
 ```zsh
-$ brew install cmake doxygen graphviz
+$ brew install cmake doxygen
 $ git clone https://github.com/HollowCore/HollowCore.git
 $ cd HollowCore
 $ doxygen
+$ open html/index.html
+```
+
+## Documentation Generation with Call Graph Images
+```zsh
+$ brew install cmake doxygen graphviz
+$ git clone https://github.com/HollowCore/HollowCore.git
+$ cd HollowCore
+$ (cat Doxyfile ; echo "HAVE_DOT=YES") | doxygen -
 $ open html/index.html
 ```
 
@@ -135,18 +144,24 @@ $ mkdir build
 $ cd build
 $ cmake .. -DCOVERAGE=1
 $ make hollowcorecoverage
-$ firefox html/index.html
+$ firefox hollowcorecoverage/html/index.html
 ```
 
 ## Documentation Generation
 ```bash
-$ sudo apt install build-essential cmake git doxygen graphviz
+$ sudo apt install build-essential cmake doxygen
 $ git clone https://github.com/HollowCore/HollowCore.git
 $ cd HollowCore
-$ mkdir build
-$ cd build
-$ cmake .. -DCOVERAGE=1
-$ make hollowcorecoverage
+$ doxygen
+$ firefox html/index.html
+```
+
+## Documentation Generation with Call Graph Images
+```bash
+$ brew install build-essential cmake doxygen graphviz
+$ git clone https://github.com/HollowCore/HollowCore.git
+$ cd HollowCore
+$ (cat Doxyfile ; echo "HAVE_DOT=YES") | doxygen -
 $ firefox html/index.html
 ```
 

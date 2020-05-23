@@ -107,6 +107,69 @@ CTEST(HCRectangle, Queries) {
     // TODO: Test negative rectangles for rectangle containment
 }
 
+CTEST(HCRectangle, Overlap) {
+    // Test full overlap
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0))));
+    
+    // Test partial overlaps
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.0, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-1.0, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, +0.0), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.0, -1.0), HCSizeMake(1.0, 1.0))));
+    
+    // Test exact overlap of edges
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.5, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-1.5, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, +0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, -1.5), HCSizeMake(1.0, 1.0))));
+    
+    // Test exact overlap of corners
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.5, +0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-1.5, +0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.5, -1.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_TRUE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-1.5, -1.5), HCSizeMake(1.0, 1.0))));
+    
+    // Test non-overlap
+    ASSERT_FALSE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(+0.5000001, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_FALSE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-1.5000001, -0.5), HCSizeMake(1.0, 1.0))));
+    ASSERT_FALSE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, +0.5000001), HCSizeMake(1.0, 1.0))));
+    ASSERT_FALSE(HCRectangleOverlapsRectangle(
+        HCRectangleMake(HCPointMake(-0.5, -0.5), HCSizeMake(1.0, 1.0)),
+        HCRectangleMake(HCPointMake(-0.5, -1.5000001), HCSizeMake(1.0, 1.0))));
+}
+
 CTEST(HCRectangle, Standardize) {
     HCRectangle inverted = HCRectangleMake(HCPointMake(15.0, 4.0), HCSizeMake(-3.0, -2.0));
     HCRectangle standardized = HCRectangleStandardize(inverted);

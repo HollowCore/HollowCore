@@ -124,25 +124,25 @@ void HCJSONValueAppendToData(HCJSONValueRef value, HCDataRef data) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Query
 //----------------------------------------------------------------------------------------------------------------------------------
-HCJSONValueType HCJSONValueTypeForObject(HCJSONValueRef object) {
+HCJSONValueType HCJSONValueTypeForObject(HCJSONValueRef value) {
     // Query the object type to determine if it's kind is of one of the corresponding JSON object types
-    if (object == NULL) {
+    if (value == NULL) {
         return HCJSONValueTypeNull;
     }
-    if (HCObjectIsOfKind(object, HCNumberType)) {
-        HCNumberRef number = (HCNumberRef)object;
+    if (HCObjectIsOfKind(value, HCNumberType)) {
+        HCNumberRef number = (HCNumberRef)value;
         if (HCNumberIsBoolean(number)) {
             return HCNumberAsBoolean(number) ? HCJSONValueTypeTrue : HCJSONValueTypeFalse;
         }
         return HCJSONValueTypeNumber;
     }
-    if (HCObjectIsOfKind(object, HCStringType)) {
+    if (HCObjectIsOfKind(value, HCStringType)) {
         return HCJSONValueTypeString;
     }
-    if (HCObjectIsOfKind(object, HCListType)) {
+    if (HCObjectIsOfKind(value, HCListType)) {
         return HCJSONValueTypeArray;
     }
-    if (HCObjectIsOfKind(object, HCMapType)) {
+    if (HCObjectIsOfKind(value, HCMapType)) {
         return HCJSONValueTypeObject;
     }
     return HCJSONValueTypeUnknown;

@@ -86,6 +86,34 @@ void HCThreadPrint(HCThreadRef self, FILE* stream) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Attributes
+//----------------------------------------------------------------------------------------------------------------------------------
+void* HCThreadContext(HCThreadRef self) {
+    return self->context;
+}
+
+HCThreadOption HCThreadOptions(HCThreadRef self) {
+    return self->options;
+}
+
+// TODO: Should these options exist? If so enable them and expose them in the public header.
+#if 0
+void HCThreadSetOptions(HCThreadRef self, HCThreadOption options) {
+    self->options |= options;
+}
+
+void HCThreadUnsetOptions(HCThreadRef self, HCThreadOption options) {
+    // Determine the options that are currently enabled so they can be removed via XOR
+    HCThreadOption removeMask = self->options & options;
+    self->options ^= removeMask;
+}
+
+void HCThreadClearOptions(HCThreadRef self) {
+    self->options = HCThreadOptionNone;
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Current Thread
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,25 +141,25 @@ HCThreadRef HCThreadGetCurrent(void) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Execution State
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCThreadStart(HCThreadRef self) {
+void HCThreadExecute(HCThreadRef self) {
     pthread_create(&self->pthread, NULL, (void*)HCThreadStartEntry, self);
     atomic_store(&self->isJoined, false);
 }
 
 void HCThreadCancel(HCThreadRef self) {
-    atomic_store(&self->isCanceled, true);
+    atomic_store(&self->isCancelled, true);
 }
 
 HCBoolean HCThreadIsExecuting(HCThreadRef self) {
     return atomic_load(&self->isExecuting);
 }
 
-HCBoolean HCThreadIsCanceled(HCThreadRef self) {
-    return atomic_load(&self->isCanceled);
+HCBoolean HCThreadIsCancelled(HCThreadRef self) {
+    return atomic_load(&self->isCancelled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Memory Management
+// MARK: - Joining Threads
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCThreadIsJoined(HCThreadRef self) {
     return atomic_load(&self->isJoined);
@@ -142,10 +170,6 @@ void HCThreadJoin(HCThreadRef self) {
         pthread_join(self->pthread, NULL);
     }
     // TODO: Log error if called when not needed?
-}
-
-void* HCThreadGetContext(HCThreadRef self) {
-    return self->context;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -160,27 +184,3 @@ void* HCThreadStartEntry(HCThreadRef self) {
 
     return NULL;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Options
-//----------------------------------------------------------------------------------------------------------------------------------
-HCThreadOption HCThreadGetOptions(HCThreadRef self) {
-    return self->options;
-}
-
-// TODO: Should these options exist? If so enable them and expose them in the public header.
-#if 0
-void HCThreadSetOptions(HCThreadRef self, HCThreadOption options) {
-    self->options |= options;
-}
-
-void HCThreadUnsetOptions(HCThreadRef self, HCThreadOption options) {
-    // Determine the options that are currently enabled so they can be removed via XOR
-    HCThreadOption removeMask = self->options & options;
-    self->options ^= removeMask;
-}
-
-void HCThreadClearOptions(HCThreadRef self) {
-    self->options = HCThreadOptionNone;
-}
-#endif

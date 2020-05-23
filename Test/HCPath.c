@@ -923,6 +923,10 @@ CTEST(HCPath, ContourIndexFromElement) {
         ASSERT_TRUE(HCIntegerIsEqual(HCPathIndexOfContourContainingElement(path, HCPathElementCount(pathA) + elementIndex), 1));
     }
     
+    ASSERT_TRUE(HCContourIsEqual(HCPathCurrentContour(pathA), contourA));
+    ASSERT_TRUE(HCContourIsEqual(HCPathCurrentContour(pathB), contourB));
+    ASSERT_TRUE(HCContourIsEqual(HCPathCurrentContour(path), contourB));
+    
     HCRelease(pathA);
     HCRelease(pathB);
     HCRelease(path);
@@ -1328,7 +1332,7 @@ CTEST(HCPath, MutabilityAndPolylines) {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Boolean Operations
-// HCPath+BooleanOperations.h
+// HCPath+SetOperations.h
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCPath, Union) {

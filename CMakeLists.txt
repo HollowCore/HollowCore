@@ -27,31 +27,39 @@ endif ()
 
 # HollowCore Library
 set(HOLLOWCORE_LIBRARY_NAME hollowcore)
+
 set(SOURCES ${SOURCES} Source/Core/HCCore.c)
 set(SOURCES ${SOURCES} Source/Core/HCObject.c)
+
 set(SOURCES ${SOURCES} Source/Data/HCNumber.c)
 set(SOURCES ${SOURCES} Source/Data/HCString.c)
 set(SOURCES ${SOURCES} Source/Data/HCData.c)
+
 set(SOURCES ${SOURCES} Source/Container/HCList.c)
 set(SOURCES ${SOURCES} Source/Container/HCSet.c)
 set(SOURCES ${SOURCES} Source/Container/HCMap.c)
+
+set(SOURCES ${SOURCES} Source/JSON/HCJSON.c)
+
+set(SOURCES ${SOURCES} Source/Thread/HCThread.c)
+set(SOURCES ${SOURCES} Source/Thread/HCLock.c)
+set(SOURCES ${SOURCES} Source/Thread/HCCondition.c)
+
 set(SOURCES ${SOURCES} Source/Geometry/HCPoint.c)
 set(SOURCES ${SOURCES} Source/Geometry/HCSize.c)
 set(SOURCES ${SOURCES} Source/Geometry/HCRectangle.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCContour.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCContourCurve.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCPath.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCPath+Shapes.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCPath+SetOperations.c)
+set(SOURCES ${SOURCES} Source/Geometry/HCPath+SVG.c)
+
 set(SOURCES ${SOURCES} Source/Graphic/HCColor.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCRaster.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCRaster+Draw.c)
 set(SOURCES ${SOURCES} Source/Graphic/HCRaster+File.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCContour.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCContourCurve.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCPath.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCPath+BooleanOperations.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCPath+Shapes.c)
-set(SOURCES ${SOURCES} Source/Graphic/HCPath+SVG.c)
-set(SOURCES ${SOURCES} Source/JSON/HCJSON.c)
-set(SOURCES ${SOURCES} Source/Thread/HCThread.c)
-set(SOURCES ${SOURCES} Source/Thread/HCLock.c)
-set(SOURCES ${SOURCES} Source/Thread/HCCondition.c)
+
 set(LIB_SOURCES ${LIB_SOURCES} Source/JSON/json-parser/json.c)
 add_library(${HOLLOWCORE_LIBRARY_NAME} ${SOURCES} ${LIB_SOURCES})
 

@@ -1455,8 +1455,7 @@ void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint p
     // Determine if quadratic curve bounds rectangles overlap
     HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
     HCRectangle qr = HCContourCurveBoundsQuadratic(q0, qc, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         return;
     }
     
@@ -1467,7 +1466,7 @@ void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint p
     HCReal qtSpan = (qte - qts);
     HCReal qt = qts + qtSpan * 0.5;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.001;
+    HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
@@ -1506,8 +1505,7 @@ void HCContourCurveIntersectionQuadraticQuadratic(HCPoint p0, HCPoint pc, HCPoin
     // Determine if quadratic curve bounds rectangles overlap at all
     HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
     HCRectangle qr = HCContourCurveBoundsQuadratic(q0, qc, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         if (count != NULL) {
             *count = 0;
         }
@@ -1541,8 +1539,7 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     // Determine if quadratic and cubic curve bounds rectangles overlap
     HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
     HCRectangle qr = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         return;
     }
     
@@ -1553,7 +1550,7 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     HCReal qtSpan = (qte - qts);
     HCReal qt = qts + qtSpan * 0.5;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.001;
+    HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
@@ -1594,8 +1591,7 @@ void HCContourCurveIntersectionQuadraticCubic(HCPoint p0, HCPoint pc, HCPoint p1
     // Determine if quadratic and cubic curve bounds rectangles overlap at all
     HCRectangle pr = HCContourCurveBoundsQuadratic(p0, pc, p1);
     HCRectangle qr = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         if (count != NULL) {
             *count = 0;
         }
@@ -1629,8 +1625,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     // Determine if cubic curve bounds rectangles overlap
     HCRectangle pr = HCContourCurveBoundsCubic(p0, pc0, pc1, p1);
     HCRectangle qr = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection) && !HCRectangleContainsPoint(pr, intersection.origin) && !HCRectangleContainsPoint(qr, intersection.origin)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         return;
     }
     
@@ -1641,7 +1636,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     HCReal qtSpan = (qte - qts);
     HCReal qt = qts + qtSpan * 0.5;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.001;
+    HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
@@ -1684,8 +1679,7 @@ void HCContourCurveIntersectionCubicCubic(HCPoint p0, HCPoint pc0, HCPoint pc1, 
     // Determine if cubic curve bounds rectangles overlap at all
     HCRectangle pr = HCContourCurveBoundsCubic(p0, pc0, pc1, p1);
     HCRectangle qr = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
-    HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (!HCRectangleOverlapsRectangle(pr, qr)) {
         if (count != NULL) {
             *count = 0;
         }

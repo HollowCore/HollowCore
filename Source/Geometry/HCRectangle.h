@@ -24,8 +24,8 @@ typedef struct HCRectangle {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCRectangleInvalidStatic   ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
-#define HCRectangleZeroStatic      ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
+#define HCRectangleInvalidStatic ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
+#define HCRectangleZeroStatic ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
 
 static const HCRectangle HCRectangleInvalid = HCRectangleInvalidStatic;
 static const HCRectangle HCRectangleZero = HCRectangleZeroStatic;
@@ -64,6 +64,7 @@ HCBoolean HCRectangleIsInfinite(HCRectangle rectangle);
 HCBoolean HCRectangleIsEmpty(HCRectangle rectangle);
 HCBoolean HCRectangleContainsPoint(HCRectangle rectangle, HCPoint point);
 HCBoolean HCRectangleContainsRectangle(HCRectangle rectangle, HCRectangle other);
+HCBoolean HCRectangleOverlapsRectangle(HCRectangle rectangle, HCRectangle other);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Calculated Properties

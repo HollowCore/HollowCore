@@ -29,5 +29,5 @@ void HCThreadFunctionDetatch(void* context) {
 
 CTEST(HCThread_Internal, Detatched) {
     HCThreadRef thread = HCThreadCreate(HCThreadFunctionDetatch, NULL);
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
 }

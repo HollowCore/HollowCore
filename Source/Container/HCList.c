@@ -239,6 +239,13 @@ void HCListRemoveLastObjectEqualToObject(HCListRef self, HCRef object) {
     HCListRemoveObjectEqualToObject(self, self->count, true, object);
 }
 
+void HCListRemoveObjectEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object) {
+    HCInteger index = HCListIndexOfObject(self, searchIndex, reverseSearch, object);
+    if (HCListContainsIndex(self, index)) {
+        HCListRemoveObjectAtIndex(self, index);
+    }
+}
+
 void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object) {
     // Remove all objects equal to the requested object, back to front
     // TODO: Deque better for speed?
@@ -246,13 +253,6 @@ void HCListRemoveAllObjectsEqualToObject(HCListRef self, HCRef object) {
         if (HCIsEqual(object, HCListObjectAtIndex(self, index))) {
             HCListRemoveObjectAtIndex(self, index);
         }
-    }
-}
-
-void HCListRemoveObjectEqualToObject(HCListRef self, HCInteger searchIndex, HCBoolean reverseSearch, HCRef object) {
-    HCInteger index = HCListIndexOfObject(self, searchIndex, reverseSearch, object);
-    if (HCListContainsIndex(self, index)) {
-        HCListRemoveObjectAtIndex(self, index);
     }
 }
 
@@ -365,7 +365,7 @@ void HCListForEach(HCListRef self, HCListForEachFunction forEachFunction, void* 
         return;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        forEachFunction(context, i.object);
+        forEachFunction(context, i.list, i.index, i.object);
     }
 }
 
@@ -375,7 +375,7 @@ HCListRef HCListFilterRetained(HCListRef self, HCListFilterFunction isIncluded, 
         return filtered;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        if (isIncluded(context, i.object)) {
+        if (isIncluded(context, i.list, i.index, i.object)) {
             HCListAddObject(filtered, i.object);
         }
     }
@@ -385,7 +385,7 @@ HCListRef HCListFilterRetained(HCListRef self, HCListFilterFunction isIncluded, 
 HCListRef HCListMapRetained(HCListRef self, HCListMapFunction transform, void* context) {
     HCListRef mapped = HCListCreateWithCapacity(HCListCount(self));
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        HCRef mappedValue = transform == NULL ? HCRetain(i.object) : transform(context, i.object);
+        HCRef mappedValue = transform == NULL ? HCRetain(i.object) : transform(context, i.list, i.index, i.object);
         HCListAddObjectReleased(mapped, mappedValue);
     }
     return mapped;
@@ -397,7 +397,7 @@ HCRef HCListReduceRetained(HCListRef self, HCRef initialValue, HCListReduceFunct
         return aggregateValue;
     }
     for (HCListIterator i = HCListIterationBegin(self); !HCListIterationHasEnded(&i); HCListIterationNext(&i)) {
-        HCRef intermediateValue = nextPartialResult(context, aggregateValue, i.object);
+        HCRef intermediateValue = nextPartialResult(context, aggregateValue, i.list, i.index, i.object);
         HCRelease(aggregateValue);
         aggregateValue = intermediateValue;
     }

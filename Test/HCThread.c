@@ -27,12 +27,12 @@ void HCThreadTestFunctionIsCurrentThread(void* context) {
     ASSERT_TRUE(*thread == HCThreadGetCurrent());
 }
 
-#define HCThreadFunctionWhileNotCanceledSleep (100)
-void HCThreadFunctionWhileNotCanceled(void* context) {
+#define HCThreadFunctionWhileNotCancelledSleep (100)
+void HCThreadFunctionWhileNotCancelled(void* context) {
     HCInteger timeoutCount = (HCInteger)context;
     HCInteger count = 0;
-    while (!HCThreadIsCanceled(HCThreadGetCurrent())) {
-        usleep(HCThreadFunctionWhileNotCanceledSleep);
+    while (!HCThreadIsCancelled(HCThreadGetCurrent())) {
+        usleep(HCThreadFunctionWhileNotCancelledSleep);
         count++;
         if (count > timeoutCount) {
             ASSERT_FAIL();
@@ -58,8 +58,8 @@ CTEST(HCThread, CreateWithOptions) {
     for (HCInteger i = 0; i < (HCInteger)(sizeof(options) / sizeof(HCThreadOption)); i++) {
         HCThreadOption option = options[i];
         HCThreadRef thread = HCThreadCreateWithOptions(HCThreadTestFunctionEmpty, NULL, option);
-        ASSERT_TRUE((HCThreadGetOptions(thread) & option) == option);
-        ASSERT_TRUE((HCThreadGetOptions(thread) ^ option) == 0);
+        ASSERT_TRUE((HCThreadOptions(thread) & option) == option);
+        ASSERT_TRUE((HCThreadOptions(thread) ^ option) == 0);
         HCRelease(thread);
     }
 }
@@ -68,7 +68,7 @@ CTEST(HCThread, Start) {
     HCInteger callCount = 0;
     HCThreadRef thread = HCThreadCreate(HCThreadTestFunctionIncrementCallCount, &callCount);
     
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     ASSERT_TRUE(!HCThreadIsJoined(thread));
     HCThreadJoin(thread);
     ASSERT_TRUE(HCThreadIsJoined(thread));
@@ -82,17 +82,17 @@ CTEST(HCThread, Current) {
     HCThreadRef thread = NULL;
     thread = HCThreadCreate(HCThreadTestFunctionIsCurrentThread, &thread);
     
-    HCThreadStart(thread);
+    HCThreadExecute(thread);
     HCThreadJoin(thread);
     
     HCRelease(thread);
 }
 
 CTEST(HCThread, IsExecutingThenCancel) {
-    HCThreadRef thread = HCThreadCreate(HCThreadFunctionWhileNotCanceled, (void*)100);
+    HCThreadRef thread = HCThreadCreate(HCThreadFunctionWhileNotCancelled, (void*)100);
     
-    HCThreadStart(thread);
-    usleep(HCThreadFunctionWhileNotCanceledSleep * 2);
+    HCThreadExecute(thread);
+    usleep(HCThreadFunctionWhileNotCancelledSleep * 2);
     ASSERT_TRUE(HCThreadIsExecuting(thread));
     HCThreadCancel(thread);
     HCThreadJoin(thread);
@@ -104,7 +104,7 @@ CTEST(HCThread, IsExecutingThenCancel) {
 CTEST(HCThread, GetContext) {
     HCInteger context = 1;
     HCThreadRef thread = HCThreadCreate(HCThreadTestFunctionIncrementCallCount, &context);
-    ASSERT_TRUE(HCThreadGetContext(thread) == &context);
+    ASSERT_TRUE(HCThreadContext(thread) == &context);
     HCRelease(thread);
 }
 
@@ -121,18 +121,18 @@ CTEST(HCThread, OptionFreeContextOnDestroy) {
 }
 
 CTEST(HCThread, HCThreadOptionJoinOnDestroy) {
-    HCThreadRef thread = HCThreadCreateWithOptions(HCThreadFunctionWhileNotCanceled, (void*)100, HCThreadOptionJoinOnDestroy);
-    HCThreadStart(thread);
-    usleep(HCThreadFunctionWhileNotCanceledSleep * 2);
+    HCThreadRef thread = HCThreadCreateWithOptions(HCThreadFunctionWhileNotCancelled, (void*)100, HCThreadOptionJoinOnDestroy);
+    HCThreadExecute(thread);
+    usleep(HCThreadFunctionWhileNotCancelledSleep * 2);
     ASSERT_TRUE(HCThreadIsExecuting(thread));
     HCThreadCancel(thread);
     HCRelease(thread);
 }
 
 CTEST(HCThread, OptionCancelOnDestroy) {
-    HCThreadRef thread = HCThreadCreateWithOptions(HCThreadFunctionWhileNotCanceled, (void*)100, HCThreadOptionCancelOnDestroy);
-    HCThreadStart(thread);
-    usleep(HCThreadFunctionWhileNotCanceledSleep * 2);
+    HCThreadRef thread = HCThreadCreateWithOptions(HCThreadFunctionWhileNotCancelled, (void*)100, HCThreadOptionCancelOnDestroy);
+    HCThreadExecute(thread);
+    usleep(HCThreadFunctionWhileNotCancelledSleep * 2);
     ASSERT_TRUE(HCThreadIsExecuting(thread));
     HCRelease(thread);
 }

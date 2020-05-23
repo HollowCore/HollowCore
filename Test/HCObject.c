@@ -19,8 +19,9 @@ CTEST(HCObject, Creation) {
 
 CTEST(HCObject, Type) {
     HCNumberRef number = HCNumberCreate();
-    ASSERT_TRUE(strcmp(HCObjectName(number), HCNumberType->name) == 0);
-    ASSERT_TRUE(HCObjectAncestor(number) == HCNumberType->ancestor);
+    ASSERT_TRUE(HCObjectTypeOf(number) == HCNumberType);
+    ASSERT_TRUE(strcmp(HCObjectTypeName(number), HCNumberType->name) == 0);
+    ASSERT_TRUE(HCObjectTypeAncestor(number) == HCNumberType->ancestor);
     ASSERT_FALSE(HCObjectHasAncestor(number, HCNumberType));
     ASSERT_TRUE(HCObjectHasAncestor(number, HCObjectType));
     ASSERT_FALSE(HCObjectHasAncestor(NULL, HCObjectType));

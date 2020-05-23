@@ -42,6 +42,8 @@ void HCConditionInit(void* memory) {
     
     self->lock = HCLockCreate();
     pthread_cond_init(&self->condition, NULL);
+    
+    HCObjectSetType(self, HCConditionType);
 }
 
 void HCConditionDestroy(HCConditionRef self) {
@@ -148,30 +150,33 @@ void* HCConditionWaitThenExecuteAcquired(HCConditionRef self, HCConditionExecute
     return functionResult;
 }
 
-HCBoolean HCConditionWaitTimeout(HCConditionRef self, HCReal secondsToTimeout) {
-    long wholeSecondsToTimeout = (long)secondsToTimeout;
-    double nanoSecondsToTimeout = secondsToTimeout - (double)((long)wholeSecondsToTimeout);
-    nanoSecondsToTimeout *= 1000000000; // Seconds to Nano Seconds conversion
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Waiting with Timeout
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCBoolean HCConditionWaitTimeout(HCConditionRef self, HCReal timeout) {
+    long timeoutWholeSeconds = (long)timeout;
+    double timeoutNanoseconds = (timeout - (double)((long)timeoutWholeSeconds)) * 1000000000.0;
     
     struct timeval timeval;
-    struct timespec timeout;
+    struct timespec timeoutSpec;
     gettimeofday(&timeval, NULL);
-    timeout.tv_sec = timeval.tv_sec + wholeSecondsToTimeout;
-    timeout.tv_nsec = timeval.tv_usec * 1000 + (long)nanoSecondsToTimeout;
+    timeoutSpec.tv_sec = timeval.tv_sec + timeoutWholeSeconds;
+    timeoutSpec.tv_nsec = timeval.tv_usec * 1000 + (long)timeoutNanoseconds;
 
-    HCBoolean result = pthread_cond_timedwait(&self->condition, &self->lock->mutex, &timeout) == ETIMEDOUT;
+    HCBoolean result = pthread_cond_timedwait(&self->condition, &self->lock->mutex, &timeoutSpec) == ETIMEDOUT;
     return result;
 }
 
-HCBoolean HCConditionWaitTimeoutAcquired(HCConditionRef self, HCReal secondsToTimeout) {
+HCBoolean HCConditionWaitTimeoutAcquired(HCConditionRef self, HCReal timeout) {
     HCConditionAquire(self);
-    HCBoolean didTimeout = HCConditionWaitTimeout(self, secondsToTimeout);
+    HCBoolean didTimeout = HCConditionWaitTimeout(self, timeout);
     HCConditionRelinquish(self);
     return didTimeout;
 }
 
-void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
-    HCBoolean timeoutResult = HCConditionWaitTimeout(self, secondsToTimeout);
+void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal timeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
+    HCBoolean timeoutResult = HCConditionWaitTimeout(self, timeout);
     if (didTimeout != NULL) {
         *didTimeout = timeoutResult;
     }
@@ -181,14 +186,17 @@ void HCConditionWaitTimeoutThenExecute(HCConditionRef self, HCReal secondsToTime
             *result = functionResult;
         }
     }
-    
 }
 
-void HCConditionWaitTimeoutThenExecuteAcquired(HCConditionRef self, HCReal secondsToTimeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
+void HCConditionWaitTimeoutThenExecuteAcquired(HCConditionRef self, HCReal timeout, HCConditionExecuteAcquiredFunction function, void* context, void** result, HCBoolean* didTimeout) {
     HCConditionAquire(self);
-    HCConditionWaitTimeoutThenExecute(self, secondsToTimeout, function, context, result, didTimeout);
+    HCConditionWaitTimeoutThenExecute(self, timeout, function, context, result, didTimeout);
     HCConditionRelinquish(self);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Waiting with Timeout Query
+//----------------------------------------------------------------------------------------------------------------------------------
 
 void HCConditionWaitWhile(HCConditionRef self, HCConditionWaitWhileFunction waitWhile, void* context, HCReal waitIntervalDuration) {
     if (waitWhile == NULL) {
@@ -211,6 +219,7 @@ void* HCConditionWaitWhileThenExecute(HCConditionRef self, HCConditionWaitWhileF
     if (function == NULL) {
         return NULL;
     }
+    // TODO: Shouldn't the waitWhile function have some way to indicate that the function should not be executed?
     return function(functionContext);
 }
 

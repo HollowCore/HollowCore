@@ -1,5 +1,5 @@
 ///
-/// @file HCPath+BooleanOperations.h
+/// @file HCPath+SetOperations.h
 /// @ingroup HollowCore
 ///
 /// @author Matt Stoker
@@ -7,8 +7,8 @@
 /// @copyright © 2020 HollowCore Contributors. MIT License.
 ///
 
-#ifndef HCPath_BooleanOperations_h
-#define HCPath_BooleanOperations_h
+#ifndef HCPath_SetOperations_h
+#define HCPath_SetOperations_h
 
 #include "HCPath.h"
 
@@ -24,4 +24,4 @@ typedef enum HCPathCombineOperation {
 
 HCPathRef HCPathCombine(HCPathRef self, HCPathRef other, HCPathCombineOperation operation);
 
-#endif /* HCPath_BooleanOperations_h */
+#endif /* HCPath_SetOperations_h */
