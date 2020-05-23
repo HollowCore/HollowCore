@@ -676,6 +676,7 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             HCContourCurve start = HCContourCurveMakeLinear(element.points[0]);
             HCDataRef contourData = HCDataCreateWithBytes(sizeof(start), (HCByte*)&start);
             HCListAddObjectReleased(self->contours, contourData);
+            // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
             HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
         } break;
         case HCPathCommandAddLine:
@@ -701,12 +702,14 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             
             // Add the contour curve to the current contour and update the contour atlas
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
+            // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
             HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
         } break;
         case HCPathCommandCloseContour: {
             // Mark the current contour as closed (if there is one to mark, as a path can be closed with no other elements)
             HCDataRef contourData = HCListLastObject(self->contours);
             if (contourData != NULL) {
+                // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
                 HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), true);
             }
         } break;
@@ -782,6 +785,7 @@ void HCPathRemoveElement(HCPathRef self) {
                 HCListRemoveObject(self->contours);
             }
             else {
+                // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
                 HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), curveCount, false);
             }
         }
@@ -790,6 +794,7 @@ void HCPathRemoveElement(HCPathRef self) {
             HCDataRef contourData = HCListLastObject(self->contours);
             if (contourData != NULL) {
                 HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+                // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
                 HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), curveCount, false);
             }
         } break;

@@ -129,7 +129,7 @@ HCInteger HCDataAsInteger(HCDataRef self) {
 }
 
 HCBoolean HCDataIsReal(HCDataRef self) {
-    return self->size == (HCInteger)sizeof(HCReal) && !isnan(*(HCReal*)self->data);
+    return self->size == (HCInteger)sizeof(HCReal) && !HCRealIsInvalid(*(HCReal*)self->data);
 }
 
 HCReal HCDataAsReal(HCDataRef self) {
@@ -139,6 +139,10 @@ HCReal HCDataAsReal(HCDataRef self) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+void HCDataChangeBytes(HCDataRef self, HCInteger location, HCInteger size, const HCByte* bytes) {
+    memcpy(self->data + location, bytes, size);
+}
+
 void HCDataClear(HCDataRef self) {
     HCDataRemoveBytes(self, self->size);
 }

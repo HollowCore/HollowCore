@@ -99,7 +99,7 @@ void HCContourPrint(const HCContour* contour, FILE* stream) {
         HCContourCurvePrint(HCContourCurveAt(contour, curveIndex), stream);
     }
     fprintf(stream, ">");
-    fprintf(stream, ",closed:%s>", HCContourIsClosed(contour) ? "true" : "false");
+    fprintf(stream, ",closed:%s>", HCContourIsClosed(contour) ? "⊨" : "⊭");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

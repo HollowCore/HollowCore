@@ -11,9 +11,9 @@
 #define HCRaster_Draw_h
 
 #include "HCRaster.h"
-#include "HCContour.h"
-#include "HCPath.h"
-#include "HCPath+SVG.h"
+#include "../Geometry/HCContour.h"
+#include "../Geometry/HCPath.h"
+#include "../Geometry/HCPath+SVG.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions

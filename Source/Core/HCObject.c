@@ -18,6 +18,10 @@ const static HCInteger HCObjectReferenceCountDestructionValue = 1;
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Type Query
 //----------------------------------------------------------------------------------------------------------------------------------
+HCBoolean HCTypeIsOfType(HCType type, HCType other) {
+    return (type != NULL && other != NULL) && (type == other || strcmp(type->name, other->name) == 0);
+}
+
 HCBoolean HCTypeHasAncestor(HCType type, HCType other) {
     // Reject type checks against the null type
     if (type == NULL) {
@@ -33,19 +37,19 @@ HCBoolean HCTypeHasAncestor(HCType type, HCType other) {
     return false;
 }
 
-HCBoolean HCTypeIsOfType(HCType type, HCType other) {
-    return (type != NULL && other != NULL) && (type == other || strcmp(type->name, other->name) == 0);
-}
-
 HCBoolean HCTypeIsOfKind(HCType type, HCType other) {
     return HCTypeIsOfType(type, other) || HCTypeHasAncestor(type, other);
 }
 
-HCTypeName HCObjectName(HCRef object) {
+HCType HCObjectTypeOf(HCRef object) {
+    return ((HCObjectRef)object)->type;
+}
+
+HCTypeName HCObjectTypeName(HCRef object) {
     return ((HCObjectRef)object)->type->name;
 }
 
-HCType HCObjectAncestor(HCRef object) {
+HCType HCObjectTypeAncestor(HCRef object) {
     return ((HCObjectRef)object)->type->ancestor;
 }
 

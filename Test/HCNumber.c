@@ -164,6 +164,20 @@ CTEST(HCNumber, EqualHash) {
     HCRelease(trueNumber);
     HCRelease(oneNumber);
     HCRelease(oneRealNumber);
+    
+    HCNumberRef twoNumber = HCNumberCreateWithInteger(2);
+    HCNumberRef twoRealNumber = HCNumberCreateWithReal(2.0);
+    HCNumberRef twoPointFive = HCNumberCreateWithReal(2.5);
+    ASSERT_TRUE(HCNumberIsEqual(twoNumber, twoRealNumber));
+    ASSERT_TRUE(HCNumberIsEqual(twoRealNumber, twoNumber));
+    ASSERT_FALSE(HCNumberIsEqual(twoRealNumber, twoPointFive));
+    ASSERT_FALSE(HCNumberIsEqual(twoPointFive, twoRealNumber));
+    ASSERT_FALSE(HCNumberIsEqual(twoNumber, twoPointFive));
+    ASSERT_FALSE(HCNumberIsEqual(twoPointFive, twoNumber));
+    ASSERT_EQUAL(HCNumberHashValue(twoNumber), HCNumberHashValue(twoRealNumber));
+    HCRelease(twoNumber);
+    HCRelease(twoRealNumber);
+    HCRelease(twoPointFive);
 }
 
 CTEST(HCNumber, Print) {
