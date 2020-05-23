@@ -765,7 +765,7 @@ CTEST(HCRaster, DrawDinosaur) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawCanonical) {
+CTEST(HCRaster, DrawCurveCanonical) {
     // Define curve whose canonical representation is to be drawn
     HCPoint canonical = HCContourCurveCanonical(HCPointMake(0.0, 0.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
     
@@ -874,6 +874,36 @@ CTEST(HCRaster, DrawCanonical) {
     HCRelease(t0LoopPath);
     HCRelease(t1LoopPath);
     HCRelease(cuspPath);
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawCurveBoundsAndExtrema) {
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.8);
+    HCPoint qc0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint qc1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    
+    HCRectangle bounds = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
+    HCReal minX = HCRectangleMinX(bounds);
+    HCReal minY = HCRectangleMinY(bounds);
+    HCReal maxX = HCRectangleMaxX(bounds);
+    HCReal maxY = HCRectangleMaxY(bounds);
+    
+    HCInteger count = 0;
+    HCReal extrema[9] = { NAN, NAN, NAN };
+    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, &count, extrema);
+    
+    HCRasterRef raster = HCRasterCreate(100.0, 100.0);
+    HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+    HCRasterDrawQuad(raster, minX, minY, maxX, minY, maxX, maxY, minX, maxY, HCColorYellow, HCColorYellow, HCColorYellow, HCColorYellow);
+    for (HCInteger extremaIndex = 0; extremaIndex < count; extremaIndex++) {
+        HCReal extreme = extrema[extremaIndex];
+        HCPoint extremePoint = HCContourCurveValueCubic(q0, qc0, qc1, q1, extreme);
+        HCRasterDrawEllipse(raster, extremePoint.x, extremePoint.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+    }
+    HCRasterSaveBMP(raster, "curve_cubic_bounds_extrema.bmp");
     HCRelease(raster);
 }
 
@@ -1081,7 +1111,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
                 
                 for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
                     HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
-                    HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.y, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                    HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                     HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
                 }
                 
@@ -1127,7 +1157,7 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
                     
                     for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
                         HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
-                        HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.y, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                        HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                         HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
                     }
                     

@@ -1521,9 +1521,11 @@ void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint p
     // When the parameter span being considered for intersection is small enough, call its center an intersection
     // TODO: How small?
     HCReal ptSpan = (pte - pts);
-    HCReal pt = pts + ptSpan * 0.5;
+    HCReal pSplit = 0.5;
+    HCReal pt = pts + ptSpan * pSplit;
     HCReal qtSpan = (qte - qts);
-    HCReal qt = qts + qtSpan * 0.5;
+    HCReal qSplit = 0.5;
+    HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
     HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
@@ -1544,14 +1546,14 @@ void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint p
     HCPoint pep0 = HCPointInvalid;
     HCPoint pec = HCPointInvalid;
     HCPoint pep1 = HCPointInvalid;
-    HCContourCurveSplitQuadratic(p0, pc, p1, pt, &psp0, &psc, &psp1, &pep0, &pec, &pep1);
+    HCContourCurveSplitQuadratic(p0, pc, p1, pSplit, &psp0, &psc, &psp1, &pep0, &pec, &pep1);
     HCPoint qsp0 = HCPointInvalid;
     HCPoint qsc = HCPointInvalid;
     HCPoint qsp1 = HCPointInvalid;
     HCPoint qep0 = HCPointInvalid;
     HCPoint qec = HCPointInvalid;
     HCPoint qep1 = HCPointInvalid;
-    HCContourCurveSplitQuadratic(q0, qc, q1, qt, &qsp0, &qsc, &qsp1, &qep0, &qec, &qep1);
+    HCContourCurveSplitQuadratic(q0, qc, q1, qSplit, &qsp0, &qsc, &qsp1, &qep0, &qec, &qep1);
     
     // Search for overlaps among the 4 resulting curves
     HCContourCurveIntersectionQuadraticQuadraticRecursive(psp0, psc, psp1, pts, pt, qsp0, qsc, qsp1, qts, qt, count, t, u);
@@ -1605,9 +1607,11 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     // When the parameter span being considered for intersection is small enough, call its center an intersection
     // TODO: How small?
     HCReal ptSpan = (pte - pts);
-    HCReal pt = pts + ptSpan * 0.5;
+    HCReal pSplit = 0.5;
+    HCReal pt = pts + ptSpan * pSplit;
     HCReal qtSpan = (qte - qts);
-    HCReal qt = qts + qtSpan * 0.5;
+    HCReal qSplit = 0.5;
+    HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
     HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
@@ -1628,7 +1632,7 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     HCPoint pep0 = HCPointInvalid;
     HCPoint pec = HCPointInvalid;
     HCPoint pep1 = HCPointInvalid;
-    HCContourCurveSplitQuadratic(p0, pc, p1, pt, &psp0, &psc, &psp1, &pep0, &pec, &pep1);
+    HCContourCurveSplitQuadratic(p0, pc, p1, pSplit, &psp0, &psc, &psp1, &pep0, &pec, &pep1);
     HCPoint qsp0 = HCPointInvalid;
     HCPoint qsc0 = HCPointInvalid;
     HCPoint qsc1 = HCPointInvalid;
@@ -1637,7 +1641,7 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     HCPoint qec0 = HCPointInvalid;
     HCPoint qec1 = HCPointInvalid;
     HCPoint qep1 = HCPointInvalid;
-    HCContourCurveSplitCubic(q0, qc0, qc1, q1, qt, &qsp0, &qsc0, &qsc1, &qsp1, &qep0, &qec0, &qec1, &qep1);
+    HCContourCurveSplitCubic(q0, qc0, qc1, q1, qSplit, &qsp0, &qsc0, &qsc1, &qsp1, &qep0, &qec0, &qec1, &qep1);
     
     // Search for overlaps among the 4 resulting curves
     HCContourCurveIntersectionQuadraticCubicRecursive(psp0, psc, psp1, pts, pt, qsp0, qsc0, qsc1, qsp1, qts, qt, count, t, u);
@@ -1691,9 +1695,11 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     // When the parameter span being considered for intersection is small enough, call its center an intersection
     // TODO: How small?
     HCReal ptSpan = (pte - pts);
-    HCReal pt = pts + ptSpan * 0.5;
+    HCReal pSplit = 0.5;
+    HCReal pt = pts + ptSpan * pSplit;
     HCReal qtSpan = (qte - qts);
-    HCReal qt = qts + qtSpan * 0.5;
+    HCReal qSplit = 0.5;
+    HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
     HCReal tPrecision = 0.0001;
     if (tSpan < tPrecision) {
@@ -1716,7 +1722,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     HCPoint pec0 = HCPointInvalid;
     HCPoint pec1 = HCPointInvalid;
     HCPoint pep1 = HCPointInvalid;
-    HCContourCurveSplitCubic(p0, pc0, pc1, p1, pt, &psp0, &psc0, &psc1, &psp1, &pep0, &pec0, &pec1, &pep1);
+    HCContourCurveSplitCubic(p0, pc0, pc1, p1, pSplit, &psp0, &psc0, &psc1, &psp1, &pep0, &pec0, &pec1, &pep1);
     HCPoint qsp0 = HCPointInvalid;
     HCPoint qsc0 = HCPointInvalid;
     HCPoint qsc1 = HCPointInvalid;
@@ -1725,7 +1731,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     HCPoint qec0 = HCPointInvalid;
     HCPoint qec1 = HCPointInvalid;
     HCPoint qep1 = HCPointInvalid;
-    HCContourCurveSplitCubic(q0, qc0, qc1, q1, qt, &qsp0, &qsc0, &qsc1, &qsp1, &qep0, &qec0, &qec1, &qep1);
+    HCContourCurveSplitCubic(q0, qc0, qc1, q1, qSplit, &qsp0, &qsc0, &qsc1, &qsp1, &qep0, &qec0, &qec1, &qep1);
     
     // Search for overlaps among the 4 resulting curves
     HCContourCurveIntersectionCubicCubicRecursive(psp0, psc0, psc1, psp1, pts, pt, qsp0, qsc0, qsc1, qsp1, qts, qt, count, t, u);
