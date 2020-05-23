@@ -52,12 +52,14 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
-        sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy))) /
-        sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-    if (flatness < 1.0001) {
-        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
+    // Determine quadratic curve flatness
+    HCReal p0cDistance = sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0));
+    HCReal cp1Distance = sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
+    HCReal p0p1Distance = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    HCReal flatness = (p0cDistance + cp1Distance) / p0p1Distance;
+    HCReal flatnessThreshold = HCPathFlatnessNormal;
+    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+         HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }
 
@@ -74,12 +76,14 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
 
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +
-        sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) +
-        sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1))) /
-        sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
-    if (flatness < 1.0001) {
+    // Determine cubic curve flatness
+    HCReal p0c0Distance = sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0));
+    HCReal c0c1Distance = sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0));
+    HCReal c1p1Distance = sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1));
+    HCReal p0p1Distance = sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    HCReal flatness = (p0c0Distance + c0c1Distance + c1p1Distance) / p0p1Distance;
+    HCReal flatnessThreshold = HCPathFlatnessNormal;
+    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
         HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }

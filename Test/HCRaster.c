@@ -1007,6 +1007,140 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
     }
 }
 
+CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    HCPoint qc = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.8, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.2);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger pcIndex = 0; pcIndex < countX * countY; pcIndex++) {
+            HCPoint pc = points[pcIndex];
+            for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+                HCPoint p1 = points[p1Index];
+        
+                HCInteger intersectionCount = 0;
+                HCReal intersectionT[4] = { NAN, NAN, NAN, NAN };
+                HCReal intersectionU[4] = { NAN, NAN, NAN, NAN };
+                HCContourCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
+                if (intersectionCount == 0) {
+                    continue;
+                }
+                
+                HCRasterRef raster = HCRasterCreate(100, 100);
+                HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, pc.x, pc.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+                
+                for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                    HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
+                    HCRasterDrawQuadraticCurve(raster, q0.x, q0.y, qc.x, qc.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                    HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+                }
+                
+                char bmpFileName[1024];
+                sprintf(bmpFileName, "curve_intersection_qq_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                HCRasterSaveBMP(raster, bmpFileName);
+                HCRelease(raster);
+            }
+        }
+    }
+}
+
+CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint qc0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint qc1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger pcIndex = 0; pcIndex < countX * countY; pcIndex++) {
+            HCPoint pc = points[pcIndex];
+            for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+                HCPoint p1 = points[p1Index];
+        
+                HCInteger intersectionCount = 0;
+                HCReal intersectionT[6] = { NAN, NAN, NAN, NAN, NAN, NAN };
+                HCReal intersectionU[6] = { NAN, NAN, NAN, NAN, NAN, NAN };
+                HCContourCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+                if (intersectionCount == 0) {
+                    continue;
+                }
+                
+                HCRasterRef raster = HCRasterCreate(100, 100);
+                HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, pc.x, pc.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+                
+                for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                    HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                    HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.y, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                    HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+                }
+                
+                char bmpFileName[1024];
+                sprintf(bmpFileName, "curve_intersection_qc_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                HCRasterSaveBMP(raster, bmpFileName);
+                HCRelease(raster);
+            }
+        }
+    }
+}
+
+CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint qc0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint qc1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger pc0Index = 0; pc0Index < countX * countY; pc0Index++) {
+            HCPoint pc0 = points[pc0Index];
+            for (HCInteger pc1Index = 0; pc1Index < countX * countY; pc1Index++) {
+                HCPoint pc1 = points[pc1Index];
+                for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+                    HCPoint p1 = points[p1Index];
+        
+                    HCInteger intersectionCount = 0;
+                    HCReal intersectionT[9] = { NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN };
+                    HCReal intersectionU[9] = { NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN };
+                    HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+                    if (intersectionCount == 0) {
+                        continue;
+                    }
+                    
+                    HCRasterRef raster = HCRasterCreate(100, 100);
+                    HCRasterDrawCubicCurve(raster, p0.x, p0.y, pc0.x, pc0.y, pc1.x, pc1.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+                    
+                    for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                        HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                        HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.y, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                        HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+                    }
+                    
+                    char bmpFileName[1024];
+                    sprintf(bmpFileName, "curve_intersection_cc_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                    HCRasterSaveBMP(raster, bmpFileName);
+                    HCRelease(raster);
+                }
+            }
+        }
+    }
+}
+
 CTEST(HCRaster, DrawPathIntersection) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(
