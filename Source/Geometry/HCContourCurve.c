@@ -1277,7 +1277,7 @@ void HCContourCurveIntersectionLinearLinear(HCPoint p0, HCPoint p1, HCPoint q0, 
     HCReal intersectionT = ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
     HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
         
-    // Determine if the intersection is in range and report
+    // Validate intersection for use as t and u values
     if (intersectionT < 0.0 || intersectionT > 1.0 || intersectionU < 0.0 || intersectionU > 1.0) {
         if (count != NULL) {
             *count = 0;
@@ -1324,47 +1324,49 @@ void HCContourCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q
     p1 = HCPointMake(p1x, p1y);
     
     // Calculate zero crossing of the quadratic's y component function, as these are the intersection points with the curves aligned to the x-axis
-    HCInteger iCount = 0;
+    HCReal a = +1.0 * q0.y - 2.0 * qc.y + 1.0 * q1.y;
+    HCReal b = -2.0 * q0.y + 2.0 * qc.y;
+    HCReal c = +1.0 * q0.y;
+    HCReal roots[2] = { NAN, NAN };
+    HCReal discriminant = b * b - 4.0 * a * c;
+    if (discriminant >= 0.0) {
+        HCReal sqrtDiscriminant = sqrt(discriminant);
+        HCReal denominatorInverse = 1.0 / (2.0 * a);
+        roots[0] = (-b + sqrtDiscriminant) * denominatorInverse;
+        roots[1] = (-b - sqrtDiscriminant) * denominatorInverse;
+    }
+    
+    // Validate roots for use as t and u values
+    HCInteger rCount = 0;
     HCReal ts[2];
     HCReal us[2];
-    HCReal ax = +1.0 * q0.y - 2.0 * qc.y + 1.0 * q1.y;
-    HCReal bx = -2.0 * q0.y + 2.0 * qc.y;
-    HCReal cx = +1.0 * q0.y;
-    HCReal discriminantX = bx * bx - 4.0 * ax * cx;
-    if (discriminantX >= 0.0) {
-        HCReal sqrtDiscriminant = sqrt(discriminantX);
-        HCReal denominatorInverse = 1.0 / (2.0 * ax);
-        HCReal u0 = (-bx + sqrtDiscriminant) * denominatorInverse;
-        if (u0 >= 0.0 && u0 <= 1.0) {
-            HCPoint intersection0 = HCContourCurveValueQuadratic(q0, qc, q1, u0);
-            HCReal t0 = intersection0.x / p1.x;
-            if (t0 >= 0.0 && t0 < 1.0) {
-                ts[iCount] = t0;
-                us[iCount] = u0;
-                iCount++;
-            }
+    for (HCInteger rootIndex = 0; rootIndex < 2; rootIndex++) {
+        HCReal root = roots[rootIndex];
+        if (isnan(root)) {
+            continue;
         }
-        HCReal u1 = (-bx - sqrtDiscriminant) * denominatorInverse;
-        if (u1 >= 0.0 && u1 <= 1.0) {
-            HCPoint intersection1 = HCContourCurveValueQuadratic(q0, qc, q1, u1);
-            HCReal t1 = intersection1.x / p1.x;
-            if (t1 >= 0.0 && t1 < 1.0) {
-                ts[iCount] = t1;
-                us[iCount] = u1;
-                iCount++;
-            }
+        if (root < 0.0 || root > 1.0) {
+            continue;
         }
+        HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, root);
+        HCReal intersectionT = intersection.x / p1.x;
+        if (intersectionT < 0.0 || intersectionT > 1.0) {
+            continue;
+        }
+        ts[rCount] = intersectionT;
+        us[rCount] = root;
+        rCount++;
     }
     
     // Deliver results
     if (count != NULL) {
-        *count = iCount;
+        *count = rCount;
     }
     if (t != NULL) {
-        memcpy(t, ts, iCount * sizeof(HCReal));
+        memcpy(t, ts, rCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, iCount * sizeof(HCReal));
+        memcpy(u, us, rCount * sizeof(HCReal));
     }
 }
 
@@ -1372,7 +1374,7 @@ void HCContourCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, H
     // Translate points so the linear curve t0 anchor point is at the origin
     q0 = HCPointOffset(q0, -p0.x, -p0.y);
     qc0 = HCPointOffset(qc0, -p0.x, -p0.y);
-    qc1 = HCPointOffset(qc0, -p0.x, -p0.y);
+    qc1 = HCPointOffset(qc1, -p0.x, -p0.y);
     q1 = HCPointOffset(q1, -p0.x, -p0.y);
     p1 = HCPointOffset(p1, -p0.x, -p0.y);
     p0 = HCPointZero;
@@ -1400,49 +1402,99 @@ void HCContourCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, H
     p1 = HCPointMake(p1x, p1y);
     
     // Calculate zero crossing of the cubic's y component function, as these are the intersection points with the curves aligned to the x-axis
-    HCInteger iCount = 0;
+//    HCReal a = -1.0 * q0.y + 1.0 * qc0.y - 1.0 * qc1.y + 1.0 * q1.y;
+//    HCReal b = +3.0 * q0.y - 2.0 * qc0.y + 1.0 * qc1.y;
+//    HCReal c = -3.0 * q0.y + 1.0 * qc0.y;
+//    HCReal d = +1.0 * q0.y;
+    HCReal a = +3.0 * q0.y - 6.0 * qc0.y + 3.0 * qc1.y;
+    HCReal b = -3.0 * q0.y + 3.0 * qc0.y;
+    HCReal c = +1.0 * q0.y;
+    HCReal d = -1.0 * q0.y + 3.0 * qc0.y - 3.0 * qc1.y + 1.0 * q1.y;
+    HCReal roots[3] = { NAN, NAN, NAN };
+    if (d == 0.0 && a != 0.0 && b != 0.0) {
+        // Component function is quadratic, so solve that for t=0 using quadratic equation
+        HCReal discriminant = b * b - 4.0 * a * c;
+        if (discriminant >= 0.0) {
+            HCReal sqrtDiscriminant = sqrt(discriminant);
+            HCReal denominatorInverse = 1.0 / (2.0 * a);
+            roots[0] = (-b + sqrtDiscriminant) * denominatorInverse;
+            roots[1] = (-b - sqrtDiscriminant) * denominatorInverse;
+        }
+    }
+    else if (d == 0.0 && a == 0.0 && b != 0.0) {
+        // Component function is linear, so solve that for t=0
+        roots[0] = -c / b;
+    }
+    else if (d == 0.0 && a == 0.0 && b == 0.0) {
+        // No solutions
+    }
+    else {
+        // Component function is a true cubic, solve that for t=0 using modified Cardano's Method
+        a /= d;
+        b /= d;
+        c /= d;
+        HCReal p = (3.0 * b - a * a) / 3.0;
+        HCReal p3 = p / 3;
+        HCReal q = (2.0 * a * a * a - 9.0 * a * b + 27.0 * c) / 27.0;
+        HCReal q2 = q / 2.0;
+        HCReal discriminant = q2 * q2 + p3 * p3 * p3;
+        if (discriminant < 0.0) {
+            HCReal mp3 = -p / 3.0;
+            HCReal mp33 = mp3 * mp3 * mp3;
+            HCReal r = sqrt(mp33);
+            HCReal s = -q / (2.0 * r);
+            HCReal cosphi = s < -1.0 ? -1.0 : s > 1.0 ? 1.0 : s;
+            HCReal phi = acos(cosphi);
+            HCReal crtr = cbrt(r);
+            HCReal s1 = 2.0 * crtr;
+            roots[0] = s1 * cos(phi / 3.0) - a / 3.0;
+            roots[1] = s1 * cos((phi + 2.0 * M_PI) / 3.0) - a / 3.0;
+            roots[2] = s1 * cos((phi + 4.0 * M_PI) / 3.0) - a / 3.0;
+        }
+        else if (discriminant == 0.0) {
+            HCReal u1 = q2 < 0.0 ? cbrt(-q2) : -cbrt(q2);
+            roots[0] = 2.0 * u1 - a / 3.0;
+            roots[1] = -u1 - a / 3.0;
+        }
+        else {
+            HCReal sd = sqrt(discriminant);
+            HCReal u1 = cbrt(sd - q2);
+            HCReal v1 = cbrt(sd + q2);
+            roots[0] = u1 - v1 - a / 3.0;
+        }
+    }
+    
+    // Validate roots for use as t and u values
+    HCInteger rCount = 0;
     HCReal ts[3];
     HCReal us[3];
-    HCReal ax = -1.0 * q0.y + 1.0 * qc0.y - 1.0 * qc1.y + 1.0 * q1.y;
-    HCReal bx = +3.0 * q0.y - 2.0 * qc0.y + 1.0 * qc1.y;
-    HCReal cx = -3.0 * q0.y + 1.0 * qc0.y;
-    HCReal dx = +1.0 * p0.y;
-    // TODO: Solutions to cubic
-//    HCReal discriminantX = bx * bx - 4.0 * ax * cx;
-//    if (discriminantX >= 0.0) {
-//        HCReal sqrtDiscriminant = sqrt(discriminantX);
-//        HCReal denominatorInverse = 1.0 / (2.0 * ax);
-//        HCReal u0 = (-bx + sqrtDiscriminant) * denominatorInverse;
-//        if (u0 >= 0.0 && u0 <= 1.0) {
-//            HCPoint intersection0 = HCContourCurveValueQuadratic(q0, qc, q1, u0);
-//            HCReal t0 = intersection0.x / p1.x;
-//            if (t0 >= 0.0 && t0 < 1.0) {
-//                ts[iCount] = t0;
-//                us[iCount] = u0;
-//                iCount++;
-//            }
-//        }
-//        HCReal u1 = (-bx - sqrtDiscriminant) * denominatorInverse;
-//        if (u1 >= 0.0 && u1 <= 1.0) {
-//            HCPoint intersection1 = HCContourCurveValueQuadratic(q0, qc, q1, u1);
-//            HCReal t1 = intersection1.x / p1.x;
-//            if (t1 >= 0.0 && t1 < 1.0) {
-//                ts[iCount] = t1;
-//                us[iCount] = u1;
-//                iCount++;
-//            }
-//        }
-//    }
+    for (HCInteger rootIndex = 0; rootIndex < 3; rootIndex++) {
+        HCReal root = roots[rootIndex];
+        if (isnan(root)) {
+            continue;
+        }
+        if (root < 0.0 || root > 1.0) {
+            continue;
+        }
+        HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, root);
+        HCReal intersectionT = intersection.x / p1.x;
+        if (intersectionT < 0.0 || intersectionT > 1.0) {
+            continue;
+        }
+        ts[rCount] = intersectionT;
+        us[rCount] = root;
+        rCount++;
+    }
     
     // Deliver results
     if (count != NULL) {
-        *count = iCount;
+        *count = rCount;
     }
     if (t != NULL) {
-        memcpy(t, ts, iCount * sizeof(HCReal));
+        memcpy(t, ts, rCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, iCount * sizeof(HCReal));
+        memcpy(u, us, rCount * sizeof(HCReal));
     }
 }
 

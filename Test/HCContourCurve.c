@@ -419,12 +419,12 @@ CTEST(HCContourCurve, IntersectionLinearCubic) {
     HCReal u[3] = {NAN, NAN};
     HCContourCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
-    ASSERT_DBL_NEAR(t[0], 0.25);
-    ASSERT_DBL_NEAR(t[1], 0.50);
-    ASSERT_DBL_NEAR(t[2], 0.75);
-    ASSERT_DBL_NEAR(u[0], 0.25);
-    ASSERT_DBL_NEAR(u[1], 0.50);
-    ASSERT_DBL_NEAR(u[2], 0.75);
+    ASSERT_DBL_NEAR(t[0], 0.8273);
+    ASSERT_DBL_NEAR(t[1], 0.1726);
+    ASSERT_DBL_NEAR(t[2], 0.5000);
+    ASSERT_DBL_NEAR(u[0], 0.8273);
+    ASSERT_DBL_NEAR(u[1], 0.1726);
+    ASSERT_DBL_NEAR(u[2], 0.5000);
 }
 
 CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
