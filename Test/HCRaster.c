@@ -160,7 +160,6 @@ CTEST(HCRaster, DrawPoint) {
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 49).r == HCColorWhite.r);
     ASSERT_FALSE(HCRasterPixelAt(raster, 50, 51).r == HCColorWhite.r);
     HCRasterSaveBMP(raster, "point.bmp");
-    HCRasterSavePPM(raster, "point.ppm");
     HCRelease(raster);
 }
 
@@ -168,7 +167,6 @@ CTEST(HCRaster, DrawLine) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawLine(raster, 10, 80, 90, 20, HCColorYellow, HCColorMagenta);
     HCRasterSaveBMP(raster, "line.bmp");
-    HCRasterSavePPM(raster, "line.ppm");
     HCRelease(raster);
 }
 
@@ -176,7 +174,6 @@ CTEST(HCRaster, DrawQuadraticCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawQuadraticCurve(raster, 10, 90, 50, 10, 90, 90, HCColorMagenta, HCColorCyan);
     HCRasterSaveBMP(raster, "quadratic_curve.bmp");
-    HCRasterSavePPM(raster, "quadratic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -184,7 +181,6 @@ CTEST(HCRaster, DrawCubicCurve) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawCubicCurve(raster, 10, 90, 30, 10, 70, 10, 90, 90, HCColorCyan, HCColorYellow);
     HCRasterSaveBMP(raster, "cubic_curve.bmp");
-    HCRasterSavePPM(raster, "cubic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -192,7 +188,13 @@ CTEST(HCRaster, DrawArc) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawArc(raster, 25.0, 75.0, 75.0, 75.0, 32.5, 32.5, 0.0, true, true, HCColorRed, HCColorGreen);
     HCRasterSaveBMP(raster, "arc.bmp");
-    HCRasterSavePPM(raster, "arc.ppm");
+    HCRelease(raster);
+}
+
+CTEST(HCRaster, DrawEllipse) {
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawEllipse(raster, 50.0, 50.0, 30.0, 45.0, M_PI / 3.0, HCColorYellow, HCColorGreen);
+    HCRasterSaveBMP(raster, "ellipse.bmp");
     HCRelease(raster);
 }
 
@@ -206,7 +208,6 @@ CTEST(HCRaster, DrawRectanglePath) {
     HCPathRef path = HCPathCreateRectangle(rectangle);
     HCRasterDrawPath(raster, path, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_rectangle.bmp");
-    HCRasterSavePPM(raster, "path_rectangle.ppm");
     HCRelease(path);
     HCRelease(raster);
 }
@@ -217,7 +218,6 @@ CTEST(HCRaster, DrawEllipsePath) {
     HCPathRef path = HCPathCreateEllipse(rectangle);
     HCRasterDrawPath(raster, path, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_ellipse.bmp");
-    HCRasterSavePPM(raster, "path_ellipse.ppm");
     HCRelease(path);
     HCRelease(raster);
 }
@@ -226,7 +226,6 @@ CTEST(HCRaster, DrawTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawTriangle(raster, 10, 80, 50, 20, 90, 70, HCColorRed, HCColorGreen, HCColorBlue);
     HCRasterSaveBMP(raster, "triangle.bmp");
-    HCRasterSavePPM(raster, "triangle.ppm");
     HCRelease(raster);
 }
 
@@ -234,7 +233,6 @@ CTEST(HCRaster, FillTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillTriangle(raster, 10, 80, 50, 20, 90, 70, HCColorRed, HCColorGreen, HCColorBlue);
     HCRasterSaveBMP(raster, "triangle_filled.bmp");
-    HCRasterSavePPM(raster, "triangle_filled.ppm");
     HCRelease(raster);
 }
 
@@ -248,9 +246,7 @@ CTEST(HCRaster, FillTexturedTriangle) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillTexturedTriangle(raster, 10, 80, 50, 20, 90, 70, texture, 0, 0, 100, 0, 0, 100);
     HCRasterSaveBMP(texture, "triangle_texture.bmp");
-    HCRasterSavePPM(texture, "triangle_texture.ppm");
     HCRasterSaveBMP(raster, "triangle_textured.bmp");
-    HCRasterSavePPM(raster, "triangle_textured.ppm");
     HCRelease(raster);
     HCRelease(texture);
 }
@@ -259,7 +255,6 @@ CTEST(HCRaster, DrawQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCColorRed, HCColorGreen, HCColorBlue, HCColorWhite);
     HCRasterSaveBMP(raster, "quad.bmp");
-    HCRasterSavePPM(raster, "quad.ppm");
     HCRelease(raster);
 }
 
@@ -267,7 +262,6 @@ CTEST(HCRaster, FillQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, HCColorRed, HCColorGreen, HCColorBlue, HCColorWhite);
     HCRasterSaveBMP(raster, "quad_filled.bmp");
-    HCRasterSavePPM(raster, "quad_filled.ppm");
     HCRelease(raster);
 }
 
@@ -281,9 +275,7 @@ CTEST(HCRaster, FillTexturedQuad) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillTexturedQuad(raster, 30, 20, 80, 10, 90, 90, 10, 80, texture, 0, 0, 100, 0, 100, 100, 0, 100);
     HCRasterSaveBMP(texture, "quad_texture.bmp");
-    HCRasterSavePPM(texture, "quad_texture.ppm");
     HCRasterSaveBMP(raster, "quad_textured.bmp");
-    HCRasterSavePPM(raster, "quad_textured.ppm");
     HCRelease(raster);
     HCRelease(texture);
 }
@@ -292,7 +284,6 @@ CTEST(HCRaster, Gradient) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterFillQuad(raster, -50, 50, 50, -50, 150, 50, 50, 150, HCColorRed, HCColorRed, HCColorGreen, HCColorGreen);
     HCRasterSaveBMP(raster, "gradient.bmp");
-    HCRasterSavePPM(raster, "gradient.ppm");
     HCRelease(raster);
 }
 
@@ -310,7 +301,6 @@ CTEST(HCRaster, DrawPolyline) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPolyline(raster, startPoint, points, sizeof(points) / sizeof(HCPoint), false, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "polyline.bmp");
-    HCRasterSavePPM(raster, "polyline.ppm");
     HCRelease(raster);
 }
 
@@ -324,7 +314,6 @@ CTEST(HCRaster, DrawPolyquadratic) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPolyquadratic(raster, startPoint, points, sizeof(points) / sizeof(HCPoint) / 2, false, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "polyquadratic.bmp");
-    HCRasterSavePPM(raster, "polyquadratic.ppm");
     HCRelease(raster);
 }
 
@@ -338,7 +327,6 @@ CTEST(HCRaster, DrawPolycubic) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPolycubic(raster, startPoint, points, sizeof(points) / sizeof(HCPoint) / 3, true, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "polycubic.bmp");
-    HCRasterSavePPM(raster, "polycubic.ppm");
     HCRelease(raster);
 }
 
@@ -354,7 +342,6 @@ CTEST(HCRaster, DrawLinearContour) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "contour_linear.bmp");
-    HCRasterSavePPM(raster, "contour_linear.ppm");
     HCRelease(raster);
 }
 
@@ -369,7 +356,6 @@ CTEST(HCRaster, DrawQuadraticContour) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "contour_quadratic.bmp");
-    HCRasterSavePPM(raster, "contour_quadratic.ppm");
     HCRelease(raster);
 }
 
@@ -384,7 +370,6 @@ CTEST(HCRaster, DrawCubicContour) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawContour(raster, contour, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "contour_cubic.bmp");
-    HCRasterSavePPM(raster, "contour_cubic.ppm");
     HCRelease(raster);
 }
 
@@ -395,7 +380,6 @@ CTEST(HCRaster, DrawHorizontalPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 H 50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal.bmp");
-    HCRasterSavePPM(raster, "path_horizontal.ppm");
     HCRelease(raster);
 }
 
@@ -403,7 +387,6 @@ CTEST(HCRaster, DrawHorizontalRelativePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 h 40", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal_relative.bmp");
-    HCRasterSavePPM(raster, "path_horizontal_relative.ppm");
     HCRelease(raster);
 }
 
@@ -411,7 +394,6 @@ CTEST(HCRaster, DrawHorizontalPolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 H 25 50 75 90", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal_poly.bmp");
-    HCRasterSavePPM(raster, "path_horizontal_poly.ppm");
     HCRelease(raster);
 }
 
@@ -419,7 +401,6 @@ CTEST(HCRaster, DrawHorizontalRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 h 15 25 25 15", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_horizontal_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_horizontal_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -427,7 +408,6 @@ CTEST(HCRaster, DrawVerticalPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 V 50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_vertical.bmp");
-    HCRasterSavePPM(raster, "path_vertical.ppm");
     HCRelease(raster);
 }
 
@@ -435,7 +415,6 @@ CTEST(HCRaster, DrawVerticalRelativePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 v 30", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_vertical_relative.bmp");
-    HCRasterSavePPM(raster, "path_vertical_relative.ppm");
     HCRelease(raster);
 }
 
@@ -443,7 +422,6 @@ CTEST(HCRaster, DrawVerticalPolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 V 25 50 75 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_vertical_poly.bmp");
-    HCRasterSavePPM(raster, "path_vertical_poly.ppm");
     HCRelease(raster);
 }
 
@@ -451,7 +429,6 @@ CTEST(HCRaster, DrawVerticalRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 v 5 25 25 5", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_vertical_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_vertical_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -459,7 +436,6 @@ CTEST(HCRaster, DrawLinePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 L 60 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_line.bmp");
-    HCRasterSavePPM(raster, "path_line.ppm");
     HCRelease(raster);
 }
 
@@ -467,7 +443,6 @@ CTEST(HCRaster, DrawLineRelativePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 l 50 60", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_line_relative.bmp");
-    HCRasterSavePPM(raster, "path_line_relative.ppm");
     HCRelease(raster);
 }
 
@@ -475,7 +450,6 @@ CTEST(HCRaster, DrawLinePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 L 60 80 50 40 90 20", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_line_poly.bmp");
-    HCRasterSavePPM(raster, "path_line_poly.ppm");
     HCRelease(raster);
 }
 
@@ -483,7 +457,6 @@ CTEST(HCRaster, DrawLineRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 20 l 50 60 -10 -40 40 -20", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_line_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_line_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -491,7 +464,6 @@ CTEST(HCRaster, DrawQuadraticCurvePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 95 10 180 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_curve.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -499,7 +471,6 @@ CTEST(HCRaster, DrawQuadraticCurveRelativePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 q 85 -70 170 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_curve_relative.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_curve_relative.ppm");
     HCRelease(raster);
 }
 
@@ -507,7 +478,6 @@ CTEST(HCRaster, DrawQuadraticCurvePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 95 10 180 80 95 150 10 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_curve_poly.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_curve_poly.ppm");
     HCRelease(raster);
 }
 
@@ -515,7 +485,6 @@ CTEST(HCRaster, DrawQuadraticCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 q 85 -70 170 0 -85 70 -170 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_curve_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_curve_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -523,7 +492,6 @@ CTEST(HCRaster, DrawQuadraticSmoothCurvePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 52.5 10 95 80 T 180 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_smooth_curve.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_smooth_curve.ppm");
     HCRelease(raster);
 }
 
@@ -531,7 +499,6 @@ CTEST(HCRaster, DrawQuadraticSmoothCurveRelativePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 52.5 10 95 80 t 85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_smooth_curve_relative.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_smooth_curve_relative.ppm");
     HCRelease(raster);
 }
 
@@ -539,7 +506,6 @@ CTEST(HCRaster, DrawQuadraticSmoothCurvePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 52.5 10 95 80 T 180 80 95 80 10 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_smooth_curve_poly.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_smooth_curve_poly.ppm");
     HCRelease(raster);
 }
 
@@ -547,7 +513,6 @@ CTEST(HCRaster, DrawQuadraticSmoothCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 Q 52.5 10 95 80 t 85 0 -85 0 -85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_quadratic_smooth_curve_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_quadratic_smooth_curve_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -555,7 +520,6 @@ CTEST(HCRaster, DrawCubicCurvePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 90 C 30 10 70 10 90 90", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_curve.bmp");
-    HCRasterSavePPM(raster, "path_cubic_curve.ppm");
     HCRelease(raster);
 }
 
@@ -563,7 +527,6 @@ CTEST(HCRaster, DrawCubicCurveRelativePath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 90 c 20 -80 60 -80 80 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_curve_relative.bmp");
-    HCRasterSavePPM(raster, "path_cubic_curve_relative.ppm");
     HCRelease(raster);
 }
 
@@ -571,7 +534,6 @@ CTEST(HCRaster, DrawCubicCurvePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 90 C 30 10 70 10 90 90 70 40 30 40 10 90", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_curve_poly.bmp");
-    HCRasterSavePPM(raster, "path_cubic_curve_poly.ppm");
     HCRelease(raster);
 }
 
@@ -579,7 +541,6 @@ CTEST(HCRaster, DrawCubicCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 90 c 20 -80 60 -80 80 0 -20 -50 -60 -50 -80 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_curve_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_cubic_curve_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -587,7 +548,6 @@ CTEST(HCRaster, DrawCubicSmoothCurvePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 C 40 10 65 10 95 80 S 150 150 180 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_smooth_curve.bmp");
-    HCRasterSavePPM(raster, "path_cubic_smooth_curve.ppm");
     HCRelease(raster);
 }
 
@@ -595,7 +555,6 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 C 40 10 65 10 95 80 s 55 70 85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_smooth_curve_relative.bmp");
-    HCRasterSavePPM(raster, "path_cubic_smooth_curve_relative.ppm");
     HCRelease(raster);
 }
 
@@ -603,7 +562,6 @@ CTEST(HCRaster, DrawCubicSmoothCurvePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 C 40 10 65 10 95 80 S 150 150 180 80 80 10 95 80 10 150 10 80", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_smooth_curve_poly.bmp");
-    HCRasterSavePPM(raster, "path_cubic_smooth_curve_poly.ppm");
     HCRelease(raster);
 }
 
@@ -611,7 +569,6 @@ CTEST(HCRaster, DrawCubicSmoothCurveRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(190, 160);
     HCRasterDrawPathData(raster, "M 10 80 C 40 10 65 10 95 80 s 55 70 85 0 -100 -70 -85 0 -85 70 -85 0", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_cubic_smooth_curve_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_cubic_smooth_curve_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -624,7 +581,6 @@ CTEST(HCRaster, DrawArcPath) {
         "A25  75 -30 0 1 325 200 L 375 175"
         "A25 100 -30 0 1 425 150 L 475 125", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc.bmp");
-    HCRasterSavePPM(raster, "path_arc.ppm");
     HCRelease(raster);
 }
 
@@ -637,7 +593,6 @@ CTEST(HCRaster, DrawArcRelativePath) {
         "a25  75 -30 0 1 50 -25 l 50 -25"
         "a25 100 -30 0 1 50 -25 l 50 -25", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_relative.bmp");
-    HCRasterSavePPM(raster, "path_arc_relative.ppm");
     HCRelease(raster);
 }
 
@@ -645,7 +600,6 @@ CTEST(HCRaster, DrawArcPolyPath) {
     HCRasterRef raster = HCRasterCreate(320, 320);
     HCRasterDrawPathData(raster, "M 10 315 L 110 215 A 30 50 60 0 1 162.55 162.55 30 50 30 1 0 215.10 110.10 L 315 10", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_poly.bmp");
-    HCRasterSavePPM(raster, "path_arc_poly.ppm");
     HCRelease(raster);
 }
 
@@ -653,7 +607,6 @@ CTEST(HCRaster, DrawArcRelativePolyPath) {
     HCRasterRef raster = HCRasterCreate(320, 320);
     HCRasterDrawPathData(raster, "M 10 315 L 110 215 a 30 50 60 0 1 52.55 -52.45 30 50 30 1 0 52.55 -52.45 L 315 10", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_relative_poly.bmp");
-    HCRasterSavePPM(raster, "path_arc_relative_poly.ppm");
     HCRelease(raster);
 }
 
@@ -661,7 +614,6 @@ CTEST(HCRaster, DrawArcSmallArcNegativeSweep) {
     HCRasterRef raster = HCRasterCreate(350, 200);
     HCRasterDrawPathData(raster, "M 125,75 a100,50 0 0,0 100,50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_small_arc_negative_sweep.bmp");
-    HCRasterSavePPM(raster, "path_arc_small_arc_negative_sweep.ppm");
     HCRelease(raster);
 }
 
@@ -669,7 +621,6 @@ CTEST(HCRaster, DrawArcLargeArcNegativeSweep) {
     HCRasterRef raster = HCRasterCreate(350, 200);
     HCRasterDrawPathData(raster, "M 125,75 a100,50 0 1,0 100,50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_large_arc_negative_sweep.bmp");
-    HCRasterSavePPM(raster, "path_arc_large_arc_negative_sweep.ppm");
     HCRelease(raster);
 }
 
@@ -677,7 +628,6 @@ CTEST(HCRaster, DrawArcSmallArcPositiveSweep) {
     HCRasterRef raster = HCRasterCreate(350, 200);
     HCRasterDrawPathData(raster, "M 125,75 a100,50 0 0,1 100,50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_small_arc_positive_sweep.bmp");
-    HCRasterSavePPM(raster, "path_arc_small_arc_positive_sweep.ppm");
     HCRelease(raster);
 }
 
@@ -685,7 +635,6 @@ CTEST(HCRaster, DrawArcLargeArcPositiveSweep) {
     HCRasterRef raster = HCRasterCreate(350, 200);
     HCRasterDrawPathData(raster, "M 125,75 a100,50 0 1,1 100,50", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_large_arc_positive_sweep.bmp");
-    HCRasterSavePPM(raster, "path_arc_large_arc_positive_sweep.ppm");
     HCRelease(raster);
 }
 
@@ -693,7 +642,6 @@ CTEST(HCRaster, DrawCircle90ArcPath) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 500 750", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_circle90.bmp");
-    HCRasterSavePPM(raster, "path_arc_circle90.ppm");
     HCRelease(raster);
 }
 
@@ -701,7 +649,6 @@ CTEST(HCRaster, DrawCircle180ArcPath) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 0 1 250 500", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_circle180.bmp");
-    HCRasterSavePPM(raster, "path_arc_circle180.ppm");
     HCRelease(raster);
 }
 
@@ -709,7 +656,6 @@ CTEST(HCRaster, DrawCircle270ArcPath) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 1 1 500 250", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_circle270.bmp");
-    HCRasterSavePPM(raster, "path_arc_circle270.ppm");
     HCRelease(raster);
 }
 
@@ -717,7 +663,6 @@ CTEST(HCRaster, DrawCircle359ArcPath) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCRasterDrawPathData(raster, "M 750 500 A 250 250 0 1 1 749.96 495.64", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_arc_circle359.bmp");
-    HCRasterSavePPM(raster, "path_arc_circle359.ppm");
     HCRelease(raster);
 }
 
@@ -743,9 +688,6 @@ CTEST(HCRaster, DrawCircleArcPaths) {
         char bmpFileName[1024];
         sprintf(bmpFileName, "path_arc_circle_%i.bmp", (int)i);
         HCRasterSaveBMP(raster, bmpFileName);
-        char ppmFileName[1024];
-        sprintf(ppmFileName, "path_arc_circle_%i.ppm", (int)i);
-        HCRasterSavePPM(raster, ppmFileName);
         HCRelease(raster);
     }
 }
@@ -754,7 +696,6 @@ CTEST(HCRaster, DrawPath) {
     HCRasterRef raster = HCRasterCreate(100, 100);
     HCRasterDrawPathData(raster, "M 10 90 C 30 10 70 10 90 90 Z L 30 10 H 70 L 90 90 Q 50 10 10 90 Z", HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path.bmp");
-    HCRasterSavePPM(raster, "path.ppm");
     HCRelease(raster);
 }
 
@@ -784,7 +725,6 @@ CTEST(HCRaster, DrawManyQuadratics) {
         "M 300 500 Q 500  -500 700 500 "
         , HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_many_quadratics.bmp");
-    HCRasterSavePPM(raster, "path_many_quadratics.ppm");
     HCRelease(raster);
 }
 
@@ -814,7 +754,6 @@ CTEST(HCRaster, DrawManyCubics) {
         "M 300 500 C 500  -500 500  -500 700 500 "
         , HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_many_cubics.bmp");
-    HCRasterSavePPM(raster, "path_many_cubics.ppm");
     HCRelease(raster);
 }
 
@@ -823,7 +762,6 @@ CTEST(HCRaster, DrawDinosaur) {
     HCRasterRef raster = HCRasterCreate(500, 500);
     HCRasterDrawPathData(raster, dinosaur, HCRasterColorRotating);
     HCRasterSaveBMP(raster, "path_dinosaur.bmp");
-    HCRasterSavePPM(raster, "path_dinosaur.ppm");
     HCRelease(raster);
 }
 
@@ -930,7 +868,6 @@ CTEST(HCRaster, DrawCanonical) {
     HCRasterDrawCubicCurve(raster, p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, curveColor, curveColor);
     
     HCRasterSaveBMP(raster, "path_canonical.bmp");
-    HCRasterSavePPM(raster, "path_canonical.ppm");
     
     HCRelease(doubleInflectionPath);
     HCRelease(loopPath);
@@ -940,7 +877,137 @@ CTEST(HCRaster, DrawCanonical) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawIntersection) {
+void HCPointGrid(HCRectangle r, HCInteger countX, HCInteger countY, HCPoint* points) {
+    HCReal xSpan = fmax(HCRealMinimumPositive, HCRectangleWidth(r) / (HCReal)(countX - 1));
+    HCReal ySpan = fmax(HCRealMinimumPositive, HCRectangleHeight(r) / (HCReal)(countY - 1));
+    for (HCReal y = HCRectangleMinY(r); y <= HCRectangleMaxY(r); y += ySpan) {
+        for (HCReal x = HCRectangleMinX(r); x <= HCRectangleMaxX(r); x += xSpan) {
+            *points++ = HCPointMake(x, y);
+        }
+    }
+}
+
+CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.3);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+            HCPoint p1 = points[p1Index];
+            
+            HCInteger intersectionCount = 0;
+            HCReal intersectionT[1] = { NAN };
+            HCReal intersectionU[1] = { NAN };
+            HCContourCurveIntersectionLinearLinear(p0, p1, q0, q1, &intersectionCount, intersectionT, intersectionU);
+            if (intersectionCount == 0) {
+                continue;
+            }
+            
+            HCRasterRef raster = HCRasterCreate(100, 100);
+            HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+            for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                HCPoint intersection = HCContourCurveValueLinear(q0, q1, intersectionU[intersectionIndex]);
+                HCRasterDrawLine(raster, q0.x, q0.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+            }
+            
+            char bmpFileName[1024];
+            sprintf(bmpFileName, "curve_intersection_ll_%i_%i.bmp", (int)p0Index, (int)p1Index);
+            HCRasterSaveBMP(raster, bmpFileName);
+            HCRelease(raster);
+        }
+    }
+}
+
+CTEST(HCRaster, DrawCurveIntersectionsLinearQuadratic) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    HCPoint qc = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.8, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.2);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+            HCPoint p1 = points[p1Index];
+            
+            HCInteger intersectionCount = 0;
+            HCReal intersectionT[2] = { NAN, NAN };
+            HCReal intersectionU[2] = { NAN, NAN };
+            HCContourCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
+            if (intersectionCount == 0) {
+                continue;
+            }
+            
+            HCRasterRef raster = HCRasterCreate(100, 100);
+            HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+            for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
+                HCRasterDrawQuadraticCurve(raster, q0.x, q0.y, qc.x, qc.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+            }
+            
+            char bmpFileName[1024];
+            sprintf(bmpFileName, "curve_intersection_lq_%i_%i.bmp", (int)p0Index, (int)p1Index);
+            HCRasterSaveBMP(raster, bmpFileName);
+            HCRelease(raster);
+        }
+    }
+}
+
+CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
+    HCInteger countX = 4;
+    HCInteger countY = 4;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint qc0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint qc1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger p0Index = 0; p0Index < countX * countY; p0Index++) {
+        HCPoint p0 = points[p0Index];
+        for (HCInteger p1Index = 0; p1Index < countX * countY; p1Index++) {
+            HCPoint p1 = points[p1Index];
+            
+            HCInteger intersectionCount = 0;
+            HCReal intersectionT[3] = { NAN, NAN, NAN };
+            HCReal intersectionU[3] = { NAN, NAN, NAN };
+            HCContourCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+            if (intersectionCount == 0) {
+                continue;
+            }
+            
+            HCRasterRef raster = HCRasterCreate(100, 100);
+            HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+            for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
+                HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
+                HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
+            }
+            
+            char bmpFileName[1024];
+            sprintf(bmpFileName, "curve_intersection_lc_%i_%i.bmp", (int)p0Index, (int)p1Index);
+            HCRasterSaveBMP(raster, bmpFileName);
+            HCRelease(raster);
+        }
+    }
+}
+
+CTEST(HCRaster, DrawPathIntersection) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(
         "M 200 500 C 500  1000 500  1000 800 500 Z "
@@ -956,13 +1023,12 @@ CTEST(HCRaster, DrawIntersection) {
         }
     }
     HCRasterSaveBMP(raster, "path_intersection.bmp");
-    HCRasterSavePPM(raster, "path_intersection.ppm");
     HCRelease(rectangle);
     HCRelease(path);
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawIntersectionNonZero) {
+CTEST(HCRaster, DrawPathIntersectionNonZero) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(
         "M 200 500 C 500  1000 500  1000 800 500 Z "
@@ -978,7 +1044,6 @@ CTEST(HCRaster, DrawIntersectionNonZero) {
         }
     }
     HCRasterSaveBMP(raster, "path_intersection.bmp");
-    HCRasterSavePPM(raster, "path_intersection.ppm");
     HCRelease(rectangle);
     HCRelease(path);
     HCRelease(raster);

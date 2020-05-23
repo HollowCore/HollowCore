@@ -1274,6 +1274,13 @@ void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, H
 void HCContourCurveIntersectionLinearLinear(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Find intersection of lines formed by linear curve anchor points
     HCReal d = (p0.x - p1.x) * (q0.y - q1.y) - (p0.y - p1.y) * (q0.x - q1.x);
+    if (d == 0) {
+        if (count != NULL) {
+            *count = 0;
+        }
+        return;
+    }
+    
     HCReal intersectionT = ((p0.x - q0.x) * (q0.y - q1.y) - (p0.y - q0.y) * (q0.x - q1.x)) / d;
     HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
         
