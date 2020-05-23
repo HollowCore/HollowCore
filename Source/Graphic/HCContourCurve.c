@@ -1630,7 +1630,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     HCRectangle pr = HCContourCurveBoundsCubic(p0, pc0, pc1, p1);
     HCRectangle qr = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
     HCRectangle intersection = HCRectangleIntersection(pr, qr);
-    if (HCRectangleIsEmpty(intersection)) {
+    if (HCRectangleIsEmpty(intersection) && !HCRectangleContainsPoint(pr, intersection.origin) && !HCRectangleContainsPoint(qr, intersection.origin)) {
         return;
     }
     

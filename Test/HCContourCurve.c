@@ -479,11 +479,11 @@ CTEST(HCContourCurve, IntersectionCubicCubic) {
     HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.32080078125);
-    ASSERT_DBL_NEAR(t[1], 0.67919921875);
-    ASSERT_DBL_NEAR(t[2], 0.67919921875);
+    ASSERT_DBL_NEAR(t[1], 0.50000000000);
+    ASSERT_DBL_NEAR(t[2], 0.67822265625);
     ASSERT_DBL_NEAR(u[0], 0.32080078125);
-    ASSERT_DBL_NEAR(u[1], 0.67919921875);
-    ASSERT_DBL_NEAR(u[2], 0.67919921875);
+    ASSERT_DBL_NEAR(u[1], 0.50000000000);
+    ASSERT_DBL_NEAR(u[2], 0.67822265625);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
