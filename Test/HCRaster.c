@@ -877,7 +877,7 @@ CTEST(HCRaster, DrawCurveCanonical) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawCurveBoundsAndExtrema) {
+CTEST(HCRaster, DrawCurveBoundsExtremaInflection) {
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     
     HCPoint q0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.8);
@@ -891,19 +891,28 @@ CTEST(HCRaster, DrawCurveBoundsAndExtrema) {
     HCReal maxX = HCRectangleMaxX(bounds);
     HCReal maxY = HCRectangleMaxY(bounds);
     
-    HCInteger count = 0;
+    HCInteger extremaCount = 0;
     HCReal extrema[9] = { NAN, NAN, NAN };
-    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, &count, extrema);
+    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, &extremaCount, extrema);
+    
+    HCInteger inflectionCount = 0;
+    HCReal inflections[2] = { NAN, NAN };
+    HCContourCurveInflectionsCubic(q0, qc0, qc1, q1, &inflectionCount, inflections);
     
     HCRasterRef raster = HCRasterCreate(100.0, 100.0);
     HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
     HCRasterDrawQuad(raster, minX, minY, maxX, minY, maxX, maxY, minX, maxY, HCColorYellow, HCColorYellow, HCColorYellow, HCColorYellow);
-    for (HCInteger extremaIndex = 0; extremaIndex < count; extremaIndex++) {
+    for (HCInteger extremaIndex = 0; extremaIndex < extremaCount; extremaIndex++) {
         HCReal extreme = extrema[extremaIndex];
         HCPoint extremePoint = HCContourCurveValueCubic(q0, qc0, qc1, q1, extreme);
         HCRasterDrawEllipse(raster, extremePoint.x, extremePoint.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
     }
-    HCRasterSaveBMP(raster, "curve_cubic_bounds_extrema.bmp");
+    for (HCInteger inflectionIndex = 0; inflectionIndex < inflectionCount; inflectionIndex++) {
+        HCReal inflection = inflections[inflectionIndex];
+        HCPoint inflectionPoint = HCContourCurveValueCubic(q0, qc0, qc1, q1, inflection);
+        HCRasterDrawEllipse(raster, inflectionPoint.x, inflectionPoint.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorCyan, HCColorCyan);
+    }
+    HCRasterSaveBMP(raster, "curve_cubic_bounds_extrema_inflection.bmp");
     HCRelease(raster);
 }
 
