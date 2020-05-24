@@ -439,10 +439,10 @@ CTEST(HCContourCurve, IntersectionQuadraticQuadratic) {
     HCReal u[2] = {NAN, NAN};
     HCContourCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
-    ASSERT_DBL_NEAR(t[0], 0.3531);
-    ASSERT_DBL_NEAR(t[1], 0.6469);
-    ASSERT_DBL_NEAR(u[0], 0.3531);
-    ASSERT_DBL_NEAR(u[1], 0.6469);
+    ASSERT_DBL_NEAR(t[0], 0.2104);
+    ASSERT_DBL_NEAR(t[1], 0.7886);
+    ASSERT_DBL_NEAR(u[0], 0.2114);
+    ASSERT_DBL_NEAR(u[1], 0.7886);
 }
 
 CTEST(HCContourCurve, IntersectionQuadraticCubic) {
@@ -458,10 +458,10 @@ CTEST(HCContourCurve, IntersectionQuadraticCubic) {
     HCReal u[6] = {NAN, NAN};
     HCContourCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
-    ASSERT_DBL_NEAR(t[0], 0.3318);
-    ASSERT_DBL_NEAR(t[1], 0.4981);
-    ASSERT_DBL_NEAR(u[0], 0.3642);
-    ASSERT_DBL_NEAR(u[1], 0.5347);
+    ASSERT_DBL_NEAR(t[0], 0.1821);
+    ASSERT_DBL_NEAR(t[1], 0.4946);
+    ASSERT_DBL_NEAR(u[0], 0.2310);
+    ASSERT_DBL_NEAR(u[1], 0.5786);
 }
 
 CTEST(HCContourCurve, IntersectionCubicCubic) {
@@ -478,12 +478,12 @@ CTEST(HCContourCurve, IntersectionCubicCubic) {
     HCReal u[9] = {NAN, NAN};
     HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
-    ASSERT_DBL_NEAR(t[0], 0.3213);
-    ASSERT_DBL_NEAR(t[1], 0.5000);
-    ASSERT_DBL_NEAR(t[2], 0.6787);
-    ASSERT_DBL_NEAR(u[0], 0.3213);
-    ASSERT_DBL_NEAR(u[1], 0.5000);
-    ASSERT_DBL_NEAR(u[2], 0.6787);
+    ASSERT_DBL_NEAR(t[0], 0.1724);
+    ASSERT_DBL_NEAR(t[1], 0.4995);
+    ASSERT_DBL_NEAR(t[2], 0.8267);
+    ASSERT_DBL_NEAR(u[0], 0.1724);
+    ASSERT_DBL_NEAR(u[1], 0.4995);
+    ASSERT_DBL_NEAR(u[2], 0.8276);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
