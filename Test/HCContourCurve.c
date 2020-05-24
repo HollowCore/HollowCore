@@ -322,7 +322,49 @@ CTEST(HCContourCurve, Extrema) {
 // MARK: - Inflection
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCContourCurve, LinearInflections) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCInteger count = 0;
+    HCContourCurveInflectionsLinear(p0, p1, &count, NULL);
+    ASSERT_TRUE(count == 0);
+}
+
+CTEST(HCContourCurve, QuadraticInflection) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint pc = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCInteger count = 0;
+    HCContourCurveInflectionsQuadratic(p0, pc, p1, &count, NULL);
+    ASSERT_TRUE(count == 0);
+}
+
+CTEST(HCContourCurve, CubicInflection) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint pc0 = HCPointMake(0.0, 2.0);
+    HCPoint pc1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCInteger count = 0;
+    HCReal inflections[2];
+    HCContourCurveInflectionsCubic(p0, pc0, pc1, p1, &count, inflections);
+    ASSERT_TRUE(HCContourCurveCanonicalTypeCubic(p0, pc0, pc1, p1) == HCContourCurveTypeCubicSingleInflection);
+    ASSERT_TRUE(count == 1);
+    ASSERT_DBL_NEAR(inflections[0], 0.4384);
+}
+
+CTEST(HCContourCurve, Inflection) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint pc0 = HCPointMake(0.0, 2.0);
+    HCPoint pc1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCContourCurve c = HCContourCurveMakeCubic(pc0, pc1, p1);
+    HCInteger count = 0;
+    HCReal inflections[2];
+    HCContourCurveInflections(p0, c, &count, inflections);
+    ASSERT_TRUE(HCContourCurveCanonicalType(p0, c) == HCContourCurveTypeCubicSingleInflection);
+    ASSERT_TRUE(count == 1);
+    ASSERT_DBL_NEAR(inflections[0], 0.4384);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
