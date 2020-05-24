@@ -56,9 +56,14 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
     HCReal p0cDistance = sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0));
     HCReal cp1Distance = sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
     HCReal p0p1Distance = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    if (HCRealIsSimilar(p0cDistance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(cp1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+        return;
+    }
     HCReal flatness = (p0cDistance + cp1Distance) / p0p1Distance;
     HCReal flatnessThreshold = HCPathFlatnessNormal;
-    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+    if (flatness < flatnessThreshold) {
          HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }
@@ -81,9 +86,15 @@ void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, 
     HCReal c0c1Distance = sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0));
     HCReal c1p1Distance = sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1));
     HCReal p0p1Distance = sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    if (HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0c0Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(c0c1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+        return;
+    }
     HCReal flatness = (p0c0Distance + c0c1Distance + c1p1Distance) / p0p1Distance;
     HCReal flatnessThreshold = HCPathFlatnessNormal;
-    if (flatness < flatnessThreshold || HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+    if (flatness < flatnessThreshold) {
         HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }
