@@ -21,7 +21,7 @@ HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCRe
 }
 
 HCRectangle HCRectangleMakeWithEdges(HCReal minX, HCReal minY, HCReal maxX, HCReal maxY) {
-    return HCRectangleMake(HCPointMake(minX, minY), HCSizeMake(maxX - minX, maxY - minY));
+    return HCRectangleMake(HCPointMake(fmin(minX, maxX), fmin(minY, maxY)), HCSizeMake(fabs(maxX - minX), fabs(maxY - minY)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

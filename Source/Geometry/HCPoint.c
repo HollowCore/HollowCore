@@ -72,3 +72,9 @@ HCPoint HCPointInterpolate(HCPoint point, HCPoint other, HCReal t) {
     HCReal tc = 1.0 - t;
     return HCPointMake(tc * point.x + t * other.x, tc * point.y + t * other.y);
 }
+
+HCReal HCPointDistance(HCPoint point, HCPoint other) {
+    HCReal dx = point.x - other.x;
+    HCReal dy = point.y - other.y;
+    return sqrt(dx * dx + dy * dy);
+}

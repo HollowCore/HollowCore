@@ -150,6 +150,14 @@ void HCContourCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInt
 void HCContourCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Approximate Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCContourCurveApproximateBounds(HCPoint p0, HCContourCurve curve);
+HCRectangle HCContourCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1);
+HCRectangle HCContourCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCRectangle HCContourCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve);
@@ -160,10 +168,10 @@ HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve, HCReal t);
-HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1, HCReal t);
-HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
-HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve);
+HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1);
+HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameterization by Arc Length

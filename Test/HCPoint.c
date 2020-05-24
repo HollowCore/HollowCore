@@ -60,8 +60,11 @@ CTEST(HCPoint, Operations) {
     
     // Point interpolate
     HCPoint p0 = HCPointMake(1.0, -1.0);
-    HCPoint p1 = HCPointMake(1.0, -1.0);
+    HCPoint p1 = HCPointMake(3.0, -2.0);
     HCReal t = 0.25;
     HCPoint interpolated = HCPointInterpolate(p0, p1, t);
     ASSERT_TRUE(HCPointIsSimilar(interpolated, HCPointMake((1.0 - t) * p0.x + t * p1.x, (1.0 - t) * p0.y + t * p1.y), 0.000001));
+    
+    // Point distance
+    ASSERT_TRUE(HCPointDistance(p0, p1) == sqrt(5.0));
 }

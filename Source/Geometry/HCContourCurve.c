@@ -1051,6 +1051,43 @@ void HCContourCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Approximate Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCContourCurveApproximateBounds(HCPoint p0, HCContourCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCContourCurveApproximateBoundsLinear(p0, curve.p);
+        }
+        return HCContourCurveApproximateBoundsQuadratic(p0, curve.c0, curve.p);
+    }
+    return HCContourCurveApproximateBoundsCubic(p0, curve.c0, curve.c1, curve.p);
+}
+
+HCRectangle HCContourCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, p1.x),
+        fmin(p0.y, p1.y),
+        fmax(p0.x, p1.x),
+        fmax(p0.y, p1.y));
+}
+
+HCRectangle HCContourCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c.x, p1.x)),
+        fmin(p0.y, fmin(c.y, p1.y)),
+        fmax(p0.x, fmax(c.x, p1.x)),
+        fmax(p0.y, fmax(c.y, p1.y)));
+}
+
+HCRectangle HCContourCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
+        fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Bounds
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve) {
@@ -1125,22 +1162,22 @@ HCRectangle HCContourCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve, HCReal t) {
+HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            return HCContourCurveLengthLinear(p0, curve.p, t);
+            return HCContourCurveLengthLinear(p0, curve.p);
         }
-        return HCContourCurveLengthQuadratic(p0, curve.c0, curve.p, t);
+        return HCContourCurveLengthQuadratic(p0, curve.c0, curve.p);
     }
-    return HCContourCurveLengthCubic(p0, curve.c0, curve.c1, curve.p, t);
+    return HCContourCurveLengthCubic(p0, curve.c0, curve.c1, curve.p);
 }
 
-HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1, HCReal t) {
+HCReal HCContourCurveLengthLinear(HCPoint p0, HCPoint p1) {
     // Calculate using linear distance equation
-    return sqrt(p0.x * p0.x + p1.x * p1.x) * t;
+    return HCPointDistance(p0, p1);
 }
 
-HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
+HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
     // Calculate using closed-form quadratic bezier solution
     // See https://malczak.linuxpl.com/blog/quadratic-bezier-curve-length
     HCReal ax = p0.x - 2.0 * c.x + p1.x;
@@ -1160,9 +1197,18 @@ HCReal HCContourCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t
     return (Saa * Sabc + Sa * B * (Sabc - Sc) + (4.0 * C * A - B * B) * log((2.0 * Sa + BSa + Sabc) / (BSa + Sc))) / (4.0 * Saa);
 }
 
-HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t) {
+HCReal HCContourCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     // TODO: Use Legendre-Gauss to numerically calculate length
-    return NAN;
+    // Calculate using polyline
+    HCReal length = 0.0;
+    HCPoint ps = p0;
+    for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
+        HCPoint pe = HCContourCurveValueCubic(p0, c0, c1, p1, t);
+        HCReal segmentLength = HCPointDistance(ps, pe);
+        length += segmentLength;
+        ps = pe;
+    }
+    return length;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
