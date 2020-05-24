@@ -918,8 +918,8 @@ void HCPointGrid(HCRectangle r, HCInteger countX, HCInteger countY, HCPoint* poi
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
@@ -957,8 +957,8 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsLinearQuadratic) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
@@ -997,8 +997,8 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearQuadratic) {
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
@@ -1038,8 +1038,8 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
@@ -1081,8 +1081,8 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
@@ -1125,8 +1125,8 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
 }
 
 CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
-    HCInteger countX = 4;
-    HCInteger countY = 4;
+    HCInteger countX = 2;// 5
+    HCInteger countY = 2;// 5
     HCPoint points[countX * countY];
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPointGrid(r, countX, countY, points);
