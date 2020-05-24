@@ -1072,7 +1072,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
                 }
                 
                 char bmpFileName[1024];
-                sprintf(bmpFileName, "curve_intersection_qq_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                sprintf(bmpFileName, "curve_intersection_qq_%i_%i_%i.bmp", (int)p0Index, (int)pcIndex, (int)p1Index);
                 HCRasterSaveBMP(raster, bmpFileName);
                 HCRelease(raster);
             }
@@ -1116,7 +1116,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
                 }
                 
                 char bmpFileName[1024];
-                sprintf(bmpFileName, "curve_intersection_qc_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                sprintf(bmpFileName, "curve_intersection_qc_%i_%i_%i.bmp", (int)p0Index, (int)pcIndex, (int)p1Index);
                 HCRasterSaveBMP(raster, bmpFileName);
                 HCRelease(raster);
             }
@@ -1162,7 +1162,7 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
                     }
                     
                     char bmpFileName[1024];
-                    sprintf(bmpFileName, "curve_intersection_cc_%i_%i.bmp", (int)p0Index, (int)p1Index);
+                    sprintf(bmpFileName, "curve_intersection_cc_%i_%i_%i_%i.bmp", (int)p0Index, (int)pc0Index, (int)pc1Index, (int)p1Index);
                     HCRasterSaveBMP(raster, bmpFileName);
                     HCRelease(raster);
                 }

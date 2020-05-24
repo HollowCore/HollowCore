@@ -1527,7 +1527,7 @@ void HCContourCurveIntersectionQuadraticQuadraticRecursive(HCPoint p0, HCPoint p
     HCReal qSplit = 0.5;
     HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.0001;
+    HCReal tPrecision = 0.001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
@@ -1613,7 +1613,7 @@ void HCContourCurveIntersectionQuadraticCubicRecursive(HCPoint p0, HCPoint pc, H
     HCReal qSplit = 0.5;
     HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.0001;
+    HCReal tPrecision = 0.001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
@@ -1701,7 +1701,7 @@ void HCContourCurveIntersectionCubicCubicRecursive(HCPoint p0, HCPoint pc0, HCPo
     HCReal qSplit = 0.5;
     HCReal qt = qts + qtSpan * qSplit;
     HCReal tSpan = fmin(ptSpan, qtSpan);
-    HCReal tPrecision = 0.0001;
+    HCReal tPrecision = 0.001;
     if (tSpan < tPrecision) {
         // Filter intersections close to intersections already found
         // TODO: How close?
