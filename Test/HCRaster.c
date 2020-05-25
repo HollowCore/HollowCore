@@ -767,7 +767,7 @@ CTEST(HCRaster, DrawDinosaur) {
 
 CTEST(HCRaster, DrawCurveCanonical) {
     // Define curve whose canonical representation is to be drawn
-    HCPoint canonical = HCContourCurveCanonical(HCPointMake(0.0, 0.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
+    HCPoint canonical = HCCurveCanonical(HCPointMake(0.0, 0.0), HCPointMake(0.0, 100.0), HCPointMake(100.0, 100.0), HCPointMake(100.0, 0.0));
     
     // Configure raster
     HCReal w = 1000.0;
@@ -885,7 +885,7 @@ CTEST(HCRaster, DrawCurveBoundsExtremaInflection) {
     HCPoint qc1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
     HCPoint q1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
     
-    HCRectangle bounds = HCContourCurveBoundsCubic(q0, qc0, qc1, q1);
+    HCRectangle bounds = HCCurveBoundsCubic(q0, qc0, qc1, q1);
     HCReal minX = HCRectangleMinX(bounds);
     HCReal minY = HCRectangleMinY(bounds);
     HCReal maxX = HCRectangleMaxX(bounds);
@@ -893,23 +893,23 @@ CTEST(HCRaster, DrawCurveBoundsExtremaInflection) {
     
     HCInteger extremaCount = 0;
     HCReal extrema[9] = { NAN, NAN, NAN };
-    HCContourCurveExtremaCubic(q0, qc0, qc1, q1, &extremaCount, extrema);
+    HCCurveExtremaCubic(q0, qc0, qc1, q1, &extremaCount, extrema);
     
     HCInteger inflectionCount = 0;
     HCReal inflections[2] = { NAN, NAN };
-    HCContourCurveInflectionsCubic(q0, qc0, qc1, q1, &inflectionCount, inflections);
+    HCCurveInflectionsCubic(q0, qc0, qc1, q1, &inflectionCount, inflections);
     
     HCRasterRef raster = HCRasterCreate(100.0, 100.0);
     HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
     HCRasterDrawQuad(raster, minX, minY, maxX, minY, maxX, maxY, minX, maxY, HCColorYellow, HCColorYellow, HCColorYellow, HCColorYellow);
     for (HCInteger extremaIndex = 0; extremaIndex < extremaCount; extremaIndex++) {
         HCReal extreme = extrema[extremaIndex];
-        HCPoint extremePoint = HCContourCurveValueCubic(q0, qc0, qc1, q1, extreme);
+        HCPoint extremePoint = HCCurveValueCubic(q0, qc0, qc1, q1, extreme);
         HCRasterDrawEllipse(raster, extremePoint.x, extremePoint.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
     }
     for (HCInteger inflectionIndex = 0; inflectionIndex < inflectionCount; inflectionIndex++) {
         HCReal inflection = inflections[inflectionIndex];
-        HCPoint inflectionPoint = HCContourCurveValueCubic(q0, qc0, qc1, q1, inflection);
+        HCPoint inflectionPoint = HCCurveValueCubic(q0, qc0, qc1, q1, inflection);
         HCRasterDrawEllipse(raster, inflectionPoint.x, inflectionPoint.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorCyan, HCColorCyan);
     }
     HCRasterSaveBMP(raster, "curve_cubic_bounds_extrema_inflection.bmp");
@@ -943,7 +943,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
             HCInteger intersectionCount = 0;
             HCReal intersectionT[1] = { NAN };
             HCReal intersectionU[1] = { NAN };
-            HCContourCurveIntersectionLinearLinear(p0, p1, q0, q1, &intersectionCount, intersectionT, intersectionU);
+            HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &intersectionCount, intersectionT, intersectionU);
             if (intersectionCount == 0) {
                 continue;
             }
@@ -952,7 +952,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
             HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
             
             for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                HCPoint intersection = HCContourCurveValueLinear(q0, q1, intersectionU[intersectionIndex]);
+                HCPoint intersection = HCCurveValueLinear(q0, q1, intersectionU[intersectionIndex]);
                 HCRasterDrawLine(raster, q0.x, q0.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                 HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
             }
@@ -983,7 +983,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearQuadratic) {
             HCInteger intersectionCount = 0;
             HCReal intersectionT[2] = { NAN, NAN };
             HCReal intersectionU[2] = { NAN, NAN };
-            HCContourCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
+            HCCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
             if (intersectionCount == 0) {
                 continue;
             }
@@ -992,7 +992,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearQuadratic) {
             HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
             
             for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
+                HCPoint intersection = HCCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
                 HCRasterDrawQuadraticCurve(raster, q0.x, q0.y, qc.x, qc.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                 HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
             }
@@ -1024,7 +1024,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
             HCInteger intersectionCount = 0;
             HCReal intersectionT[3] = { NAN, NAN, NAN };
             HCReal intersectionU[3] = { NAN, NAN, NAN };
-            HCContourCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+            HCCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
             if (intersectionCount == 0) {
                 continue;
             }
@@ -1033,7 +1033,7 @@ CTEST(HCRaster, DrawCurveIntersectionsLinearCubic) {
             HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
             
             for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                HCPoint intersection = HCCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
                 HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                 HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
             }
@@ -1066,7 +1066,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
                 HCInteger intersectionCount = 0;
                 HCReal intersectionT[4] = { NAN, NAN, NAN, NAN };
                 HCReal intersectionU[4] = { NAN, NAN, NAN, NAN };
-                HCContourCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
+                HCCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &intersectionCount, intersectionT, intersectionU);
                 if (intersectionCount == 0) {
                     continue;
                 }
@@ -1075,7 +1075,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticQuadratic) {
                 HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, pc.x, pc.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
                 
                 for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                    HCPoint intersection = HCContourCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
+                    HCPoint intersection = HCCurveValueQuadratic(q0, qc, q1, intersectionU[intersectionIndex]);
                     HCRasterDrawQuadraticCurve(raster, q0.x, q0.y, qc.x, qc.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                     HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
                 }
@@ -1110,7 +1110,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
                 HCInteger intersectionCount = 0;
                 HCReal intersectionT[6] = { NAN, NAN, NAN, NAN, NAN, NAN };
                 HCReal intersectionU[6] = { NAN, NAN, NAN, NAN, NAN, NAN };
-                HCContourCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+                HCCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
                 if (intersectionCount == 0) {
                     continue;
                 }
@@ -1119,7 +1119,7 @@ CTEST(HCRaster, DrawCurveIntersectionsQuadraticCubic) {
                 HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, pc.x, pc.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
                 
                 for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                    HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                    HCPoint intersection = HCCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
                     HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                     HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
                 }
@@ -1156,7 +1156,7 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
                     HCInteger intersectionCount = 0;
                     HCReal intersectionT[9] = { NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN };
                     HCReal intersectionU[9] = { NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN };
-                    HCContourCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
+                    HCCurveIntersectionCubicCubic(p0, pc0, pc1, p1, q0, qc0, qc1, q1, &intersectionCount, intersectionT, intersectionU);
                     if (intersectionCount == 0) {
                         continue;
                     }
@@ -1165,7 +1165,7 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
                     HCRasterDrawCubicCurve(raster, p0.x, p0.y, pc0.x, pc0.y, pc1.x, pc1.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
                     
                     for (HCInteger intersectionIndex = 0; intersectionIndex < intersectionCount; intersectionIndex++) {
-                        HCPoint intersection = HCContourCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
+                        HCPoint intersection = HCCurveValueCubic(q0, qc0, qc1, q1, intersectionU[intersectionIndex]);
                         HCRasterDrawCubicCurve(raster, q0.x, q0.y, qc0.x, qc0.y, qc1.x, qc1.y, q1.x, q1.y, HCColorGreen, HCColorGreen);
                         HCRasterDrawEllipse(raster, intersection.x, intersection.y, HCRectangleWidth(r) * 0.025, HCRectangleHeight(r) * 0.025, 0.0, HCColorRed, HCColorRed);
                     }

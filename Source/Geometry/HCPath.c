@@ -476,7 +476,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             
             // Determine if they intersect within the bounds of the segments
             HCInteger count = 0;
-            HCContourCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, NULL, NULL);
+            HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, NULL, NULL);
             if (count > 0) {
                 intersectionCount++;
             }
@@ -539,7 +539,7 @@ void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunc
                     // Determine if they intersect within the bounds of the segments
                     HCInteger count = 0;
                     HCReal t = NAN;
-                    HCContourCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, NULL);
+                    HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, NULL);
                     if (count > 0) {
                         // Calculate the intersection point and call the intersection function
                         HCReal tc = 1.0 - t;
