@@ -204,27 +204,27 @@ HCPoint HCCurveProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCCurve HCCurveMould(HCCurve curve, HCPoint p, HCReal t);
-HCCurve HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
-HCCurve HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p, HCReal t);
-HCCurve HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p, HCReal t);
+void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rp1);
+void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc, HCPoint* rp1);
+void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Interpolation
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCCurve HCCurveInterpolating(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
-HCCurve HCCurveInterpolatingLinear(HCPoint p0, HCPoint p, HCReal t);
-HCCurve HCCurveInterpolatingQuadratic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
-HCCurve HCCurveInterpolatingCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
+void HCCurveInterpolatingLinear(HCPoint p0, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rp1);
+void HCCurveInterpolatingQuadratic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc, HCPoint* rp1);
+void HCCurveInterpolatingCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Fitting
 //----------------------------------------------------------------------------------------------------------------------------------
 
-void HCCurveFitting(HCInteger count, const HCPoint* points, HCPoint* p0, HCCurve* curve);
-void HCCurveFittingLinear(HCInteger count, const HCPoint* points, HCPoint* p0, HCCurve* curve);
-void HCCurveFittingQuadratic(HCInteger count, const HCPoint* points, HCPoint* p0, HCCurve* curve);
-void HCCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint* p0, HCCurve* curve);
+HCCurve HCCurveFitting(HCInteger count, const HCPoint* points);
+void HCCurveFittingLinear(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rp1);
+void HCCurveFittingQuadratic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc, HCPoint* rp1);
+void HCCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
