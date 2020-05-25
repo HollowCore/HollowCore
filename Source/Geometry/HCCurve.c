@@ -1240,6 +1240,7 @@ HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     HCReal length = 0.0;
     HCPoint ps = p0;
     for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
+        // TODO: Cache polyline?
         HCPoint pe = HCCurveValueCubic(p0, c0, c1, p1, t);
         HCReal segmentLength = HCPointDistance(ps, pe);
         length += segmentLength;
@@ -1266,18 +1267,76 @@ HCReal HCCurveParameter(HCCurve curve, HCReal d) {
 }
 
 HCReal HCCurveParameterLinear(HCPoint p0, HCPoint p1, HCReal d) {
-    // TODO: This!
-    return NAN;
+    // Linear curve parameterized by distance is a simple division
+    return HCPointDistance(p0, p1) / d;
 }
 
 HCReal HCCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d) {
-    // TODO: This!
-    return NAN;
+    if (d < 0.0) {
+        return 0.0;
+    }
+    
+    // TODO: Can do this faster by calling HCCurveLengthQuadratic()?
+    // Walk the curve polyline until the segment contains the desired distance
+    HCReal length = 0.0;
+    HCPoint ps = p0;
+    HCPoint pe = ps;
+    HCReal t = 0.0;
+    HCReal tStep = 0.01;
+    for (t = 0.0; t <= 1.0; t += tStep) {
+        // TODO: Cache polyline?
+        pe = HCCurveValueQuadratic(p0, c, p1, t);
+        HCReal segmentLength = HCPointDistance(ps, pe);
+        if (length + segmentLength >= d) {
+            break;
+        }
+        length += segmentLength;
+        ps = pe;
+    }
+    
+    // Unless the end of the curve was reached, walk partially along the last segment to d
+    HCReal remaining = d - length;
+    if (remaining <= 0.0) {
+        return t;
+    }
+    HCReal segmentLength = HCPointDistance(ps, pe);
+    HCReal tRemaining = (remaining / segmentLength) * tStep;
+    t += tRemaining;
+    return t;
 }
 
 HCReal HCCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d) {
-    // TODO: This!
-    return NAN;
+    if (d < 0.0) {
+        return 0.0;
+    }
+    
+    // TODO: Use Legendre-Gauss to numerically calculate length
+    // Walk the curve polyline until the segment contains the desired distance
+    HCReal length = 0.0;
+    HCPoint ps = p0;
+    HCPoint pe = ps;
+    HCReal t = 0.0;
+    HCReal tStep = 0.01;
+    for (t = 0.0; t <= 1.0; t += tStep) {
+        // TODO: Cache polyline?
+        pe = HCCurveValueCubic(p0, c0, c1, p1, t);
+        HCReal segmentLength = HCPointDistance(ps, pe);
+        if (length + segmentLength >= d) {
+            break;
+        }
+        length += segmentLength;
+        ps = pe;
+    }
+    
+    // Unless the end of the curve was reached, walk partially along the last segment to d
+    HCReal remaining = d - length;
+    if (remaining <= 0.0) {
+        return t;
+    }
+    HCReal segmentLength = HCPointDistance(ps, pe);
+    HCReal tRemaining = (remaining / segmentLength) * tStep;
+    t += tRemaining;
+    return t;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

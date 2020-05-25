@@ -499,7 +499,63 @@ CTEST(HCCurve, Length) {
 // MARK: - Parameterization by Arc Length
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCCurve, LinearParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCReal length = HCCurveLengthLinear(p0, p1);
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCCurveParameterLinear(p0, p1, d);
+        ASSERT_DBL_NEAR(t, length / d);
+    }
+}
+
+CTEST(HCCurve, QuadraticParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal length = HCCurveLengthQuadratic(p0, c, p1);
+    HCReal previousT = 0.0;
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCCurveParameterQuadratic(p0, c, p1, d);
+        ASSERT_TRUE(t >= 0.0);
+        ASSERT_TRUE(t <= 1.0);
+        ASSERT_TRUE(t >= previousT);
+        previousT = t;
+    }
+}
+
+CTEST(HCCurve, CubicParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal length = HCCurveLengthCubic(p0, c0, c1, p1);
+    HCReal previousT = 0.0;
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCCurveParameterCubic(p0, c0, c1, p1, d);
+        ASSERT_TRUE(t >= 0.0);
+        ASSERT_TRUE(t <= 1.0);
+        ASSERT_TRUE(t >= previousT);
+        previousT = t;
+    }
+}
+
+CTEST(HCCurve, ParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal length = HCCurveLength(curve);
+    HCReal previousT = 0.0;
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCCurveParameter(curve, d);
+        ASSERT_TRUE(t >= 0.0);
+        ASSERT_TRUE(t <= 1.0);
+        ASSERT_TRUE(t >= previousT);
+        previousT = t;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameter Given Point
