@@ -190,18 +190,6 @@ HCReal HCContourCurveParameterNearestPointQuadratic(HCPoint p0, HCPoint c, HCPoi
 HCReal HCContourCurveParameterNearestPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Parameter Given Axis
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCContourCurveParametersFromXAxis(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersFromYAxis(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersLinearFromXAxis(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersLinearFromYAxis(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersQuadraticFromXAxis(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersQuadraticFromYAxis(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersCubicFromXAxis(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCContourCurveParametersCubicFromYAxis(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Projection
 //----------------------------------------------------------------------------------------------------------------------------------
 
