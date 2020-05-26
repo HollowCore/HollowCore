@@ -472,32 +472,46 @@ HCReal HCContourCurveParameterNearestPoint(HCPoint p0, HCContourCurve curve, HCP
     }
 }
 
-HCPoint HCContourCurveProjection(HCPoint p0, HCContourCurve curve) {
+HCReal HCContourCurveDistanceFromPoint(HCPoint p0, HCContourCurve curve, HCPoint p) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveProjectionLinear(p0, curve.p);
+            return HCCurveDistanceFromPointLinear(p0, curve.p, p);
         }
         else {
-            return HCCurveProjectionQuadratic(p0, curve.c0, curve.p);
+            return HCCurveDistanceFromPointQuadratic(p0, curve.c0, curve.p, p);
         }
     }
     else {
-        return HCCurveProjectionCubic(p0, curve.c0, curve.c1, curve.p);
+        return HCCurveDistanceFromPointCubic(p0, curve.c0, curve.c1, curve.p, p);
     }
 }
 
-HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCPoint p, HCReal t) {
-    HCContourCurve moulded = HCContourCurveInvalid;
+HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCReal t) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            HCCurveMouldLinear(p0, curve.p, p, t, NULL, &moulded.p);
+            return HCCurveBaselineProjectionLinear(p0, curve.p, t);
         }
         else {
-            HCCurveMouldQuadratic(p0, curve.c0, curve.p, p, t, NULL, &moulded.c0, &moulded.p);
+            return HCCurveBaselineProjectionQuadratic(p0, curve.c0, curve.p, t);
         }
     }
     else {
-        HCCurveMouldCubic(p0, curve.c0, curve.c1, curve.p, p, t, NULL, &moulded.c0, &moulded.c1, &moulded.p);
+        return HCCurveBaselineProjectionCubic(p0, curve.c0, curve.c1, curve.p, t);
+    }
+}
+
+HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint p) {
+    HCContourCurve moulded = curve;
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            moulded = curve;
+        }
+        else {
+            HCCurveMouldQuadratic(p0, curve.c0, curve.p, t, p, &moulded.c0);
+        }
+    }
+    else {
+        HCCurveMouldCubic(p0, curve.c0, curve.c1, curve.p, t, p, &moulded.c0, &moulded.c1);
     }
     return moulded;
 }

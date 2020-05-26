@@ -1444,77 +1444,168 @@ HCReal HCCurveParameterNearestPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCP
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Projection
+// MARK: - Distance from Point
 //----------------------------------------------------------------------------------------------------------------------------------
-
-HCPoint HCCurveProjection(HCCurve curve) {
+HCReal HCCurveDistanceFromPoint(HCCurve curve, HCPoint p) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveProjectionLinear(curve.p0, curve.p1);
+            return HCCurveDistanceFromPointLinear(curve.p0, curve.p1, p);
         }
         else {
-            return HCCurveProjectionQuadratic(curve.p0, curve.c0, curve.p1);
+            return HCCurveDistanceFromPointQuadratic(curve.p0, curve.c0, curve.p1, p);
         }
     }
     else {
-        return HCCurveProjectionCubic(curve.p0, curve.c0, curve.c1, curve.p1);
+        return HCCurveDistanceFromPointCubic(curve.p0, curve.c0, curve.c1, curve.p1, p);
     }
 }
 
-HCPoint HCCurveProjectionLinear(HCPoint p0, HCPoint p1) {
-    // TODO: This!
-    return HCPointInvalid;
+HCReal HCCurveDistanceFromPointLinear(HCPoint p0, HCPoint p1, HCPoint p) {
+    HCReal nearest = HCCurveParameterNearestPointLinear(p0, p1, p);
+    HCPoint nearestPoint = HCCurveValueLinear(p0, p1, nearest);
+    return HCPointDistance(nearestPoint, p);
 }
 
-HCPoint HCCurveProjectionQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
-    // TODO: This!
-    return HCPointInvalid;
+HCReal HCCurveDistanceFromPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p) {
+    HCReal nearest = HCCurveParameterNearestPointQuadratic(p0, c, p1, p);
+    HCPoint nearestPoint = HCCurveValueQuadratic(p0, c, p1, nearest);
+    return HCPointDistance(nearestPoint, p);
 }
 
-HCPoint HCCurveProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
-    // TODO: This!
-    return HCPointInvalid;
+HCReal HCCurveDistanceFromPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p) {
+    HCReal nearest = HCCurveParameterNearestPointCubic(p0, c0, c1, p1, p);
+    HCPoint nearestPoint = HCCurveValueCubic(p0, c0, c1, p1, nearest);
+    return HCPointDistance(nearestPoint, p);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Baseline Projection
+//----------------------------------------------------------------------------------------------------------------------------------
+
+HCPoint HCCurveBaselineProjection(HCCurve curve, HCReal t) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCCurveBaselineProjectionLinear(curve.p0, curve.p1, t);
+        }
+        else {
+            return HCCurveBaselineProjectionQuadratic(curve.p0, curve.c0, curve.p1, t);
+        }
+    }
+    else {
+        return HCCurveBaselineProjectionCubic(curve.p0, curve.c0, curve.c1, curve.p1, t);
+    }
+}
+
+HCPoint HCCurveBaselineProjectionLinear(HCPoint p0, HCPoint p1, HCReal t) {
+    // Linear projection onto "baseline" is the point itself
+    return HCCurveValueLinear(p0, p1, t);
+}
+
+HCPoint HCCurveBaselineProjectionQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
+    // Compute quadratic baseline projection point for t
+    HCReal tc = 1.0 - t;
+    HCReal u = (tc * tc) / (t * t + tc * tc);
+    HCReal uc = (1.0 - u);
+    HCReal cx = u * p0.x + uc * p1.x;
+    HCReal cy = u * p0.y + uc * p1.y;
+    return HCPointMake(cx, cy);
+}
+
+HCPoint HCCurveBaselineProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t) {
+    // Compute cubic baseline projection point for t
+    HCReal tc = 1.0 - t;
+    HCReal u = (tc * tc * tc) / (t * t * t + tc * tc * tc);
+    HCReal uc = (1.0 - u);
+    HCReal cx = u * p0.x + uc * p1.x;
+    HCReal cy = u * p0.y + uc * p1.y;
+    return HCPointMake(cx, cy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Moulding
 //----------------------------------------------------------------------------------------------------------------------------------
 
-HCCurve HCCurveMould(HCCurve curve, HCPoint p, HCReal t) {
-    HCCurve moulded = HCCurveInvalid;
+HCCurve HCCurveMould(HCCurve curve, HCReal t, HCPoint p) {
+    HCCurve moulded = curve;
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            HCCurveMouldLinear(curve.p0, curve.p1, p, t, &moulded.p0, &moulded.p1);
+            moulded = curve;
         }
         else {
-            HCCurveMouldQuadratic(curve.p0, curve.c0, curve.p1, p, t, &moulded.p0, &moulded.c0, &moulded.p1);
+            HCCurveMouldQuadratic(curve.p0, curve.c0, curve.p1, t, p, &moulded.c0);
         }
     }
     else {
-        HCCurveMouldCubic(curve.p0, curve.c0, curve.c1, curve.p1, p, t, &moulded.p0, &moulded.c0, &moulded.c1, &moulded.p1);
+        HCCurveMouldCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, p, &moulded.c0, &moulded.c1);
     }
     return moulded;
 }
 
-void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint p) {
+    // Linear curve cannot be moulded since its anchor points are the only contributing elements to its form
 }
 
-void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rc = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc) {
+    HCReal tc = 1.0 - t;
+    
+    // Find the projection of the quadratic curve point at t on its baseline
+    HCPoint b = HCCurveBaselineProjectionQuadratic(p0, c, p1, t);
+    
+    // Given the baseline point and the desired on-curve point, calculate the control point projection whose relationship should remain fixed in the moulded curve
+    // With a quadratic curve, this projected point is the control point of the moulded curve that makes the desired on-curve point be on-curve at t
+    HCReal ratio = fabs((t * t + tc * tc - 1.0) / (t * t + tc * tc));
+    HCReal cpx = p.x + (p.x - b.x) / ratio;
+    HCReal cpy = p.y + (p.y - b.y) / ratio;
+    
+    // Deliver result
+    if (rc != NULL) {
+        *rc = HCPointMake(cpx, cpy);
+    }
 }
 
-void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rc0 = HCPointInvalid;
-    *rc1 = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc0, HCPoint* rc1) {
+    HCReal tc = 1.0 - t;
+    
+    // Find the projection of the cubic curve point at t on its baseline
+    HCPoint b = HCCurveBaselineProjectionCubic(p0, c0, c1, p1, t);
+    
+    // Given the baseline point and the desired on-curve point, calculate the control point segment projection whose relationship should remain fixed in the moulded curve
+    HCReal ratio = fabs((t * t * t + tc * tc * tc - 1.0) / (t * t * t + tc * tc * tc));
+    HCReal apx = p.x + (p.x - b.x) / ratio;
+    HCReal apy = p.y + (p.y - b.y) / ratio;
+    
+    // Calculate the points on the existing curve bezier sub-control polygon just above the on-curve point
+    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
+    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
+    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
+    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
+    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
+    HCPoint   s = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
+    
+    // Translate the sub-control polygon points to be relative to the desired on-curve point
+    HCReal dx = p.x - s.x;
+    HCReal dy = p.y - s.y;
+    HCPoint rpp0 = HCPointOffset(rp0, dx, dy);
+    HCPoint rpp1 = HCPointOffset(rp1, dx, dy);
+    
+    // Calculate the bezier sub-control polygon points leading to control points that make the desired on-curve point be on-curve at t
+    // TODO: Tell Pomax section 31 v1,v2 calculations are wrong! These are correct:
+    HCReal qpp0x = (rpp0.x - t * apx) / tc;
+    HCReal qpp0y = (rpp0.y - t * apy) / tc;
+    HCReal qpp1x = (rpp1.x - tc * apx) / t;
+    HCReal qpp1y = (rpp1.y - tc * apy) / t;
+    HCReal cp0x = (qpp0x - tc * p0.x) / t;
+    HCReal cp0y = (qpp0y - tc * p0.y) / t;
+    HCReal cp1x = (qpp1x - t * p1.x) / tc;
+    HCReal cp1y = (qpp1y - t * p1.y) / tc;
+    
+    // Deliver result
+    if (rc0 != NULL) {
+        *rc0 = HCPointMake(cp0x, cp0y);
+    }
+    if (rc1 != NULL) {
+        *rc1 = HCPointMake(cp1x, cp1y);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

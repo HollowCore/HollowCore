@@ -191,22 +191,30 @@ HCReal HCCurveParameterNearestPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, 
 HCReal HCCurveParameterNearestPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Projection
+// MARK: - Distance from Point
+//----------------------------------------------------------------------------------------------------------------------------------
+HCReal HCCurveDistanceFromPoint(HCCurve curve, HCPoint p);
+HCReal HCCurveDistanceFromPointLinear(HCPoint p0, HCPoint p1, HCPoint p);
+HCReal HCCurveDistanceFromPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p);
+HCReal HCCurveDistanceFromPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Baseline Projection
 //----------------------------------------------------------------------------------------------------------------------------------
 
-HCPoint HCCurveProjection(HCCurve curve);
-HCPoint HCCurveProjectionLinear(HCPoint p0, HCPoint p1);
-HCPoint HCCurveProjectionQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
-HCPoint HCCurveProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+HCPoint HCCurveBaselineProjection(HCCurve curve, HCReal t);
+HCPoint HCCurveBaselineProjectionLinear(HCPoint p0, HCPoint p1, HCReal t);
+HCPoint HCCurveBaselineProjectionQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
+HCPoint HCCurveBaselineProjectionCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Moulding
 //----------------------------------------------------------------------------------------------------------------------------------
 
-HCCurve HCCurveMould(HCCurve curve, HCPoint p, HCReal t);
-void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rp1);
-void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc, HCPoint* rp1);
-void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p, HCReal t, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1);
+HCCurve HCCurveMould(HCCurve curve, HCReal t, HCPoint p);
+void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint p);
+void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc);
+void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc0, HCPoint* rc1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Interpolation

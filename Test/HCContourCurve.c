@@ -525,8 +525,8 @@ CTEST(HCContourCurve, CubicParameterizedByArcLength) {
 CTEST(HCContourCurve, LinearParameterNearestPoint) {
     HCPoint p0 = HCPointMake(-1.0, 2.0);
     HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCPoint p = HCPointMake(1.0, -1.0);
     HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
     HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
     ASSERT_TRUE(nearest >= 0.0);
     ASSERT_TRUE(nearest <= 1.0);
@@ -536,8 +536,8 @@ CTEST(HCContourCurve, QuadraticParameterNearestPoint) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
     HCPoint  c = HCPointMake(3.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCPoint p = HCPointMake(1.0, -1.0);
     HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
     HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
     ASSERT_TRUE(nearest >= 0.0);
     ASSERT_TRUE(nearest <= 1.0);
@@ -548,12 +548,136 @@ CTEST(HCContourCurve, CubicParameterNearestPoint) {
     HCPoint c0 = HCPointMake(2.0, 4.0);
     HCPoint c1 = HCPointMake(4.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCPoint p = HCPointMake(1.0, -1.0);
     HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
     HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
     ASSERT_TRUE(nearest >= 0.0);
     ASSERT_TRUE(nearest <= 1.0);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Distance from Point
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearDistanceFromPoint) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCReal distance = HCContourCurveDistanceFromPoint(p0, curve, p);
+    ASSERT_TRUE(distance <= HCPointDistance(p, p0));
+    ASSERT_TRUE(distance <= HCPointDistance(p, p1));
+}
+
+CTEST(HCContourCurve, QuadraticDistanceFromPoint) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCReal distance = HCContourCurveDistanceFromPoint(p0, curve, p);
+    ASSERT_TRUE(distance <= HCPointDistance(p, p0));
+    ASSERT_TRUE(distance <= HCPointDistance(p, c));
+    ASSERT_TRUE(distance <= HCPointDistance(p, p1));
+}
+
+CTEST(HCContourCurve, CubicDistanceFromPoint) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCReal distance = HCContourCurveDistanceFromPoint(p0, curve, p);
+    ASSERT_TRUE(distance <= HCPointDistance(p, p0));
+    ASSERT_TRUE(distance <= HCPointDistance(p, c0));
+    ASSERT_TRUE(distance <= HCPointDistance(p, c1));
+    ASSERT_TRUE(distance <= HCPointDistance(p, p1));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Baseline Projection
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearBaselineProjection) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCPoint b = HCContourCurveBaselineProjection(p0, curve, 0.25);
+    ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
+}
+
+CTEST(HCContourCurve, QuadraticBaselineProjection) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCPoint b = HCContourCurveBaselineProjection(p0, curve, 0.25);
+    ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
+}
+
+CTEST(HCContourCurve, CubicBaselineProjection) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCPoint b = HCContourCurveBaselineProjection(p0, curve, 0.25);
+    ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Moulding
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearMould) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCContourCurve moulded = HCContourCurveMould(p0, curve, t, p);
+    ASSERT_TRUE(HCContourCurveIsEqual(curve, moulded));
+}
+
+CTEST(HCContourCurve, QuadraticMould) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCContourCurve moulded = HCContourCurveMould(p0, curve, t, p);
+    ASSERT_DBL_FAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
+    ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, moulded, p), 0.0);
+    ASSERT_TRUE(HCPointIsSimilar(p, HCContourCurveValue(p0, moulded, t), 0.00001));
+}
+
+CTEST(HCContourCurve, CubicMould) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCContourCurve moulded = HCContourCurveMould(p0, curve, t, p);
+    ASSERT_DBL_FAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
+    ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, moulded, p), 0.0);
+    ASSERT_TRUE(HCPointIsSimilar(p, HCContourCurveValue(p0, moulded, t), 0.00001));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Interpolation
+//----------------------------------------------------------------------------------------------------------------------------------
+
+// TODO: Tests
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Fitting
+//----------------------------------------------------------------------------------------------------------------------------------
+
+// TODO: Tests
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
@@ -680,27 +804,3 @@ CTEST(HCContourCurve, IntersectionCubicCubic) {
     ASSERT_DBL_NEAR(u[1], 0.4995);
     ASSERT_DBL_NEAR(u[2], 0.8276);
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Projection
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Moulding
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Interpolation
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Fitting
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests

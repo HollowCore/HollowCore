@@ -1004,6 +1004,83 @@ CTEST(HCRaster, DrawCurveNearestParameterCubic) {
     }
 }
 
+CTEST(HCRaster, DrawMouldLinear) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCCurveMouldLinear(p0, p1, 0.5, p);
+            
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_mould_linear_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
+CTEST(HCRaster, DrawMouldQuadratic) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    HCPoint  c = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.8, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.2);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCPoint cp;
+        HCCurveMouldQuadratic(p0, c, p1, 0.5, p, &cp);
+        
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, c.x, c.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, cp.x, cp.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_mould_quadratic_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
+CTEST(HCRaster, DrawMouldCubic) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint c1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCPoint c0p;
+        HCPoint c1p;
+        HCCurveMouldCubic(p0, c0, c1, p1, 0.5, p, &c0p, &c1p);
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawCubicCurve(raster, p0.x, p0.y, c0.x, c0.y, c1.x, c1.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawCubicCurve(raster, p0.x, p0.y, c0p.x, c0p.y, c1p.x, c1p.y, p1.x, p1.y, HCColorBlue, HCColorBlue);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_mould_cubic_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
 CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
     HCInteger countX = 2;// 5
     HCInteger countY = 2;// 5
