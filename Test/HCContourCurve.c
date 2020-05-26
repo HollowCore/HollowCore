@@ -474,19 +474,86 @@ CTEST(HCContourCurve, CubicLength) {
 // MARK: - Parameterization by Arc Length
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCContourCurve, LinearParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCReal length = HCContourCurveLength(p0, curve);
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCContourCurveParameter(p0, curve, d);
+        ASSERT_DBL_NEAR(t, length / d);
+    }
+}
+
+CTEST(HCContourCurve, QuadraticParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCReal length = HCContourCurveLength(p0, curve);
+    HCReal previousT = 0.0;
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCContourCurveParameter(p0, curve, d);
+        ASSERT_TRUE(t >= 0.0);
+        ASSERT_TRUE(t <= 1.0);
+        ASSERT_TRUE(t >= previousT);
+        previousT = t;
+    }
+}
+
+CTEST(HCContourCurve, CubicParameterizedByArcLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCReal length = HCContourCurveLength(p0, curve);
+    HCReal previousT = 0.0;
+    for (HCReal d = 0.0; d < length; d += 0.1) {
+        HCReal t = HCContourCurveParameter(p0, curve, d);
+        ASSERT_TRUE(t >= 0.0);
+        ASSERT_TRUE(t <= 1.0);
+        ASSERT_TRUE(t >= previousT);
+        previousT = t;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameter Given Point
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCContourCurve, LinearParameterNearestPoint) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
+    ASSERT_TRUE(nearest >= 0.0);
+    ASSERT_TRUE(nearest <= 1.0);
+}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Parameter Given Axis
-//----------------------------------------------------------------------------------------------------------------------------------
+CTEST(HCContourCurve, QuadraticParameterNearestPoint) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
+    ASSERT_TRUE(nearest >= 0.0);
+    ASSERT_TRUE(nearest <= 1.0);
+}
 
-// TODO: Tests
+CTEST(HCContourCurve, CubicParameterNearestPoint) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCPoint p = HCPointMake(1.0, -1.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCReal nearest = HCContourCurveParameterNearestPoint(p0, curve, p);
+    ASSERT_TRUE(nearest >= 0.0);
+    ASSERT_TRUE(nearest <= 1.0);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection

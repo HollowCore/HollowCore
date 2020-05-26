@@ -1236,15 +1236,27 @@ HCReal HCCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
 
 HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     // TODO: Use Legendre-Gauss to numerically calculate length
-    // Calculate using polyline
+    // Calculate using polyline segment lengths
     HCReal length = 0.0;
     HCPoint ps = p0;
-    for (HCReal t = 0.0; t <= 1.0; t += 0.01) {
+    HCReal t = 0.0;
+    HCReal tStep = 0.01;
+    while (true) {
+        // Calculate segment length and aggregate to length
         // TODO: Cache polyline?
         HCPoint pe = HCCurveValueCubic(p0, c0, c1, p1, t);
         HCReal segmentLength = HCPointDistance(ps, pe);
         length += segmentLength;
         ps = pe;
+        
+        // Move to next parameter sample, or finish if the end has been reached
+        if (t == 1.0) {
+            break;
+        }
+        t += tStep;
+        if (t > 1.0) {
+            t = 1.0;
+        }
     }
     return length;
 }
@@ -1357,18 +1369,78 @@ HCReal HCCurveParameterNearestPoint(HCCurve curve, HCPoint p) {
 }
 
 HCReal HCCurveParameterNearestPointLinear(HCPoint p0, HCPoint p1, HCPoint p) {
-    // TODO: This!
-    return NAN;
+    // Translate the curve and point to origin then rotate them to the x axis
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    p.x -= p0.x;
+    p.y -= p0.y;
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal px = cosAngle * p.x - sinAngle * p.y;
+    
+    // Project point to x-axis by ignoring y value and determine t value by linearization
+    HCReal t = px / p1x;
+    
+    // Clamp to start and end as the point is closest to one of the end points if beyond the edges
+    return fmax(0.0, fmin(1.0, t));
 }
 
 HCReal HCCurveParameterNearestPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p) {
-    // TODO: This!
-    return NAN;
+    // TODO: Can avoid using polyline?
+    // Use polyline to find parameter with nearest evaluated quadratic curve point
+    HCReal nearestT = 0.0;
+    HCReal nearestDistance = HCRealMaximumPositive;
+    HCReal tStep = 0.01;
+    HCReal t = 0.0;
+    while (true) {
+        // Sample distance and compare to current nearest
+        HCPoint pt = HCCurveValueQuadratic(p0, c, p1, t);
+        HCReal distance = HCPointDistance(p, pt);
+        if (nearestDistance > distance) {
+            nearestDistance = distance;
+            nearestT = t;
+        }
+        
+        // Move to next parameter sample, or finish if the end has been reached
+        if (t == 1.0) {
+            break;
+        }
+        t += tStep;
+        if (t > 1.0) {
+            t = 1.0;
+        }
+    }
+    return nearestT;
 }
 
 HCReal HCCurveParameterNearestPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p) {
-    // TODO: This!
-    return NAN;
+    // TODO: Can avoid using polyline?
+    // Use polyline to find parameter with nearest evaluated quadratic curve point
+    HCReal nearestT = 0.0;
+    HCReal nearestDistance = HCRealMaximumPositive;
+    HCReal tStep = 0.01;
+    HCReal t = 0.0;
+    while (true) {
+        // Sample distance and compare to current nearest
+        HCPoint pt = HCCurveValueCubic(p0, c0, c1, p1, t);
+        HCReal distance = HCPointDistance(p, pt);
+        if (nearestDistance > distance) {
+            nearestDistance = distance;
+            nearestT = t;
+        }
+        
+        // Move to next parameter sample, or finish if the end has been reached
+        if (t == 1.0) {
+            break;
+        }
+        t += tStep;
+        if (t > 1.0) {
+            t = 1.0;
+        }
+    }
+    return nearestT;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

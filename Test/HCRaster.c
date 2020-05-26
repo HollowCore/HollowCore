@@ -926,6 +926,84 @@ void HCPointGrid(HCRectangle r, HCInteger countX, HCInteger countY, HCPoint* poi
     }
 }
 
+CTEST(HCRaster, DrawCurveNearestParameterLinear) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCReal nearest = HCCurveParameterNearestPointLinear(p0, p1, p);
+        HCPoint nearestPoint = HCCurveValueLinear(p0, p1, nearest);
+            
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawLine(raster, p0.x, p0.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawLine(raster, p.x, p.y, nearestPoint.x, nearestPoint.y, HCColorRed, HCColorRed);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_nearest_linear_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
+CTEST(HCRaster, DrawCurveNearestParameterQuadratic) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.7);
+    HCPoint  c = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.8, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.2);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCReal nearest = HCCurveParameterNearestPointQuadratic(p0, c, p1, p);
+        HCPoint nearestPoint = HCCurveValueQuadratic(p0, c, p1, nearest);
+            
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawQuadraticCurve(raster, p0.x, p0.y, c.x, c.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawLine(raster, p.x, p.y, nearestPoint.x, nearestPoint.y, HCColorRed, HCColorRed);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_nearest_quadratic_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
+CTEST(HCRaster, DrawCurveNearestParameterCubic) {
+    HCInteger countX = 5;
+    HCInteger countY = 5;
+    HCPoint points[countX * countY];
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPointGrid(r, countX, countY, points);
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint c1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    for (HCInteger pIndex = 0; pIndex < countX * countY; pIndex++) {
+        HCPoint p = points[pIndex];
+        HCReal nearest = HCCurveParameterNearestPointCubic(p0, c0, c1, p1, p);
+        HCPoint nearestPoint = HCCurveValueCubic(p0, c0, c1, p1, nearest);
+            
+        HCRasterRef raster = HCRasterCreate(100, 100);
+        HCRasterDrawCubicCurve(raster, p0.x, p0.y, c0.x, c0.y, c1.x, c1.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        HCRasterDrawLine(raster, p.x, p.y, nearestPoint.x, nearestPoint.y, HCColorRed, HCColorRed);
+            
+        char bmpFileName[1024];
+        sprintf(bmpFileName, "curve_nearest_cubic_%i.bmp", (int)pIndex);
+        HCRasterSaveBMP(raster, bmpFileName);
+        HCRelease(raster);
+    }
+}
+
 CTEST(HCRaster, DrawCurveIntersectionsLinearLinear) {
     HCInteger countX = 2;// 5
     HCInteger countY = 2;// 5
