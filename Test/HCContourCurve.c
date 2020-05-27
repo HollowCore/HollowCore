@@ -627,6 +627,58 @@ CTEST(HCContourCurve, CubicBaselineProjection) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Interpolation
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCReal t = 1.0;
+    HCReal dx = 0.0;
+    HCReal dy = 0.0;
+    HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
+    ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
+    HCReal cdx;
+    HCReal cdy;
+    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
+    ASSERT_DBL_NEAR(dx, cdx);
+    ASSERT_DBL_NEAR(dy, cdy);
+}
+
+CTEST(HCContourCurve, QuadraticInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCReal t = 0.25;
+    HCReal dx = 0.0;
+    HCReal dy = 0.0;
+    HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
+    ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
+    HCReal cdx;
+    HCReal cdy;
+    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
+    ASSERT_DBL_NEAR(dx, cdx);
+    ASSERT_DBL_NEAR(dy, cdy);
+}
+
+CTEST(HCContourCurve, CubicInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(4.0, 2.0);
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCReal t = 0.25;
+    HCReal dx = -2.0;
+    HCReal dy = 2.0;
+    HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
+    ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
+    HCReal cdx;
+    HCReal cdy;
+    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
+    ASSERT_DBL_NEAR(dx, cdx);
+    ASSERT_DBL_NEAR(dy, cdy);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Moulding
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -666,12 +718,6 @@ CTEST(HCContourCurve, CubicMould) {
     ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, moulded, p), 0.0);
     ASSERT_TRUE(HCPointIsSimilar(p, HCContourCurveValue(p0, moulded, t), 0.00001));
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Interpolation
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Fitting

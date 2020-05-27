@@ -88,8 +88,8 @@ HCReal HCContourCurveParameter(HCPoint p0, HCContourCurve curve, HCReal d);
 HCReal HCContourCurveParameterNearestPoint(HCPoint p0, HCContourCurve curve, HCPoint p);
 HCReal HCContourCurveDistanceFromPoint(HCPoint p0, HCContourCurve curve, HCPoint p);
 HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCReal t);
+HCContourCurve HCContourCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
 HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint p);
-HCContourCurve HCContourCurveInterpolating(HCPoint p0, HCPoint p1, HCPoint p, HCReal t);
 void HCContourCurveFitting(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve);
 void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);
 

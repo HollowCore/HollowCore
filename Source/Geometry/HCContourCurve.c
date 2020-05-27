@@ -492,12 +492,18 @@ HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCRea
             return HCCurveBaselineProjectionLinear(p0, curve.p, t);
         }
         else {
-            return HCCurveBaselineProjectionQuadratic(p0, curve.c0, curve.p, t);
+            return HCCurveBaselineProjectionQuadratic(p0, curve.p, t);
         }
     }
     else {
-        return HCCurveBaselineProjectionCubic(p0, curve.c0, curve.c1, curve.p, t);
+        return HCCurveBaselineProjectionCubic(p0, curve.p, t);
     }
+}
+
+HCContourCurve HCContourCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy) {
+    HCContourCurve curve = HCContourCurveInvalid;
+    HCCurveInterpolatingPointCubic(p0, p1, p, t, dx, dy, &curve.c0, &curve.c1);
+    return curve;
 }
 
 HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint p) {
@@ -514,12 +520,6 @@ HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, H
         HCCurveMouldCubic(p0, curve.c0, curve.c1, curve.p, t, p, &moulded.c0, &moulded.c1);
     }
     return moulded;
-}
-
-HCContourCurve HCContourCurveInterpolating(HCPoint p0, HCPoint p1, HCPoint p, HCReal t) {
-    HCContourCurve curve = HCContourCurveInvalid;
-    HCCurveInterpolatingCubic(p0, p1, p, t, p1.x - p0.x, p1.y - p0.y, NULL, &curve.c0, &curve.c1, &curve.p);
-    return curve;
 }
 
 void HCContourCurveFitting(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve) {

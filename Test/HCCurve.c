@@ -667,18 +667,15 @@ CTEST(HCCurve, LinearBaselineProjection) {
 
 CTEST(HCCurve, QuadraticBaselineProjection) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint  c = HCPointMake(3.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCPoint b = HCCurveBaselineProjectionQuadratic(p0, c, p1, 0.25);
+    HCPoint b = HCCurveBaselineProjectionQuadratic(p0, p1, 0.25);
     ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
 }
 
 CTEST(HCCurve, CubicBaselineProjection) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(2.0, 4.0);
-    HCPoint c1 = HCPointMake(4.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCPoint b = HCCurveBaselineProjectionCubic(p0, c0, c1, p1, 0.25);
+    HCPoint b = HCCurveBaselineProjectionCubic(p0, p1, 0.25);
     ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
 }
 
@@ -690,6 +687,71 @@ CTEST(HCCurve, BaselineProjection) {
     HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
     HCPoint b = HCCurveBaselineProjection(curve, 0.25);
     ASSERT_DBL_NEAR((p1.y - p0.y) / (p1.x - p0.x), (b.y - p0.y) / (b.x - p0.x));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Interpolation
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCCurve, LinearInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCReal t = 0.25;
+    HCCurveInterpolatingPointLinear(p0, p1, t);
+    ASSERT_DBL_NEAR(HCCurveDistanceFromPointLinear(p0, p1, p1), 0.0);
+    // TODO: How can this be made to make sense?
+//    HCReal cdx;
+//    HCReal cdy;
+//    HCContourCurveEvaluateLinear(p0, curve, t);
+//    ASSERT_DBL_NEAR(dx, cdx);
+//    ASSERT_DBL_NEAR(dy, cdy);
+}
+
+CTEST(HCCurve, QuadraticInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCPoint cp = HCPointInvalid;
+    HCCurveInterpolatingPointQuadratic(p0, p1, p, t, &cp);
+    ASSERT_DBL_NEAR(HCCurveDistanceFromPointQuadratic(p0, cp, p1, p), 0.0);
+    ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValueQuadratic(p0, cp, p1, t), 0.00001));
+    HCReal dx;
+    HCReal dy;
+    HCCurveEvaluateQuadratic(p0, cp, p1, t, NULL, NULL, &dx, &dy);
+    ASSERT_DBL_NEAR(dx, 2.0);
+    ASSERT_DBL_NEAR(dy, 1.3333);
+}
+
+CTEST(HCCurve, CubicInterpolatingCurve) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(4.0, 2.0);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCPoint c0p = HCPointInvalid;
+    HCPoint c1p = HCPointInvalid;
+    HCCurveInterpolatingPointCubic(p0, p1, p, t, 1.0, 0.0, &c0p, &c1p);
+    ASSERT_DBL_NEAR(HCCurveDistanceFromPointCubic(p0, c0p, c1p, p1, p), 0.0);
+    ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValueCubic(p0, c0p, c1p, p1, t), 0.00001));
+    HCReal dx;
+    HCReal dy;
+    HCCurveEvaluateCubic(p0, c0p, c1p, p1, t, NULL, NULL, &dx, &dy, NULL, NULL);
+    ASSERT_DBL_NEAR(dx, 1.0);
+    ASSERT_DBL_NEAR(dy, 0.0);
+}
+
+CTEST(HCCurve, InterpolatingCurve) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.25;
+    HCPoint p = HCPointMake(2.0, 3.0);
+    HCCurve moulded = HCCurveMould(curve, t, p);
+    ASSERT_DBL_FAR(HCCurveDistanceFromPoint(curve, p), 0.0);
+    ASSERT_DBL_NEAR(HCCurveDistanceFromPoint(moulded, p), 0.0);
+    ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValue(moulded, t), 0.00001));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -745,12 +807,6 @@ CTEST(HCCurve, Mould) {
     ASSERT_DBL_NEAR(HCCurveDistanceFromPoint(moulded, p), 0.0);
     ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValue(moulded, t), 0.00001));
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Interpolation
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Fitting
