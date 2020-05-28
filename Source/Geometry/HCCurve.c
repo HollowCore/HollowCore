@@ -1636,30 +1636,136 @@ void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t,
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCCurve HCCurveFitting(HCInteger count, const HCPoint* points) {
-    HCCurve curve = HCCurveInvalid;
-    HCCurveFittingCubic(count, points, &curve.p0, &curve.c0, &curve.c1, &curve.p1);
-    return curve;
+    switch (count) {
+        case 1:
+        case 2: {
+            HCCurve curve = HCCurveInvalid;
+            HCCurveFittingLinear(count, points, &curve.p0, &curve.p1);
+            return curve;
+        }
+        case 3: {
+            HCCurve curve = HCCurveInvalid;
+            HCCurveFittingQuadratic(count, points, &curve.p0, &curve.c0, &curve.p1);
+            return curve;
+        }
+        default: {
+            HCCurve curve = HCCurveInvalid;
+            HCCurveFittingCubic(count, points, &curve.p0, &curve.c0, &curve.c1, &curve.p1);
+            return curve;
+        }
+    }
 }
 
 void HCCurveFittingLinear(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+    HCPoint p0 = HCPointInvalid;
+    HCPoint p1 = HCPointInvalid;
+    if (count > 0) {
+        switch (count) {
+            case 1: {
+                p0 = points[0];
+                p1 = points[0];
+            } break;
+            case 2: {
+                p0 = points[0];
+                p1 = points[1];
+            } break;
+            default: {
+                // TODO: This!
+            }
+        }
+    }
+    
+    // Deliver results
+    if (rp0 != NULL) {
+        *rp0 = p0;
+    }
+    if (rp1 != NULL) {
+        *rp1 = p1;
+    }
 }
 
 void HCCurveFittingQuadratic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rc = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+    HCPoint p0 = HCPointInvalid;
+    HCPoint c = HCPointInvalid;
+    HCPoint p1 = HCPointInvalid;
+    if (count > 0) {
+        switch (count) {
+            case 1: {
+                p0 = points[0];
+                c = points[0];
+                p1 = points[0];
+            } break;
+            case 2: {
+                p0 = points[0];
+                c = points[1];
+                p1 = points[1];
+            } break;
+            case 3: {
+                p0 = points[0];
+                p1 = points[1];
+                HCCurveInterpolatingPointQuadratic(p0, p1, points[2], 0.5, &c);
+            } break;
+            default: {
+                // TODO: This!
+            }
+        }
+    }
+    
+    // Deliver results
+    if (rp0 != NULL) {
+        *rp0 = p0;
+    }
+    if (rc != NULL) {
+        *rc = c;
+    }
+    if (rp1 != NULL) {
+        *rp1 = p1;
+    }
 }
 
 void HCCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1) {
-    // TODO: This!
-    *rp0 = HCPointInvalid;
-    *rc0 = HCPointInvalid;
-    *rc1 = HCPointInvalid;
-    *rp1 = HCPointInvalid;
+    HCPoint p0 = HCPointInvalid;
+    HCPoint c0 = HCPointInvalid;
+    HCPoint c1 = HCPointInvalid;
+    HCPoint p1 = HCPointInvalid;
+    if (count > 0) {
+        switch (count) {
+            case 1: {
+                p0 = points[0];
+                c0 = points[0];
+                c1 = points[0];
+                p1 = points[0];
+            } break;
+            case 2: {
+                p0 = points[0];
+                c0 = points[0];
+                c1 = points[1];
+                p1 = points[1];
+            } break;
+            case 3: {
+                p0 = points[0];
+                p1 = points[1];
+                HCCurveInterpolatingPointCubic(p0, p1, points[2], 0.5, p1.x - p0.x, p1.y - p0.y, &c0, &c1);
+            } break;
+            default: {
+                // TODO: This!
+            }
+        }
+    }
+    
+    // Deliver results
+    if (rp0 != NULL) {
+        *rp0 = p0;
+    }
+    if (rc0 != NULL) {
+        *rc0 = c0;
+    }
+    if (rc1 != NULL) {
+        *rc1 = c1;
+    }
+    if (rp1 != NULL) {
+        *rp1 = p1;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
