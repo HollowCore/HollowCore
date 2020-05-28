@@ -97,8 +97,8 @@ HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal
 // MARK: - Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCCurveEvaluate(HCCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
-void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y);
-void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy);
+void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
+void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
 void HCCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ HCPoint HCCurveBaselineProjectionCubic(HCPoint p0, HCPoint p1, HCReal t);
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCCurve HCCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
-void HCCurveInterpolatingPointLinear(HCPoint p0, HCPoint p1, HCReal t);
+void HCCurveInterpolatingPointLinear(HCPoint p0, HCPoint p, HCReal t, HCPoint* p1);
 void HCCurveInterpolatingPointQuadratic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rc);
 void HCCurveInterpolatingPointCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy, HCPoint* rc0, HCPoint* rc1);
 

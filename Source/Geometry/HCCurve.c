@@ -372,28 +372,10 @@ HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal
 void HCCurveEvaluate(HCCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            HCCurveEvaluateLinear(curve.p0, curve.p1, t, x, y);
-            if (dx != NULL) {
-                *dx = 0.0;
-            }
-            if (dy != NULL) {
-                *dy = 0.0;
-            }
-            if (ddx != NULL) {
-                *ddx = 0.0;
-            }
-            if (ddy != NULL) {
-                *ddy = 0.0;
-            }
+            HCCurveEvaluateLinear(curve.p0, curve.p1, t, x, y, dx, dy, ddx, ddy);
         }
         else {
-            HCCurveEvaluateQuadratic(curve.p0, curve.c0, curve.p1, t, x, y, dx, dy);
-            if (ddx != NULL) {
-                *ddx = 0.0;
-            }
-            if (ddy != NULL) {
-                *ddy = 0.0;
-            }
+            HCCurveEvaluateQuadratic(curve.p0, curve.c0, curve.p1, t, x, y, dx, dy, ddx, ddy);
         }
     }
     else {
@@ -401,7 +383,7 @@ void HCCurveEvaluate(HCCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, 
     }
 }
 
-void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y) {
+void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
     HCReal tc = 1.0 - t;
         
     // Calculate linear interpolations along linear curve at t
@@ -414,9 +396,21 @@ void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* 
     if (y != NULL) {
         *y = sp.y;
     }
+    if (dx != NULL) {
+        *dx = p1.x - p0.x;
+    }
+    if (dy != NULL) {
+        *dy = p1.y - p0.y;
+    }
+    if (ddx != NULL) {
+        *ddx = 0.0;
+    }
+    if (ddy != NULL) {
+        *ddy = 0.0;
+    }
 }
 
-void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy) {
+void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
     HCReal tc = 1.0 - t;
     
     // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
@@ -424,7 +418,7 @@ void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCRea
     HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
     HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
     
-    // Provide solution point and derivative at t
+    // Provide solution point and derivatives at t
     if (x != NULL) {
         *x = sp.x;
     }
@@ -436,6 +430,12 @@ void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCRea
     }
     if (dy != NULL) {
         *dy = qp1.y - qp0.y;
+    }
+    if (ddx != NULL) {
+        *ddx = 2.0 * (p1.x - 2.0 * c.x + p0.x);
+    }
+    if (ddy != NULL) {
+        *ddy = 2.0 * (p1.y - 2.0 * c.y + p0.y);
     }
 }
 
@@ -818,14 +818,14 @@ HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t) {
 }
 
 HCReal HCCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
-    // TODO: Second derivative is zero. How does this work?!?
-//    HCReal dx = 0.0;
-//    HCReal dy = 0.0;
-//    HCCurveEvaluateQuadratic(p0, c, p1, t, NULL, NULL, &dx, &dy);
-//    HCReal numerator = dx * ddy - ddx * dy
-//    HCReal denominator = pow(dx*dx + dy*dy, 1.5)
-//    return numerator / denominator
-    return NAN;
+    HCReal dx = 0.0;
+    HCReal dy = 0.0;
+    HCReal ddx = 0.0;
+    HCReal ddy = 0.0;
+    HCCurveEvaluateQuadratic(p0, c, p1, t, NULL, NULL, &dx, &dy, &ddx, &ddy);
+    HCReal numerator = dx * ddy - ddx * dy;
+    HCReal denominator = pow(dx*dx + dy*dy, 1.5);
+    return numerator / denominator;
 }
 
 HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t) {
@@ -1526,13 +1526,18 @@ HCPoint HCCurveBaselineProjectionCubic(HCPoint p0, HCPoint p1, HCReal t) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 HCCurve HCCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy) {
-    HCCurve curve = HCCurveInvalid;
+    HCCurve curve = HCCurveMakeLinear(p0, p1);
     HCCurveInterpolatingPointCubic(p0, p1, p, t, dx, dy, &curve.c0, &curve.c1);
     return curve;
 }
 
-void HCCurveInterpolatingPointLinear(HCPoint p0, HCPoint p1, HCReal t) {
-    // Linear curve cannot interpolate at t since its anchor points are the only contributing elements to its form
+void HCCurveInterpolatingPointLinear(HCPoint p0, HCPoint p, HCReal t, HCPoint* p1) {
+    HCReal tc = 1.0 - t;
+    
+    // Find the end point that causes p to correspond to t
+    if (p1 != NULL) {
+        *p1 = HCPointMake((p.x - tc * p0.x) / t, (p.y - tc * p0.y) / t);
+    }
 }
 
 void HCCurveInterpolatingPointQuadratic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCPoint* rc) {

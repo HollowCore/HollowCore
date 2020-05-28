@@ -171,39 +171,27 @@ HCPoint HCContourCurveValue(HCPoint p0, HCContourCurve curve, HCReal t) {
         if (HCPointIsInvalid(curve.c0)) {
             return HCCurveValueLinear(p0, curve.p, t);
         }
-        return HCCurveValueQuadratic(p0, curve.c0, curve.p, t);
+        else {
+            return HCCurveValueQuadratic(p0, curve.c0, curve.p, t);
+        }
     }
-    return HCCurveValueCubic(p0, curve.c0, curve.c1, curve.p, t);
+    else {
+        return HCCurveValueCubic(p0, curve.c0, curve.c1, curve.p, t);
+    }
 }
 
 void HCContourCurveEvaluate(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            HCCurveEvaluateLinear(p0, curve.p, t, x, y);
-            if (dx != NULL) {
-                *dx = 0.0;
-            }
-            if (dy != NULL) {
-                *dy = 0.0;
-            }
-            if (ddx != NULL) {
-                *ddx = 0.0;
-            }
-            if (ddy != NULL) {
-                *ddy = 0.0;
-            }
-            return;
+            HCCurveEvaluateLinear(p0, curve.p, t, x, y, dx, dy, ddx, ddy);
         }
-        HCCurveEvaluateQuadratic(p0, curve.c0, curve.p, t, x, y, dx, dy);
-        if (ddx != NULL) {
-            *ddx = 0.0;
+        else {
+            HCCurveEvaluateQuadratic(p0, curve.c0, curve.p, t, x, y, dx, dy, ddx, ddy);
         }
-        if (ddy != NULL) {
-            *ddy = 0.0;
-        }
-        return;
     }
-    HCCurveEvaluateCubic(p0, curve.c0, curve.c1, curve.p, t, x, y, dx, dy, ddx, ddy);
+    else {
+        HCCurveEvaluateCubic(p0, curve.c0, curve.c1, curve.p, t, x, y, dx, dy, ddx, ddy);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
