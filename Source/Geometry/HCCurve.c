@@ -714,7 +714,7 @@ void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve) {
                 *sCurve = HCCurveMakeQuadratic(sp0, sc, sp1);
             }
             if (eCurve != NULL) {
-                *eCurve = HCCurveMakeQuadratic(sp0, ec, ep1);
+                *eCurve = HCCurveMakeQuadratic(ep0, ec, ep1);
             }
         }
     }
@@ -732,7 +732,7 @@ void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve) {
             *sCurve = HCCurveMakeCubic(sp0, sc0, sc1, sp1);
         }
         if (eCurve != NULL) {
-            *eCurve = HCCurveMakeCubic(sp0, ec0, ec1, ep1);
+            *eCurve = HCCurveMakeCubic(ep0, ec0, ec1, ep1);
         }
     }
 }

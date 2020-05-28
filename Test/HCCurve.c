@@ -186,34 +186,82 @@ CTEST(HCCurve, Canonical) {
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCCurve, LinearValue) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCReal t = 0.5;
+    HCPoint s = HCCurveValueLinear(p0, p1, t);
+    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
+}
+
+CTEST(HCCurve, QuadraticValue) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.5;
+    HCPoint s = HCCurveValueQuadratic(p0, c, p1, t);
+    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.0), 0.000001));
+}
+
+CTEST(HCCurve, CubicValue) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.5;
+    HCPoint s = HCCurveValueCubic(p0, c0, c1, p1, t);
+    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.5), 0.000001));
+}
+
+CTEST(HCCurve, Value) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.5;
+    HCPoint s =  HCCurveValue(curve, t);
+    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.5), 0.000001));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Evaluation
 //----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCCurve, LinearEvaluation) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCReal t = 0.5;
     HCPoint s = HCPointInvalid;
-    HCCurveEvaluateLinear(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), 0.5, &s.x, &s.y);
+    HCCurveEvaluateLinear(p0, p1, t, &s.x, &s.y);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
 }
 
 CTEST(HCCurve, QuadraticEvaluation) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.5;
     HCPoint s = HCPointInvalid;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCCurveEvaluateQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 2.0), 0.5, &s.x, &s.y, &dx, &dy);
+    HCReal dx = HCRealInvalid;
+    HCReal dy = HCRealInvalid;
+    HCCurveEvaluateQuadratic(p0, c, p1, t, &s.x, &s.y, &dx, &dy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.0), 0.000001));
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 0.0);
 }
 
 CTEST(HCCurve, CubicEvaluation) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.5;
     HCPoint s = HCPointInvalid;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCReal ddx = NAN;
-    HCReal ddy = NAN;
-    HCCurveEvaluateCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0), 0.5, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
+    HCReal dx = HCRealInvalid;
+    HCReal dy = HCRealInvalid;
+    HCReal ddx = HCRealInvalid;
+    HCReal ddy = HCRealInvalid;
+    HCCurveEvaluateCubic(p0, c0, c1, p1, t, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.5), 0.000001));
     ASSERT_DBL_NEAR(dx, 1.5);
     ASSERT_DBL_NEAR(dy, 0.0);
@@ -222,13 +270,18 @@ CTEST(HCCurve, CubicEvaluation) {
 }
 
 CTEST(HCCurve, Evaluation) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.5;
     HCPoint s = HCPointInvalid;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCReal ddx = NAN;
-    HCReal ddy = NAN;
-    HCCurve curve = HCCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0));
-    HCCurveEvaluate(curve, 0.5, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
+    HCReal dx = HCRealInvalid;
+    HCReal dy = HCRealInvalid;
+    HCReal ddx = HCRealInvalid;
+    HCReal ddy = HCRealInvalid;
+    HCCurveEvaluate(curve, t, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
     ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.5), 0.000001));
     ASSERT_DBL_NEAR(dx, 1.5);
     ASSERT_DBL_NEAR(dy, 0.0);
@@ -239,32 +292,175 @@ CTEST(HCCurve, Evaluation) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Axis Alignment
 //----------------------------------------------------------------------------------------------------------------------------------
-CTEST(HCCurve, AxisAligned) {
-    HCCurve curve = HCCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 0.0), HCPointMake(5.0, 1.0), HCPointMake(7.0, 8.0));
+CTEST(HCCurve, LinearAxisAlign) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCPoint xAxisAlignedP0 = HCPointInvalid;
+    HCPoint xAxisAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedLinear(p0, p1, &xAxisAlignedP0, &xAxisAlignedP1);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP1.y, 0.0);
+    
+    HCPoint yAxisAlignedP0 = HCPointInvalid;
+    HCPoint yAxisAlignedP1 = HCPointInvalid;
+    HCCurveYAxisAlignedLinear(p0, p1, &yAxisAlignedP0, &yAxisAlignedP1);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP1.x, 0.0);
+}
+
+CTEST(HCCurve, QuadraticAxisAlign) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCPoint xAxisAlignedP0 = HCPointInvalid;
+    HCPoint xAxisAlignedC = HCPointInvalid;
+    HCPoint xAxisAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedQuadratic(p0, c, p1, &xAxisAlignedP0, &xAxisAlignedC, &xAxisAlignedP1);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP1.y, 0.0);
+    
+    HCPoint yAxisAlignedP0 = HCPointInvalid;
+    HCPoint yAxisAlignedC = HCPointInvalid;
+    HCPoint yAxisAlignedP1 = HCPointInvalid;
+    HCCurveYAxisAlignedQuadratic(p0, c, p1, &yAxisAlignedP0, &yAxisAlignedC, &yAxisAlignedP1);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP1.x, 0.0);
+}
+
+CTEST(HCCurve, CubicAxisAlign) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCPoint xAxisAlignedP0 = HCPointInvalid;
+    HCPoint xAxisAlignedC0 = HCPointInvalid;
+    HCPoint xAxisAlignedC1 = HCPointInvalid;
+    HCPoint xAxisAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedCubic(p0, c0, c1, p1, &xAxisAlignedP0, &xAxisAlignedC0, &xAxisAlignedC1, &xAxisAlignedP1);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(xAxisAlignedP1.y, 0.0);
+    
+    HCPoint yAxisAlignedP0 = HCPointInvalid;
+    HCPoint yAxisAlignedC0 = HCPointInvalid;
+    HCPoint yAxisAlignedC1 = HCPointInvalid;
+    HCPoint yAxisAlignedP1 = HCPointInvalid;
+    HCCurveYAxisAlignedCubic(p0, c0, c1, p1, &yAxisAlignedP0, &yAxisAlignedC0, &yAxisAlignedC1, &yAxisAlignedP1);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.x, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP0.y, 0.0);
+    ASSERT_DBL_NEAR(yAxisAlignedP1.x, 0.0);
+    
+    HCPoint curveCanonical = HCCurveCanonical(p0, c0, c1, p1);
+    HCPoint xAxisAlignedCanonical = HCCurveCanonical(xAxisAlignedP0, xAxisAlignedC0, xAxisAlignedC1, xAxisAlignedP1);
+    HCPoint yAxisAlignedCanonical = HCCurveCanonical(yAxisAlignedP0, yAxisAlignedC0, yAxisAlignedC1, yAxisAlignedP1);
+    ASSERT_TRUE(HCPointIsSimilar(curveCanonical, xAxisAlignedCanonical, 0.000001));
+    ASSERT_TRUE(HCPointIsSimilar(curveCanonical, yAxisAlignedCanonical, 0.000001));
+}
+
+CTEST(HCCurve, AxisAlign) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(3.0, 0.0);
+    HCPoint c1 = HCPointMake(5.0, 1.0);
+    HCPoint p1 = HCPointMake(7.0, 8.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
     HCCurve xAxisAligned = HCCurveXAxisAligned(curve);
-    ASSERT_FALSE(HCCurveIsInvalid(xAxisAligned));
-    ASSERT_FALSE(HCCurveIsZero(xAxisAligned));
-    ASSERT_FALSE(HCCurveIsInfinite(xAxisAligned));
-    ASSERT_FALSE(HCCurveIsLinear(xAxisAligned));
-    ASSERT_FALSE(HCCurveIsQuadratic(xAxisAligned));
-    ASSERT_TRUE(HCCurveIsCubic(xAxisAligned));
+    ASSERT_DBL_NEAR(xAxisAligned.p0.x, 0.0);
+    ASSERT_DBL_NEAR(xAxisAligned.p0.y, 0.0);
     ASSERT_DBL_NEAR(xAxisAligned.p1.y, 0.0);
     
     HCCurve yAxisAligned = HCCurveYAxisAligned(curve);
-    ASSERT_FALSE(HCCurveIsInvalid(yAxisAligned));
-    ASSERT_FALSE(HCCurveIsZero(yAxisAligned));
-    ASSERT_FALSE(HCCurveIsInfinite(yAxisAligned));
-    ASSERT_FALSE(HCCurveIsLinear(yAxisAligned));
-    ASSERT_FALSE(HCCurveIsQuadratic(yAxisAligned));
-    ASSERT_TRUE(HCCurveIsCubic(yAxisAligned));
+    ASSERT_DBL_NEAR(yAxisAligned.p0.x, 0.0);
+    ASSERT_DBL_NEAR(yAxisAligned.p0.y, 0.0);
     ASSERT_DBL_NEAR(yAxisAligned.p1.x, 0.0);
+    
+    HCPoint curveCanonical = HCCurveCanonical(curve.p0, curve.c0, curve.c1, curve.p1);
+    HCPoint xAxisAlignedCanonical = HCCurveCanonical(xAxisAligned.p0, xAxisAligned.c0, xAxisAligned.c1, xAxisAligned.p1);
+    HCPoint yAxisAlignedCanonical = HCCurveCanonical(yAxisAligned.p0, yAxisAligned.c0, yAxisAligned.c1, yAxisAligned.p1);
+    ASSERT_TRUE(HCPointIsSimilar(curveCanonical, xAxisAlignedCanonical, 0.000001));
+    ASSERT_TRUE(HCPointIsSimilar(curveCanonical, yAxisAlignedCanonical, 0.000001));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Split
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Tests
+CTEST(HCCurve, LinearSplit) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCPoint sp1 = HCPointInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCPoint ep1 = HCPointInvalid;
+    HCCurveSplitLinear(p0, p1, t, &sp0, &sp1, &ep0, &ep1);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sp1, ep0));
+    ASSERT_TRUE(HCPointIsEqual(ep1, p1));
+    ASSERT_TRUE(HCPointIsEqual(sp1, HCCurveValueLinear(p0, p1, t)));
+    ASSERT_DBL_NEAR(HCCurveLengthLinear(sp0, sp1) + HCCurveLengthLinear(ep0, ep1), HCCurveLengthLinear(p0, p1));
+}
+
+CTEST(HCCurve, QuadraticSplit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCPoint  sc = HCPointInvalid;
+    HCPoint sp1 = HCPointInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCPoint  ec = HCPointInvalid;
+    HCPoint ep1 = HCPointInvalid;
+    HCCurveSplitQuadratic(p0, c, p1, t, &sp0, &sc, &sp1, &ep0, &ec, &ep1);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sp1, ep0));
+    ASSERT_TRUE(HCPointIsEqual(ep1, p1));
+    ASSERT_TRUE(HCPointIsEqual(sp1, HCCurveValueQuadratic(p0, c, p1, t)));
+    ASSERT_DBL_NEAR(HCCurveLengthQuadratic(sp0, sc, sp1) + HCCurveLengthQuadratic(ep0, ec, ep1), HCCurveLengthQuadratic(p0, c, p1));
+}
+
+CTEST(HCCurve, CubicSplit) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint c0 = HCPointMake(0.0, 2.0);
+    HCPoint c1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCPoint sc0 = HCPointInvalid;
+    HCPoint sc1 = HCPointInvalid;
+    HCPoint sp1 = HCPointInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCPoint ec0 = HCPointInvalid;
+    HCPoint ec1 = HCPointInvalid;
+    HCPoint ep1 = HCPointInvalid;
+    HCCurveSplitCubic(p0, c0, c1, p1, t, &sp0, &sc0, &sc1, &sp1, &ep0, &ec0, &ec1, &ep1);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sp1, ep0));
+    ASSERT_TRUE(HCPointIsEqual(ep1, p1));
+    ASSERT_TRUE(HCPointIsEqual(sp1, HCCurveValueCubic(p0, c0, c1, p1, t)));
+    ASSERT_DBL_NEAR(HCCurveLengthCubic(sp0, sc0, sc1, sp1) + HCCurveLengthCubic(ep0, ec0, ec1, ep1), HCCurveLengthCubic(p0, c0, c1, p1));
+}
+
+CTEST(HCCurve, Split) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint c0 = HCPointMake(0.0, 2.0);
+    HCPoint c1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCReal t = 0.25;
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCCurve sCurve = HCCurveInvalid;
+    HCCurve eCurve = HCCurveInvalid;
+    HCCurveSplit(curve, t, &sCurve, &eCurve);
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p1, eCurve.p0));
+    ASSERT_TRUE(HCPointIsEqual(eCurve.p1, p1));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p1, HCCurveValueCubic(p0, c0, c1, p1, t)));
+    ASSERT_DBL_NEAR(HCCurveLength(sCurve) + HCCurveLength(eCurve), HCCurveLength(curve));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
@@ -283,29 +479,42 @@ CTEST(HCCurve, AxisAligned) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCCurve, LinearExtrema) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
     HCInteger count = 0;
-    HCCurveExtremaLinear(HCPointMake(-1.0, 2.0), HCPointMake(3.0, -4.0), &count, NULL);
+    HCCurveExtremaLinear(p0, p1, &count, NULL);
     ASSERT_TRUE(count == 0);
 }
 
 CTEST(HCCurve, QuadraticExtrema) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
     HCInteger count = 0;
     HCReal extrema[2];
-    HCCurveExtremaQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 2.0), &count, extrema);
+    HCCurveExtremaQuadratic(p0, c, p1, &count, extrema);
     ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
 }
 
 CTEST(HCCurve, CubicExtrema) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
     HCInteger count = 0;
     HCReal extrema[6];
-    HCCurveExtremaCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0), &count, extrema);
+    HCCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
     ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
 }
 
 CTEST(HCCurve, Extrema) {
-    HCCurve curve = HCCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(2.0, 4.0), HCPointMake(4.0, 4.0), HCPointMake(5.0, 2.0));
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
     HCInteger count = 0;
     HCReal extrema[6];
     HCCurveExtrema(curve, &count, extrema);
@@ -354,7 +563,7 @@ CTEST(HCCurve, Inflection) {
     HCPoint p1 = HCPointMake(1.0, 4.0);
     HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
     HCInteger count = 0;
-    HCReal inflections[2];
+    HCReal inflections[2] = {HCRealInvalid, HCRealInvalid};
     HCCurveInflections(curve, &count, inflections);
     ASSERT_TRUE(HCCurveCanonicalType(curve) == HCCurveTypeCubicSingleInflection);
     ASSERT_TRUE(count == 1);
@@ -716,8 +925,8 @@ CTEST(HCCurve, QuadraticInterpolatingCurve) {
     HCCurveInterpolatingPointQuadratic(p0, p1, p, t, &cp);
     ASSERT_DBL_NEAR(HCCurveDistanceFromPointQuadratic(p0, cp, p1, p), 0.0);
     ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValueQuadratic(p0, cp, p1, t), 0.00001));
-    HCReal dx;
-    HCReal dy;
+    HCReal dx = HCRealInvalid;
+    HCReal dy = HCRealInvalid;
     HCCurveEvaluateQuadratic(p0, cp, p1, t, NULL, NULL, &dx, &dy);
     ASSERT_DBL_NEAR(dx, 2.0);
     ASSERT_DBL_NEAR(dy, 1.3333);
@@ -733,8 +942,8 @@ CTEST(HCCurve, CubicInterpolatingCurve) {
     HCCurveInterpolatingPointCubic(p0, p1, p, t, 1.0, 0.0, &c0p, &c1p);
     ASSERT_DBL_NEAR(HCCurveDistanceFromPointCubic(p0, c0p, c1p, p1, p), 0.0);
     ASSERT_TRUE(HCPointIsSimilar(p, HCCurveValueCubic(p0, c0p, c1p, p1, t), 0.00001));
-    HCReal dx;
-    HCReal dy;
+    HCReal dx = HCRealInvalid;
+    HCReal dy = HCRealInvalid;
     HCCurveEvaluateCubic(p0, c0p, c1p, p1, t, NULL, NULL, &dx, &dy, NULL, NULL);
     ASSERT_DBL_NEAR(dx, 1.0);
     ASSERT_DBL_NEAR(dy, 0.0);
@@ -824,8 +1033,8 @@ CTEST(HCCurve, IntersectionLinearLinear) {
     HCPoint q0 = HCPointMake(100.0, 0.0);
     HCPoint q1 = HCPointMake(0.0, 100.0);
     HCInteger count = 0;
-    HCReal t = NAN;
-    HCReal u = NAN;
+    HCReal t = HCRealInvalid;
+    HCReal u = HCRealInvalid;
     HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, &u);
     ASSERT_TRUE(count == 1);
     ASSERT_DBL_NEAR(t, 0.5);
@@ -839,8 +1048,8 @@ CTEST(HCCurve, IntersectionLinearQuadratic) {
     HCPoint qc = HCPointMake(50.0, 100.0);
     HCPoint q1 = HCPointMake(100.0, -50.0);
     HCInteger count = 0;
-    HCReal t[2] = {NAN, NAN};
-    HCReal u[2] = {NAN, NAN};
+    HCReal t[2] = {HCRealInvalid, HCRealInvalid};
+    HCReal u[2] = {HCRealInvalid, HCRealInvalid};
     HCCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.2113);
@@ -857,8 +1066,8 @@ CTEST(HCCurve, IntersectionLinearCubic) {
     HCPoint qc1 = HCPointMake(100.0, 100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
     HCInteger count = 0;
-    HCReal t[3] = {NAN, NAN};
-    HCReal u[3] = {NAN, NAN};
+    HCReal t[3] = {HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCReal u[3] = {HCRealInvalid, HCRealInvalid, HCRealInvalid};
     HCCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.8273);
@@ -877,8 +1086,8 @@ CTEST(HCCurve, IntersectionQuadraticQuadratic) {
     HCPoint qc = HCPointMake(50.0, 100.0);
     HCPoint q1 = HCPointMake(100.0, -50.0);
     HCInteger count = 0;
-    HCReal t[2] = {NAN, NAN};
-    HCReal u[2] = {NAN, NAN};
+    HCReal t[4] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCReal u[4] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
     HCCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.2104);
@@ -896,8 +1105,8 @@ CTEST(HCCurve, IntersectionQuadraticCubic) {
     HCPoint qc1 = HCPointMake(100.0, -100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
     HCInteger count = 0;
-    HCReal t[6] = {NAN, NAN};
-    HCReal u[6] = {NAN, NAN};
+    HCReal t[6] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCReal u[6] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
     HCCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.1821);
@@ -916,8 +1125,8 @@ CTEST(HCCurve, IntersectionCubicCubic) {
     HCPoint qc1 = HCPointMake(100.0, 100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
     HCInteger count = 0;
-    HCReal t[9] = {NAN, NAN};
-    HCReal u[9] = {NAN, NAN};
+    HCReal t[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCReal u[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
     HCCurveIntersectionCubicCubic(p0, c0, c1, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.1724);
@@ -940,8 +1149,8 @@ CTEST(HCCurve, Intersection) {
     HCPoint qp1 = HCPointMake(150.0, -50.0);
     HCCurve curveQ = HCCurveMakeCubic(qp0, qc0, qc1, qp1);
     HCInteger count = 0;
-    HCReal t[9] = {NAN, NAN};
-    HCReal u[9] = {NAN, NAN};
+    HCReal t[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCReal u[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
     HCCurveIntersection(curveP, curveQ, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.1724);
