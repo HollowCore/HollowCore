@@ -226,15 +226,6 @@ void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint 
 void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc0, HCPoint* rc1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Fitting
-//----------------------------------------------------------------------------------------------------------------------------------
-
-HCCurve HCCurveFitting(HCInteger count, const HCPoint* points);
-void HCCurveFittingLinear(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rp1);
-void HCCurveFittingQuadratic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc, HCPoint* rp1);
-void HCCurveFittingCubic(HCInteger count, const HCPoint* points, HCPoint* rp0, HCPoint* rc0, HCPoint* rc1, HCPoint* rp1);
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCCurveIntersection(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);

@@ -510,10 +510,6 @@ HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, H
     return moulded;
 }
 
-void HCContourCurveFitting(HCInteger count, const HCPoint* points, HCPoint* p0, HCContourCurve* curve) {
-    HCCurveFittingCubic(count, points, p0, &curve->c0, &curve->c1, &curve->p);
-}
-
 void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* count, HCReal* t, HCReal* u) {
     if (HCContourCurveIsLinear(p0, pCurve)) {
         if (HCContourCurveIsLinear(p0, qCurve)) {
