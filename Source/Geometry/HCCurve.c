@@ -389,9 +389,14 @@ HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
 }
 
 void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    // Calculate linear derivative weight
     HCPoint dp = HCPointInvalid;
     HCCurveDerivativeLinear(p0, p1, &dp);
+    
+    // Evaluate derivative curve at t (constant, so that's easy!)
     HCPoint d = dp;
+    
+    // Deliver result as tangent vector
     if (tx != NULL) {
         *tx = d.x;
     }
@@ -401,10 +406,15 @@ void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* 
 }
 
 void HCCurveTangentQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    // Calculate quadratic derivative weights
     HCPoint dp0 = HCPointInvalid;
     HCPoint dp1 = HCPointInvalid;
     HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
+    
+    // Evaluate derivative curve at t
     HCPoint d = HCCurveValueLinear(dp0, dp1, t);
+    
+    // Deliver result as tangent vector
     if (tx != NULL) {
         *tx = d.x;
     }
@@ -414,11 +424,16 @@ void HCCurveTangentQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal
 }
 
 void HCCurveTangentCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    // Calculate cubic derivative weights
     HCPoint dp0 = HCPointInvalid;
     HCPoint  dc = HCPointInvalid;
     HCPoint dp1 = HCPointInvalid;
     HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
+    
+    // Evaluate derivative curve at t
     HCPoint d = HCCurveValueQuadratic(dp0, dc, dp1, t);
+    
+    // Deliver result as tangent vector
     if (tx != NULL) {
         *tx = d.x;
     }
@@ -450,15 +465,48 @@ HCCurve HCCurveNormal(HCCurve curve, HCReal t) {
 }
 
 void HCCurveNormalLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
-    // TODO: This!
+    // Obtain tangent vector to linear curve at t
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentLinear(p0, p1, t, &tx, &ty);
+    
+    // Rotate by pi/2 and deliver result as normal vector
+    if (nx != NULL) {
+        *nx = -ty;
+    }
+    if (ny != NULL) {
+        *ny = +tx;
+    }
 }
 
 void HCCurveNormalQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
-    // TODO: This!
+    // Obtain tangent vector to quadratic curve at t
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentQuadratic(p0, c, p1, t, &tx, &ty);
+    
+    // Rotate by pi/2 and deliver result as normal vector
+    if (nx != NULL) {
+        *nx = -ty;
+    }
+    if (ny != NULL) {
+        *ny = +tx;
+    }
 }
 
 void HCCurveNormalCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
-    // TODO: This!
+    // Obtain tangent vector to cubic curve at t
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentCubic(p0, c0, c1, p1, t, &tx, &ty);
+    
+    // Rotate by pi/2 and deliver result as normal vector
+    if (nx != NULL) {
+        *nx = -ty;
+    }
+    if (ny != NULL) {
+        *ny = +tx;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
