@@ -102,6 +102,22 @@ void HCCurveDerivativeQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* dp0,
 void HCCurveDerivativeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* dp0, HCPoint* dc, HCPoint* dp1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Tangent
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveTangent(HCCurve curve, HCReal t);
+void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty);
+void HCCurveTangentQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty);
+void HCCurveTangentCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Normal
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveNormal(HCCurve curve, HCReal t);
+void HCCurveNormalLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny);
+void HCCurveNormalQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny);
+void HCCurveNormalCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCCurveCurvature(HCCurve curve, HCReal t);

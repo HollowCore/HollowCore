@@ -367,6 +367,84 @@ HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Tangent
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCCurveTangentLinear(curve.p0, curve.p1, t, &tx, &ty);
+        }
+        else {
+            HCCurveTangentQuadratic(curve.p0, curve.c0, curve.p1, t, &tx, &ty);
+        }
+    }
+    else {
+        HCCurveTangentCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &tx, &ty);
+    }
+    HCPoint p = HCCurveValue(curve, t);
+    HCPoint tp = HCPointOffset(p, tx, ty);
+    return HCCurveMakeLinear(p, tp);
+}
+
+void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    // TODO: This!
+}
+
+void HCCurveTangentQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    // TODO: This!
+}
+
+void HCCurveTangentCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint  dc = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
+    HCPoint d = HCCurveValueQuadratic(dp0, dc, dp1, t);
+    if (tx != NULL) {
+        *tx = d.x;
+    }
+    if (ty != NULL) {
+        *ty = d.y;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Normal
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveNormal(HCCurve curve, HCReal t) {
+    HCReal nx = HCRealInvalid;
+    HCReal ny = HCRealInvalid;
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCCurveNormalLinear(curve.p0, curve.p1, t, &nx, &ny);
+        }
+        else {
+            HCCurveNormalQuadratic(curve.p0, curve.c0, curve.p1, t, &nx, &ny);
+        }
+    }
+    else {
+        HCCurveNormalCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &nx, &ny);
+    }
+    HCPoint p = HCCurveValue(curve, t);
+    HCPoint np = HCPointOffset(p, nx, ny);
+    return HCCurveMakeLinear(p, np);
+}
+
+void HCCurveNormalLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
+    // TODO: This!
+}
+
+void HCCurveNormalQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
+    // TODO: This!
+}
+
+void HCCurveNormalCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* nx, HCReal* ny) {
+    // TODO: This!
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Derivative
 //----------------------------------------------------------------------------------------------------------------------------------
 HCCurve HCCurveDerivative(HCCurve curve) {
