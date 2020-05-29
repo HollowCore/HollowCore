@@ -389,11 +389,28 @@ HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
 }
 
 void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
-    // TODO: This!
+    HCPoint dp = HCPointInvalid;
+    HCCurveDerivativeLinear(p0, p1, &dp);
+    HCPoint d = dp;
+    if (tx != NULL) {
+        *tx = d.x;
+    }
+    if (ty != NULL) {
+        *ty = d.y;
+    }
 }
 
 void HCCurveTangentQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
-    // TODO: This!
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
+    HCPoint d = HCCurveValueLinear(dp0, dp1, t);
+    if (tx != NULL) {
+        *tx = d.x;
+    }
+    if (ty != NULL) {
+        *ty = d.y;
+    }
 }
 
 void HCCurveTangentCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
