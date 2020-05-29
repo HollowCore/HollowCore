@@ -926,6 +926,49 @@ void HCPointGrid(HCRectangle r, HCInteger countX, HCInteger countY, HCPoint* poi
     }
 }
 
+CTEST(HCRaster, DrawCurveDerivativeFrameCubic) {
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint c1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    
+    HCRasterRef raster = HCRasterCreate(100, 100);
+    HCRasterDrawCubicCurve(raster, p0.x, p0.y, c0.x, c0.y, c1.x, c1.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        
+    HCInteger count = 10;
+    HCReal tStep = 1.0 / (HCReal)(count - 1);
+    HCReal length = fmin(r.size.width, r.size.height) * 0.1;
+    for (HCInteger tIndex = 0; tIndex < count; tIndex++) {
+        HCReal t = (HCReal)tIndex * tStep;
+        
+        HCPoint p = HCCurveValue(curve, t);
+        
+        HCReal tx = HCRealInvalid;
+        HCReal ty = HCRealInvalid;
+        HCCurveTangentCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &tx, &ty);
+        HCReal tangentLength = sqrt(tx * tx + ty * ty);
+        tx /= tangentLength;
+        ty /= tangentLength;
+        HCPoint tp = HCPointOffset(p, tx * length, ty * length);
+        
+        HCReal nx = HCRealInvalid;
+        HCReal ny = HCRealInvalid;
+        HCCurveNormalCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &nx, &ny);
+        HCReal normalLength = sqrt(nx * nx + ny * ny); // TODO: Can use tangent length for both?
+        nx /= normalLength;
+        ny /= normalLength;
+        HCPoint np = HCPointOffset(p, nx * length, ny * length);
+        
+        HCRasterDrawLine(raster, p.x, p.y, tp.x, tp.y, HCColorBlue, HCColorBlue);
+        HCRasterDrawLine(raster, p.x, p.y, np.x, np.y, HCColorRed, HCColorRed);
+    }
+    
+    HCRasterSaveBMP(raster, "curve_derivative_frame.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawCurveNearestParameterLinear) {
     HCInteger countX = 5;
     HCInteger countY = 5;
