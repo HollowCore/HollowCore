@@ -367,432 +367,71 @@ HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Evaluation
+// MARK: - Derivative
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveEvaluate(HCCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCCurveEvaluateLinear(curve.p0, curve.p1, t, x, y, dx, dy, ddx, ddy);
-        }
-        else {
-            HCCurveEvaluateQuadratic(curve.p0, curve.c0, curve.p1, t, x, y, dx, dy, ddx, ddy);
-        }
-    }
-    else {
-        HCCurveEvaluateCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, x, y, dx, dy, ddx, ddy);
-    }
-}
-
-void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
-    HCReal tc = 1.0 - t;
-        
-    // Calculate linear interpolations along linear curve at t
-    HCPoint sp = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
-    
-    // Provide solution point and derivative at t
-    if (x != NULL) {
-        *x = sp.x;
-    }
-    if (y != NULL) {
-        *y = sp.y;
-    }
-    if (dx != NULL) {
-        *dx = p1.x - p0.x;
-    }
-    if (dy != NULL) {
-        *dy = p1.y - p0.y;
-    }
-    if (ddx != NULL) {
-        *ddx = 0.0;
-    }
-    if (ddy != NULL) {
-        *ddy = 0.0;
+HCCurve HCCurveDerivative(HCCurve curve) {
+    HCCurveType type = HCCurveCanonicalType(curve);
+    switch (type) {
+        case HCCurveTypeInvalid: {
+            return HCCurveInvalid;
+        } break;
+        case HCCurveTypePoint:
+        case HCCurveTypeLinear: {
+            HCPoint dp = HCPointInvalid;
+            HCCurveDerivativeLinear(curve.p0, curve.p1, &dp);
+            return HCCurveMakeLinear(dp, dp);
+        } break;
+        case HCCurveTypeQuadratic: {
+            HCPoint dp0 = HCPointInvalid;
+            HCPoint dp1 = HCPointInvalid;
+            HCCurveDerivativeQuadratic(curve.p0, curve.c0, curve.p1, &dp0, &dp1);
+            return HCCurveMakeLinear(dp0, dp1);
+        } break;
+        case HCCurveTypeCubicSimple:
+        case HCCurveTypeCubicSingleInflection:
+        case HCCurveTypeCubicDoubleInflection:
+        case HCCurveTypeCubicLoop:
+        case HCCurveTypeCubicLoopAtStart:
+        case HCCurveTypeCubicLoopAtEnd:
+        case HCCurveTypeCubicLoopClosed:
+        case HCCurveTypeCubicCusp: {
+            HCPoint dp0 = HCPointInvalid;
+            HCPoint dc = HCPointInvalid;
+            HCPoint dp1 = HCPointInvalid;
+            HCCurveDerivativeCubic(curve.p0, curve.c0, curve.c1, curve.p1, &dp0, &dc, &dp1);
+            return HCCurveMakeQuadratic(dp0, dc, dp1);
+        } break;
     }
 }
 
-void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *   c.x, tc *  p0.y + t *   c.y);
-    HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
-    HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
-    
-    // Provide solution point and derivatives at t
-    if (x != NULL) {
-        *x = sp.x;
-    }
-    if (y != NULL) {
-        *y = sp.y;
-    }
-    if (dx != NULL) {
-        *dx = qp1.x - qp0.x;
-    }
-    if (dy != NULL) {
-        *dy = qp1.y - qp0.y;
-    }
-    if (ddx != NULL) {
-        *ddx = 2.0 * (p1.x - 2.0 * c.x + p0.x);
-    }
-    if (ddy != NULL) {
-        *ddy = 2.0 * (p1.y - 2.0 * c.y + p0.y);
+void HCCurveDerivativeLinear(HCPoint p0, HCPoint p1, HCPoint* dp) {
+    // Calculate linear derivative weights
+    if (dp != NULL) {
+        *dp = HCPointMake(1.0 * (p1.x - p0.x), 1.0 * (p1.y - p0.y));
     }
 }
 
-void HCCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy) {
-    HCReal tc = 1.0 - t;
-        
-    // Calculate linear interpolations along cubic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
-    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
-    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
-    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
-    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
-    HCPoint  sp = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
-    
-    // Provide solution point and derivatives at t
-    if (x != NULL) {
-        *x = sp.x;
+void HCCurveDerivativeQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* dp0, HCPoint* dp1) {
+    // Calculate quadratic derivative weights
+    if (dp0 != NULL) {
+        *dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
     }
-    if (y != NULL) {
-        *y = sp.y;
-    }
-    if (dx != NULL) {
-        *dx = rp1.x - rp0.x;
-    }
-    if (dy != NULL) {
-        *dy = rp1.y - rp0.y;
-    }
-    if (ddx != NULL) {
-        // TODO: Correct?
-        *ddx = qp1.x - qp0.x;
-    }
-    if (ddy != NULL) {
-        // TODO: Correct?
-        *ddy = qp1.y - qp0.y;
+    if (dp1 != NULL) {
+        *dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Axis Alignment
-//----------------------------------------------------------------------------------------------------------------------------------
-HCCurve HCCurveXAxisAligned(HCCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint ap0 = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveXAxisAlignedLinear(curve.p0, curve.p1, &ap0, &ap1);
-            return HCCurveMakeLinear(ap0, ap1);
-        }
-        else {
-            HCPoint ap0 = HCPointInvalid;
-            HCPoint ac = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveXAxisAlignedQuadratic(curve.p0, curve.c0, curve.p1, &ap0, &ac, &ap1);
-            return HCCurveMakeQuadratic(ap0, ac, ap1);
-        }
+void HCCurveDerivativeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* dp0, HCPoint* dc, HCPoint* dp1) {
+    // Calculate cubic derivative weights
+    if (dp0 != NULL) {
+        *dp0 = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
     }
-    else {
-        HCPoint ap0 = HCPointInvalid;
-        HCPoint ac0 = HCPointInvalid;
-        HCPoint ac1 = HCPointInvalid;
-        HCPoint ap1 = HCPointInvalid;
-        HCCurveXAxisAlignedCubic(curve.p0, curve.c0, curve.c1, curve.p1, &ap0, &ac0, &ac1, &ap1);
-        return HCCurveMakeCubic(ap0, ac0, ac1, ap1);
+    if (dc != NULL) {
+        *dc =  HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
     }
-}
-
-void HCCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
-    // Translate curve to origin
-    p1.x -= p0.x;
-    p1.y -= p0.y;
-    
-    // Calculate angle of end point
-    HCReal angle = -atan2(p1.y, p1.x);
-    HCReal cosAngle = cos(angle);
-    HCReal sinAngle = sin(angle);
-    
-    // Rotate curve by angle to align the end point to the x-axis
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
+    if (dp1 != NULL) {
+        *dp1 = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
     }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-void HCCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
-    // Translate curve to origin
-    c.x -= p0.x;
-    c.y -= p0.y;
-    p1.x -= p0.x;
-    p1.y -= p0.y;
-    
-    // Calculate angle of end point
-    HCReal angle = -atan2(p1.y, p1.x);
-    HCReal cosAngle = cos(angle);
-    HCReal sinAngle = sin(angle);
-    
-    // Rotate curve by angle to align the end point to the x-axis
-    HCReal cx = cosAngle * c.x - sinAngle * c.y;
-    HCReal cy = sinAngle * c.x + cosAngle * c.y;
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
-    }
-    if (ac != NULL) {
-        *ac = HCPointMake(cx, cy);
-    }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-void HCCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
-    // Translate curve to origin
-    c0.x -= p0.x;
-    c0.y -= p0.y;
-    c1.x -= p0.x;
-    c1.y -= p0.y;
-    p1.x -= p0.x;
-    p1.y -= p0.y;
-    
-    // Calculate angle of end point
-    HCReal angle = -atan2(p1.y, p1.x);
-    HCReal cosAngle = cos(angle);
-    HCReal sinAngle = sin(angle);
-    
-    // Rotate curve by angle to align the end point to the x-axis
-    HCReal c0x = cosAngle * c0.x - sinAngle * c0.y;
-    HCReal c0y = sinAngle * c0.x + cosAngle * c0.y;
-    HCReal c1x = cosAngle * c1.x - sinAngle * c1.y;
-    HCReal c1y = sinAngle * c1.x + cosAngle * c1.y;
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
-    }
-    if (ac0 != NULL) {
-        *ac0 = HCPointMake(c0x, c0y);
-    }
-    if (ac1 != NULL) {
-        *ac1 = HCPointMake(c1x, c1y);
-    }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-HCCurve HCCurveYAxisAligned(HCCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint ap0 = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveYAxisAlignedLinear(curve.p0, curve.p1, &ap0, &ap1);
-            return HCCurveMakeLinear(ap0, ap1);
-        }
-        else {
-            HCPoint ap0 = HCPointInvalid;
-            HCPoint ac = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveYAxisAlignedQuadratic(curve.p0, curve.c0, curve.p1, &ap0, &ac, &ap1);
-            return HCCurveMakeQuadratic(ap0, ac, ap1);
-        }
-    }
-    else {
-        HCPoint ap0 = HCPointInvalid;
-        HCPoint ac0 = HCPointInvalid;
-        HCPoint ac1 = HCPointInvalid;
-        HCPoint ap1 = HCPointInvalid;
-        HCCurveYAxisAlignedCubic(curve.p0, curve.c0, curve.c1, curve.p1, &ap0, &ac0, &ac1, &ap1);
-        return HCCurveMakeCubic(ap0, ac0, ac1, ap1);
-    }
-}
-
-void HCCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
-    // Align to x-axis then rotate PI/2 to y-axis
-    HCPoint xAlignedP1 = HCPointInvalid;
-    HCCurveXAxisAlignedLinear(p0, p1, NULL, &xAlignedP1);
-    HCReal p1x = -xAlignedP1.y;
-    HCReal p1y = +xAlignedP1.x;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
-    }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-void HCCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
-    // Align to x-axis then rotate PI/2 to y-axis
-    HCPoint xAlignedC = HCPointInvalid;
-    HCPoint xAlignedP1 = HCPointInvalid;
-    HCCurveXAxisAlignedQuadratic(p0, c, p1, NULL, &xAlignedC, &xAlignedP1);
-    HCReal cx = -xAlignedC.y;
-    HCReal cy = +xAlignedC.x;
-    HCReal p1x = -xAlignedP1.y;
-    HCReal p1y = +xAlignedP1.x;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
-    }
-    if (ac != NULL) {
-        *ac = HCPointMake(cx, cy);
-    }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
-    // Align to x-axis then rotate PI/2 to y-axis
-    HCPoint xAlignedC0 = HCPointInvalid;
-    HCPoint xAlignedC1 = HCPointInvalid;
-    HCPoint xAlignedP1 = HCPointInvalid;
-    HCCurveXAxisAlignedCubic(p0, c0, c1, p1, NULL, &xAlignedC0, &xAlignedC1, &xAlignedP1);
-    HCReal c0x = -xAlignedC0.y;
-    HCReal c0y = +xAlignedC0.x;
-    HCReal c1x = -xAlignedC1.y;
-    HCReal c1y = +xAlignedC1.x;
-    HCReal p1x = -xAlignedP1.y;
-    HCReal p1y = +xAlignedP1.x;
-    
-    // Deliver result
-    if (ap0 != NULL) {
-        *ap0 = HCPointZero;
-    }
-    if (ac0 != NULL) {
-        *ac0 = HCPointMake(c0x, c0y);
-    }
-    if (ac1 != NULL) {
-        *ac1 = HCPointMake(c1x, c1y);
-    }
-    if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Split
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint sp0 = HCPointZero;
-            HCPoint sp1 = HCPointZero;
-            HCPoint ep0 = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCCurveSplitLinear(curve.p0, curve.p1, t, &sp0, &sp1, &ep0, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCCurveMakeLinear(sp0, sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCCurveMakeLinear(ep0, ep1);
-            }
-        }
-        else {
-            HCPoint sp0 = HCPointZero;
-            HCPoint sc = HCPointZero;
-            HCPoint sp1 = HCPointZero;
-            HCPoint ep0 = HCPointZero;
-            HCPoint ec = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCCurveSplitQuadratic(curve.p0, curve.c0, curve.p1, t, &sp0, &sc, &sp1, &ep0, &ec, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCCurveMakeQuadratic(sp0, sc, sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCCurveMakeQuadratic(ep0, ec, ep1);
-            }
-        }
-    }
-    else {
-        HCPoint sp0 = HCPointZero;
-        HCPoint sc0 = HCPointZero;
-        HCPoint sc1 = HCPointZero;
-        HCPoint sp1 = HCPointZero;
-        HCPoint ep0 = HCPointZero;
-        HCPoint ec0 = HCPointZero;
-        HCPoint ec1 = HCPointZero;
-        HCPoint ep1 = HCPointZero;
-        HCCurveSplitCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &sp0, &sc0, &sc1, &sp1, &ep0, &ec0, &ec1, &ep1);
-        if (sCurve != NULL) {
-            *sCurve = HCCurveMakeCubic(sp0, sc0, sc1, sp1);
-        }
-        if (eCurve != NULL) {
-            *eCurve = HCCurveMakeCubic(ep0, ec0, ec1, ep1);
-        }
-    }
-}
-
-void HCCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along linear curve at t
-    HCPoint  sp = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ep1 = p1;
-}
-
-void HCCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *   c.x, tc *  p0.y + t *   c.y);
-    HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
-    HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sc = qp0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ec = qp1;
-    *ep1 = p1;
-}
-
-void HCCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1) {
-    HCReal tc = 1.0 - t;
-    
-    // Calculate linear interpolations along cubic curve anchor and control point polyline at t
-    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
-    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
-    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
-    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
-    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
-    HCPoint  sp = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
-    
-    // Provide intermediates that correspond to a t0-side split
-    *sp0 = p0;
-    *sc0 = qp0;
-    *sc1 = rp0;
-    *sp1 = sp;
-    
-    // Provide intermediates that correspond to a t1-side split
-    *ep0 = sp;
-    *ec0 = rp1;
-    *ec1 = qp1;
-    *ep1 = p1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -818,72 +457,41 @@ HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t) {
 }
 
 HCReal HCCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t) {
-    HCReal dx = 0.0;
-    HCReal dy = 0.0;
-    HCReal ddx = 0.0;
-    HCReal ddy = 0.0;
-    HCCurveEvaluateQuadratic(p0, c, p1, t, NULL, NULL, &dx, &dy, &ddx, &ddy);
-    HCReal numerator = dx * ddy - ddx * dy;
-    HCReal denominator = pow(dx*dx + dy*dy, 1.5);
+    // Calculate quadratic first and second derivative weights
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
+    HCPoint ddp = HCPointInvalid;
+    HCCurveDerivativeLinear(dp0, dp1, &ddp);
+    
+    // Evaluate quadratic derivative curves at t
+    HCPoint d = HCCurveValueLinear(dp0, dp1, t);
+    HCPoint dd = ddp;
+    
+    // Calculate curvature at t
+    HCReal numerator = d.x * dd.y - dd.x * d.y;
+    HCReal denominator = pow(d.x * d.x + d.y * d.y, 1.5);
     return numerator / denominator;
 }
 
 HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t) {
-    HCReal dx = 0.0;
-    HCReal dy = 0.0;
-    HCReal ddx = 0.0;
-    HCReal ddy = 0.0;
-    HCCurveEvaluateCubic(p0, c0, c1, p1, t, NULL, NULL, &dx, &dy, &ddx, &ddy);
-    HCReal numerator = dx * ddy - ddx * dy;
-    HCReal denominator = pow(dx*dx + dy*dy, 1.5);
+    // Calculate cubic first and second derivative weights
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint  dc = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
+    HCPoint ddp0 = HCPointInvalid;
+    HCPoint ddp1 = HCPointInvalid;
+    HCCurveDerivativeQuadratic(dp0, dc, dp1, &ddp0, &ddp1);
+    
+    // Evaluate cubic derivative curves at t
+    HCPoint d = HCCurveValueQuadratic(dp0, dc, dp1, t);
+    HCPoint dd = HCCurveValueLinear(ddp0, ddp1, t);
+    
+    // Calculate curvature at t
+    HCReal numerator = d.x * dd.y - dd.x * d.y;
+    HCReal denominator = pow(d.x * d.x + d.y * d.y, 1.5);
     return numerator / denominator;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Derivative
-//----------------------------------------------------------------------------------------------------------------------------------
-HCCurve HCCurveDerivative(HCCurve curve) {
-    HCCurveType type = HCCurveCanonicalType(curve);
-    switch (type) {
-        case HCCurveTypeInvalid: {
-            return HCCurveInvalid;
-        } break;
-        case HCCurveTypePoint:
-        case HCCurveTypeLinear: {
-            // Calculate linear derivative weights
-            HCPoint p0 = curve.p0;
-            HCPoint p1 = curve.p1;
-            HCPoint pd = HCPointMake(1.0 * (p1.x - p0.x), 1.0 * (p1.y - p0.y));
-            return HCCurveMakeLinear(pd, pd);
-        } break;
-        case HCCurveTypeQuadratic: {
-            // Calculate quadratic derivative weights
-            HCPoint p0 = curve.p0;
-            HCPoint  c = curve.c0;
-            HCPoint p1 = curve.p1;
-            HCPoint p0d = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
-            HCPoint p1d = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
-            return HCCurveMakeLinear(p0d, p1d);
-        } break;
-        case HCCurveTypeCubicSimple:
-        case HCCurveTypeCubicSingleInflection:
-        case HCCurveTypeCubicDoubleInflection:
-        case HCCurveTypeCubicLoop:
-        case HCCurveTypeCubicLoopAtStart:
-        case HCCurveTypeCubicLoopAtEnd:
-        case HCCurveTypeCubicLoopClosed:
-        case HCCurveTypeCubicCusp: {
-            // Calculate cubic derivative weights
-            HCPoint p0 = curve.p0;
-            HCPoint c0 = curve.c0;
-            HCPoint c1 = curve.c1;
-            HCPoint p1 = curve.p1;
-            HCPoint p0d = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
-            HCPoint  cd = HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
-            HCPoint p1d = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
-            return HCCurveMakeQuadratic(p0d, cd, p1d);
-        } break;
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -915,20 +523,21 @@ void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count
     HCReal t[2];
     
     // Calculate quadratic derivative weights
-    HCPoint p0d = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
-    HCPoint p1d = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
+    HCPoint dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
+    HCPoint dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
+    HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
     
     // Calculate zero crossing of derivative in x and add as extrema if in range
-    HCReal ax = -1.0 * p0d.x + 1.0 * p1d.x;
-    HCReal bx = +1.0 * p0d.x;
+    HCReal ax = -1.0 * dp0.x + 1.0 * dp1.x;
+    HCReal bx = +1.0 * dp0.x;
     HCReal xt = -bx / ax;
     if (xt >= 0.0 && xt <= 1.0) {
         t[tCount++] = xt;
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if in range
-    HCReal ay = -1.0 * p0d.y + 1.0 * p1d.y;
-    HCReal by = +1.0 * p0d.y;
+    HCReal ay = -1.0 * dp0.y + 1.0 * dp1.y;
+    HCReal by = +1.0 * dp0.y;
     HCReal yt = -by / ay;
     if (yt >= 0.0 && yt <= 1.0) {
         t[tCount++] = yt;
@@ -948,14 +557,15 @@ void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteg
     HCReal t[6];
     
     // Calculate cubic derivative weights
-    HCPoint p0d = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
-    HCPoint  cd = HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
-    HCPoint p1d = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint  dc = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
     
     // Calculate zero crossing of derivative in x and add as extrema if real and in range
-    HCReal ax = +1.0 * p0d.x - 2.0 * cd.x + 1.0 * p1d.x;
-    HCReal bx = -2.0 * p0d.x + 2.0 * cd.x;
-    HCReal cx = +1.0 * p0d.x;
+    HCReal ax = +1.0 * dp0.x - 2.0 * dc.x + 1.0 * dp1.x;
+    HCReal bx = -2.0 * dp0.x + 2.0 * dc.x;
+    HCReal cx = +1.0 * dp0.x;
     HCReal discriminantX = bx * bx - 4.0 * ax * cx;
     if (discriminantX >= 0.0) {
         HCReal sqrtDiscriminant = sqrt(discriminantX);
@@ -971,9 +581,9 @@ void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteg
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if real and in range
-    HCReal ay = +1.0 * p0d.y - 2.0 * cd.y + 1.0 * p1d.y;
-    HCReal by = -2.0 * p0d.y + 2.0 * cd.y;
-    HCReal cy = +1.0 * p0d.y;
+    HCReal ay = +1.0 * dp0.y - 2.0 * dc.y + 1.0 * dp1.y;
+    HCReal by = -2.0 * dp0.y + 2.0 * dc.y;
+    HCReal cy = +1.0 * dp0.y;
     HCReal discriminantY = by * by - 4.0 * ay * cy;
     if (discriminantY >= 0.0) {
         HCReal sqrtDiscriminant = sqrt(discriminantY);
@@ -990,7 +600,7 @@ void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteg
     
     // Add extrema of second derivative
     HCInteger quadraticCount = 0;
-    HCCurveExtremaQuadratic(p0d, cd, p1d, &quadraticCount, &t[tCount]);
+    HCCurveExtremaQuadratic(dp0, dc, dp1, &quadraticCount, &t[tCount]);
     tCount += quadraticCount;
     
     // Deliver results
@@ -1352,7 +962,7 @@ HCReal HCCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCR
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Parameter Given Point
+// MARK: - Parameter Nearest Point
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCCurveParameterNearestPoint(HCCurve curve, HCPoint p) {
     if (HCPointIsInvalid(curve.c1)) {
@@ -1570,8 +1180,8 @@ void HCCurveInterpolatingPointCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t,
     HCReal apy = p.y + (p.y - b.y) / ratio;
     
     // Calculate the points on the curve bezier sub-control polygon of the desired curve just above the on-curve point according to the desired dx/dy
-    HCPoint rpp0 = HCPointOffset(p, -t * dx, -t * dy);
-    HCPoint rpp1 = HCPointOffset(rpp0, dx, dy);
+    HCPoint rpp0 = HCPointOffset(p, -t * dx / 3.0, -t * dy / 3.0);
+    HCPoint rpp1 = HCPointOffset(rpp0, dx / 3.0, dy / 3.0);
     
     // Calculate the bezier sub-control polygon points leading to control points that make the desired on-curve point be on-curve at t
     HCReal qpp0x = (rpp0.x - t * apx) / tc;
@@ -1623,12 +1233,336 @@ void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint 
 
 void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc0, HCPoint* rc1) {
     // Find the derivative of the existing curve at t for use in calculating a matching interpolating curve
-    HCReal dx;
-    HCReal dy;
-    HCCurveEvaluateCubic(p0, c0, c1, p1, t, NULL, NULL, &dx, &dy, NULL, NULL);
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint  dc = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
+    HCPoint d = HCCurveValueQuadratic(dp0, dc, dp1, t);
     
     // Calculate the interpolating cubic with the desired on-curve point, associated t value, and derivative
-    return HCCurveInterpolatingPointCubic(p0, p1, p, t, dx, dy, rc0, rc1);
+    return HCCurveInterpolatingPointCubic(p0, p1, p, t, d.x, d.y, rc0, rc1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Split
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCPoint sp0 = HCPointZero;
+            HCPoint sp1 = HCPointZero;
+            HCPoint ep0 = HCPointZero;
+            HCPoint ep1 = HCPointZero;
+            HCCurveSplitLinear(curve.p0, curve.p1, t, &sp0, &sp1, &ep0, &ep1);
+            if (sCurve != NULL) {
+                *sCurve = HCCurveMakeLinear(sp0, sp1);
+            }
+            if (eCurve != NULL) {
+                *eCurve = HCCurveMakeLinear(ep0, ep1);
+            }
+        }
+        else {
+            HCPoint sp0 = HCPointZero;
+            HCPoint sc = HCPointZero;
+            HCPoint sp1 = HCPointZero;
+            HCPoint ep0 = HCPointZero;
+            HCPoint ec = HCPointZero;
+            HCPoint ep1 = HCPointZero;
+            HCCurveSplitQuadratic(curve.p0, curve.c0, curve.p1, t, &sp0, &sc, &sp1, &ep0, &ec, &ep1);
+            if (sCurve != NULL) {
+                *sCurve = HCCurveMakeQuadratic(sp0, sc, sp1);
+            }
+            if (eCurve != NULL) {
+                *eCurve = HCCurveMakeQuadratic(ep0, ec, ep1);
+            }
+        }
+    }
+    else {
+        HCPoint sp0 = HCPointZero;
+        HCPoint sc0 = HCPointZero;
+        HCPoint sc1 = HCPointZero;
+        HCPoint sp1 = HCPointZero;
+        HCPoint ep0 = HCPointZero;
+        HCPoint ec0 = HCPointZero;
+        HCPoint ec1 = HCPointZero;
+        HCPoint ep1 = HCPointZero;
+        HCCurveSplitCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &sp0, &sc0, &sc1, &sp1, &ep0, &ec0, &ec1, &ep1);
+        if (sCurve != NULL) {
+            *sCurve = HCCurveMakeCubic(sp0, sc0, sc1, sp1);
+        }
+        if (eCurve != NULL) {
+            *eCurve = HCCurveMakeCubic(ep0, ec0, ec1, ep1);
+        }
+    }
+}
+
+void HCCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along linear curve at t
+    HCPoint  sp = HCPointMake(tc * p0.x + t * p1.x, tc * p0.y + t * p1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ep1 = p1;
+}
+
+void HCCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along quadratic curve anchor and control point polyline at t
+    HCPoint qp0 = HCPointMake(tc *  p0.x + t *   c.x, tc *  p0.y + t *   c.y);
+    HCPoint qp1 = HCPointMake(tc *   c.x + t *  p1.x, tc *   c.y + t *  p1.y);
+    HCPoint  sp = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sc = qp0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ec = qp1;
+    *ep1 = p1;
+}
+
+void HCCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1) {
+    HCReal tc = 1.0 - t;
+    
+    // Calculate linear interpolations along cubic curve anchor and control point polyline at t
+    HCPoint qp0 = HCPointMake(tc *  p0.x + t *  c0.x, tc *  p0.y + t *  c0.y);
+    HCPoint  qc = HCPointMake(tc *  c0.x + t *  c1.x, tc *  c0.y + t *  c1.y);
+    HCPoint qp1 = HCPointMake(tc *  c1.x + t *  p1.x, tc *  c1.y + t *  p1.y);
+    HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
+    HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
+    HCPoint  sp = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
+    
+    // Provide intermediates that correspond to a t0-side split
+    *sp0 = p0;
+    *sc0 = qp0;
+    *sc1 = rp0;
+    *sp1 = sp;
+    
+    // Provide intermediates that correspond to a t1-side split
+    *ep0 = sp;
+    *ec0 = rp1;
+    *ec1 = qp1;
+    *ep1 = p1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Axis Alignment
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveXAxisAligned(HCCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCPoint ap0 = HCPointInvalid;
+            HCPoint ap1 = HCPointInvalid;
+            HCCurveXAxisAlignedLinear(curve.p0, curve.p1, &ap0, &ap1);
+            return HCCurveMakeLinear(ap0, ap1);
+        }
+        else {
+            HCPoint ap0 = HCPointInvalid;
+            HCPoint ac = HCPointInvalid;
+            HCPoint ap1 = HCPointInvalid;
+            HCCurveXAxisAlignedQuadratic(curve.p0, curve.c0, curve.p1, &ap0, &ac, &ap1);
+            return HCCurveMakeQuadratic(ap0, ac, ap1);
+        }
+    }
+    else {
+        HCPoint ap0 = HCPointInvalid;
+        HCPoint ac0 = HCPointInvalid;
+        HCPoint ac1 = HCPointInvalid;
+        HCPoint ap1 = HCPointInvalid;
+        HCCurveXAxisAlignedCubic(curve.p0, curve.c0, curve.c1, curve.p1, &ap0, &ac0, &ac1, &ap1);
+        return HCCurveMakeCubic(ap0, ac0, ac1, ap1);
+    }
+}
+
+void HCCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
+    // Translate curve to origin
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
+    // Translate curve to origin
+    c.x -= p0.x;
+    c.y -= p0.y;
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal cx = cosAngle * c.x - sinAngle * c.y;
+    HCReal cy = sinAngle * c.x + cosAngle * c.y;
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac != NULL) {
+        *ac = HCPointMake(cx, cy);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
+    // Translate curve to origin
+    c0.x -= p0.x;
+    c0.y -= p0.y;
+    c1.x -= p0.x;
+    c1.y -= p0.y;
+    p1.x -= p0.x;
+    p1.y -= p0.y;
+    
+    // Calculate angle of end point
+    HCReal angle = -atan2(p1.y, p1.x);
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    
+    // Rotate curve by angle to align the end point to the x-axis
+    HCReal c0x = cosAngle * c0.x - sinAngle * c0.y;
+    HCReal c0y = sinAngle * c0.x + cosAngle * c0.y;
+    HCReal c1x = cosAngle * c1.x - sinAngle * c1.y;
+    HCReal c1y = sinAngle * c1.x + cosAngle * c1.y;
+    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
+    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac0 != NULL) {
+        *ac0 = HCPointMake(c0x, c0y);
+    }
+    if (ac1 != NULL) {
+        *ac1 = HCPointMake(c1x, c1y);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+HCCurve HCCurveYAxisAligned(HCCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCPoint ap0 = HCPointInvalid;
+            HCPoint ap1 = HCPointInvalid;
+            HCCurveYAxisAlignedLinear(curve.p0, curve.p1, &ap0, &ap1);
+            return HCCurveMakeLinear(ap0, ap1);
+        }
+        else {
+            HCPoint ap0 = HCPointInvalid;
+            HCPoint ac = HCPointInvalid;
+            HCPoint ap1 = HCPointInvalid;
+            HCCurveYAxisAlignedQuadratic(curve.p0, curve.c0, curve.p1, &ap0, &ac, &ap1);
+            return HCCurveMakeQuadratic(ap0, ac, ap1);
+        }
+    }
+    else {
+        HCPoint ap0 = HCPointInvalid;
+        HCPoint ac0 = HCPointInvalid;
+        HCPoint ac1 = HCPointInvalid;
+        HCPoint ap1 = HCPointInvalid;
+        HCCurveYAxisAlignedCubic(curve.p0, curve.c0, curve.c1, curve.p1, &ap0, &ac0, &ac1, &ap1);
+        return HCCurveMakeCubic(ap0, ac0, ac1, ap1);
+    }
+}
+
+void HCCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedLinear(p0, p1, NULL, &xAlignedP1);
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedC = HCPointInvalid;
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedQuadratic(p0, c, p1, NULL, &xAlignedC, &xAlignedP1);
+    HCReal cx = -xAlignedC.y;
+    HCReal cy = +xAlignedC.x;
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac != NULL) {
+        *ac = HCPointMake(cx, cy);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
+}
+
+void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1) {
+    // Align to x-axis then rotate PI/2 to y-axis
+    HCPoint xAlignedC0 = HCPointInvalid;
+    HCPoint xAlignedC1 = HCPointInvalid;
+    HCPoint xAlignedP1 = HCPointInvalid;
+    HCCurveXAxisAlignedCubic(p0, c0, c1, p1, NULL, &xAlignedC0, &xAlignedC1, &xAlignedP1);
+    HCReal c0x = -xAlignedC0.y;
+    HCReal c0y = +xAlignedC0.x;
+    HCReal c1x = -xAlignedC1.y;
+    HCReal c1y = +xAlignedC1.x;
+    HCReal p1x = -xAlignedP1.y;
+    HCReal p1y = +xAlignedP1.x;
+    
+    // Deliver result
+    if (ap0 != NULL) {
+        *ap0 = HCPointZero;
+    }
+    if (ac0 != NULL) {
+        *ac0 = HCPointMake(c0x, c0y);
+    }
+    if (ac1 != NULL) {
+        *ac1 = HCPointMake(c1x, c1y);
+    }
+    if (ap1 != NULL) {
+        *ap1 = HCPointMake(p1x, p1y);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

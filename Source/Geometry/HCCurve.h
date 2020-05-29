@@ -94,32 +94,12 @@ HCPoint HCCurveValueQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
 HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Evaluation
+// MARK: - Derivative
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveEvaluate(HCCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
-void HCCurveEvaluateLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
-void HCCurveEvaluateQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
-void HCCurveEvaluateCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Axis Alignment
-//----------------------------------------------------------------------------------------------------------------------------------
-HCCurve HCCurveXAxisAligned(HCCurve curve);
-void HCCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
-void HCCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
-void HCCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
-HCCurve HCCurveYAxisAligned(HCCurve curve);
-void HCCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
-void HCCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
-void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Split
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve);
-void HCCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1);
-void HCCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1);
-void HCCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1);
+HCCurve HCCurveDerivative(HCCurve curve);
+void HCCurveDerivativeLinear(HCPoint p0, HCPoint p1, HCPoint* dp);
+void HCCurveDerivativeQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* dp0, HCPoint* dp1);
+void HCCurveDerivativeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* dp0, HCPoint* dc, HCPoint* dp1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
@@ -128,11 +108,6 @@ HCReal HCCurveCurvature(HCCurve curve, HCReal t);
 HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Derivative
-//----------------------------------------------------------------------------------------------------------------------------------
-HCCurve HCCurveDerivative(HCCurve curve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema
@@ -183,7 +158,7 @@ HCReal HCCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d);
 HCReal HCCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Parameter Given Point
+// MARK: - Parameter Nearest Point
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCCurveParameterNearestPoint(HCCurve curve, HCPoint p);
 HCReal HCCurveParameterNearestPointLinear(HCPoint p0, HCPoint p1, HCPoint p);
@@ -226,6 +201,26 @@ void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint 
 void HCCurveMouldCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc0, HCPoint* rc1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Split
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveSplit(HCCurve curve, HCReal t, HCCurve* sCurve, HCCurve* eCurve);
+void HCCurveSplitLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sp1, HCPoint* ep0, HCPoint* ep1);
+void HCCurveSplitQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc, HCPoint* sp1, HCPoint* ep0, HCPoint* ec, HCPoint* ep1);
+void HCCurveSplitCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t, HCPoint* sp0, HCPoint* sc0, HCPoint* sc1, HCPoint* sp1, HCPoint* ep0, HCPoint* ec0, HCPoint* ec1, HCPoint* ep1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Axis Alignment
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveXAxisAligned(HCCurve curve);
+void HCCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
+void HCCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
+void HCCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
+HCCurve HCCurveYAxisAligned(HCCurve curve);
+void HCCurveYAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap1);
+void HCCurveYAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap0, HCPoint* ac, HCPoint* ap1);
+void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* ap0, HCPoint* ac0, HCPoint* ac1, HCPoint* ap1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCCurveIntersection(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);
@@ -235,6 +230,5 @@ void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint 
 void HCCurveIntersectionQuadraticQuadratic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);
 void HCCurveIntersectionQuadraticCubic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);
 void HCCurveIntersectionCubicCubic(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);
-
 
 #endif /* HCCurve_h */

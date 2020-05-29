@@ -225,134 +225,68 @@ CTEST(HCContourCurve, CubicValue) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Evaluation
+// MARK: - Derivative
 //----------------------------------------------------------------------------------------------------------------------------------
-CTEST(HCContourCurve, LinearEvaluation) {
+
+CTEST(HCContourCurve, LinearDerivative) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
     HCPoint p1 = HCPointMake(3.0, 4.0);
     HCContourCurve curve = HCContourCurveMakeLinear(p1);
-    HCPoint s = HCPointInvalid;
-    HCContourCurveEvaluate(p0, curve, 0.5, &s.x, &s.y, NULL, NULL, NULL, NULL);
-    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(2.0, 3.0), 0.000001));
+    HCPoint dp0 = HCPointInvalid;
+    HCContourCurve d = HCContourCurveInvalid;
+    HCContourCurveDerivative(p0, curve, &dp0, &d);
+    ASSERT_DBL_NEAR(dp0.x, 1.0 * (p1.x - p0.x));
+    ASSERT_DBL_NEAR(dp0.y, 1.0 * (p1.y - p0.y));
 }
 
-CTEST(HCContourCurve, QuadraticEvaluation) {
+CTEST(HCContourCurve, QuadraticDerivative) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c = HCPointMake(3.0, 4.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
     HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
-    HCPoint s = HCPointInvalid;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCContourCurveEvaluate(p0, curve, 0.5, &s.x, &s.y, &dx, &dy, NULL, NULL);
-    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.0), 0.000001));
-    ASSERT_DBL_NEAR(dx, 2.0);
-    ASSERT_DBL_NEAR(dy, 0.0);
+    HCPoint dp0 = HCPointInvalid;
+    HCContourCurve d = HCContourCurveInvalid;
+    HCContourCurveDerivative(p0, curve, &dp0, &d);
+    ASSERT_DBL_NEAR(dp0.x, 2.0 * ( c.x - p0.x));
+    ASSERT_DBL_NEAR(dp0.y, 2.0 * ( c.y - p0.y));
+    ASSERT_DBL_NEAR(d.p.x, 2.0 * (p1.x -  c.x));
+    ASSERT_DBL_NEAR(d.p.y, 2.0 * (p1.y -  c.y));
+    
+    HCPoint ddp0 = HCPointInvalid;
+    HCContourCurve dd = HCContourCurveInvalid;
+    HCContourCurveDerivative(dp0, d, &ddp0, &dd);
+    ASSERT_DBL_NEAR(ddp0.x, 1.0 * (d.p.x - dp0.x));
+    ASSERT_DBL_NEAR(ddp0.y, 1.0 * (d.p.y - dp0.y));
 }
 
-CTEST(HCContourCurve, CubicEvaluation) {
+CTEST(HCContourCurve, CubicDerivative) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
     HCPoint c0 = HCPointMake(2.0, 4.0);
     HCPoint c1 = HCPointMake(4.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
     HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
-    HCPoint s = HCPointInvalid;
-    HCReal dx = NAN;
-    HCReal dy = NAN;
-    HCReal ddx = NAN;
-    HCReal ddy = NAN;
-    HCContourCurveEvaluate(p0, curve, 0.5, &s.x, &s.y, &dx, &dy, &ddx, &ddy);
-    ASSERT_TRUE(HCPointIsSimilar(s, HCPointMake(3.0, 3.5), 0.000001));
-    ASSERT_DBL_NEAR(dx, 1.5);
-    ASSERT_DBL_NEAR(dy, 0.0);
-    ASSERT_DBL_NEAR(ddx, 3.0);
-    ASSERT_DBL_NEAR(ddy, 0.0);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Axis Alignment
-//----------------------------------------------------------------------------------------------------------------------------------
-CTEST(HCContourCurve, AxisAligned) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(3.0, 0.0);
-    HCPoint c1 = HCPointMake(5.0, 1.0);
-    HCPoint p1 = HCPointMake(7.0, 8.0);
-    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
-    HCContourCurve xAxisAligned = HCContourCurveXAxisAligned(p0, curve);
-    ASSERT_FALSE(HCContourCurveIsInvalid(xAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsZero(xAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsInfinite(xAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, xAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, xAxisAligned));
-    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, xAxisAligned));
-    ASSERT_DBL_NEAR(xAxisAligned.p.y, 0.0);
+    HCPoint dp0 = HCPointInvalid;
+    HCContourCurve d = HCContourCurveInvalid;
+    HCContourCurveDerivative(p0, curve, &dp0, &d);
+    ASSERT_DBL_NEAR( dp0.x, 3.0 * (c0.x - p0.x));
+    ASSERT_DBL_NEAR( dp0.y, 3.0 * (c0.y - p0.y));
+    ASSERT_DBL_NEAR(d.c0.x, 3.0 * (c1.x - c0.x));
+    ASSERT_DBL_NEAR(d.c0.y, 3.0 * (c1.y - c0.y));
+    ASSERT_DBL_NEAR( d.p.x, 3.0 * (p1.x - c1.x));
+    ASSERT_DBL_NEAR( d.p.y, 3.0 * (p1.y - c1.y));
     
-    HCContourCurve yAxisAligned = HCContourCurveYAxisAligned(p0, curve);
-    ASSERT_FALSE(HCContourCurveIsInvalid(yAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsZero(yAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsInfinite(yAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, yAxisAligned));
-    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, yAxisAligned));
-    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, yAxisAligned));
-    ASSERT_DBL_NEAR(yAxisAligned.p.x, 0.0);
-}
-
-///----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Split
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearSplit) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourCurve curve = HCContourCurveMakeLinear(p1);
-    HCReal t = 0.25;
-    HCPoint sp0 = HCPointInvalid;
-    HCContourCurve sCurve = HCContourCurveInvalid;
-    HCPoint ep0 = HCPointInvalid;
-    HCContourCurve eCurve = HCContourCurveInvalid;
-    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
-    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
-    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
-    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
-}
-
-CTEST(HCContourCurve, QuadraticSplit) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint  c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
-    HCReal t = 0.25;
-    HCPoint sp0 = HCPointInvalid;
-    HCContourCurve sCurve = HCContourCurveInvalid;
-    HCPoint ep0 = HCPointInvalid;
-    HCContourCurve eCurve = HCContourCurveInvalid;
-    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
-    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
-    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
-    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
-}
-
-CTEST(HCContourCurve, CubicSplit) {
-    HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCPoint c0 = HCPointMake(0.0, 2.0);
-    HCPoint c1 = HCPointMake(2.0, 2.0);
-    HCPoint p1 = HCPointMake(1.0, 4.0);
-    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
-    HCReal t = 0.25;
-    HCPoint sp0 = HCPointInvalid;
-    HCContourCurve sCurve = HCContourCurveInvalid;
-    HCPoint ep0 = HCPointInvalid;
-    HCContourCurve eCurve = HCContourCurveInvalid;
-    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
-    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
-    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
-    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
-    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
+    HCPoint ddp0 = HCPointInvalid;
+    HCContourCurve dd = HCContourCurveInvalid;
+    HCContourCurveDerivative(dp0, d, &ddp0, &dd);
+    ASSERT_DBL_NEAR(ddp0.x, 2.0 * (d.c0.x - dp0.x));
+    ASSERT_DBL_NEAR(ddp0.y, 2.0 * (d.c0.y - dp0.y));
+    ASSERT_DBL_NEAR(dd.p.x, 2.0 * (d.p.x - d.c0.x));
+    ASSERT_DBL_NEAR(dd.p.y, 2.0 * (d.p.y - d.c0.y));
+    
+    HCPoint dddp = HCPointInvalid;
+    HCContourCurveDerivative(ddp0, dd, &dddp, NULL);
+    ASSERT_DBL_NEAR(dddp.x, 1.0 * (dd.p.x - ddp0.x));
+    ASSERT_DBL_NEAR(dddp.y, 1.0 * (dd.p.y - ddp0.y));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -375,7 +309,7 @@ CTEST(HCContourCurve, QuadraticCurvature) {
     HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
     HCReal t = 0.75;
     HCReal k = HCContourCurveCurvature(p0, curve, t);
-    ASSERT_DBL_NEAR(k, -1.4311);
+    ASSERT_DBL_NEAR(k, -0.3578);
 }
 
 CTEST(HCContourCurve, CubicCurvature) {
@@ -386,14 +320,8 @@ CTEST(HCContourCurve, CubicCurvature) {
     HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
     HCReal t = 0.75;
     HCReal k = HCContourCurveCurvature(p0, curve, t);
-    ASSERT_DBL_NEAR(k, 0.3306);
+    ASSERT_DBL_NEAR(k, -0.4409);
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Derivative
-//----------------------------------------------------------------------------------------------------------------------------------
-
-// TODO: Tests
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema
@@ -747,11 +675,6 @@ CTEST(HCContourCurve, LinearInterpolatingCurve) {
     HCReal dy = 0.0;
     HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
     ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
-    HCReal cdx;
-    HCReal cdy;
-    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
-    ASSERT_DBL_NEAR(dx, cdx);
-    ASSERT_DBL_NEAR(dy, cdy);
 }
 
 CTEST(HCContourCurve, QuadraticInterpolatingCurve) {
@@ -763,11 +686,6 @@ CTEST(HCContourCurve, QuadraticInterpolatingCurve) {
     HCReal dy = 0.0;
     HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
     ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
-    HCReal cdx;
-    HCReal cdy;
-    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
-    ASSERT_DBL_NEAR(dx, cdx);
-    ASSERT_DBL_NEAR(dy, cdy);
 }
 
 CTEST(HCContourCurve, CubicInterpolatingCurve) {
@@ -779,11 +697,6 @@ CTEST(HCContourCurve, CubicInterpolatingCurve) {
     HCReal dy = 2.0;
     HCContourCurve curve = HCContourCurveInterpolatingPoint(p0, p1, p, t, dx, dy);
     ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
-    HCReal cdx;
-    HCReal cdy;
-    HCContourCurveEvaluate(p0, curve, t, NULL, NULL, &cdx, &cdy, NULL, NULL);
-    ASSERT_DBL_NEAR(dx, cdx);
-    ASSERT_DBL_NEAR(dy, cdy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -825,6 +738,92 @@ CTEST(HCContourCurve, CubicMould) {
     ASSERT_DBL_FAR(HCContourCurveDistanceFromPoint(p0, curve, p), 0.0);
     ASSERT_DBL_NEAR(HCContourCurveDistanceFromPoint(p0, moulded, p), 0.0);
     ASSERT_TRUE(HCPointIsSimilar(p, HCContourCurveValue(p0, moulded, t), 0.00001));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Split
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearSplit) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourCurve curve = HCContourCurveMakeLinear(p1);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCContourCurve sCurve = HCContourCurveInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCContourCurve eCurve = HCContourCurveInvalid;
+    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
+    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
+    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
+}
+
+CTEST(HCContourCurve, QuadraticSplit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourCurve curve = HCContourCurveMakeQuadratic(c, p1);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCContourCurve sCurve = HCContourCurveInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCContourCurve eCurve = HCContourCurveInvalid;
+    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
+    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
+    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
+}
+
+CTEST(HCContourCurve, CubicSplit) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint c0 = HCPointMake(0.0, 2.0);
+    HCPoint c1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCReal t = 0.25;
+    HCPoint sp0 = HCPointInvalid;
+    HCContourCurve sCurve = HCContourCurveInvalid;
+    HCPoint ep0 = HCPointInvalid;
+    HCContourCurve eCurve = HCContourCurveInvalid;
+    HCContourCurveSplit(p0, curve, t, &sp0, &sCurve, &ep0, &eCurve);
+    ASSERT_TRUE(HCPointIsEqual(sp0, p0));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, ep0));
+    ASSERT_TRUE(HCPointIsEqual(eCurve.p, curve.p));
+    ASSERT_TRUE(HCPointIsEqual(sCurve.p, HCContourCurveValue(p0, curve, t)));
+    ASSERT_DBL_NEAR(HCContourCurveLength(sp0, sCurve) + HCContourCurveLength(ep0, eCurve), HCContourCurveLength(p0, curve));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Axis Alignment
+//----------------------------------------------------------------------------------------------------------------------------------
+CTEST(HCContourCurve, AxisAligned) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(3.0, 0.0);
+    HCPoint c1 = HCPointMake(5.0, 1.0);
+    HCPoint p1 = HCPointMake(7.0, 8.0);
+    HCContourCurve curve = HCContourCurveMakeCubic(c0, c1, p1);
+    HCContourCurve xAxisAligned = HCContourCurveXAxisAligned(p0, curve);
+    ASSERT_FALSE(HCContourCurveIsInvalid(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsZero(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsInfinite(xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, xAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, xAxisAligned));
+    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, xAxisAligned));
+    ASSERT_DBL_NEAR(xAxisAligned.p.y, 0.0);
+    
+    HCContourCurve yAxisAligned = HCContourCurveYAxisAligned(p0, curve);
+    ASSERT_FALSE(HCContourCurveIsInvalid(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsZero(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsInfinite(yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsLinear(HCPointZero, yAxisAligned));
+    ASSERT_FALSE(HCContourCurveIsQuadratic(HCPointZero, yAxisAligned));
+    ASSERT_TRUE(HCContourCurveIsCubic(HCPointZero, yAxisAligned));
+    ASSERT_DBL_NEAR(yAxisAligned.p.x, 0.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

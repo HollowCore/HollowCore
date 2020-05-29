@@ -69,16 +69,12 @@ HCCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve);
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCContourCurveValue(HCPoint p0, HCContourCurve curve, HCReal t);
-void HCContourCurveEvaluate(HCPoint p0, HCContourCurve curve, HCReal t, HCReal* x, HCReal* y, HCReal* dx, HCReal* dy, HCReal* ddx, HCReal* ddy);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
-HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
-void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve);
-HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
 void HCContourCurveDerivative(HCPoint p0, HCContourCurve curve, HCPoint* dP0, HCContourCurve* dCurve);
+HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
 void HCContourCurveExtrema(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
 void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections);
 HCRectangle HCContourCurveApproximateBounds(HCPoint p0, HCContourCurve curve);
@@ -90,6 +86,9 @@ HCReal HCContourCurveDistanceFromPoint(HCPoint p0, HCContourCurve curve, HCPoint
 HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCReal t);
 HCContourCurve HCContourCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
 HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint p);
+void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve);
+HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve);
+HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve);
 void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);
 
 #endif /* HCContourCurve_h */
