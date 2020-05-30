@@ -51,7 +51,6 @@ HCPathRef HCPathCreateCopy(HCPathRef path);
 HCPathRef HCPathCreateWithElements(const HCPathElement* elements, HCInteger elementCount);
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 HCPathRef HCPathCreateWithContour(const HCContour* contour);
-HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
 HCPathRef HCPathCreateByTranslatingPath(HCPathRef path, HCReal tx, HCReal ty);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -75,7 +74,7 @@ HCRectangle HCPathBounds(HCPathRef self);
 HCInteger HCPathContourCount(HCPathRef self);
 HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex);
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex);
-HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
+HCCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
 const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------

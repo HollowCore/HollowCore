@@ -822,7 +822,7 @@ CTEST(HCPath, PathFromContour) {
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), HCContourCurveCount((HCContour*)contour)));
     for (HCInteger elementIndex = 0; elementIndex < HCContourCurveCount(contour); elementIndex++) {
-        ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, elementIndex), HCContourCurveAt(contour, elementIndex)));
+        ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 0, elementIndex), HCContourCurveAt(contour, elementIndex)));
     }
     
     HCRelease(path);
@@ -832,20 +832,18 @@ CTEST(HCPath, ContourFromLinear) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 20 L 60 80 30 10 Z M 1 2 L 6 8 3 1");
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 2));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 3));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 20.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeLinear(HCPointMake(60.0, 80.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 2), HCContourCurveMakeLinear(HCPointMake(30.0, 10.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 2));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCCurveMakeLinear(HCPointMake(10.0, 20.0), HCPointMake(60.0, 80.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCCurveMakeLinear(HCPointMake(60.0, 80.0), HCPointMake(30.0, 10.0))));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), true));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 20.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(HCPathContourAt(path, 0)), HCPointMake(10.0, 20.0)));
     
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 1), 3));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 1), HCContourCurveMakeLinear(HCPointMake(6.0, 8.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 1, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 1), 2));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 1, 0), HCCurveMakeLinear(HCPointMake(1.0, 2.0), HCPointMake(6.0, 8.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 1, 1), HCCurveMakeLinear(HCPointMake(6.0, 8.0), HCPointMake(3.0, 1.0))));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 1)), HCPathContourCurveCount(path, 1)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 1)), false));
@@ -859,9 +857,8 @@ CTEST(HCPath, ContourFromQuadratic) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 80 Q 95 10 180 80");
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 2));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 80.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeQuadratic(HCPointMake(95.0, 10.0), HCPointMake(180.0, 80.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 1));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCCurveMakeQuadratic(HCPointMake(10.0, 80.0), HCPointMake(95.0, 10.0), HCPointMake(180.0, 80.0))));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), false));
@@ -875,9 +872,8 @@ CTEST(HCPath, ContourFromCubic) {
     HCPathRef path = HCPathCreateWithSVGPathData("M 10 90 C 30 10 70 10 90 90");
     
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(path), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 2));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCContourCurveMakeLinear(HCPointMake(10.0, 90.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(path, 0, 1), HCContourCurveMakeCubic(HCPointMake(30.0, 10.0), HCPointMake(70.0, 10.0), HCPointMake(90.0, 90.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(path, 0), 1));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(path, 0, 0), HCCurveMakeCubic(HCPointMake(10.0, 90.0), HCPointMake(30.0, 10.0), HCPointMake(70.0, 10.0), HCPointMake(90.0, 90.0))));
     
     ASSERT_TRUE(HCIntegerIsEqual(HCContourCurveCount(HCPathContourAt(path, 0)), HCPathContourCurveCount(path, 0)));
     ASSERT_TRUE(HCBooleanIsEqual(HCContourIsClosed(HCPathContourAt(path, 0)), false));
@@ -1020,39 +1016,46 @@ CTEST(HCPath, ContourStrangePaths) {
     
     HCPathRef singleMove = HCPathCreateWithSVGPathData("M 1 2");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleMove), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleMove, 0), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleMove, 0), 0));
     ASSERT_TRUE(!HCPathContourIsClosed(singleMove, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(singleMove, 0)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleMove, 0), 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
     HCPathRemoveElement(singleMove);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleMove), 0));
     HCRelease(singleMove);
     
     HCPathRef singleLine = HCPathCreateWithSVGPathData("L 1 2");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleLine), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleLine, 0), 2));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleLine, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleLine, 0, 1), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleLine, 0), 1));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(singleLine, 0, 0), HCCurveMakeLinear(HCPointMake(0.0, 0.0), HCPointMake(1.0, 2.0))));
     ASSERT_TRUE(!HCPathContourIsClosed(singleLine, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(singleLine, 0)), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleLine, 0), 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleLine, 0), 1), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
     HCPathRemoveElement(singleLine);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleLine), 0));
     HCRelease(singleLine);
     
     HCPathRef singleQuadratic = HCPathCreateWithSVGPathData("Q 1 2 3 4");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleQuadratic), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleQuadratic, 0), 2));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleQuadratic, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleQuadratic, 0, 1), HCContourCurveMakeQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleQuadratic, 0), 1));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(singleQuadratic, 0, 0), HCCurveMakeQuadratic(HCPointMake(0.0, 0.0), HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0))));
     ASSERT_TRUE(!HCPathContourIsClosed(singleQuadratic, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(singleQuadratic, 0)), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleQuadratic, 0), 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleQuadratic, 0), 1), HCContourCurveMakeQuadratic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0))));
     HCPathRemoveElement(singleQuadratic);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleQuadratic), 0));
     HCRelease(singleQuadratic);
     
     HCPathRef singleCubic = HCPathCreateWithSVGPathData("C 1 2 3 4 5 6");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleCubic), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleCubic, 0), 2));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleCubic, 0, 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(singleCubic, 0, 1), HCContourCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(singleCubic, 0), 1));
+    ASSERT_TRUE(HCCurveIsEqual(HCPathContourCurveAt(singleCubic, 0, 0), HCCurveMakeCubic(HCPointMake(0.0, 0.0), HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0))));
     ASSERT_TRUE(!HCPathContourIsClosed(singleCubic, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(singleCubic, 0)), 2));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleCubic, 0), 0), HCContourCurveMakeLinear(HCPointMake(0.0, 0.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(singleCubic, 0), 1), HCContourCurveMakeCubic(HCPointMake(1.0, 2.0), HCPointMake(3.0, 4.0), HCPointMake(5.0, 6.0))));
     HCPathRemoveElement(singleCubic);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(singleCubic), 0));
     HCRelease(singleCubic);
@@ -1065,16 +1068,16 @@ CTEST(HCPath, ContourStrangePaths) {
     
     HCPathRef doubleMove = HCPathCreateWithSVGPathData("M 1 2 M 3 4");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 2));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
-    ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 0));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 1), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 1, 0), HCContourCurveMakeLinear(HCPointMake(3.0, 4.0))));
-    ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 1));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(doubleMove, 0)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(doubleMove, 0), 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(doubleMove, 1)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(doubleMove, 1), 0), HCContourCurveMakeLinear(HCPointMake(3.0, 4.0))));
     HCPathRemoveElement(doubleMove);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(doubleMove, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(doubleMove, 0), 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(doubleMove, 0)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(doubleMove, 0), 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
     ASSERT_TRUE(!HCPathContourIsClosed(doubleMove, 0));
     HCPathRemoveElement(doubleMove);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(doubleMove), 0));
@@ -1088,14 +1091,18 @@ CTEST(HCPath, ContourStrangePaths) {
     
     HCPathRef moveClose = HCPathCreateWithSVGPathData("M 1 2 Z");
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(moveClose, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 0));
     ASSERT_TRUE(HCPathContourIsClosed(moveClose, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(moveClose, 0)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(moveClose, 0), 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCContourIsClosed(HCPathContourAt(moveClose, 0)));
     HCPathRemoveElement(moveClose);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 1));
-    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 1));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCPathContourCurveAt(moveClose, 0, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCurveCount(moveClose, 0), 0));
     ASSERT_TRUE(!HCPathContourIsClosed(moveClose, 0));
+    ASSERT_TRUE(HCIntegerIsEqual(HCContourComponentCount(HCPathContourAt(moveClose, 0)), 1));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(HCPathContourAt(moveClose, 0), 0), HCContourCurveMakeLinear(HCPointMake(1.0, 2.0))));
+    ASSERT_TRUE(!HCContourIsClosed(HCPathContourAt(moveClose, 0)));
     HCPathRemoveElement(moveClose);
     ASSERT_TRUE(HCIntegerIsEqual(HCPathContourCount(moveClose), 0));
     HCRelease(moveClose);

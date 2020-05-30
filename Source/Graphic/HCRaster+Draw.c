@@ -469,7 +469,7 @@ void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, H
 }
 
 void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
-    HCRasterDrawContourCurves(self, HCContourCurves(contour), HCContourCurveCount(contour), HCContourIsClosed(contour), color);
+    HCRasterDrawContourCurves(self, HCContourComponents(contour), HCContourComponentCount(contour), HCContourIsClosed(contour), color);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

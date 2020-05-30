@@ -22,11 +22,15 @@ CTEST(HCContour, CreatePolyline) {
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeLinear(HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourComponentCount(contour) == 4);
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 1), HCContourCurveMakeLinear(HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 3), HCContourCurveMakeLinear(HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveCount(contour) == 3);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 0), HCCurveMakeLinear(HCPointMake(1.0, 1.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 1), HCCurveMakeLinear(HCPointMake(3.0, 1.0), HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 2), HCCurveMakeLinear(HCPointMake(3.0, 3.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, CreatePolyquadratic) {
@@ -41,11 +45,15 @@ CTEST(HCContour, CreatePolyquadratic) {
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeQuadratic(HCPointMake(3.0, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourComponentCount(contour) == 4);
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 3), HCContourCurveMakeQuadratic(HCPointMake(3.0, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveCount(contour) == 3);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 0), HCCurveMakeQuadratic(HCPointMake(1.0, 1.0), HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 1), HCCurveMakeLinear(HCPointMake(3.0, 1.0), HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 2), HCCurveMakeQuadratic(HCPointMake(3.0, 3.0), HCPointMake(3.0, 4.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, CreatePolycubic) {
@@ -60,11 +68,15 @@ CTEST(HCContour, CreatePolycubic) {
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourComponentCount(contour) == 4);
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveCount(contour) == 3);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 0), HCCurveMakeQuadratic(HCPointMake(1.0, 1.0), HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 1), HCCurveMakeLinear(HCPointMake(3.0, 1.0), HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 2), HCCurveMakeCubic(HCPointMake(3.0, 3.0), HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, CreateWithCurves) {
@@ -79,11 +91,15 @@ CTEST(HCContour, CreateWithCurves) {
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), HCPointMake(1.0, 1.0)));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), HCPointMake(1.0, 1.0)));
-    ASSERT_TRUE(HCContourCurveCount(contour) == 4);
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
-    ASSERT_TRUE(HCContourCurveIsEqual(HCContourCurveAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourComponentCount(contour) == 4);
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 0), HCContourCurveMakeLinear(HCPointMake(1.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 1), HCContourCurveMakeQuadratic(HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 2), HCContourCurveMakeLinear(HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveIsEqual(HCContourComponentAt(contour, 3), HCContourCurveMakeCubic(HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
+    ASSERT_TRUE(HCContourCurveCount(contour) == 3);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 0), HCCurveMakeQuadratic(HCPointMake(1.0, 1.0), HCPointMake(2.0, 0.0), HCPointMake(3.0, 1.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 1), HCCurveMakeLinear(HCPointMake(3.0, 1.0), HCPointMake(3.0, 3.0))));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 2), HCCurveMakeCubic(HCPointMake(3.0, 3.0), HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
 }
 
 CTEST(HCContour, Equality) {

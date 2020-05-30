@@ -78,26 +78,26 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
 }
 
 HCPathRef HCPathCreateWithContour(const HCContour* contour) {
-    return HCPathCreateWithContourCurves(HCContourCurves(contour), HCContourCurveCount(contour), HCContourIsClosed(contour));
-}
-
-HCPathRef HCPathCreateWithContourCurves(const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
+    const HCContourCurve* components = HCContourComponents(contour);
+    HCInteger componentCount = HCContourComponentCount(contour);
+    HCBoolean closed = HCContourIsClosed(contour);
+    
     HCPathRef self = HCPathCreate();
-    if (curveCount <= 0) {
+    if (componentCount <= 0) {
         return self;
     }
-    HCPathMove(self, curves[0].p.x, curves[0].p.y);
-    for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
-        HCPoint p0 = curves[curveIndex - 1].p;
-        HCContourCurve curve = curves[curveIndex];
-        if (HCContourCurveIsLinear(p0, curve)) {
-            HCPathAddLine(self, curve.p.x, curve.p.y);
+    HCPathMove(self, components[0].p.x, components[0].p.y);
+    for (HCInteger componentIndex = 1; componentIndex < componentCount; componentIndex++) {
+        HCPoint p0 = components[componentIndex - 1].p;
+        HCContourCurve component = components[componentIndex];
+        if (HCContourCurveIsLinear(p0, component)) {
+            HCPathAddLine(self, component.p.x, component.p.y);
         }
-        else if (HCContourCurveIsQuadratic(p0, curve)) {
-            HCPathAddQuadraticCurve(self, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y);
+        else if (HCContourCurveIsQuadratic(p0, component)) {
+            HCPathAddQuadraticCurve(self, component.c0.x, component.c0.y, component.p.x, component.p.y);
         }
-        else if (HCContourCurveIsCubic(p0, curve)) {
-            HCPathAddCubicCurve(self, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y);
+        else if (HCContourCurveIsCubic(p0, component)) {
+            HCPathAddCubicCurve(self, component.c0.x, component.c0.y, component.c1.x, component.c1.y, component.p.x, component.p.y);
         }
 
     }
@@ -242,14 +242,11 @@ HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex) {
 }
 
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex) {
-    HCDataRef contourData = HCListObjectAtIndex(self->contours, contourIndex);
-    return HCDataSize(contourData) / sizeof(HCContourCurve);
+    return HCContourCurveCount(HCPathContourAt(self, contourIndex));
 }
 
-HCContourCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex) {
-    HCDataRef contourData = HCListObjectAtIndex(self->contours, contourIndex);
-    HCContourCurve* curves = (HCContourCurve*)HCDataBytes(contourData);
-    return curves[curveIndex];
+HCCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex) {
+    return HCContourCurveAt(HCPathContourAt(self, contourIndex), curveIndex);
 }
 
 const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex) {
