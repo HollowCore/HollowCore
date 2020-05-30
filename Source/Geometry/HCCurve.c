@@ -442,6 +442,54 @@ void HCCurveTangentCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal 
     }
 }
 
+HCCurve HCCurveTangentUnit(HCCurve curve, HCReal t) {
+    HCPoint p = HCPointInvalid;
+    HCReal tangentX = HCRealInvalid;
+    HCReal tangentY = HCRealInvalid;
+    HCReal tc = 1.0 - t;
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            // Calculate linear interpolation along linear curve at t to obtain an on-curve point at t
+            p = HCPointMake(tc * curve.p0.x + t * curve.p1.x, tc * curve.p0.y + t * curve.p1.y);
+            
+            // The linear curve is tangent to itself at all points, including at t, so use its end points to calculate a raw tangent vector
+            tangentX = curve.p1.x - curve.p0.x;
+            tangentY = curve.p1.y - curve.p0.y;
+        }
+        else {
+            // Calculate linear interpolations along quadratic curve anchor and control point polyline at t to obtain an on-curve point at t
+            HCPoint qp0 = HCPointMake(tc * curve.p0.x + t * curve.c0.x, tc * curve.p0.y + t * curve.c0.y);
+            HCPoint qp1 = HCPointMake(tc * curve.c0.x + t * curve.p1.x, tc * curve.c0.y + t * curve.p1.y);
+            p = HCPointMake(tc * qp0.x + t * qp1.x, tc * qp0.y + t * qp1.y);
+            
+            // The segment interpolated to obtain the on-curve point is tangent to the curve at t, so use its endpoints to calculate a raw tangent vector
+            tangentX = qp1.x - qp0.x;
+            tangentY = qp1.y - qp0.y;
+        }
+    }
+    else {
+        // Calculate linear interpolations along cubic curve anchor and control point polyline at t, as well as along the resulting segment, to obtain an on-curve point at t
+        HCPoint qp0 = HCPointMake(tc * curve.p0.x + t * curve.c0.x, tc * curve.p0.y + t * curve.c0.y);
+        HCPoint  qc = HCPointMake(tc * curve.c0.x + t * curve.c1.x, tc * curve.c0.y + t * curve.c1.y);
+        HCPoint qp1 = HCPointMake(tc * curve.c1.x + t * curve.p1.x, tc * curve.c1.y + t * curve.p1.y);
+        HCPoint rp0 = HCPointMake(tc * qp0.x + t *  qc.x, tc * qp0.y + t *  qc.y);
+        HCPoint rp1 = HCPointMake(tc *  qc.x + t * qp1.x, tc *  qc.y + t * qp1.y);
+        p = HCPointMake(tc * rp0.x + t * rp1.x, tc * rp0.y + t * rp1.y);
+        
+        // The segment interpolated to obtain the on-curve point is tangent to the curve at t, so use its endpoints to calculate a raw tangent vector
+        tangentX = rp1.x - rp0.x;
+        tangentY = rp1.y - rp0.y;
+    }
+    
+    // Normalize the raw tangent vector to unit length by scaling by its inverse length
+    HCReal lengthInverse = 1.0 / sqrt(tangentX * tangentX + tangentY * tangentY);
+    tangentX *= lengthInverse;
+    tangentY *= lengthInverse;
+    
+    // Package result as a linear curve starting at the on-curve point at t and ending one unit distance away in the direction of the curve tangent at t
+    return HCCurveMakeLinear(p, HCPointOffset(p, tangentX, tangentY));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Normal
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -507,6 +555,16 @@ void HCCurveNormalCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t
     if (ny != NULL) {
         *ny = +tx;
     }
+}
+
+HCCurve HCCurveNormalUnit(HCCurve curve, HCReal t) {
+    // Obtain unit-length tangent to the curve at t
+    HCCurve tangent = HCCurveTangentUnit(curve, t);
+    
+    // Rotate by pi/2 and deliver result as unit normal vector
+    HCReal tx = tangent.p1.x - tangent.p0.x;
+    HCReal ty = tangent.p1.y - tangent.p0.y;
+    return HCCurveMakeLinear(tangent.p0, HCPointOffset(tangent.p0, -ty, +tx));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -61,6 +61,7 @@ static const HCColor HCColorYellow = HCColorYellowStatic;
 HCColor HCColorMake(HCReal a, HCReal r, HCReal g, HCReal b);
 HCColor HCColorMakeWithAHSB(HCReal alpha, HCReal hue, HCReal saturation, HCReal brightness);
 HCColor HCColorMakeWithARGB(uint32_t color);
+HCColor HCColorWithAlpha(HCColor color, HCReal a);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Conversion

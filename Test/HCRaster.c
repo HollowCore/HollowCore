@@ -926,7 +926,7 @@ void HCPointGrid(HCRectangle r, HCInteger countX, HCInteger countY, HCPoint* poi
     }
 }
 
-CTEST(HCRaster, DrawCurveDerivativeFrameCubic) {
+CTEST(HCRaster, DrawCurveTangentNormalFrame) {
     HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(100.0, 100.0));
     HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
     HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
@@ -943,29 +943,16 @@ CTEST(HCRaster, DrawCurveDerivativeFrameCubic) {
     for (HCInteger tIndex = 0; tIndex < count; tIndex++) {
         HCReal t = (HCReal)tIndex * tStep;
         
-        HCPoint p = HCCurveValue(curve, t);
+        HCCurve tangent = HCCurveTangentUnit(curve, t);
+        tangent.p1 = HCPointOffset(tangent.p0, (tangent.p1.x - tangent.p0.x) * length, (tangent.p1.y - tangent.p0.y) * length);
+        HCRasterDrawLine(raster, tangent.p0.x, tangent.p0.y, tangent.p1.x, tangent.p1.y, HCColorGreen, HCColorWithAlpha(HCColorBlue, 0.9));
         
-        HCReal tx = HCRealInvalid;
-        HCReal ty = HCRealInvalid;
-        HCCurveTangentCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &tx, &ty);
-        HCReal tangentLength = sqrt(tx * tx + ty * ty);
-        tx /= tangentLength;
-        ty /= tangentLength;
-        HCPoint tp = HCPointOffset(p, tx * length, ty * length);
-        
-        HCReal nx = HCRealInvalid;
-        HCReal ny = HCRealInvalid;
-        HCCurveNormalCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &nx, &ny);
-        HCReal normalLength = sqrt(nx * nx + ny * ny); // TODO: Can use tangent length for both?
-        nx /= normalLength;
-        ny /= normalLength;
-        HCPoint np = HCPointOffset(p, nx * length, ny * length);
-        
-        HCRasterDrawLine(raster, p.x, p.y, tp.x, tp.y, HCColorBlue, HCColorBlue);
-        HCRasterDrawLine(raster, p.x, p.y, np.x, np.y, HCColorRed, HCColorRed);
+        HCCurve normal = HCCurveNormalUnit(curve, t);
+        normal.p1 = HCPointOffset(normal.p0, (normal.p1.x - normal.p0.x) * length, (normal.p1.y - normal.p0.y) * length);
+        HCRasterDrawLine(raster, normal.p0.x, normal.p0.y, normal.p1.x, normal.p1.y, HCColorGreen, HCColorWithAlpha(HCColorRed, 0.9));
     }
     
-    HCRasterSaveBMP(raster, "curve_derivative_frame.bmp");
+    HCRasterSaveBMP(raster, "curve_tangent_normal_frame.bmp");
     HCRelease(raster);
 }
 
