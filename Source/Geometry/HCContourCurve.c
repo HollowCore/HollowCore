@@ -27,6 +27,14 @@ HCContourCurve HCContourCurveMakeCubic(HCPoint c0, HCPoint c1, HCPoint p) {
     return (HCContourCurve){ .c0 = c0, .c1 = c1, .p = p };
 }
 
+HCContourCurve HCContourCurveMakeWithCurve(HCCurve curve) {
+    return (HCContourCurve){ .c0 = curve.c0, .c1 = curve.c1, .p = curve.p1 };
+}
+
+HCCurve HCCurveMakeWithContourCurve(HCPoint p0, HCContourCurve curve) {
+    return (HCCurve){ .p0 = p0, .c0 = curve.c0, .c1 = curve.c1, .p1 = curve.p };
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -144,245 +152,84 @@ HCContourCurve HCContourCurveAsCubic(HCPoint p0, HCContourCurve curve) {
 // MARK: - Canonical Type
 //----------------------------------------------------------------------------------------------------------------------------------
 HCCurveType HCContourCurveCanonicalType(HCPoint p0, HCContourCurve curve) {
-    // Determine curve type based on provided information
-    if (HCPointIsInvalid(p0) || HCPointIsInvalid(curve.p) || (HCPointIsInvalid(curve.c0) && !HCPointIsInvalid(curve.c1))) {
-        // Provided curve data has invalid anchor points or has control point 1 but not control point 0
-        return HCCurveTypeInvalid;
-    }
-    else if (HCPointIsInvalid(curve.c0)) {
-        // Linear curve data provided
-        return HCCurveCanonicalTypeLinear(p0, curve.p);
-    }
-    else if (HCPointIsInvalid(curve.c1)) {
-        // Quadratic curve data provided
-        return HCCurveCanonicalTypeQuadratic(p0, curve.c0, curve.p);
-    }
-    else {
-        // Cubic curve data provided
-        return HCCurveCanonicalTypeCubic(p0, curve.c0, curve.c1, curve.p);
-    }
+    return HCCurveCanonicalType(HCCurveMakeWithContourCurve(p0, curve));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCContourCurveValue(HCPoint p0, HCContourCurve curve, HCReal t) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveValueLinear(p0, curve.p, t);
-        }
-        else {
-            return HCCurveValueQuadratic(p0, curve.c0, curve.p, t);
-        }
-    }
-    else {
-        return HCCurveValueCubic(p0, curve.c0, curve.c1, curve.p, t);
-    }
+    return HCCurveValue(HCCurveMakeWithContourCurve(p0, curve), t);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 
+HCContourCurve HCContourCurveTangent(HCPoint p0, HCContourCurve curve, HCReal t) {
+    return HCContourCurveMakeWithCurve(HCCurveTangent(HCCurveMakeWithContourCurve(p0, curve), t));
+}
+
+HCContourCurve HCContourCurveTangentUnit(HCPoint p0, HCContourCurve curve, HCReal t) {
+    return HCContourCurveMakeWithCurve(HCCurveTangentUnit(HCCurveMakeWithContourCurve(p0, curve), t));
+}
+
+HCContourCurve HCContourCurveNormal(HCPoint p0, HCContourCurve curve, HCReal t) {
+    return HCContourCurveMakeWithCurve(HCCurveNormal(HCCurveMakeWithContourCurve(p0, curve), t));
+}
+
+HCContourCurve HCContourCurveNormalUnit(HCPoint p0, HCContourCurve curve, HCReal t) {
+   return HCContourCurveMakeWithCurve(HCCurveNormalUnit(HCCurveMakeWithContourCurve(p0, curve), t));
+}
+
 void HCContourCurveDerivative(HCPoint p0, HCContourCurve curve, HCPoint* dP0, HCContourCurve* dCurve) {
-    HCCurveType type = HCContourCurveCanonicalType(p0, curve);
-    switch (type) {
-        case HCCurveTypeInvalid: {
-            if (dP0 != NULL) {
-                *dP0 = HCPointInvalid;
-            }
-            if (dCurve != NULL) {
-                *dCurve = HCContourCurveInvalid;
-            }
-        } break;
-        case HCCurveTypePoint:
-        case HCCurveTypeLinear: {
-            // Calculate linear derivative weights
-            HCPoint p1 = curve.p;
-            HCPoint pd = HCPointMake(1.0 * (p1.x - p0.x), 1.0 * (p1.y - p0.y));
-            if (dP0 != NULL) {
-                *dP0 = pd;
-            }
-            if (dCurve != NULL) {
-                *dCurve = HCContourCurveMakeLinear(pd);
-            }
-        } break;
-        case HCCurveTypeQuadratic: {
-            // Calculate quadratic derivative weights
-            HCPoint c = curve.c0;
-            HCPoint p1 = curve.p;
-            HCPoint p0d = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
-            HCPoint p1d = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
-            if (dP0 != NULL) {
-                *dP0 = p0d;
-            }
-            if (dCurve != NULL) {
-                *dCurve = HCContourCurveMakeLinear(p1d);
-            }
-        } break;
-        case HCCurveTypeCubicSimple:
-        case HCCurveTypeCubicSingleInflection:
-        case HCCurveTypeCubicDoubleInflection:
-        case HCCurveTypeCubicLoop:
-        case HCCurveTypeCubicLoopAtStart:
-        case HCCurveTypeCubicLoopAtEnd:
-        case HCCurveTypeCubicLoopClosed:
-        case HCCurveTypeCubicCusp: {
-            // Calculate cubic derivative weights
-            HCPoint c0 = curve.c0;
-            HCPoint c1 = curve.c1;
-            HCPoint p1 = curve.p;
-            HCPoint p0d = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
-            HCPoint  cd = HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
-            HCPoint p1d = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
-            if (dP0 != NULL) {
-                *dP0 = p0d;
-            }
-            if (dCurve != NULL) {
-                *dCurve = HCContourCurveMakeQuadratic(cd, p1d);
-            }
-        } break;
+    HCCurve derivative = HCCurveDerivative(HCCurveMakeWithContourCurve(p0, curve));
+    if (dP0 != NULL) {
+        *dP0 = derivative.p0;
+    }
+    if (dCurve != NULL) {
+        *dCurve = HCContourCurveMakeWithCurve(derivative);
     }
 }
 
 HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveCurvatureLinear(p0, curve.p, t);
-        }
-        else {
-            return HCCurveCurvatureQuadratic(p0, curve.c0, curve.p, t);
-        }
-    }
-    else {
-        return HCCurveCurvatureCubic(p0, curve.c0, curve.c1, curve.p, t);
-    }
+    return HCCurveCurvature(HCCurveMakeWithContourCurve(p0, curve), t);
 }
 
 void HCContourCurveExtrema(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCCurveExtremaLinear(p0, curve.p, count, extrema);
-        }
-        else {
-            HCCurveExtremaQuadratic(p0, curve.c0, curve.p, count, extrema);
-        }
-    }
-    else {
-        HCCurveExtremaCubic(p0, curve.c0, curve.c1, curve.p, count, extrema);
-    }
+    HCCurveExtrema(HCCurveMakeWithContourCurve(p0, curve), count, extrema);
 }
 
 void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCCurveInflectionsLinear(p0, curve.p, count, inflections);
-        }
-        else {
-            HCCurveInflectionsQuadratic(p0, curve.c0, curve.p, count, inflections);
-        }
-    }
-    else {
-        HCCurveInflectionsCubic(p0, curve.c0, curve.c1, curve.p, count, inflections);
-    }
+    HCCurveInflections(HCCurveMakeWithContourCurve(p0, curve), count, inflections);
 }
 
 HCRectangle HCContourCurveApproximateBounds(HCPoint p0, HCContourCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveApproximateBoundsLinear(p0, curve.p);
-        }
-        else {
-            return HCCurveApproximateBoundsQuadratic(p0, curve.c0, curve.p);
-        }
-    }
-    else {
-        return HCCurveApproximateBoundsCubic(p0, curve.c0, curve.c1, curve.p);
-    }
+    return HCCurveApproximateBounds(HCCurveMakeWithContourCurve(p0, curve));
 }
 
 HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveBoundsLinear(p0, curve.p);
-        }
-        else {
-            return HCCurveBoundsQuadratic(p0, curve.c0, curve.p);
-        }
-    }
-    else {
-        return HCCurveBoundsCubic(p0, curve.c0, curve.c1, curve.p);
-    }
+    return HCCurveBounds(HCCurveMakeWithContourCurve(p0, curve));
 }
 
 HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveLengthLinear(p0, curve.p);
-        }
-        else {
-            return HCCurveLengthQuadratic(p0, curve.c0, curve.p);
-        }
-    }
-    else {
-        return HCCurveLengthCubic(p0, curve.c0, curve.c1, curve.p);
-    }
+    return HCCurveLength(HCCurveMakeWithContourCurve(p0, curve));
 }
 
-HCReal HCContourCurveParameter(HCPoint p0, HCContourCurve curve, HCReal d) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveParameterLinear(p0, curve.p, d);
-        }
-        else {
-            return HCCurveParameterQuadratic(p0, curve.c0, curve.p, d);
-        }
-    }
-    else {
-        return HCCurveParameterCubic(p0, curve.c0, curve.c1, curve.p, d);
-    }
+HCReal HCContourCurveParameterAtLength(HCPoint p0, HCContourCurve curve, HCReal d) {
+    return HCCurveParameterAtLength(HCCurveMakeWithContourCurve(p0, curve), d);
 }
 
 HCReal HCContourCurveParameterNearestPoint(HCPoint p0, HCContourCurve curve, HCPoint p) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveParameterNearestPointLinear(p0, curve.p, p);
-        }
-        else {
-            return HCCurveParameterNearestPointQuadratic(p0, curve.c0, curve.p, p);
-        }
-    }
-    else {
-        return HCCurveParameterNearestPointCubic(p0, curve.c0, curve.c1, curve.p, p);
-    }
+    return HCCurveParameterNearestPoint(HCCurveMakeWithContourCurve(p0, curve), p);
 }
 
 HCReal HCContourCurveDistanceFromPoint(HCPoint p0, HCContourCurve curve, HCPoint p) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveDistanceFromPointLinear(p0, curve.p, p);
-        }
-        else {
-            return HCCurveDistanceFromPointQuadratic(p0, curve.c0, curve.p, p);
-        }
-    }
-    else {
-        return HCCurveDistanceFromPointCubic(p0, curve.c0, curve.c1, curve.p, p);
-    }
+    return HCCurveDistanceFromPoint(HCCurveMakeWithContourCurve(p0, curve), p);
 }
 
 HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCReal t) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveBaselineProjectionLinear(p0, curve.p, t);
-        }
-        else {
-            return HCCurveBaselineProjectionQuadratic(p0, curve.p, t);
-        }
-    }
-    else {
-        return HCCurveBaselineProjectionCubic(p0, curve.p, t);
-    }
+    return HCCurveBaselineProjection(HCCurveMakeWithContourCurve(p0, curve), t);
 }
 
 HCContourCurve HCContourCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy) {
@@ -392,135 +239,35 @@ HCContourCurve HCContourCurveInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint 
 }
 
 HCContourCurve HCContourCurveMould(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint p) {
-    HCContourCurve moulded = curve;
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            moulded = curve;
-        }
-        else {
-            HCCurveMouldQuadratic(p0, curve.c0, curve.p, t, p, &moulded.c0);
-        }
-    }
-    else {
-        HCCurveMouldCubic(p0, curve.c0, curve.c1, curve.p, t, p, &moulded.c0, &moulded.c1);
-    }
-    return moulded;
+    return HCContourCurveMakeWithCurve(HCCurveMould(HCCurveMakeWithContourCurve(p0, curve), t, p));
 }
 
 void HCContourCurveSplit(HCPoint p0, HCContourCurve curve, HCReal t, HCPoint* sp0, HCContourCurve* sCurve, HCPoint* ep0, HCContourCurve* eCurve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint sp1 = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCCurveSplitLinear(p0, curve.p, t, sp0, &sp1, ep0, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCContourCurveMakeLinear(sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCContourCurveMakeLinear(ep1);
-            }
-        }
-        else {
-            HCPoint sc = HCPointZero;
-            HCPoint sp1 = HCPointZero;
-            HCPoint ec = HCPointZero;
-            HCPoint ep1 = HCPointZero;
-            HCCurveSplitQuadratic(p0, curve.c0, curve.p, t, sp0, &sc, &sp1, ep0, &ec, &ep1);
-            if (sCurve != NULL) {
-                *sCurve = HCContourCurveMakeQuadratic(sc, sp1);
-            }
-            if (eCurve != NULL) {
-                *eCurve = HCContourCurveMakeQuadratic(ec, ep1);
-            }
-        }
+    HCCurve s = HCCurveInvalid;
+    HCCurve e = HCCurveInvalid;
+    HCCurveSplit(HCCurveMakeWithContourCurve(p0, curve), t, &s, &e);
+    if (sp0 != NULL) {
+        *sp0 = s.p0;
     }
-    else {
-        HCPoint sc0 = HCPointZero;
-        HCPoint sc1 = HCPointZero;
-        HCPoint sp1 = HCPointZero;
-        HCPoint ec0 = HCPointZero;
-        HCPoint ec1 = HCPointZero;
-        HCPoint ep1 = HCPointZero;
-        HCCurveSplitCubic(p0, curve.c0, curve.c1, curve.p, t, sp0, &sc0, &sc1, &sp1, ep0, &ec0, &ec1, &ep1);
-        if (sCurve != NULL) {
-            *sCurve = HCContourCurveMakeCubic(sc0, sc1, sp1);
-        }
-        if (eCurve != NULL) {
-            *eCurve = HCContourCurveMakeCubic(ec0, ec1, ep1);
-        }
+    if (sCurve != NULL) {
+        *sCurve = HCContourCurveMakeWithCurve(s);
+    }
+    if (ep0 != NULL) {
+        *ep0 = e.p0;
+    }
+    if (eCurve != NULL) {
+        *eCurve = HCContourCurveMakeWithCurve(e);
     }
 }
 
 HCContourCurve HCContourCurveXAxisAligned(HCPoint p0, HCContourCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveXAxisAlignedLinear(p0, curve.p, NULL, &ap1);
-            return HCContourCurveMakeLinear(ap1);
-        }
-        else {
-            HCPoint ac = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveXAxisAlignedQuadratic(p0, curve.c0, curve.p, NULL, &ac, &ap1);
-            return HCContourCurveMakeQuadratic(ac, ap1);
-        }
-    }
-    else {
-        HCPoint ac0 = HCPointInvalid;
-        HCPoint ac1 = HCPointInvalid;
-        HCPoint ap1 = HCPointInvalid;
-        HCCurveXAxisAlignedCubic(p0, curve.c0, curve.c1, curve.p, NULL, &ac0, &ac1, &ap1);
-        return HCContourCurveMakeCubic(ac0, ac1, ap1);
-    }
+    return HCContourCurveMakeWithCurve(HCCurveXAxisAligned(HCCurveMakeWithContourCurve(p0, curve)));
 }
 
 HCContourCurve HCContourCurveYAxisAligned(HCPoint p0, HCContourCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveYAxisAlignedLinear(p0, curve.p, NULL, &ap1);
-            return HCContourCurveMakeLinear(ap1);
-        }
-        else {
-            HCPoint ac = HCPointInvalid;
-            HCPoint ap1 = HCPointInvalid;
-            HCCurveYAxisAlignedQuadratic(p0, curve.c0, curve.p, NULL, &ac, &ap1);
-            return HCContourCurveMakeQuadratic(ac, ap1);
-        }
-    }
-    else {
-        HCPoint ac0 = HCPointInvalid;
-        HCPoint ac1 = HCPointInvalid;
-        HCPoint ap1 = HCPointInvalid;
-        HCCurveYAxisAlignedCubic(p0, curve.c0, curve.c1, curve.p, NULL, &ac0, &ac1, &ap1);
-        return HCContourCurveMakeCubic(ac0, ac1, ap1);
-    }
+    return HCContourCurveMakeWithCurve(HCCurveYAxisAligned(HCCurveMakeWithContourCurve(p0, curve)));
 }
 
 void HCContourCurveIntersection(HCPoint p0, HCContourCurve pCurve, HCPoint q0, HCContourCurve qCurve, HCInteger* count, HCReal* t, HCReal* u) {
-    if (HCContourCurveIsLinear(p0, pCurve)) {
-        if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCCurveIntersectionLinearLinear(p0, pCurve.p, q0, qCurve.p, count, t, u);
-        }
-        else if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCCurveIntersectionLinearQuadratic(p0, pCurve.p, q0, qCurve.c0, qCurve.p, count, t, u);
-        }
-        else {
-            HCCurveIntersectionLinearCubic(p0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
-        }
-    }
-    else if (HCContourCurveIsQuadratic(p0, pCurve)) {
-        if (HCContourCurveIsLinear(p0, qCurve)) {
-            HCCurveIntersectionLinearQuadratic(q0, qCurve.p, p0, pCurve.c0, pCurve.p, count, u, t);
-        }
-        else if (HCContourCurveIsQuadratic(p0, qCurve)) {
-            HCCurveIntersectionQuadraticQuadratic(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.p, count, t, u);
-        }
-        else {
-            return HCCurveIntersectionQuadraticCubic(p0, pCurve.c0, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
-        }
-    }
-    else {
-        return HCCurveIntersectionCubicCubic(p0, pCurve.c0, pCurve.c1, pCurve.p, q0, qCurve.c0, qCurve.c1, qCurve.p, count, t, u);
-    }
+    HCCurveIntersection(HCCurveMakeWithContourCurve(p0, pCurve), HCCurveMakeWithContourCurve(q0, qCurve), count, t, u);
 }

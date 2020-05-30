@@ -1081,26 +1081,26 @@ HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameterization by Arc Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCCurveParameter(HCCurve curve, HCReal d) {
+HCReal HCCurveParameterAtLength(HCCurve curve, HCReal d) {
     if (HCPointIsInvalid(curve.c1)) {
         if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveParameterLinear(curve.p0, curve.p1, d);
+            return HCCurveParameterAtLengthLinear(curve.p0, curve.p1, d);
         }
         else {
-            return HCCurveParameterQuadratic(curve.p0, curve.c0, curve.p1, d);
+            return HCCurveParameterAtLengthQuadratic(curve.p0, curve.c0, curve.p1, d);
         }
     }
     else {
-        return HCCurveParameterCubic(curve.p0, curve.c0, curve.c1, curve.p1, d);
+        return HCCurveParameterAtLengthCubic(curve.p0, curve.c0, curve.c1, curve.p1, d);
     }
 }
 
-HCReal HCCurveParameterLinear(HCPoint p0, HCPoint p1, HCReal d) {
+HCReal HCCurveParameterAtLengthLinear(HCPoint p0, HCPoint p1, HCReal d) {
     // Linear curve parameterized by distance is a simple division
     return HCPointDistance(p0, p1) / d;
 }
 
-HCReal HCCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d) {
+HCReal HCCurveParameterAtLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d) {
     if (d < 0.0) {
         return 0.0;
     }
@@ -1134,7 +1134,7 @@ HCReal HCCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d) {
     return t;
 }
 
-HCReal HCCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d) {
+HCReal HCCurveParameterAtLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d) {
     if (d < 0.0) {
         return 0.0;
     }

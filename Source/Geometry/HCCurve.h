@@ -171,10 +171,10 @@ HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameterization by Arc Length
 //----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCCurveParameter(HCCurve curve, HCReal d);
-HCReal HCCurveParameterLinear(HCPoint p0, HCPoint p1, HCReal d);
-HCReal HCCurveParameterQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d);
-HCReal HCCurveParameterCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d);
+HCReal HCCurveParameterAtLength(HCCurve curve, HCReal d);
+HCReal HCCurveParameterAtLengthLinear(HCPoint p0, HCPoint p1, HCReal d);
+HCReal HCCurveParameterAtLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal d);
+HCReal HCCurveParameterAtLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal d);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameter Nearest Point

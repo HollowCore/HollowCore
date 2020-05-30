@@ -608,7 +608,7 @@ CTEST(HCCurve, LinearParameterizedByArcLength) {
     HCPoint p1 = HCPointMake(3.0, -4.0);
     HCReal length = HCCurveLengthLinear(p0, p1);
     for (HCReal d = 0.0; d < length; d += 0.1) {
-        HCReal t = HCCurveParameterLinear(p0, p1, d);
+        HCReal t = HCCurveParameterAtLengthLinear(p0, p1, d);
         ASSERT_DBL_NEAR(t, length / d);
     }
 }
@@ -620,7 +620,7 @@ CTEST(HCCurve, QuadraticParameterizedByArcLength) {
     HCReal length = HCCurveLengthQuadratic(p0, c, p1);
     HCReal previousT = 0.0;
     for (HCReal d = 0.0; d < length; d += 0.1) {
-        HCReal t = HCCurveParameterQuadratic(p0, c, p1, d);
+        HCReal t = HCCurveParameterAtLengthQuadratic(p0, c, p1, d);
         ASSERT_TRUE(t >= 0.0);
         ASSERT_TRUE(t <= 1.0);
         ASSERT_TRUE(t >= previousT);
@@ -636,7 +636,7 @@ CTEST(HCCurve, CubicParameterizedByArcLength) {
     HCReal length = HCCurveLengthCubic(p0, c0, c1, p1);
     HCReal previousT = 0.0;
     for (HCReal d = 0.0; d < length; d += 0.1) {
-        HCReal t = HCCurveParameterCubic(p0, c0, c1, p1, d);
+        HCReal t = HCCurveParameterAtLengthCubic(p0, c0, c1, p1, d);
         ASSERT_TRUE(t >= 0.0);
         ASSERT_TRUE(t <= 1.0);
         ASSERT_TRUE(t >= previousT);
@@ -653,7 +653,7 @@ CTEST(HCCurve, ParameterizedByArcLength) {
     HCReal length = HCCurveLength(curve);
     HCReal previousT = 0.0;
     for (HCReal d = 0.0; d < length; d += 0.1) {
-        HCReal t = HCCurveParameter(curve, d);
+        HCReal t = HCCurveParameterAtLength(curve, d);
         ASSERT_TRUE(t >= 0.0);
         ASSERT_TRUE(t <= 1.0);
         ASSERT_TRUE(t >= previousT);

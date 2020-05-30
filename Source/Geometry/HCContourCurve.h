@@ -38,6 +38,8 @@ static const HCReal HCContourCurvePointAxisDissimilarity = HCContourCurvePointAx
 HCContourCurve HCContourCurveMakeLinear(HCPoint p);
 HCContourCurve HCContourCurveMakeQuadratic(HCPoint c, HCPoint p);
 HCContourCurve HCContourCurveMakeCubic(HCPoint c0, HCPoint c1, HCPoint p);
+HCContourCurve HCContourCurveMakeWithCurve(HCCurve curve);
+HCCurve HCCurveMakeWithContourCurve(HCPoint p0, HCContourCurve curve);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
@@ -74,13 +76,17 @@ HCPoint HCContourCurveValue(HCPoint p0, HCContourCurve curve, HCReal t);
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCContourCurveDerivative(HCPoint p0, HCContourCurve curve, HCPoint* dP0, HCContourCurve* dCurve);
+HCContourCurve HCContourCurveTangent(HCPoint p0, HCContourCurve curve, HCReal t);
+HCContourCurve HCContourCurveTangentUnit(HCPoint p0, HCContourCurve curve, HCReal t);
+HCContourCurve HCContourCurveNormal(HCPoint p0, HCContourCurve curve, HCReal t);
+HCContourCurve HCContourCurveNormalUnit(HCPoint p0, HCContourCurve curve, HCReal t);
 HCReal HCContourCurveCurvature(HCPoint p0, HCContourCurve curve, HCReal t);
 void HCContourCurveExtrema(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* extrema);
 void HCContourCurveInflections(HCPoint p0, HCContourCurve curve, HCInteger* count, HCReal* inflections);
 HCRectangle HCContourCurveApproximateBounds(HCPoint p0, HCContourCurve curve);
 HCRectangle HCContourCurveBounds(HCPoint p0, HCContourCurve curve);
 HCReal HCContourCurveLength(HCPoint p0, HCContourCurve curve);
-HCReal HCContourCurveParameter(HCPoint p0, HCContourCurve curve, HCReal d);
+HCReal HCContourCurveParameterAtLength(HCPoint p0, HCContourCurve curve, HCReal d);
 HCReal HCContourCurveParameterNearestPoint(HCPoint p0, HCContourCurve curve, HCPoint p);
 HCReal HCContourCurveDistanceFromPoint(HCPoint p0, HCContourCurve curve, HCPoint p);
 HCPoint HCContourCurveBaselineProjection(HCPoint p0, HCContourCurve curve, HCReal t);
