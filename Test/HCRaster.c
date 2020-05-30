@@ -956,6 +956,32 @@ CTEST(HCRaster, DrawCurveTangentNormalFrame) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, DrawCurveCurvature) {
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(1000.0, 1000.0));
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.4);
+    HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.3, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.8);
+    HCPoint c1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.6);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
+    HCRasterDrawCubicCurve(raster, p0.x, p0.y, c0.x, c0.y, c1.x, c1.y, p1.x, p1.y, HCColorGreen, HCColorGreen);
+        
+    HCInteger count = 100;
+    HCReal tStep = 1.0 / (HCReal)(count - 1);
+    HCReal length = fmin(r.size.width, r.size.height) * 100.0;
+    for (HCInteger tIndex = 0; tIndex < count; tIndex++) {
+        HCReal t = (HCReal)tIndex * tStep;
+        
+        HCCurve curvature = HCCurveCurvatureNormal(curve, t);
+        curvature.p1 = HCPointOffset(curvature.p0, (curvature.p1.x - curvature.p0.x) * length, (curvature.p1.y - curvature.p0.y) * length);
+        HCRasterDrawLine(raster, curvature.p0.x, curvature.p0.y, curvature.p1.x, curvature.p1.y, HCColorGreen, HCColorWithAlpha(HCColorRed, 0.9));
+    }
+    
+    HCRasterSaveBMP(raster, "curve_curvature.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawCurveNearestParameterLinear) {
     HCInteger countX = 5;
     HCInteger countY = 5;

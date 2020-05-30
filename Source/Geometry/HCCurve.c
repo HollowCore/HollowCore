@@ -367,6 +367,74 @@ HCPoint HCCurveValueCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Derivative
+//----------------------------------------------------------------------------------------------------------------------------------
+HCCurve HCCurveDerivative(HCCurve curve) {
+    HCCurveType type = HCCurveCanonicalType(curve);
+    switch (type) {
+        case HCCurveTypeInvalid: {
+            return HCCurveInvalid;
+        } break;
+        case HCCurveTypePoint:
+        case HCCurveTypeLinear: {
+            HCPoint dp = HCPointInvalid;
+            HCCurveDerivativeLinear(curve.p0, curve.p1, &dp);
+            return HCCurveMakeLinear(dp, dp);
+        } break;
+        case HCCurveTypeQuadratic: {
+            HCPoint dp0 = HCPointInvalid;
+            HCPoint dp1 = HCPointInvalid;
+            HCCurveDerivativeQuadratic(curve.p0, curve.c0, curve.p1, &dp0, &dp1);
+            return HCCurveMakeLinear(dp0, dp1);
+        } break;
+        case HCCurveTypeCubicSimple:
+        case HCCurveTypeCubicSingleInflection:
+        case HCCurveTypeCubicDoubleInflection:
+        case HCCurveTypeCubicLoop:
+        case HCCurveTypeCubicLoopAtStart:
+        case HCCurveTypeCubicLoopAtEnd:
+        case HCCurveTypeCubicLoopClosed:
+        case HCCurveTypeCubicCusp: {
+            HCPoint dp0 = HCPointInvalid;
+            HCPoint dc = HCPointInvalid;
+            HCPoint dp1 = HCPointInvalid;
+            HCCurveDerivativeCubic(curve.p0, curve.c0, curve.c1, curve.p1, &dp0, &dc, &dp1);
+            return HCCurveMakeQuadratic(dp0, dc, dp1);
+        } break;
+    }
+}
+
+void HCCurveDerivativeLinear(HCPoint p0, HCPoint p1, HCPoint* dp) {
+    // Calculate linear derivative weights
+    if (dp != NULL) {
+        *dp = HCPointMake(1.0 * (p1.x - p0.x), 1.0 * (p1.y - p0.y));
+    }
+}
+
+void HCCurveDerivativeQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* dp0, HCPoint* dp1) {
+    // Calculate quadratic derivative weights
+    if (dp0 != NULL) {
+        *dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
+    }
+    if (dp1 != NULL) {
+        *dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
+    }
+}
+
+void HCCurveDerivativeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* dp0, HCPoint* dc, HCPoint* dp1) {
+    // Calculate cubic derivative weights
+    if (dp0 != NULL) {
+        *dp0 = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
+    }
+    if (dc != NULL) {
+        *dc =  HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
+    }
+    if (dp1 != NULL) {
+        *dp1 = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Tangent
 //----------------------------------------------------------------------------------------------------------------------------------
 HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
@@ -568,74 +636,6 @@ HCCurve HCCurveNormalUnit(HCCurve curve, HCReal t) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Derivative
-//----------------------------------------------------------------------------------------------------------------------------------
-HCCurve HCCurveDerivative(HCCurve curve) {
-    HCCurveType type = HCCurveCanonicalType(curve);
-    switch (type) {
-        case HCCurveTypeInvalid: {
-            return HCCurveInvalid;
-        } break;
-        case HCCurveTypePoint:
-        case HCCurveTypeLinear: {
-            HCPoint dp = HCPointInvalid;
-            HCCurveDerivativeLinear(curve.p0, curve.p1, &dp);
-            return HCCurveMakeLinear(dp, dp);
-        } break;
-        case HCCurveTypeQuadratic: {
-            HCPoint dp0 = HCPointInvalid;
-            HCPoint dp1 = HCPointInvalid;
-            HCCurveDerivativeQuadratic(curve.p0, curve.c0, curve.p1, &dp0, &dp1);
-            return HCCurveMakeLinear(dp0, dp1);
-        } break;
-        case HCCurveTypeCubicSimple:
-        case HCCurveTypeCubicSingleInflection:
-        case HCCurveTypeCubicDoubleInflection:
-        case HCCurveTypeCubicLoop:
-        case HCCurveTypeCubicLoopAtStart:
-        case HCCurveTypeCubicLoopAtEnd:
-        case HCCurveTypeCubicLoopClosed:
-        case HCCurveTypeCubicCusp: {
-            HCPoint dp0 = HCPointInvalid;
-            HCPoint dc = HCPointInvalid;
-            HCPoint dp1 = HCPointInvalid;
-            HCCurveDerivativeCubic(curve.p0, curve.c0, curve.c1, curve.p1, &dp0, &dc, &dp1);
-            return HCCurveMakeQuadratic(dp0, dc, dp1);
-        } break;
-    }
-}
-
-void HCCurveDerivativeLinear(HCPoint p0, HCPoint p1, HCPoint* dp) {
-    // Calculate linear derivative weights
-    if (dp != NULL) {
-        *dp = HCPointMake(1.0 * (p1.x - p0.x), 1.0 * (p1.y - p0.y));
-    }
-}
-
-void HCCurveDerivativeQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* dp0, HCPoint* dp1) {
-    // Calculate quadratic derivative weights
-    if (dp0 != NULL) {
-        *dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
-    }
-    if (dp1 != NULL) {
-        *dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
-    }
-}
-
-void HCCurveDerivativeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint* dp0, HCPoint* dc, HCPoint* dp1) {
-    // Calculate cubic derivative weights
-    if (dp0 != NULL) {
-        *dp0 = HCPointMake(3.0 * (c0.x - p0.x), 3.0 * (c0.y - p0.y));
-    }
-    if (dc != NULL) {
-        *dc =  HCPointMake(3.0 * (c1.x - c0.x), 3.0 * (c1.y - c0.y));
-    }
-    if (dp1 != NULL) {
-        *dp1 = HCPointMake(3.0 * (p1.x - c1.x), 3.0 * (p1.y - c1.y));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
 //----------------------------------------------------------------------------------------------------------------------------------
 HCReal HCCurveCurvature(HCCurve curve, HCReal t) {
@@ -693,6 +693,12 @@ HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCR
     HCReal numerator = d.x * dd.y - dd.x * d.y;
     HCReal denominator = pow(d.x * d.x + d.y * d.y, 1.5);
     return numerator / denominator;
+}
+
+HCCurve HCCurveCurvatureNormal(HCCurve curve, HCReal t) {
+    HCReal curvature = HCCurveCurvature(curve, t);
+    HCCurve normal = HCCurveNormalUnit(curve, t);
+    return HCCurveMakeLinear(normal.p0, HCPointOffset(normal.p0, (normal.p1.x - normal.p0.x) * curvature, (normal.p1.y - normal.p0.y) * curvature));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

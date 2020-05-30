@@ -126,6 +126,7 @@ HCReal HCCurveCurvature(HCCurve curve, HCReal t);
 HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
+HCCurve HCCurveCurvatureNormal(HCCurve curve, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Extrema
