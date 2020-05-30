@@ -63,29 +63,25 @@ HCBoolean HCContourComponentIsCubic(HCPoint p0, HCContourComponent component);
 HCContourComponent HCContourComponentAsCubic(HCPoint p0, HCContourComponent component);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Canonical Type
+// MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCCurveType HCContourComponentCanonicalType(HCPoint p0, HCContourComponent component);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Value
-//----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourComponentValue(HCPoint p0, HCContourComponent component, HCReal t);
+void HCContourComponentExtrema(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* extrema);
+void HCContourComponentInflections(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* inflections);
+HCRectangle HCContourComponentApproximateBounds(HCPoint p0, HCContourComponent component);
+HCRectangle HCContourComponentBounds(HCPoint p0, HCContourComponent component);
+HCReal HCContourComponentLength(HCPoint p0, HCContourComponent component);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourComponentValue(HCPoint p0, HCContourComponent component, HCReal t);
 void HCContourComponentDerivative(HCPoint p0, HCContourComponent component, HCPoint* dP0, HCContourComponent* dCurve);
 HCContourComponent HCContourComponentTangent(HCPoint p0, HCContourComponent component, HCReal t);
 HCContourComponent HCContourComponentTangentUnit(HCPoint p0, HCContourComponent component, HCReal t);
 HCContourComponent HCContourComponentNormal(HCPoint p0, HCContourComponent component, HCReal t);
 HCContourComponent HCContourComponentNormalUnit(HCPoint p0, HCContourComponent component, HCReal t);
 HCReal HCContourComponentCurvature(HCPoint p0, HCContourComponent component, HCReal t);
-void HCContourComponentExtrema(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* extrema);
-void HCContourComponentInflections(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* inflections);
-HCRectangle HCContourComponentApproximateBounds(HCPoint p0, HCContourComponent component);
-HCRectangle HCContourComponentBounds(HCPoint p0, HCContourComponent component);
-HCReal HCContourComponentLength(HCPoint p0, HCContourComponent component);
 HCReal HCContourComponentParameterAtLength(HCPoint p0, HCContourComponent component, HCReal d);
 HCReal HCContourComponentParameterNearestPoint(HCPoint p0, HCContourComponent component, HCPoint p);
 HCReal HCContourComponentDistanceFromPoint(HCPoint p0, HCContourComponent component, HCPoint p);

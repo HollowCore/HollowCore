@@ -314,6 +314,383 @@ HCPoint HCCurveCanonical(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Extrema
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveExtrema(HCCurve curve, HCInteger* count, HCReal* extrema) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCCurveExtremaLinear(curve.p0, curve.p1, count, extrema);
+        }
+        else {
+            HCCurveExtremaQuadratic(curve.p0, curve.c0, curve.p1, count, extrema);
+        }
+    }
+    else {
+        HCCurveExtremaCubic(curve.p0, curve.c0, curve.c1, curve.p1, count, extrema);
+    }
+}
+
+void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    // Linear curve has no extrema
+    if (count != NULL) {
+        *count = 0;
+    }
+}
+
+void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    HCInteger tCount = 0;
+    HCReal t[2];
+    
+    // Calculate quadratic derivative weights
+    HCPoint dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
+    HCPoint dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
+    HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
+    
+    // Calculate zero crossing of derivative in x and add as extrema if in range
+    HCReal ax = -1.0 * dp0.x + 1.0 * dp1.x;
+    HCReal bx = +1.0 * dp0.x;
+    HCReal xt = -bx / ax;
+    if (xt >= 0.0 && xt <= 1.0) {
+        t[tCount++] = xt;
+    }
+    
+    // Calculate zero crossing of derivative in y and add as extrema if in range
+    HCReal ay = -1.0 * dp0.y + 1.0 * dp1.y;
+    HCReal by = +1.0 * dp0.y;
+    HCReal yt = -by / ay;
+    if (yt >= 0.0 && yt <= 1.0) {
+        t[tCount++] = yt;
+    }
+    
+    // Deliver results
+    if (count != NULL) {
+        *count = tCount;
+    }
+    if (extrema != NULL) {
+        memcpy(extrema, t, tCount * sizeof(HCReal));
+    }
+}
+
+void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    HCInteger tCount = 0;
+    HCReal t[6];
+    
+    // Calculate cubic derivative weights
+    HCPoint dp0 = HCPointInvalid;
+    HCPoint  dc = HCPointInvalid;
+    HCPoint dp1 = HCPointInvalid;
+    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
+    
+    // Calculate zero crossing of derivative in x and add as extrema if real and in range
+    HCReal ax = +1.0 * dp0.x - 2.0 * dc.x + 1.0 * dp1.x;
+    HCReal bx = -2.0 * dp0.x + 2.0 * dc.x;
+    HCReal cx = +1.0 * dp0.x;
+    HCReal discriminantX = bx * bx - 4.0 * ax * cx;
+    if (discriminantX >= 0.0) {
+        HCReal sqrtDiscriminant = sqrt(discriminantX);
+        HCReal denominatorInverse = 1.0 / (2.0 * ax);
+        HCReal xt0 = (-bx + sqrtDiscriminant) * denominatorInverse;
+        if (xt0 >= 0.0 && xt0 <= 1.0) {
+            t[tCount++] = xt0;
+        }
+        HCReal xt1 = (-bx - sqrtDiscriminant) * denominatorInverse;
+        if (xt1 >= 0.0 && xt1 <= 1.0) {
+            t[tCount++] = xt1;
+        }
+    }
+    
+    // Calculate zero crossing of derivative in y and add as extrema if real and in range
+    HCReal ay = +1.0 * dp0.y - 2.0 * dc.y + 1.0 * dp1.y;
+    HCReal by = -2.0 * dp0.y + 2.0 * dc.y;
+    HCReal cy = +1.0 * dp0.y;
+    HCReal discriminantY = by * by - 4.0 * ay * cy;
+    if (discriminantY >= 0.0) {
+        HCReal sqrtDiscriminant = sqrt(discriminantY);
+        HCReal denominatorInverse = 1.0 / (2.0 * ay);
+        HCReal yt0 = (-by + sqrtDiscriminant) * denominatorInverse;
+        if (yt0 >= 0.0 && yt0 <= 1.0) {
+            t[tCount++] = yt0;
+        }
+        HCReal yt1 = (-by - sqrtDiscriminant) * denominatorInverse;
+        if (yt1 >= 0.0 && yt1 <= 1.0) {
+            t[tCount++] = yt1;
+        }
+    }
+    
+    // Add extrema of second derivative
+    HCInteger quadraticCount = 0;
+    HCCurveExtremaQuadratic(dp0, dc, dp1, &quadraticCount, &t[tCount]);
+    tCount += quadraticCount;
+    
+    // Deliver results
+    if (count != NULL) {
+        *count = tCount;
+    }
+    if (extrema != NULL) {
+        memcpy(extrema, t, tCount * sizeof(HCReal));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Inflection
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveInflections(HCCurve curve, HCInteger* count, HCReal* inflections) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            HCCurveInflectionsLinear(curve.p0, curve.p1, count, inflections);
+        }
+        else {
+            HCCurveInflectionsQuadratic(curve.p0, curve.c0, curve.p1, count, inflections);
+        }
+    }
+    else {
+        HCCurveInflectionsCubic(curve.p0, curve.c0, curve.c1, curve.p1, count, inflections);
+    }
+}
+
+void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Linear curves have no inflections
+    if (count != NULL) {
+        *count = 0;
+    }
+}
+
+void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Quadratic curves have no inflections
+    if (count != NULL) {
+        *count = 0;
+    }
+}
+
+void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    // Axis-align the curve to make computation of inflections more straightforward
+    HCCurveXAxisAlignedCubic(p0, c0, c1, p1, &p0, &c0, &c1, &p1);
+    
+    // Compute zero-crossings of curvature given curve is axis-aligned
+    HCReal a = c1.x * c0.y;
+    HCReal b = p1.x * c0.y;
+    HCReal c = c0.x * c1.y;
+    HCReal d = p1.x * c1.y;
+    HCReal x = 18.0 * (-3.0 * a + 2.0 * b + 3.0 * c - d);
+    HCReal y = 18.0 * (+3.0 * a - 1.0 * b - 3.0 * c);
+    HCReal z = 18.0 * (-1.0 * a + 0.0 * b + 1.0 * c);
+    HCReal determinant = y * y - 4.0 * x * z;
+    if (determinant < 0.0) {
+        if (count != NULL) {
+            *count = 0;
+        }
+    }
+    HCReal sqrtDeterminant = sqrt(determinant);
+    HCReal denominatorInverse = 1.0 / (2.0 * x);
+    HCReal inflection0 = (-y + sqrtDeterminant) * denominatorInverse;
+    HCReal inflection1 = (-y - sqrtDeterminant) * denominatorInverse;
+    
+    // Determine if inflections occur in-range and deliver them
+    HCInteger inflectionCount = 0;
+    if (inflection0 >= 0.0 && inflection0 <= 1.0) {
+        if (inflections != NULL) {
+            inflections[inflectionCount] = inflection0;
+        }
+        inflectionCount++;
+    }
+    if (inflection1 >= 0.0 && inflection1 <= 1.0) {
+        if (inflections != NULL) {
+            inflections[inflectionCount] = inflection1;
+        }
+        inflectionCount++;
+    }
+    if (count != NULL) {
+        *count = inflectionCount;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Approximate Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCCurveApproximateBounds(HCCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCCurveApproximateBoundsLinear(curve.p0, curve.p1);
+        }
+        else {
+            return HCCurveApproximateBoundsQuadratic(curve.p0, curve.c0, curve.p1);
+        }
+    }
+    else {
+        return HCCurveApproximateBoundsCubic(curve.p0, curve.c0, curve.c1, curve.p1);
+    }
+}
+
+HCRectangle HCCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, p1.x),
+        fmin(p0.y, p1.y),
+        fmax(p0.x, p1.x),
+        fmax(p0.y, p1.y));
+}
+
+HCRectangle HCCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c.x, p1.x)),
+        fmin(p0.y, fmin(c.y, p1.y)),
+        fmax(p0.x, fmax(c.x, p1.x)),
+        fmax(p0.y, fmax(c.y, p1.y)));
+}
+
+HCRectangle HCCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+    return HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
+        fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCCurveBounds(HCCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCCurveBoundsLinear(curve.p0, curve.p1);
+        }
+        else {
+            return HCCurveBoundsQuadratic(curve.p0, curve.c0, curve.p1);
+        }
+    }
+    else {
+        return HCCurveBoundsCubic(curve.p0, curve.c0, curve.c1, curve.p1);
+    }
+}
+
+HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1) {
+    // Find min/max of end points
+    HCReal minX = fmin(p0.x, p1.x);
+    HCReal minY = fmin(p0.y, p1.y);
+    HCReal maxX = fmax(p0.x, p1.x);
+    HCReal maxY = fmax(p0.y, p1.y);
+    
+    // Calculate bounding rectangle from min/max of end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+}
+
+HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+    // Calculate quadratic curve extrema
+    HCReal extrema[2];
+    HCInteger count = 0;
+    HCCurveExtremaQuadratic(p0, c, p1, &count, extrema);
+    
+    // Find min/max of extrema and end points
+    HCReal minX = fmin(p0.x, p1.x);
+    HCReal minY = fmin(p0.y, p1.y);
+    HCReal maxX = fmax(p0.x, p1.x);
+    HCReal maxY = fmax(p0.y, p1.y);
+    for (HCInteger i = 0; i < count; i++) {
+        HCReal t = extrema[i];
+        HCPoint p = HCCurveValueQuadratic(p0, c, p1, t);
+        minX = fmin(minX, p.x);
+        minY = fmin(minY, p.y);
+        maxX = fmax(maxX, p.x);
+        maxY = fmax(maxY, p.y);
+    }
+    
+    // Calculate bounding rectangle from min/max of extrema and end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+}
+
+HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+    // Calculate cubic curve extrema
+    HCReal extrema[6];
+    HCInteger count = 0;
+    HCCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
+    
+    // Find min/max of extrema and end points
+    HCReal minX = fmin(p0.x, p1.x);
+    HCReal minY = fmin(p0.y, p1.y);
+    HCReal maxX = fmax(p0.x, p1.x);
+    HCReal maxY = fmax(p0.y, p1.y);
+    for (HCInteger i = 0; i < count; i++) {
+        HCReal t = extrema[i];
+        HCPoint p = HCCurveValueCubic(p0, c0, c1, p1, t);
+        minX = fmin(minX, p.x);
+        minY = fmin(minY, p.y);
+        maxX = fmax(maxX, p.x);
+        maxY = fmax(maxY, p.y);
+    }
+    
+    // Calculate bounding rectangle from min/max of extrema and end points
+    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Length
+//----------------------------------------------------------------------------------------------------------------------------------
+HCReal HCCurveLength(HCCurve curve) {
+    if (HCPointIsInvalid(curve.c1)) {
+        if (HCPointIsInvalid(curve.c0)) {
+            return HCCurveLengthLinear(curve.p0, curve.p1);
+        }
+        else {
+            return HCCurveLengthQuadratic(curve.p0, curve.c0, curve.p1);
+        }
+    }
+    else {
+        return HCCurveLengthCubic(curve.p0, curve.c0, curve.c1, curve.p1);
+    }
+}
+
+HCReal HCCurveLengthLinear(HCPoint p0, HCPoint p1) {
+    // Calculate using linear distance equation
+    return HCPointDistance(p0, p1);
+}
+
+HCReal HCCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
+    // Calculate using closed-form quadratic bezier solution
+    // See https://malczak.linuxpl.com/blog/quadratic-bezier-curve-length
+    HCReal ax = p0.x - 2.0 * c.x + p1.x;
+    HCReal ay = p0.y - 2.0 * c.y + p1.y;
+    HCReal bx = 2.0 * c.x - 2.0 * p0.x;
+    HCReal by = 2.0 * c.y - 2.0 * p0.y;
+    HCReal A = 4.0 * (ax * ax + ay * ay);
+    HCReal B = 4.0 * (ax * bx + ay * by);
+    HCReal C = bx * bx + by * by;
+
+    HCReal Sabc = 2.0 * sqrt(A+B+C);
+    HCReal Sa = sqrt(A);
+    HCReal Saa = 2.0 * A * Sa;
+    HCReal Sc = 2.0 * sqrt(C);
+    HCReal BSa = B / Sa;
+
+    return (Saa * Sabc + Sa * B * (Sabc - Sc) + (4.0 * C * A - B * B) * log((2.0 * Sa + BSa + Sabc) / (BSa + Sc))) / (4.0 * Saa);
+}
+
+HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
+    // TODO: Use Legendre-Gauss to numerically calculate length
+    // Calculate using polyline segment lengths
+    HCReal length = 0.0;
+    HCPoint ps = p0;
+    HCReal t = 0.0;
+    HCReal tStep = 0.01;
+    while (true) {
+        // Calculate segment length and aggregate to length
+        // TODO: Cache polyline?
+        HCPoint pe = HCCurveValueCubic(p0, c0, c1, p1, t);
+        HCReal segmentLength = HCPointDistance(ps, pe);
+        length += segmentLength;
+        ps = pe;
+        
+        // Move to next parameter sample, or finish if the end has been reached
+        if (t == 1.0) {
+            break;
+        }
+        t += tStep;
+        if (t > 1.0) {
+            t = 1.0;
+        }
+    }
+    return length;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCCurveValue(HCCurve curve, HCReal t) {
@@ -699,383 +1076,6 @@ HCCurve HCCurveCurvatureNormal(HCCurve curve, HCReal t) {
     HCReal curvature = HCCurveCurvature(curve, t);
     HCCurve normal = HCCurveNormalUnit(curve, t);
     return HCCurveMakeLinear(normal.p0, HCPointOffset(normal.p0, (normal.p1.x - normal.p0.x) * curvature, (normal.p1.y - normal.p0.y) * curvature));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Extrema
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveExtrema(HCCurve curve, HCInteger* count, HCReal* extrema) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCCurveExtremaLinear(curve.p0, curve.p1, count, extrema);
-        }
-        else {
-            HCCurveExtremaQuadratic(curve.p0, curve.c0, curve.p1, count, extrema);
-        }
-    }
-    else {
-        HCCurveExtremaCubic(curve.p0, curve.c0, curve.c1, curve.p1, count, extrema);
-    }
-}
-
-void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema) {
-    // Linear curve has no extrema
-    if (count != NULL) {
-        *count = 0;
-    }
-}
-
-void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema) {
-    HCInteger tCount = 0;
-    HCReal t[2];
-    
-    // Calculate quadratic derivative weights
-    HCPoint dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
-    HCPoint dp1 = HCPointMake(2.0 * (p1.x - c.x), 2.0 * (p1.y - c.y));
-    HCCurveDerivativeQuadratic(p0, c, p1, &dp0, &dp1);
-    
-    // Calculate zero crossing of derivative in x and add as extrema if in range
-    HCReal ax = -1.0 * dp0.x + 1.0 * dp1.x;
-    HCReal bx = +1.0 * dp0.x;
-    HCReal xt = -bx / ax;
-    if (xt >= 0.0 && xt <= 1.0) {
-        t[tCount++] = xt;
-    }
-    
-    // Calculate zero crossing of derivative in y and add as extrema if in range
-    HCReal ay = -1.0 * dp0.y + 1.0 * dp1.y;
-    HCReal by = +1.0 * dp0.y;
-    HCReal yt = -by / ay;
-    if (yt >= 0.0 && yt <= 1.0) {
-        t[tCount++] = yt;
-    }
-    
-    // Deliver results
-    if (count != NULL) {
-        *count = tCount;
-    }
-    if (extrema != NULL) {
-        memcpy(extrema, t, tCount * sizeof(HCReal));
-    }
-}
-
-void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema) {
-    HCInteger tCount = 0;
-    HCReal t[6];
-    
-    // Calculate cubic derivative weights
-    HCPoint dp0 = HCPointInvalid;
-    HCPoint  dc = HCPointInvalid;
-    HCPoint dp1 = HCPointInvalid;
-    HCCurveDerivativeCubic(p0, c0, c1, p1, &dp0, &dc, &dp1);
-    
-    // Calculate zero crossing of derivative in x and add as extrema if real and in range
-    HCReal ax = +1.0 * dp0.x - 2.0 * dc.x + 1.0 * dp1.x;
-    HCReal bx = -2.0 * dp0.x + 2.0 * dc.x;
-    HCReal cx = +1.0 * dp0.x;
-    HCReal discriminantX = bx * bx - 4.0 * ax * cx;
-    if (discriminantX >= 0.0) {
-        HCReal sqrtDiscriminant = sqrt(discriminantX);
-        HCReal denominatorInverse = 1.0 / (2.0 * ax);
-        HCReal xt0 = (-bx + sqrtDiscriminant) * denominatorInverse;
-        if (xt0 >= 0.0 && xt0 <= 1.0) {
-            t[tCount++] = xt0;
-        }
-        HCReal xt1 = (-bx - sqrtDiscriminant) * denominatorInverse;
-        if (xt1 >= 0.0 && xt1 <= 1.0) {
-            t[tCount++] = xt1;
-        }
-    }
-    
-    // Calculate zero crossing of derivative in y and add as extrema if real and in range
-    HCReal ay = +1.0 * dp0.y - 2.0 * dc.y + 1.0 * dp1.y;
-    HCReal by = -2.0 * dp0.y + 2.0 * dc.y;
-    HCReal cy = +1.0 * dp0.y;
-    HCReal discriminantY = by * by - 4.0 * ay * cy;
-    if (discriminantY >= 0.0) {
-        HCReal sqrtDiscriminant = sqrt(discriminantY);
-        HCReal denominatorInverse = 1.0 / (2.0 * ay);
-        HCReal yt0 = (-by + sqrtDiscriminant) * denominatorInverse;
-        if (yt0 >= 0.0 && yt0 <= 1.0) {
-            t[tCount++] = yt0;
-        }
-        HCReal yt1 = (-by - sqrtDiscriminant) * denominatorInverse;
-        if (yt1 >= 0.0 && yt1 <= 1.0) {
-            t[tCount++] = yt1;
-        }
-    }
-    
-    // Add extrema of second derivative
-    HCInteger quadraticCount = 0;
-    HCCurveExtremaQuadratic(dp0, dc, dp1, &quadraticCount, &t[tCount]);
-    tCount += quadraticCount;
-    
-    // Deliver results
-    if (count != NULL) {
-        *count = tCount;
-    }
-    if (extrema != NULL) {
-        memcpy(extrema, t, tCount * sizeof(HCReal));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Inflection
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveInflections(HCCurve curve, HCInteger* count, HCReal* inflections) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            HCCurveInflectionsLinear(curve.p0, curve.p1, count, inflections);
-        }
-        else {
-            HCCurveInflectionsQuadratic(curve.p0, curve.c0, curve.p1, count, inflections);
-        }
-    }
-    else {
-        HCCurveInflectionsCubic(curve.p0, curve.c0, curve.c1, curve.p1, count, inflections);
-    }
-}
-
-void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections) {
-    // Linear curves have no inflections
-    if (count != NULL) {
-        *count = 0;
-    }
-}
-
-void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections) {
-    // Quadratic curves have no inflections
-    if (count != NULL) {
-        *count = 0;
-    }
-}
-
-void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections) {
-    // Axis-align the curve to make computation of inflections more straightforward
-    HCCurveXAxisAlignedCubic(p0, c0, c1, p1, &p0, &c0, &c1, &p1);
-    
-    // Compute zero-crossings of curvature given curve is axis-aligned
-    HCReal a = c1.x * c0.y;
-    HCReal b = p1.x * c0.y;
-    HCReal c = c0.x * c1.y;
-    HCReal d = p1.x * c1.y;
-    HCReal x = 18.0 * (-3.0 * a + 2.0 * b + 3.0 * c - d);
-    HCReal y = 18.0 * (+3.0 * a - 1.0 * b - 3.0 * c);
-    HCReal z = 18.0 * (-1.0 * a + 0.0 * b + 1.0 * c);
-    HCReal determinant = y * y - 4.0 * x * z;
-    if (determinant < 0.0) {
-        if (count != NULL) {
-            *count = 0;
-        }
-    }
-    HCReal sqrtDeterminant = sqrt(determinant);
-    HCReal denominatorInverse = 1.0 / (2.0 * x);
-    HCReal inflection0 = (-y + sqrtDeterminant) * denominatorInverse;
-    HCReal inflection1 = (-y - sqrtDeterminant) * denominatorInverse;
-    
-    // Determine if inflections occur in-range and deliver them
-    HCInteger inflectionCount = 0;
-    if (inflection0 >= 0.0 && inflection0 <= 1.0) {
-        if (inflections != NULL) {
-            inflections[inflectionCount] = inflection0;
-        }
-        inflectionCount++;
-    }
-    if (inflection1 >= 0.0 && inflection1 <= 1.0) {
-        if (inflections != NULL) {
-            inflections[inflectionCount] = inflection1;
-        }
-        inflectionCount++;
-    }
-    if (count != NULL) {
-        *count = inflectionCount;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Approximate Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-HCRectangle HCCurveApproximateBounds(HCCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveApproximateBoundsLinear(curve.p0, curve.p1);
-        }
-        else {
-            return HCCurveApproximateBoundsQuadratic(curve.p0, curve.c0, curve.p1);
-        }
-    }
-    else {
-        return HCCurveApproximateBoundsCubic(curve.p0, curve.c0, curve.c1, curve.p1);
-    }
-}
-
-HCRectangle HCCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1) {
-    return HCRectangleMakeWithEdges(
-        fmin(p0.x, p1.x),
-        fmin(p0.y, p1.y),
-        fmax(p0.x, p1.x),
-        fmax(p0.y, p1.y));
-}
-
-HCRectangle HCCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
-    return HCRectangleMakeWithEdges(
-        fmin(p0.x, fmin(c.x, p1.x)),
-        fmin(p0.y, fmin(c.y, p1.y)),
-        fmax(p0.x, fmax(c.x, p1.x)),
-        fmax(p0.y, fmax(c.y, p1.y)));
-}
-
-HCRectangle HCCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
-    return HCRectangleMakeWithEdges(
-        fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
-        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
-        fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
-        fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-HCRectangle HCCurveBounds(HCCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveBoundsLinear(curve.p0, curve.p1);
-        }
-        else {
-            return HCCurveBoundsQuadratic(curve.p0, curve.c0, curve.p1);
-        }
-    }
-    else {
-        return HCCurveBoundsCubic(curve.p0, curve.c0, curve.c1, curve.p1);
-    }
-}
-
-HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1) {
-    // Find min/max of end points
-    HCReal minX = fmin(p0.x, p1.x);
-    HCReal minY = fmin(p0.y, p1.y);
-    HCReal maxX = fmax(p0.x, p1.x);
-    HCReal maxY = fmax(p0.y, p1.y);
-    
-    // Calculate bounding rectangle from min/max of end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
-}
-
-HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
-    // Calculate quadratic curve extrema
-    HCReal extrema[2];
-    HCInteger count = 0;
-    HCCurveExtremaQuadratic(p0, c, p1, &count, extrema);
-    
-    // Find min/max of extrema and end points
-    HCReal minX = fmin(p0.x, p1.x);
-    HCReal minY = fmin(p0.y, p1.y);
-    HCReal maxX = fmax(p0.x, p1.x);
-    HCReal maxY = fmax(p0.y, p1.y);
-    for (HCInteger i = 0; i < count; i++) {
-        HCReal t = extrema[i];
-        HCPoint p = HCCurveValueQuadratic(p0, c, p1, t);
-        minX = fmin(minX, p.x);
-        minY = fmin(minY, p.y);
-        maxX = fmax(maxX, p.x);
-        maxY = fmax(maxY, p.y);
-    }
-    
-    // Calculate bounding rectangle from min/max of extrema and end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
-}
-
-HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
-    // Calculate cubic curve extrema
-    HCReal extrema[6];
-    HCInteger count = 0;
-    HCCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
-    
-    // Find min/max of extrema and end points
-    HCReal minX = fmin(p0.x, p1.x);
-    HCReal minY = fmin(p0.y, p1.y);
-    HCReal maxX = fmax(p0.x, p1.x);
-    HCReal maxY = fmax(p0.y, p1.y);
-    for (HCInteger i = 0; i < count; i++) {
-        HCReal t = extrema[i];
-        HCPoint p = HCCurveValueCubic(p0, c0, c1, p1, t);
-        minX = fmin(minX, p.x);
-        minY = fmin(minY, p.y);
-        maxX = fmax(maxX, p.x);
-        maxY = fmax(maxY, p.y);
-    }
-    
-    // Calculate bounding rectangle from min/max of extrema and end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Length
-//----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCCurveLength(HCCurve curve) {
-    if (HCPointIsInvalid(curve.c1)) {
-        if (HCPointIsInvalid(curve.c0)) {
-            return HCCurveLengthLinear(curve.p0, curve.p1);
-        }
-        else {
-            return HCCurveLengthQuadratic(curve.p0, curve.c0, curve.p1);
-        }
-    }
-    else {
-        return HCCurveLengthCubic(curve.p0, curve.c0, curve.c1, curve.p1);
-    }
-}
-
-HCReal HCCurveLengthLinear(HCPoint p0, HCPoint p1) {
-    // Calculate using linear distance equation
-    return HCPointDistance(p0, p1);
-}
-
-HCReal HCCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
-    // Calculate using closed-form quadratic bezier solution
-    // See https://malczak.linuxpl.com/blog/quadratic-bezier-curve-length
-    HCReal ax = p0.x - 2.0 * c.x + p1.x;
-    HCReal ay = p0.y - 2.0 * c.y + p1.y;
-    HCReal bx = 2.0 * c.x - 2.0 * p0.x;
-    HCReal by = 2.0 * c.y - 2.0 * p0.y;
-    HCReal A = 4.0 * (ax * ax + ay * ay);
-    HCReal B = 4.0 * (ax * bx + ay * by);
-    HCReal C = bx * bx + by * by;
-
-    HCReal Sabc = 2.0 * sqrt(A+B+C);
-    HCReal Sa = sqrt(A);
-    HCReal Saa = 2.0 * A * Sa;
-    HCReal Sc = 2.0 * sqrt(C);
-    HCReal BSa = B / Sa;
-
-    return (Saa * Sabc + Sa * B * (Sabc - Sc) + (4.0 * C * A - B * B) * log((2.0 * Sa + BSa + Sabc) / (BSa + Sc))) / (4.0 * Saa);
-}
-
-HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
-    // TODO: Use Legendre-Gauss to numerically calculate length
-    // Calculate using polyline segment lengths
-    HCReal length = 0.0;
-    HCPoint ps = p0;
-    HCReal t = 0.0;
-    HCReal tStep = 0.01;
-    while (true) {
-        // Calculate segment length and aggregate to length
-        // TODO: Cache polyline?
-        HCPoint pe = HCCurveValueCubic(p0, c0, c1, p1, t);
-        HCReal segmentLength = HCPointDistance(ps, pe);
-        length += segmentLength;
-        ps = pe;
-        
-        // Move to next parameter sample, or finish if the end has been reached
-        if (t == 1.0) {
-            break;
-        }
-        t += tStep;
-        if (t > 1.0) {
-            t = 1.0;
-        }
-    }
-    return length;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -86,6 +86,46 @@ HCCurveType HCCurveCanonicalTypeCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoin
 HCPoint HCCurveCanonical(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Extrema
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveExtrema(HCCurve curve, HCInteger* count, HCReal* extrema);
+void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
+void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Inflection
+//----------------------------------------------------------------------------------------------------------------------------------
+void HCCurveInflections(HCCurve curve, HCInteger* count, HCReal* inflections);
+void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections);
+void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections);
+void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Approximate Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCCurveApproximateBounds(HCCurve curve);
+HCRectangle HCCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1);
+HCRectangle HCCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCRectangle HCCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+HCRectangle HCCurveBounds(HCCurve curve);
+HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1);
+HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Length
+//----------------------------------------------------------------------------------------------------------------------------------
+HCReal HCCurveLength(HCCurve curve);
+HCReal HCCurveLengthLinear(HCPoint p0, HCPoint p1);
+HCReal HCCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
+HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCCurveValue(HCCurve curve, HCReal t);
@@ -127,46 +167,6 @@ HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t);
 HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCReal t);
 HCCurve HCCurveCurvatureNormal(HCCurve curve, HCReal t);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Extrema
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveExtrema(HCCurve curve, HCInteger* count, HCReal* extrema);
-void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema);
-void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Inflection
-//----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveInflections(HCCurve curve, HCInteger* count, HCReal* inflections);
-void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections);
-void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections);
-void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Approximate Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-HCRectangle HCCurveApproximateBounds(HCCurve curve);
-HCRectangle HCCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1);
-HCRectangle HCCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
-HCRectangle HCCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-HCRectangle HCCurveBounds(HCCurve curve);
-HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1);
-HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
-HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Length
-//----------------------------------------------------------------------------------------------------------------------------------
-HCReal HCCurveLength(HCCurve curve);
-HCReal HCCurveLengthLinear(HCPoint p0, HCPoint p1);
-HCReal HCCurveLengthQuadratic(HCPoint p0, HCPoint c, HCPoint p1);
-HCReal HCCurveLengthCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameterization by Arc Length

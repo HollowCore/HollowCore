@@ -48,6 +48,11 @@ void HCContourPrint(const HCContour* contour, FILE* stream);
 HCBoolean HCContourIsClosed(const HCContour* contour);
 HCPoint HCContourStartPoint(const HCContour* contour);
 HCPoint HCContourEndPoint(const HCContour* contour);
+void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrema);
+void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* inflections);
+HCRectangle HCContourApproximateBounds(const HCContour* contour);
+HCRectangle HCContourBounds(const HCContour* contour);
+HCReal HCContourLength(const HCContour* contour);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Components
@@ -78,11 +83,6 @@ HCCurve HCContourNormal(const HCContour* contour, HCReal t);
 HCCurve HCContourNormalUnit(const HCContour* contour, HCReal t);
 HCReal HCContourCurvature(const HCContour* contour, HCReal t);
 HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t);
-void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrema);
-void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* inflections);
-HCRectangle HCContourApproximateBounds(const HCContour* contour);
-HCRectangle HCContourBounds(const HCContour* contour);
-HCReal HCContourLength(const HCContour* contour);
 HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d);
 HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p);
 HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p);

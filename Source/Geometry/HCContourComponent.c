@@ -149,22 +149,38 @@ HCContourComponent HCContourComponentAsCubic(HCPoint p0, HCContourComponent comp
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Canonical Type
+// MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
 HCCurveType HCContourComponentCanonicalType(HCPoint p0, HCContourComponent component) {
     return HCCurveCanonicalType(HCCurveMakeWithContourComponent(p0, component));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Value
-//----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourComponentValue(HCPoint p0, HCContourComponent component, HCReal t) {
-    return HCCurveValue(HCCurveMakeWithContourComponent(p0, component), t);
+void HCContourComponentExtrema(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* extrema) {
+    HCCurveExtrema(HCCurveMakeWithContourComponent(p0, component), count, extrema);
+}
+
+void HCContourComponentInflections(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* inflections) {
+    HCCurveInflections(HCCurveMakeWithContourComponent(p0, component), count, inflections);
+}
+
+HCRectangle HCContourComponentApproximateBounds(HCPoint p0, HCContourComponent component) {
+    return HCCurveApproximateBounds(HCCurveMakeWithContourComponent(p0, component));
+}
+
+HCRectangle HCContourComponentBounds(HCPoint p0, HCContourComponent component) {
+    return HCCurveBounds(HCCurveMakeWithContourComponent(p0, component));
+}
+
+HCReal HCContourComponentLength(HCPoint p0, HCContourComponent component) {
+    return HCCurveLength(HCCurveMakeWithContourComponent(p0, component));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourComponentValue(HCPoint p0, HCContourComponent component, HCReal t) {
+    return HCCurveValue(HCCurveMakeWithContourComponent(p0, component), t);
+}
 
 HCContourComponent HCContourComponentTangent(HCPoint p0, HCContourComponent component, HCReal t) {
     return HCContourComponentMakeWithCurve(HCCurveTangent(HCCurveMakeWithContourComponent(p0, component), t));
@@ -194,26 +210,6 @@ void HCContourComponentDerivative(HCPoint p0, HCContourComponent component, HCPo
 
 HCReal HCContourComponentCurvature(HCPoint p0, HCContourComponent component, HCReal t) {
     return HCCurveCurvature(HCCurveMakeWithContourComponent(p0, component), t);
-}
-
-void HCContourComponentExtrema(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* extrema) {
-    HCCurveExtrema(HCCurveMakeWithContourComponent(p0, component), count, extrema);
-}
-
-void HCContourComponentInflections(HCPoint p0, HCContourComponent component, HCInteger* count, HCReal* inflections) {
-    HCCurveInflections(HCCurveMakeWithContourComponent(p0, component), count, inflections);
-}
-
-HCRectangle HCContourComponentApproximateBounds(HCPoint p0, HCContourComponent component) {
-    return HCCurveApproximateBounds(HCCurveMakeWithContourComponent(p0, component));
-}
-
-HCRectangle HCContourComponentBounds(HCPoint p0, HCContourComponent component) {
-    return HCCurveBounds(HCCurveMakeWithContourComponent(p0, component));
-}
-
-HCReal HCContourComponentLength(HCPoint p0, HCContourComponent component) {
-    return HCCurveLength(HCCurveMakeWithContourComponent(p0, component));
 }
 
 HCReal HCContourComponentParameterAtLength(HCPoint p0, HCContourComponent component, HCReal d) {

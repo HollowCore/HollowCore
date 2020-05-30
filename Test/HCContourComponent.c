@@ -191,6 +191,189 @@ CTEST(HCContourCurve, Canonical) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Extrema
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearExtrema) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCInteger count = 0;
+    HCContourComponentExtrema(p0, component, &count, NULL);
+    ASSERT_TRUE(count == 0);
+}
+
+CTEST(HCContourCurve, QuadraticExtrema) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCInteger count = 0;
+    HCReal extrema[2];
+    HCContourComponentExtrema(p0, component, &count, extrema);
+    ASSERT_TRUE(count == 1);
+    ASSERT_TRUE(extrema[0] == 0.5);
+}
+
+CTEST(HCContourCurve, CubicExtrema) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCInteger count = 0;
+    HCReal extrema[6];
+    HCContourComponentExtrema(p0, component, &count, extrema);
+    ASSERT_TRUE(count == 1);
+    ASSERT_TRUE(extrema[0] == 0.5);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Inflection
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearInflections) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCInteger count = 0;
+    HCContourComponentInflections(p0, component, &count, NULL);
+    ASSERT_TRUE(count == 0);
+}
+
+CTEST(HCContourCurve, QuadraticInflection) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCInteger count = 0;
+    HCContourComponentInflections(p0, component, &count, NULL);
+    ASSERT_TRUE(count == 0);
+}
+
+CTEST(HCContourCurve, CubicInflection) {
+    HCPoint p0 = HCPointMake(0.0, 0.0);
+    HCPoint c0 = HCPointMake(0.0, 2.0);
+    HCPoint c1 = HCPointMake(2.0, 2.0);
+    HCPoint p1 = HCPointMake(1.0, 4.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCInteger count = 0;
+    HCReal inflections[2];
+    HCContourComponentInflections(p0, component, &count, inflections);
+    ASSERT_TRUE(HCCurveCanonicalTypeCubic(p0, c0, c1, p1) == HCCurveTypeCubicSingleInflection);
+    ASSERT_TRUE(count == 1);
+    ASSERT_DBL_NEAR(inflections[0], 0.4384);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Approximate Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearApproximateBounds) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
+        fmin(p0.x, p1.x),
+        fmin(p0.y, p1.y),
+        fmax(p0.x, p1.x),
+        fmax(p0.y, p1.y))));
+}
+
+CTEST(HCContourCurve, QuadraticApproximateBounds) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c.x, p1.x)),
+        fmin(p0.y, fmin(c.y, p1.y)),
+        fmax(p0.x, fmax(c.x, p1.x)),
+        fmax(p0.y, fmax(c.y, p1.y)))));
+}
+
+CTEST(HCContourCurve, CubicApproximateBounds) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
+        fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
+        fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))))));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Bounds
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearBounds) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCRectangle bounds = HCContourComponentBounds(p0, HCContourComponentMakeLinear(p1));
+    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(fmin(p0.x, p1.x), fmin(p0.y, p1.y), fmax(p0.x, p1.x), fmax(p0.y, p1.y))));
+}
+
+CTEST(HCContourCurve, QuadraticBounds) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCRectangle bounds = HCContourComponentBounds(p0, component);
+    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.0)));
+}
+
+CTEST(HCContourCurve, CubicBounds) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCRectangle bounds = HCContourComponentBounds(p0, component);
+    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Length
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourCurve, LinearLength) {
+    HCPoint p0 = HCPointMake(-1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, -4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCReal length = HCContourComponentLength(p0, component);
+    ASSERT_DBL_NEAR(length, HCPointDistance(p0, p1));
+}
+
+CTEST(HCContourCurve, QuadraticLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCReal length = HCContourComponentLength(p0, component);
+    ASSERT_TRUE(length > HCPointDistance(p0, p1) && length < HCPointDistance(p0, c) + HCPointDistance(c, p1));
+}
+
+CTEST(HCContourCurve, CubicLength) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal length = HCContourComponentLength(p0, component);
+    ASSERT_TRUE(length > HCPointDistance(p0, p1) && length < HCPointDistance(p0, c0) + HCPointDistance(c0, c1) + HCPointDistance(c1, p1));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Value
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -321,189 +504,6 @@ CTEST(HCContourCurve, CubicCurvature) {
     HCReal t = 0.75;
     HCReal k = HCContourComponentCurvature(p0, component, t);
     ASSERT_DBL_NEAR(k, -0.4409);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Extrema
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearExtrema) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourComponent component = HCContourComponentMakeLinear(p1);
-    HCInteger count = 0;
-    HCContourComponentExtrema(p0, component, &count, NULL);
-    ASSERT_TRUE(count == 0);
-}
-
-CTEST(HCContourCurve, QuadraticExtrema) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
-    HCInteger count = 0;
-    HCReal extrema[2];
-    HCContourComponentExtrema(p0, component, &count, extrema);
-    ASSERT_TRUE(count == 1);
-    ASSERT_TRUE(extrema[0] == 0.5);
-}
-
-CTEST(HCContourCurve, CubicExtrema) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(2.0, 4.0);
-    HCPoint c1 = HCPointMake(4.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
-    HCInteger count = 0;
-    HCReal extrema[6];
-    HCContourComponentExtrema(p0, component, &count, extrema);
-    ASSERT_TRUE(count == 1);
-    ASSERT_TRUE(extrema[0] == 0.5);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Inflection
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearInflections) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourComponent component = HCContourComponentMakeLinear(p1);
-    HCInteger count = 0;
-    HCContourComponentInflections(p0, component, &count, NULL);
-    ASSERT_TRUE(count == 0);
-}
-
-CTEST(HCContourCurve, QuadraticInflection) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
-    HCInteger count = 0;
-    HCContourComponentInflections(p0, component, &count, NULL);
-    ASSERT_TRUE(count == 0);
-}
-
-CTEST(HCContourCurve, CubicInflection) {
-    HCPoint p0 = HCPointMake(0.0, 0.0);
-    HCPoint c0 = HCPointMake(0.0, 2.0);
-    HCPoint c1 = HCPointMake(2.0, 2.0);
-    HCPoint p1 = HCPointMake(1.0, 4.0);
-    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
-    HCInteger count = 0;
-    HCReal inflections[2];
-    HCContourComponentInflections(p0, component, &count, inflections);
-    ASSERT_TRUE(HCCurveCanonicalTypeCubic(p0, c0, c1, p1) == HCCurveTypeCubicSingleInflection);
-    ASSERT_TRUE(count == 1);
-    ASSERT_DBL_NEAR(inflections[0], 0.4384);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearApproximateBounds) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourComponent component = HCContourComponentMakeLinear(p1);
-    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
-        fmin(p0.x, p1.x),
-        fmin(p0.y, p1.y),
-        fmax(p0.x, p1.x),
-        fmax(p0.y, p1.y))));
-}
-
-CTEST(HCContourCurve, QuadraticApproximateBounds) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
-    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
-        fmin(p0.x, fmin(c.x, p1.x)),
-        fmin(p0.y, fmin(c.y, p1.y)),
-        fmax(p0.x, fmax(c.x, p1.x)),
-        fmax(p0.y, fmax(c.y, p1.y)))));
-}
-
-CTEST(HCContourCurve, CubicApproximateBounds) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(2.0, 4.0);
-    HCPoint c1 = HCPointMake(4.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
-    HCRectangle bounds = HCContourComponentApproximateBounds(p0, component);
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
-        fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
-        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
-        fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
-        fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))))));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Bounds
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearBounds) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourComponent component = HCContourComponentMakeLinear(p1);
-    HCRectangle bounds = HCContourComponentBounds(p0, HCContourComponentMakeLinear(p1));
-    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(fmin(p0.x, p1.x), fmin(p0.y, p1.y), fmax(p0.x, p1.x), fmax(p0.y, p1.y))));
-}
-
-CTEST(HCContourCurve, QuadraticBounds) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
-    HCRectangle bounds = HCContourComponentBounds(p0, component);
-    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.0)));
-}
-
-CTEST(HCContourCurve, CubicBounds) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(2.0, 4.0);
-    HCPoint c1 = HCPointMake(4.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
-    HCRectangle bounds = HCContourComponentBounds(p0, component);
-    ASSERT_TRUE(HCRectangleContainsRectangle(HCContourComponentApproximateBounds(p0, component), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Length
-//----------------------------------------------------------------------------------------------------------------------------------
-
-CTEST(HCContourCurve, LinearLength) {
-    HCPoint p0 = HCPointMake(-1.0, 2.0);
-    HCPoint p1 = HCPointMake(3.0, -4.0);
-    HCContourComponent component = HCContourComponentMakeLinear(p1);
-    HCReal length = HCContourComponentLength(p0, component);
-    ASSERT_DBL_NEAR(length, HCPointDistance(p0, p1));
-}
-
-CTEST(HCContourCurve, QuadraticLength) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint  c = HCPointMake(3.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
-    HCReal length = HCContourComponentLength(p0, component);
-    ASSERT_TRUE(length > HCPointDistance(p0, p1) && length < HCPointDistance(p0, c) + HCPointDistance(c, p1));
-}
-
-CTEST(HCContourCurve, CubicLength) {
-    HCPoint p0 = HCPointMake(1.0, 2.0);
-    HCPoint c0 = HCPointMake(2.0, 4.0);
-    HCPoint c1 = HCPointMake(4.0, 4.0);
-    HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
-    HCReal length = HCContourComponentLength(p0, component);
-    ASSERT_TRUE(length > HCPointDistance(p0, p1) && length < HCPointDistance(p0, c0) + HCPointDistance(c0, c1) + HCPointDistance(c1, p1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
