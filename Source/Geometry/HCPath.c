@@ -78,7 +78,7 @@ HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths) {
 }
 
 HCPathRef HCPathCreateWithContour(const HCContour* contour) {
-    const HCContourCurve* components = HCContourComponents(contour);
+    const HCContourComponent* components = HCContourComponents(contour);
     HCInteger componentCount = HCContourComponentCount(contour);
     HCBoolean closed = HCContourIsClosed(contour);
     
@@ -89,14 +89,14 @@ HCPathRef HCPathCreateWithContour(const HCContour* contour) {
     HCPathMove(self, components[0].p.x, components[0].p.y);
     for (HCInteger componentIndex = 1; componentIndex < componentCount; componentIndex++) {
         HCPoint p0 = components[componentIndex - 1].p;
-        HCContourCurve component = components[componentIndex];
-        if (HCContourCurveIsLinear(p0, component)) {
+        HCContourComponent component = components[componentIndex];
+        if (HCContourComponentIsLinear(p0, component)) {
             HCPathAddLine(self, component.p.x, component.p.y);
         }
-        else if (HCContourCurveIsQuadratic(p0, component)) {
+        else if (HCContourComponentIsQuadratic(p0, component)) {
             HCPathAddQuadraticCurve(self, component.c0.x, component.c0.y, component.p.x, component.p.y);
         }
-        else if (HCContourCurveIsCubic(p0, component)) {
+        else if (HCContourComponentIsCubic(p0, component)) {
             HCPathAddCubicCurve(self, component.c0.x, component.c0.y, component.c1.x, component.c1.y, component.p.x, component.p.y);
         }
 
@@ -682,11 +682,11 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
     switch (element.command) {
         case HCPathCommandMove: {
             // Begin a new contour (and implicitly finish any existing contour) with the move element point
-            HCContourCurve start = HCContourCurveMakeLinear(element.points[0]);
+            HCContourComponent start = HCContourComponentMakeLinear(element.points[0]);
             HCDataRef contourData = HCDataCreateWithBytes(sizeof(start), (HCByte*)&start);
             HCListAddObjectReleased(self->contours, contourData);
             // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
-            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
+            HCContourInitInComponents((HCContourComponent*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourComponent), false);
         } break;
         case HCPathCommandAddLine:
         case HCPathCommandAddQuadraticCurve:
@@ -695,31 +695,31 @@ void HCPathAppendElement(HCPathRef self, HCPathCommand command, const HCPoint* p
             HCDataRef contourData = HCListLastObject(self->contours);
             if (contourData == NULL || HCContourIsClosed((HCContour*)HCDataBytes(contourData))) {
                 // Contour has not yet been started, so begin a new contour at the current point (default is the origin if path was empty)
-                HCContourCurve start = HCContourCurveMakeLinear(currentPoint);
+                HCContourComponent start = HCContourComponentMakeLinear(currentPoint);
                 contourData = HCDataCreateWithBytes(sizeof(start), (HCByte*)&start);
                 HCListAddObjectReleased(self->contours, contourData);
             }
             
             // Construct the contour curve that best represents the element
-            HCContourCurve contourCurve = HCContourCurveInvalid;
+            HCContourComponent contourCurve = HCContourComponentInvalid;
             switch (element.command) {
-                case HCPathCommandAddLine: contourCurve = HCContourCurveMakeLinear(element.points[0]); break;
-                case HCPathCommandAddQuadraticCurve: contourCurve = HCContourCurveMakeQuadratic(element.points[0], element.points[1]); break;
-                case HCPathCommandAddCubicCurve: contourCurve = HCContourCurveMakeCubic(element.points[0], element.points[1], element.points[2]); break;
+                case HCPathCommandAddLine: contourCurve = HCContourComponentMakeLinear(element.points[0]); break;
+                case HCPathCommandAddQuadraticCurve: contourCurve = HCContourComponentMakeQuadratic(element.points[0], element.points[1]); break;
+                case HCPathCommandAddCubicCurve: contourCurve = HCContourComponentMakeCubic(element.points[0], element.points[1], element.points[2]); break;
                 default: break;
             }
             
             // Add the contour curve to the current contour and update the contour atlas
             HCDataAddBytes(contourData, sizeof(contourCurve), (HCByte*)&contourCurve);
             // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
-            HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), false);
+            HCContourInitInComponents((HCContourComponent*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourComponent), false);
         } break;
         case HCPathCommandCloseContour: {
             // Mark the current contour as closed (if there is one to mark, as a path can be closed with no other elements)
             HCDataRef contourData = HCListLastObject(self->contours);
             if (contourData != NULL) {
                 // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
-                HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourCurve), true);
+                HCContourInitInComponents((HCContourComponent*)HCDataBytes(contourData), HCDataSize(contourData) / sizeof(HCContourComponent), true);
             }
         } break;
     }
@@ -786,25 +786,25 @@ void HCPathRemoveElement(HCPathRef self) {
         case HCPathCommandAddCubicCurve: {
             // Remove corresponding curve from contour
             HCDataRef contourData = HCListLastObject(self->contours);
-            HCDataRemoveBytes(contourData, sizeof(HCContourCurve));
+            HCDataRemoveBytes(contourData, sizeof(HCContourComponent));
             
             // Remove contour if this was the last curve in it, otherwise update the contour atlas
-            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+            HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourComponent);
             if (curveCount == 0) {
                 HCListRemoveObject(self->contours);
             }
             else {
                 // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
-                HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), curveCount, false);
+                HCContourInitInComponents((HCContourComponent*)HCDataBytes(contourData), curveCount, false);
             }
         }
         case HCPathCommandCloseContour: {
             // Mark the current contour as open (if there is one to mark, as a path can be closed with no other elements)
             HCDataRef contourData = HCListLastObject(self->contours);
             if (contourData != NULL) {
-                HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourCurve);
+                HCInteger curveCount = HCDataSize(contourData) / sizeof(HCContourComponent);
                 // TODO: Modifies const pointer returnd by HCDataBytes(). Is there another way to do this using HCDataChangeBytes()?
-                HCContourInitInCurves((HCContourCurve*)HCDataBytes(contourData), curveCount, false);
+                HCContourInitInComponents((HCContourComponent*)HCDataBytes(contourData), curveCount, false);
             }
         } break;
     }

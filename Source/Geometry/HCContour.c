@@ -13,78 +13,78 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Definitions
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContour HCContourMake(HCPoint startPoint, HCInteger curveCount, HCBoolean closed);
+HCContour HCContourMake(HCPoint startPoint, HCInteger componentCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Constructors
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContour HCContourMake(HCPoint startPoint, HCInteger curveCount, HCBoolean closed) {
+HCContour HCContourMake(HCPoint startPoint, HCInteger componentCount, HCBoolean closed) {
     HCContour contour;
-    contour.curve = HCContourCurveMakeLinear(startPoint);
-    contour.count = curveCount;
+    contour.component = HCContourComponentMakeLinear(startPoint);
+    contour.count = componentCount;
     contour.closed = closed;
     return contour;
 }
 
-HCContour* HCContourInitInCurves(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
-    HCContour* contour = (HCContour*)curves;
-    *contour = HCContourMake(curves[0].p, curveCount, closed);
+HCContour* HCContourInitInComponents(HCContourComponent* components, HCInteger componentCount, HCBoolean closed) {
+    HCContour* contour = (HCContour*)components;
+    *contour = HCContourMake(components[0].p, componentCount, closed);
     return contour;
 }
 
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed) {
     HCContour* contour = (HCContour*)memory;
     *contour = HCContourMake(startPoint, pointCount + 1, closed);
-    HCContourCurve* curves = (HCContourCurve*)memory;
+    HCContourComponent* components = (HCContourComponent*)memory;
     for (HCInteger pointIndex = 0; pointIndex < pointCount; pointIndex += 1) {
-        HCInteger curveIndex = 1 + pointIndex;
-        curves[curveIndex] = HCContourCurveMakeLinear(points[pointIndex]);
+        HCInteger componentIndex = 1 + pointIndex;
+        components[componentIndex] = HCContourComponentMakeLinear(points[pointIndex]);
     }
 }
 
 void HCContourInitWithPolyquadratic(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed) {
     HCContour* contour = (HCContour*)memory;
     *contour = HCContourMake(startPoint, quadraticCount + 1, closed);
-    HCContourCurve* curves = (HCContourCurve*)memory;
+    HCContourComponent* components = (HCContourComponent*)memory;
     for (HCInteger quadraticIndex = 0; quadraticIndex < quadraticCount; quadraticIndex++) {
-        HCInteger curveIndex = 1 + quadraticIndex;
-        curves[curveIndex] = HCContourCurveMakeQuadratic(points[quadraticIndex * 2], points[quadraticIndex * 2 + 1]);
+        HCInteger componentIndex = 1 + quadraticIndex;
+        components[componentIndex] = HCContourComponentMakeQuadratic(points[quadraticIndex * 2], points[quadraticIndex * 2 + 1]);
     }
 }
 
 void HCContourInitWithPolycubic(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed) {
     HCContour* contour = (HCContour*)memory;
     *contour = HCContourMake(startPoint, cubicCount + 1, closed);
-    HCContourCurve* curves = (HCContourCurve*)memory;
+    HCContourComponent* components = (HCContourComponent*)memory;
     for (HCInteger cubicIndex = 0; cubicIndex < cubicCount; cubicIndex++) {
-        HCInteger curveIndex = 1 + cubicIndex;
-        curves[curveIndex] = HCContourCurveMakeCubic(points[cubicIndex * 3], points[cubicIndex * 3 + 1], points[cubicIndex * 3 + 2]);
+        HCInteger componentIndex = 1 + cubicIndex;
+        components[componentIndex] = HCContourComponentMakeCubic(points[cubicIndex * 3], points[cubicIndex * 3 + 1], points[cubicIndex * 3 + 2]);
     }
 }
 
-void HCContourInitWithCurves(void* memory, const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed) {
-    memcpy(memory, curves, sizeof(HCContourCurve) * curveCount);
+void HCContourInitWithComponents(void* memory, const HCContourComponent* components, HCInteger componentCount, HCBoolean closed) {
+    memcpy(memory, components, sizeof(HCContourComponent) * componentCount);
     HCContour* contour = (HCContour*)memory;
-    *contour = HCContourMake(curves[0].p, curveCount, closed);
+    *contour = HCContourMake(components[0].p, componentCount, closed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCContourIsEqual(const HCContour* contour, const HCContour* other) {
-    HCInteger curveCount = HCContourComponentCount(contour);
-    HCInteger otherCurveCount = HCContourComponentCount(other);
-    if (curveCount != otherCurveCount) {
+    HCInteger componentCount = HCContourComponentCount(contour);
+    HCInteger otherComponentCount = HCContourComponentCount(other);
+    if (componentCount != otherComponentCount) {
         return false;
     }
-    return memcmp(contour, other, curveCount * sizeof(HCContourCurve)) == 0;
+    return memcmp(contour, other, componentCount * sizeof(HCContourComponent)) == 0;
 }
 
 HCInteger HCContourHashValue(const HCContour* contour) {
     HCInteger componentCount = HCContourComponentCount(contour);
     HCInteger hash = 0;
     for (HCInteger componentIndex = 1; componentIndex < componentCount; componentIndex++) {
-        hash ^= HCContourCurveHashValue(HCContourComponentAt(contour, componentIndex));
+        hash ^= HCContourComponentHashValue(HCContourComponentAt(contour, componentIndex));
     }
     return hash;
 }
@@ -94,9 +94,9 @@ void HCContourPrint(const HCContour* contour, FILE* stream) {
     fprintf(stream, "<count:%lli", componentCount);
     fprintf(stream, ",start:");
     HCPointPrint(HCContourStartPoint(contour), stream);
-    fprintf(stream, ",curves:<");
+    fprintf(stream, ",components:<");
     for (HCInteger componentIndex = 1; componentIndex < componentCount; componentIndex++) {
-        HCContourCurvePrint(HCContourComponentAt(contour, componentIndex), stream);
+        HCContourComponentPrint(HCContourComponentAt(contour, componentIndex), stream);
     }
     fprintf(stream, ">");
     fprintf(stream, ",closed:%s>", HCContourIsClosed(contour) ? "⊨" : "⊭");
@@ -128,11 +128,11 @@ HCInteger HCContourComponentCount(const HCContour* contour) {
     return contour->count;
 }
 
-HCContourCurve HCContourComponentAt(const HCContour* contour, HCInteger componentIndex) {
+HCContourComponent HCContourComponentAt(const HCContour* contour, HCInteger componentIndex) {
     return HCContourComponents(contour)[componentIndex];
 }
 
-HCContourCurve HCContourComponentContaining(const HCContour* contour, HCReal t) {
+HCContourComponent HCContourComponentContaining(const HCContour* contour, HCReal t) {
     HCInteger componentIndex = HCContourComponentIndexContaining(contour, t);
     return HCContourComponentAt(contour, componentIndex);
 }
@@ -145,8 +145,8 @@ HCReal HCContourComponentParameterFor(const HCContour* contour, HCReal t) {
     return fmax(0.0, fmin(1.0, fmod(t * (HCReal)contour->count, 1.0)));
 }
 
-const HCContourCurve* HCContourComponents(const HCContour* contour) {
-    return (const HCContourCurve*)contour;
+const HCContourComponent* HCContourComponents(const HCContour* contour) {
+    return (const HCContourComponent*)contour;
 }
 
 HCInteger HCContourCurveCount(const HCContour* contour) {
@@ -154,7 +154,7 @@ HCInteger HCContourCurveCount(const HCContour* contour) {
 }
 
 HCCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex) {
-    return HCCurveMakeWithContourCurve(HCContourComponentAt(contour, curveIndex).p, HCContourComponentAt(contour, curveIndex + 1));
+    return HCCurveMakeWithContourComponent(HCContourComponentAt(contour, curveIndex).p, HCContourComponentAt(contour, curveIndex + 1));
 }
 
 HCCurve HCContourCurveContaining(const HCContour* contour, HCReal t) {

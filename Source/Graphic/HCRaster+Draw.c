@@ -430,35 +430,40 @@ void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* 
     }
 }
 
-void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed, HCColor color) {
+void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
     // Drawing empty contours does nothing
-    if (curves == NULL || curveCount <= 0) {
+    if (contour == NULL) {
         return;
     }
     
+    // Extract contour attributes
+    const HCContourComponent* components = HCContourComponents(contour);
+    HCInteger componentCount = HCContourComponentCount(contour);
+    HCBoolean closed = HCContourIsClosed(contour);
+    
     // Draw each contour curve
     HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
-    HCPoint startPoint = curves[0].p;
+    HCPoint startPoint = components[0].p;
     HCPoint currentPoint = startPoint;
-    for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
+    for (HCInteger curveIndex = 1; curveIndex < componentCount; curveIndex++) {
         // When the rotating color is requested, change the color with each curve
         if (rotatingColor) {
             color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
         }
         
         // Draw the curve
-        HCPoint p0 = curves[curveIndex - 1].p;
-        HCContourCurve curve = curves[curveIndex];
-        if (HCContourCurveIsLinear(p0, curve)) {
-            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, curve.p.x, curve.p.y, color, color);
+        HCPoint p0 = components[curveIndex - 1].p;
+        HCContourComponent component = components[curveIndex];
+        if (HCContourComponentIsLinear(p0, component)) {
+            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, component.p.x, component.p.y, color, color);
         }
-        else if (HCContourCurveIsQuadratic(p0, curve)) {
-            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y, color, color);
+        else if (HCContourComponentIsQuadratic(p0, component)) {
+            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, component.c0.x, component.c0.y, component.p.x, component.p.y, color, color);
         }
-        else if (HCContourCurveIsCubic(p0, curve)) {
-            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y, color, color);
+        else if (HCContourComponentIsCubic(p0, component)) {
+            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, component.c0.x, component.c0.y, component.c1.x, component.c1.y, component.p.x, component.p.y, color, color);
         }
-        currentPoint = curve.p;
+        currentPoint = component.p;
     }
     
     // Close the curve, if requested and required
@@ -466,10 +471,6 @@ void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, H
     if (closed && !HCPointIsEqual(endPoint, startPoint)) {
         HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
     }
-}
-
-void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
-    HCRasterDrawContourCurves(self, HCContourComponents(contour), HCContourComponentCount(contour), HCContourIsClosed(contour), color);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
