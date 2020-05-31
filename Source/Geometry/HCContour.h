@@ -70,13 +70,9 @@ HCInteger HCContourCurveIndexContaining(const HCContour* contour, HCReal t);
 HCReal HCContourCurveParameterFor(const HCContour* contour, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Value
-//----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCContourValue(const HCContour* contour, HCReal t);
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourValue(const HCContour* contour, HCReal t);
 HCCurve HCContourTangent(const HCContour* contour, HCReal t);
 HCCurve HCContourTangentUnit(const HCContour* contour, HCReal t);
 HCCurve HCContourNormal(const HCContour* contour, HCReal t);

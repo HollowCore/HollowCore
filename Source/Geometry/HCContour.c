@@ -126,6 +126,7 @@ void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrem
     // TODO: Should find extrema at component boundaries?
     HCInteger contourExtremaCount = 0;
     HCReal contourExtrema[HCContourComponentCount(contour) * 6];
+    HCInteger requestedCount = count == NULL ? HCIntegerMaximum : *count;
     const HCContourComponent* componentsStart = HCContourComponents(contour);
     const HCContourComponent* componentsEnd = componentsStart + HCContourComponentCount(contour);
     const HCContourComponent* previousComponent = componentsStart;
@@ -134,6 +135,9 @@ void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrem
         HCContourComponentExtrema(previousComponent->p, *component, &componentExtremaCount, contourExtrema + contourExtremaCount);
         contourExtremaCount += componentExtremaCount;
         previousComponent = component;
+        if (componentExtremaCount >= requestedCount) {
+            break;
+        }
     }
     
     // Deliver the results
@@ -151,6 +155,7 @@ void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* in
     // TODO: Should find inflections at component boundaries?
     HCInteger contourInflectionCount = 0;
     HCReal contourInflections[HCContourComponentCount(contour) * 2];
+    HCInteger requestedCount = count == NULL ? HCIntegerMaximum : *count;
     const HCContourComponent* componentsStart = HCContourComponents(contour);
     const HCContourComponent* componentsEnd = componentsStart + HCContourComponentCount(contour);
     const HCContourComponent* previousComponent = componentsStart;
@@ -159,6 +164,9 @@ void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* in
         HCContourComponentInflections(previousComponent->p, *component, &componentInflectionCount, contourInflections + contourInflectionCount);
         contourInflectionCount += componentInflectionCount;
         previousComponent = component;
+        if (componentInflectionCount >= requestedCount) {
+            break;
+        }
     }
     
     // Deliver the results
@@ -264,15 +272,12 @@ HCReal HCContourCurveParameterFor(const HCContour* contour, HCReal t) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Value
+// MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCContourValue(const HCContour* contour, HCReal t) {
     return HCCurveValue(HCContourCurveContaining(contour, t), HCContourCurveParameterFor(contour, t));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Operations
-//----------------------------------------------------------------------------------------------------------------------------------
 HCCurve HCContourTangent(const HCContour* contour, HCReal t) {
     return HCCurveTangent(HCContourCurveContaining(contour, t), HCContourCurveParameterFor(contour, t));
 }
@@ -330,13 +335,32 @@ HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d) {
 }
 
 HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p) {
-    // TODO: This
-    return HCRealInvalid;
+    // Find the nearest parameter for all components
+    HCReal nearestDistance = HCRealMaximumPositive;
+    HCReal nearestContourParameter = 0.0;
+    HCReal t = 0.0;
+    HCReal componentTInterval = 1.0 / HCContourComponentCount(contour);
+    const HCContourComponent* componentsStart = HCContourComponents(contour);
+    const HCContourComponent* componentsEnd = componentsStart + HCContourComponentCount(contour);
+    const HCContourComponent* previousComponent = componentsStart;
+    for (const HCContourComponent* component = componentsStart + 1; component != componentsEnd; component++) {
+        HCReal nearestComponentParameter = HCContourComponentParameterNearestPoint(previousComponent->p, *component, p);
+        HCPoint nearestComponentPoint = HCContourComponentValue(previousComponent->p, *component, nearestComponentParameter);
+        HCReal distance = HCPointDistance(p, nearestComponentPoint);
+        if (distance < nearestDistance) {
+            distance = nearestDistance;
+            nearestContourParameter = t + nearestComponentParameter * componentTInterval;
+        }
+        t += componentTInterval;
+        previousComponent = component;
+    }
+    return nearestContourParameter;
 }
 
 HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p) {
-    // TODO: This
-    return HCRealInvalid;
+    HCReal t = HCContourParameterNearestPoint(contour, p);
+    HCPoint tp = HCContourValue(contour, t);
+    return HCPointDistance(p, tp);
 }
 
 void HCContourSplit(const HCContour* contour, HCReal t, HCContour* sCurve, HCContour* eCurve) {
