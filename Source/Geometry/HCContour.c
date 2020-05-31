@@ -16,7 +16,7 @@
 HCContour HCContourMake(HCPoint startPoint, HCInteger componentCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContour HCContourMake(HCPoint startPoint, HCInteger componentCount, HCBoolean closed) {
     HCContour contour;

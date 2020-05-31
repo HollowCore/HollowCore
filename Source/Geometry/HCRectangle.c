@@ -10,7 +10,7 @@
 #include "HCRectangle.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleMake(HCPoint origin, HCSize size) {
     return (HCRectangle){.origin = origin, .size = size};

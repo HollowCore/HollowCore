@@ -10,6 +10,9 @@
 #include "ctest.h"
 #include "../Source/HollowCore.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Construction
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContour, CreatePolyline) {
     HCPoint startPoint = {.x = 1.0, .y = 1.0};
     HCPoint polyline[] = {
@@ -102,6 +105,9 @@ CTEST(HCContour, CreateWithCurves) {
     ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 2), HCCurveMakeCubic(HCPointMake(3.0, 3.0), HCPointMake(2.5, 4.0), HCPointMake(1.5, 4.0), HCPointMake(1.0, 3.0))));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Equality
+//----------------------------------------------------------------------------------------------------------------------------------
 CTEST(HCContour, Equality) {
     HCContourComponent a[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 1.0, .y = 1.0}},
@@ -144,3 +150,48 @@ CTEST(HCContour, Print) {
     HCContour* contour = HCContourInitInComponents(components, sizeof(components) / sizeof(HCContourComponent), true);
     HCContourPrint(contour, stdout); // TODO: Not to stdout
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Attributes
+//----------------------------------------------------------------------------------------------------------------------------------
+// TODO: Test these!
+//HCBoolean HCContourIsClosed(const HCContour* contour);
+//HCPoint HCContourStartPoint(const HCContour* contour);
+//HCPoint HCContourEndPoint(const HCContour* contour);
+//void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrema);
+//void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* inflections);
+//HCRectangle HCContourApproximateBounds(const HCContour* contour);
+//HCRectangle HCContourBounds(const HCContour* contour);
+//HCReal HCContourLength(const HCContour* contour);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Components
+//----------------------------------------------------------------------------------------------------------------------------------
+// TODO: Test these!
+//HCInteger HCContourComponentCount(const HCContour* contour);
+//HCContourComponent HCContourComponentAt(const HCContour* contour, HCInteger componentIndex);
+//HCContourComponent HCContourComponentContaining(const HCContour* contour, HCReal t);
+//HCInteger HCContourComponentIndexContaining(const HCContour* contour, HCReal t);
+//HCReal HCContourComponentParameterFor(const HCContour* contour, HCReal t);
+//const HCContourComponent* HCContourComponents(const HCContour* contour);
+//HCInteger HCContourCurveCount(const HCContour* contour);
+//HCCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex);
+//HCCurve HCContourCurveContaining(const HCContour* contour, HCReal t);
+//HCInteger HCContourCurveIndexContaining(const HCContour* contour, HCReal t);
+//HCReal HCContourCurveParameterFor(const HCContour* contour, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+// TODO: Test these!
+//HCPoint HCContourValue(const HCContour* contour, HCReal t);
+//HCCurve HCContourTangent(const HCContour* contour, HCReal t);
+//HCCurve HCContourTangentUnit(const HCContour* contour, HCReal t);
+//HCCurve HCContourNormal(const HCContour* contour, HCReal t);
+//HCCurve HCContourNormalUnit(const HCContour* contour, HCReal t);
+//HCReal HCContourCurvature(const HCContour* contour, HCReal t);
+//HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t);
+//HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d);
+//HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p);
+//HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p);
+//void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u);

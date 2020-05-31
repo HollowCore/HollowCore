@@ -31,7 +31,7 @@ static const HCPoint HCPointInvalid = HCPointInvalidStatic;
 static const HCPoint HCPointZero = HCPointZeroStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCPointMake(HCReal x, HCReal y);
 

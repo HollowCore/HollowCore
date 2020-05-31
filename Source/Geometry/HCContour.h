@@ -27,7 +27,7 @@ typedef union HCContour {
 } HCContour;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCContour* HCContourInitInComponents(HCContourComponent* components, HCInteger componentCount, HCBoolean closed);
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed);
