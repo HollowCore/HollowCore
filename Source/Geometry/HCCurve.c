@@ -339,7 +339,7 @@ void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extr
 
 void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* extrema) {
     HCInteger tCount = 0;
-    HCReal t[2];
+    HCReal ts[2];
     
     // Calculate quadratic derivative weights
     HCPoint dp0 = HCPointMake(2.0 * (c.x - p0.x), 2.0 * (c.y - p0.y));
@@ -351,7 +351,7 @@ void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count
     HCReal bx = +1.0 * dp0.x;
     HCReal xt = -bx / ax;
     if (xt >= 0.0 && xt <= 1.0) {
-        t[tCount++] = xt;
+        ts[tCount++] = xt;
     }
     
     // Calculate zero crossing of derivative in y and add as extrema if in range
@@ -359,21 +359,22 @@ void HCCurveExtremaQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count
     HCReal by = +1.0 * dp0.y;
     HCReal yt = -by / ay;
     if (yt >= 0.0 && yt <= 1.0) {
-        t[tCount++] = yt;
+        ts[tCount++] = yt;
     }
     
     // Deliver results
+    if (extrema != NULL) {
+        HCInteger copyCount = (count == NULL || *count > tCount) ? tCount : *count;
+        memcpy(extrema, ts, copyCount * sizeof(HCReal));
+    }
     if (count != NULL) {
         *count = tCount;
-    }
-    if (extrema != NULL) {
-        memcpy(extrema, t, tCount * sizeof(HCReal));
     }
 }
 
 void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* extrema) {
     HCInteger tCount = 0;
-    HCReal t[6];
+    HCReal ts[6];
     
     // Calculate cubic derivative weights
     HCPoint dp0 = HCPointInvalid;
@@ -391,11 +392,11 @@ void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteg
         HCReal denominatorInverse = 1.0 / (2.0 * ax);
         HCReal xt0 = (-bx + sqrtDiscriminant) * denominatorInverse;
         if (xt0 >= 0.0 && xt0 <= 1.0) {
-            t[tCount++] = xt0;
+            ts[tCount++] = xt0;
         }
         HCReal xt1 = (-bx - sqrtDiscriminant) * denominatorInverse;
         if (xt1 >= 0.0 && xt1 <= 1.0) {
-            t[tCount++] = xt1;
+            ts[tCount++] = xt1;
         }
     }
     
@@ -409,25 +410,26 @@ void HCCurveExtremaCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteg
         HCReal denominatorInverse = 1.0 / (2.0 * ay);
         HCReal yt0 = (-by + sqrtDiscriminant) * denominatorInverse;
         if (yt0 >= 0.0 && yt0 <= 1.0) {
-            t[tCount++] = yt0;
+            ts[tCount++] = yt0;
         }
         HCReal yt1 = (-by - sqrtDiscriminant) * denominatorInverse;
         if (yt1 >= 0.0 && yt1 <= 1.0) {
-            t[tCount++] = yt1;
+            ts[tCount++] = yt1;
         }
     }
     
     // Add extrema of second derivative
-    HCInteger quadraticCount = 0;
-    HCCurveExtremaQuadratic(dp0, dc, dp1, &quadraticCount, &t[tCount]);
+    HCInteger quadraticCount = 6;
+    HCCurveExtremaQuadratic(dp0, dc, dp1, &quadraticCount, &ts[tCount]);
     tCount += quadraticCount;
     
     // Deliver results
+    if (extrema != NULL) {
+        HCInteger copyCount = (count == NULL || *count > tCount) ? tCount : *count;
+        memcpy(extrema, ts, copyCount * sizeof(HCReal));
+    }
     if (count != NULL) {
         *count = tCount;
-    }
-    if (extrema != NULL) {
-        memcpy(extrema, t, tCount * sizeof(HCReal));
     }
 }
 
@@ -463,6 +465,9 @@ void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* c
 }
 
 void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    HCInteger tCount = 0;
+    HCReal ts[2];
+    
     // Axis-align the curve to make computation of inflections more straightforward
     HCCurveXAxisAlignedCubic(p0, c0, c1, p1, &p0, &c0, &c1, &p1);
     
@@ -486,21 +491,20 @@ void HCCurveInflectionsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCI
     HCReal inflection1 = (-y - sqrtDeterminant) * denominatorInverse;
     
     // Determine if inflections occur in-range and deliver them
-    HCInteger inflectionCount = 0;
     if (inflection0 >= 0.0 && inflection0 <= 1.0) {
-        if (inflections != NULL) {
-            inflections[inflectionCount] = inflection0;
-        }
-        inflectionCount++;
+        ts[tCount] = inflection0;
+        tCount++;
     }
     if (inflection1 >= 0.0 && inflection1 <= 1.0) {
-        if (inflections != NULL) {
-            inflections[inflectionCount] = inflection1;
-        }
-        inflectionCount++;
+        ts[tCount] = inflection1;
+        tCount++;
+    }
+    if (inflections != NULL) {
+        HCInteger copyCount = (count == NULL || *count > tCount) ? tCount : *count;
+        memcpy(inflections, ts, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = inflectionCount;
+        *count = tCount;
     }
 }
 
@@ -575,8 +579,8 @@ HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1) {
 
 HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
     // Calculate quadratic curve extrema
-    HCReal extrema[2];
-    HCInteger count = 0;
+    HCInteger count = 2;
+    HCReal extrema[count];
     HCCurveExtremaQuadratic(p0, c, p1, &count, extrema);
     
     // Find min/max of extrema and end points
@@ -599,8 +603,8 @@ HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
 
 HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     // Calculate cubic curve extrema
-    HCReal extrema[6];
-    HCInteger count = 0;
+    HCInteger count = 6;
+    HCReal extrema[count];
     HCCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
     
     // Find min/max of extrema and end points
@@ -1817,21 +1821,21 @@ void HCCurveIntersectionLinearLinear(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint
     HCReal intersectionU = -((p0.x - p1.x) * (p0.y - q0.y) - (p0.y - p1.y) * (p0.x - q0.x)) / d;
         
     // Validate intersection for use as t and u values
-    if (intersectionT < 0.0 || intersectionT > 1.0 || intersectionU < 0.0 || intersectionU > 1.0) {
-        if (count != NULL) {
-            *count = 0;
-        }
+    HCInteger rCount = 0;
+    if (intersectionT >= 0.0 && intersectionT <= 1.0 && intersectionU >= 0.0 && intersectionU <= 1.0) {
+        rCount++;
     }
-    else {
-        if (count != NULL) {
-            *count = 1;
-        }
-        if (t != NULL) {
-            *t = intersectionT;
-        }
-        if (u != NULL) {
-            *u = intersectionU;
-        }
+    
+    // Deliver the results
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
+    if (t != NULL && copyCount >= 1) {
+        *t = intersectionT;
+    }
+    if (u != NULL && copyCount >= 1) {
+        *u = intersectionU;
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }
 
@@ -1898,14 +1902,15 @@ void HCCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q0, HCPo
     }
     
     // Deliver results
-    if (count != NULL) {
-        *count = rCount;
-    }
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
     if (t != NULL) {
-        memcpy(t, ts, rCount * sizeof(HCReal));
+        memcpy(t, ts, copyCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, rCount * sizeof(HCReal));
+        memcpy(u, us, copyCount * sizeof(HCReal));
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }
 
@@ -2026,14 +2031,15 @@ void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint 
     }
     
     // Deliver results
-    if (count != NULL) {
-        *count = rCount;
-    }
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
     if (t != NULL) {
-        memcpy(t, ts, rCount * sizeof(HCReal));
+        memcpy(t, ts, copyCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, rCount * sizeof(HCReal));
+        memcpy(u, us, copyCount * sizeof(HCReal));
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }
 
@@ -2106,20 +2112,21 @@ void HCCurveIntersectionQuadraticQuadratic(HCPoint p0, HCPoint pc, HCPoint p1, H
     }
     
     // Search for intersections
-    HCInteger intersectionCount = 0;
+    HCInteger rCount = 0;
     HCReal ts[2];
     HCReal us[2];
-    HCCurveIntersectionQuadraticQuadraticRecursive(p0, pc, p1, 0.0, 1.0, q0, qc, q1, 0.0, 1.0, &intersectionCount, ts, us);
+    HCCurveIntersectionQuadraticQuadraticRecursive(p0, pc, p1, 0.0, 1.0, q0, qc, q1, 0.0, 1.0, &rCount, ts, us);
     
     // Deliver results
-    if (count != NULL) {
-        *count = intersectionCount;
-    }
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
     if (t != NULL) {
-        memcpy(t, ts, intersectionCount * sizeof(HCReal));
+        memcpy(t, ts, copyCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, intersectionCount * sizeof(HCReal));
+        memcpy(u, us, copyCount * sizeof(HCReal));
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }
 
@@ -2194,20 +2201,21 @@ void HCCurveIntersectionQuadraticCubic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoi
     }
     
     // Search for intersections
-    HCInteger intersectionCount = 0;
+    HCInteger rCount = 0;
     HCReal ts[6];
     HCReal us[6];
-    HCCurveIntersectionQuadraticCubicRecursive(p0, pc, p1, 0.0, 1.0, q0, qc0, qc1, q1, 0.0, 1.0, &intersectionCount, ts, us);
+    HCCurveIntersectionQuadraticCubicRecursive(p0, pc, p1, 0.0, 1.0, q0, qc0, qc1, q1, 0.0, 1.0, &rCount, ts, us);
     
     // Deliver results
-    if (count != NULL) {
-        *count = intersectionCount;
-    }
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
     if (t != NULL) {
-        memcpy(t, ts, intersectionCount * sizeof(HCReal));
+        memcpy(t, ts, copyCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, intersectionCount * sizeof(HCReal));
+        memcpy(u, us, copyCount * sizeof(HCReal));
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }
 
@@ -2284,19 +2292,20 @@ void HCCurveIntersectionCubicCubic(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint
     }
     
     // Search for intersections
-    HCInteger intersectionCount = 0;
+    HCInteger rCount = 0;
     HCReal ts[9];
     HCReal us[9];
-    HCCurveIntersectionCubicCubicRecursive(p0, pc0, pc1, p1, 0.0, 1.0, q0, qc0, qc1, q1, 0.0, 1.0, &intersectionCount, ts, us);
+    HCCurveIntersectionCubicCubicRecursive(p0, pc0, pc1, p1, 0.0, 1.0, q0, qc0, qc1, q1, 0.0, 1.0, &rCount, ts, us);
     
     // Deliver results
-    if (count != NULL) {
-        *count = intersectionCount;
-    }
+    HCInteger copyCount = (count == NULL || *count > rCount) ? rCount : *count;
     if (t != NULL) {
-        memcpy(t, ts, intersectionCount * sizeof(HCReal));
+        memcpy(t, ts, copyCount * sizeof(HCReal));
     }
     if (u != NULL) {
-        memcpy(u, us, intersectionCount * sizeof(HCReal));
+        memcpy(u, us, copyCount * sizeof(HCReal));
+    }
+    if (count != NULL) {
+        *count = rCount;
     }
 }

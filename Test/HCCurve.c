@@ -198,8 +198,8 @@ CTEST(HCCurve, QuadraticExtrema) {
     HCPoint p0 = HCPointMake(1.0, 2.0);
     HCPoint  c = HCPointMake(3.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCInteger count = 0;
-    HCReal extrema[2];
+    HCInteger count = 2;
+    HCReal extrema[count];
     HCCurveExtremaQuadratic(p0, c, p1, &count, extrema);
     ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
@@ -210,8 +210,8 @@ CTEST(HCCurve, CubicExtrema) {
     HCPoint c0 = HCPointMake(2.0, 4.0);
     HCPoint c1 = HCPointMake(4.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
-    HCInteger count = 0;
-    HCReal extrema[6];
+    HCInteger count = 6;
+    HCReal extrema[count];
     HCCurveExtremaCubic(p0, c0, c1, p1, &count, extrema);
     ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
@@ -223,8 +223,8 @@ CTEST(HCCurve, Extrema) {
     HCPoint c1 = HCPointMake(4.0, 4.0);
     HCPoint p1 = HCPointMake(5.0, 2.0);
     HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
-    HCInteger count = 0;
-    HCReal extrema[6];
+    HCInteger count = 6;
+    HCReal extrema[count];
     HCCurveExtrema(curve, &count, extrema);
     ASSERT_TRUE(count == 1);
     ASSERT_TRUE(extrema[0] == 0.5);
@@ -256,8 +256,8 @@ CTEST(HCCurve, CubicInflection) {
     HCPoint c0 = HCPointMake(0.0, 2.0);
     HCPoint c1 = HCPointMake(2.0, 2.0);
     HCPoint p1 = HCPointMake(1.0, 4.0);
-    HCInteger count = 0;
-    HCReal inflections[2];
+    HCInteger count = 2;
+    HCReal inflections[count];
     HCCurveInflectionsCubic(p0, c0, c1, p1, &count, inflections);
     ASSERT_TRUE(HCCurveCanonicalTypeCubic(p0, c0, c1, p1) == HCCurveTypeCubicSingleInflection);
     ASSERT_TRUE(count == 1);
@@ -270,8 +270,8 @@ CTEST(HCCurve, Inflection) {
     HCPoint c1 = HCPointMake(2.0, 2.0);
     HCPoint p1 = HCPointMake(1.0, 4.0);
     HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
-    HCInteger count = 0;
-    HCReal inflections[2] = {HCRealInvalid, HCRealInvalid};
+    HCInteger count = 2;
+    HCReal inflections[count];
     HCCurveInflections(curve, &count, inflections);
     ASSERT_TRUE(HCCurveCanonicalType(curve) == HCCurveTypeCubicSingleInflection);
     ASSERT_TRUE(count == 1);
@@ -1092,13 +1092,13 @@ CTEST(HCCurve, IntersectionLinearLinear) {
     HCPoint p1 = HCPointMake(100.0, 100.0);
     HCPoint q0 = HCPointMake(100.0, 0.0);
     HCPoint q1 = HCPointMake(0.0, 100.0);
-    HCInteger count = 0;
-    HCReal t = HCRealInvalid;
-    HCReal u = HCRealInvalid;
-    HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, &u);
+    HCInteger count = 1;
+    HCReal t[count];
+    HCReal u[count];
+    HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, t, u);
     ASSERT_TRUE(count == 1);
-    ASSERT_DBL_NEAR(t, 0.5);
-    ASSERT_DBL_NEAR(u, 0.5);
+    ASSERT_DBL_NEAR(t[0], 0.5);
+    ASSERT_DBL_NEAR(u[0], 0.5);
 }
 
 CTEST(HCCurve, IntersectionLinearQuadratic) {
@@ -1107,9 +1107,9 @@ CTEST(HCCurve, IntersectionLinearQuadratic) {
     HCPoint q0 = HCPointMake(0.0, -50.0);
     HCPoint qc = HCPointMake(50.0, 100.0);
     HCPoint q1 = HCPointMake(100.0, -50.0);
-    HCInteger count = 0;
-    HCReal t[2] = {HCRealInvalid, HCRealInvalid};
-    HCReal u[2] = {HCRealInvalid, HCRealInvalid};
+    HCInteger count = 2;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersectionLinearQuadratic(p0, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.2113);
@@ -1125,9 +1125,9 @@ CTEST(HCCurve, IntersectionLinearCubic) {
     HCPoint qc0 = HCPointMake(50.0, -100.0);
     HCPoint qc1 = HCPointMake(100.0, 100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
-    HCInteger count = 0;
-    HCReal t[3] = {HCRealInvalid, HCRealInvalid, HCRealInvalid};
-    HCReal u[3] = {HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCInteger count = 3;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersectionLinearCubic(p0, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.8273);
@@ -1145,9 +1145,9 @@ CTEST(HCCurve, IntersectionQuadraticQuadratic) {
     HCPoint q0 = HCPointMake(0.0, -50.0);
     HCPoint qc = HCPointMake(50.0, 100.0);
     HCPoint q1 = HCPointMake(100.0, -50.0);
-    HCInteger count = 0;
-    HCReal t[4] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
-    HCReal u[4] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCInteger count = 4;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersectionQuadraticQuadratic(p0, pc, p1, q0, qc, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.2104);
@@ -1164,9 +1164,9 @@ CTEST(HCCurve, IntersectionQuadraticCubic) {
     HCPoint qc0 = HCPointMake(50.0, 100.0);
     HCPoint qc1 = HCPointMake(100.0, -100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
-    HCInteger count = 0;
-    HCReal t[6] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
-    HCReal u[6] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCInteger count = 6;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersectionQuadraticCubic(p0, pc, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 2);
     ASSERT_DBL_NEAR(t[0], 0.1821);
@@ -1184,9 +1184,9 @@ CTEST(HCCurve, IntersectionCubicCubic) {
     HCPoint qc0 = HCPointMake(50.0, -100.0);
     HCPoint qc1 = HCPointMake(100.0, 100.0);
     HCPoint q1 = HCPointMake(150.0, -50.0);
-    HCInteger count = 0;
-    HCReal t[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
-    HCReal u[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCInteger count = 9;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersectionCubicCubic(p0, c0, c1, p1, q0, qc0, qc1, q1, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.1724);
@@ -1208,9 +1208,9 @@ CTEST(HCCurve, Intersection) {
     HCPoint qc1 = HCPointMake(100.0, 100.0);
     HCPoint qp1 = HCPointMake(150.0, -50.0);
     HCCurve curveQ = HCCurveMakeCubic(qp0, qc0, qc1, qp1);
-    HCInteger count = 0;
-    HCReal t[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
-    HCReal u[9] = {HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid, HCRealInvalid};
+    HCInteger count = 9;
+    HCReal t[count];
+    HCReal u[count];
     HCCurveIntersection(curveP, curveQ, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.1724);
