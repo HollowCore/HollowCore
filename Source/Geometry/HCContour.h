@@ -82,13 +82,6 @@ HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t);
 HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d);
 HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p);
 HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p);
-HCReal HCContourDistanceFromPointLinear(HCPoint p0, HCPoint p1, HCPoint p);
-HCReal HCContourDistanceFromPointQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint p);
-HCReal HCContourDistanceFromPointCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCPoint p);
-HCPoint HCContourBaselineProjection(const HCContour* contour, HCReal t);
-HCCurve HCContourInterpolatingPoint(HCPoint p0, HCPoint p1, HCPoint p, HCReal t, HCReal dx, HCReal dy);
-HCCurve HCContourMould(const HCContour* contour, HCReal t, HCPoint p);
-void HCContourSplit(const HCContour* contour, HCReal t, HCContour* sCurve, HCContour* eCurve);
-void HCContourIntersection(HCContour pCurve, HCContour qCurve, HCInteger* count, HCReal* t, HCReal* u);
+void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u);
 
 #endif /* HCContour_h */

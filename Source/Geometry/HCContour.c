@@ -131,7 +131,7 @@ void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrem
     const HCContourComponent* componentsEnd = componentsStart + HCContourComponentCount(contour);
     const HCContourComponent* previousComponent = componentsStart;
     for (const HCContourComponent* component = componentsStart + 1; component != componentsEnd; component++) {
-        HCInteger componentExtremaCount = 0;
+        HCInteger componentExtremaCount = 6;
         HCContourComponentExtrema(previousComponent->p, *component, &componentExtremaCount, contourExtrema + contourExtremaCount);
         contourExtremaCount += componentExtremaCount;
         previousComponent = component;
@@ -141,12 +141,12 @@ void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrem
     }
     
     // Deliver the results
+    HCInteger copyCount = contourExtremaCount < requestedCount ? contourExtremaCount : requestedCount;
     if (extrema != NULL) {
-        HCInteger copyCount = (count == NULL || *count > contourExtremaCount) ? contourExtremaCount : *count;
         memcpy(extrema, contourExtrema, sizeof(HCReal) * copyCount);
     }
     if (count != NULL) {
-        *count = contourExtremaCount;
+        *count = copyCount;
     }
 }
 
@@ -160,7 +160,7 @@ void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* in
     const HCContourComponent* componentsEnd = componentsStart + HCContourComponentCount(contour);
     const HCContourComponent* previousComponent = componentsStart;
     for (const HCContourComponent* component = componentsStart + 1; component != componentsEnd; component++) {
-        HCInteger componentInflectionCount = 0;
+        HCInteger componentInflectionCount = 2;
         HCContourComponentInflections(previousComponent->p, *component, &componentInflectionCount, contourInflections + contourInflectionCount);
         contourInflectionCount += componentInflectionCount;
         previousComponent = component;
@@ -170,12 +170,12 @@ void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* in
     }
     
     // Deliver the results
+    HCInteger copyCount = contourInflectionCount < requestedCount ? contourInflectionCount : requestedCount;
     if (inflections != NULL) {
-        HCInteger copyCount = (count == NULL || *count > contourInflectionCount) ? contourInflectionCount : *count;
         memcpy(inflections, contourInflections, sizeof(HCReal) * copyCount);
     }
     if (count != NULL) {
-        *count = contourInflectionCount;
+        *count = copyCount;
     }
 }
 
@@ -363,10 +363,42 @@ HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p) {
     return HCPointDistance(p, tp);
 }
 
-void HCContourSplit(const HCContour* contour, HCReal t, HCContour* sCurve, HCContour* eCurve) {
-    // TODO: This
-}
-
-void HCContourIntersection(HCContour pCurve, HCContour qCurve, HCInteger* count, HCReal* t, HCReal* u) {
-    // TODO: This
+void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u) {
+    // Compare each component of each contour against one another for intersections
+    // TODO: Can use / cache bounding rectangles for quick rejection?
+    HCInteger possibleIntersections = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
+    HCReal ts[possibleIntersections];
+    HCReal us[possibleIntersections];
+    HCInteger contourIntersectionCount = 0;
+    HCInteger requestedCount = count == NULL ? HCIntegerMaximum : *count;
+    const HCContourComponent* pComponentsStart = HCContourComponents(pContour);
+    const HCContourComponent* pComponentsEnd = pComponentsStart + HCContourComponentCount(pContour);
+    const HCContourComponent* pPreviousComponent = pComponentsStart;
+    for (const HCContourComponent* pComponent = pComponentsStart + 1; pComponent != pComponentsEnd; pComponent++) {
+        const HCContourComponent* qComponentsStart = HCContourComponents(qContour);
+        const HCContourComponent* qComponentsEnd = qComponentsStart + HCContourComponentCount(qContour);
+        const HCContourComponent* qPreviousComponent = qComponentsStart;
+        for (const HCContourComponent* qComponent = qComponentsStart + 1; qComponent != qComponentsEnd; qComponent++) {
+            HCInteger componentIntersectionCount = 9;
+            HCContourComponentIntersection(pPreviousComponent->p, *pComponent, qPreviousComponent->p, *qComponent, &componentIntersectionCount, ts, us);
+            contourIntersectionCount += componentIntersectionCount;
+            qPreviousComponent = qComponent;
+            if (contourIntersectionCount >= requestedCount) {
+                break;
+            }
+        }
+        pPreviousComponent = pComponent;
+    }
+    
+    // Deliver results
+    HCInteger copyCount = contourIntersectionCount < requestedCount ? contourIntersectionCount : requestedCount;
+    if (t != NULL) {
+        memcpy(t, ts, sizeof(HCReal) * copyCount);
+    }
+    if (u != NULL) {
+        memcpy(u, us, sizeof(HCReal) * copyCount);
+    }
+    if (count != NULL) {
+        *count = copyCount;
+    }
 }
