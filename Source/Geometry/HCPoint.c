@@ -64,8 +64,8 @@ HCPoint HCPointOffset(HCPoint point, HCReal dx, HCReal dy) {
     return HCPointMake(point.x + dx, point.y + dy);
 }
 
-HCPoint HCPointScale(HCPoint point, HCReal scalar) {
-    return HCPointMake(point.x * scalar, point.y * scalar);
+HCPoint HCPointScale(HCPoint point, HCReal sx, HCReal sy) {
+    return HCPointMake(point.x * sx, point.y * sy);
 }
 
 HCPoint HCPointInterpolate(HCPoint point, HCPoint other, HCReal t) {

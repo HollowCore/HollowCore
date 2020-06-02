@@ -55,7 +55,7 @@ CTEST(HCPoint, Operations) {
     
     // Point scale checks
     HCReal scale = 40.0;
-    HCPoint pScale = HCPointScale(p, scale);
+    HCPoint pScale = HCPointScale(p, scale, scale);
     ASSERT_TRUE(HCPointIsSimilar(pScale, HCPointMake(p.x * scale, p.y * scale), 0.000001));
     
     // Point interpolate

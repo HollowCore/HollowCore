@@ -279,7 +279,7 @@ CTEST(HCCurve, Inflection) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Bounds
+// MARK: - Approximate Bounds
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCCurve, LinearApproximateBounds) {
@@ -547,13 +547,129 @@ CTEST(HCCurve, Derivative) {
 // MARK: - Tangent
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Test this!
+CTEST(HCCurve, LinearTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCReal t = 0.75;
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentLinear(p0, p1, t, &tx, &ty);
+    ASSERT_DBL_NEAR(tx, 2.0);
+    ASSERT_DBL_NEAR(ty, 2.0);
+}
+
+CTEST(HCCurve, QuadraticTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.75;
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentQuadratic(p0, c, p1, t, &tx, &ty);
+    ASSERT_DBL_NEAR(tx, 4.0);
+    ASSERT_DBL_NEAR(ty, -2.0);
+}
+
+CTEST(HCCurve, CubicTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.75;
+    HCReal tx = HCRealInvalid;
+    HCReal ty = HCRealInvalid;
+    HCCurveTangentCubic(p0, c0, c1, p1, t, &tx, &ty);
+    ASSERT_DBL_NEAR(tx, 4.125);
+    ASSERT_DBL_NEAR(ty, -3.0);
+}
+
+CTEST(HCCurve, Tangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.75;
+    HCCurve tangent = HCCurveTangent(curve, t);
+    ASSERT_DBL_NEAR(tangent.p1.x, tangent.p0.x + 4.125);
+    ASSERT_DBL_NEAR(tangent.p1.y, tangent.p0.y - 3.0);
+}
+
+CTEST(HCCurve, TangentUnit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.75;
+    HCCurve tangentUnit = HCCurveTangentUnit(curve, t);
+    ASSERT_TRUE(HCPointIsEqual(tangentUnit.p0, HCCurveValue(curve, t)));
+    ASSERT_DBL_NEAR(HCCurveLength(tangentUnit), 1.0);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Normal
 //----------------------------------------------------------------------------------------------------------------------------------
 
-// TODO: Test this!
+CTEST(HCCurve, LinearNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCReal t = 0.75;
+    HCReal nx = HCRealInvalid;
+    HCReal ny = HCRealInvalid;
+    HCCurveNormalLinear(p0, p1, t, &nx, &ny);
+    ASSERT_DBL_NEAR(nx, -2.0);
+    ASSERT_DBL_NEAR(ny, 2.0);
+}
+
+CTEST(HCCurve, QuadraticNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.75;
+    HCReal nx = HCRealInvalid;
+    HCReal ny = HCRealInvalid;
+    HCCurveNormalQuadratic(p0, c, p1, t, &nx, &ny);
+    ASSERT_DBL_NEAR(nx, 2.0);
+    ASSERT_DBL_NEAR(ny, 4.0);
+}
+
+CTEST(HCCurve, CubicNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCReal t = 0.75;
+    HCReal nx = HCRealInvalid;
+    HCReal ny = HCRealInvalid;
+    HCCurveNormalCubic(p0, c0, c1, p1, t, &nx, &ny);
+    ASSERT_DBL_NEAR(nx, 3.0);
+    ASSERT_DBL_NEAR(ny, 4.125);
+}
+
+CTEST(HCCurve, Normal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.75;
+    HCCurve normal = HCCurveNormal(curve, t);
+    ASSERT_DBL_NEAR(normal.p1.x, normal.p0.x + 3.0);
+    ASSERT_DBL_NEAR(normal.p1.y, normal.p0.y + 4.125);
+}
+
+CTEST(HCCurve, NormalUnit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.75;
+    HCCurve normalUnit = HCCurveNormalUnit(curve, t);
+    ASSERT_TRUE(HCPointIsEqual(normalUnit.p0, HCCurveValue(curve, t)));
+    ASSERT_DBL_NEAR(HCCurveLength(normalUnit), 1.0);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
@@ -597,7 +713,17 @@ CTEST(HCCurve, Curvature) {
     ASSERT_DBL_NEAR(k, -0.4409);
 }
 
-// TODO: Test curvature normal
+CTEST(HCCurve, CurvatureNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    HCReal t = 0.75;
+    HCCurve kNormal = HCCurveCurvatureNormal(curve, t);
+    ASSERT_TRUE(HCPointIsEqual(kNormal.p0, HCCurveValue(curve, t)));
+    ASSERT_DBL_NEAR(HCCurveLength(kNormal), fabs(HCCurveCurvature(curve, t)));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Parameterization by Arc Length
@@ -1079,7 +1205,7 @@ CTEST(HCCurve, AxisAlign) {
     HCPoint xAxisAlignedCanonical = HCCurveCanonical(xAxisAligned.p0, xAxisAligned.c0, xAxisAligned.c1, xAxisAligned.p1);
 //    HCPoint yAxisAlignedCanonical = HCCurveCanonical(yAxisAligned.p0, yAxisAligned.c0, yAxisAligned.c1, yAxisAligned.p1);
     ASSERT_TRUE(HCPointIsSimilar(curveCanonical, xAxisAlignedCanonical, 0.000001));
-    // TODO: Why does this fail? c0.x is zero so the calculation is highly unstable
+    // TODO: Why does this fail? c0.x is zero so the calculation IS highly unstable...
 //    ASSERT_TRUE(HCPointIsSimilar(curveCanonical, yAxisAlignedCanonical, 0.000001));
 }
 

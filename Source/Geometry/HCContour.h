@@ -59,15 +59,23 @@ HCReal HCContourLength(const HCContour* contour);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCContourComponentCount(const HCContour* contour);
 HCContourComponent HCContourComponentAt(const HCContour* contour, HCInteger componentIndex);
-HCContourComponent HCContourComponentContaining(const HCContour* contour, HCReal t);
-HCInteger HCContourComponentIndexContaining(const HCContour* contour, HCReal t);
-HCReal HCContourComponentParameterFor(const HCContour* contour, HCReal t);
+HCContourComponent HCContourComponentContainingParameter(const HCContour* contour, HCReal t);
+HCInteger HCContourComponentIndexContainingParameter(const HCContour* contour, HCReal t);
+HCReal HCContourComponentParameterForParameter(const HCContour* contour, HCInteger componentIndex, HCReal t);
+HCReal HCContourParameterForComponentParameter(const HCContour* contour, HCInteger componentIndex, HCReal t);
 const HCContourComponent* HCContourComponents(const HCContour* contour);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Components as Curves
+//----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCContourCurveCount(const HCContour* contour);
 HCCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex);
-HCCurve HCContourCurveContaining(const HCContour* contour, HCReal t);
-HCInteger HCContourCurveIndexContaining(const HCContour* contour, HCReal t);
-HCReal HCContourCurveParameterFor(const HCContour* contour, HCReal t);
+HCCurve HCContourCurveContainingParameter(const HCContour* contour, HCReal t);
+HCInteger HCContourCurveIndexContainingParameter(const HCContour* contour, HCReal t);
+HCReal HCContourCurveParameterForParameter(const HCContour* contour, HCInteger curveIndex, HCReal t);
+HCReal HCContourParameterForCurveParameter(const HCContour* contour, HCInteger curveIndex, HCReal t);
+HCInteger HCContourCurveIndexForComponentIndex(const HCContour* contour, HCInteger componentIndex);
+HCInteger HCContourComponentIndexForCurveIndex(const HCContour* contour, HCInteger curveIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
