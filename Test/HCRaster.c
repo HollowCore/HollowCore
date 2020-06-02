@@ -1428,8 +1428,8 @@ CTEST(HCRaster, DrawContourIntersections) {
     );
     const HCContour* qContour = HCPathContourAt(qPath, 0);
     
-    HCRasterDrawContour(raster, pContour, HCColorGreen);
-    HCRasterDrawContour(raster, qContour, HCColorBlue);
+    HCRasterDrawContour(raster, pContour, HCRasterColorRotating);
+    HCRasterDrawContour(raster, qContour, HCRasterColorRotating);
     
     HCInteger count = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
     HCReal t[count];
@@ -1439,8 +1439,9 @@ CTEST(HCRaster, DrawContourIntersections) {
     for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
         HCPoint intersectionPointT = HCContourValue(pContour, t[intersectionIndex]);
         HCPoint intersectionPointU = HCContourValue(qContour, u[intersectionIndex]);
-        HCRasterDrawEllipse(raster, intersectionPointT.x, intersectionPointT.y, 2.5, 2.5, 0, HCColorYellow, HCColorYellow);
-        HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, HCColorRed, HCColorRed);
+        HCColor color = HCPointIsSimilar(intersectionPointT, intersectionPointU, 1.0) ? HCColorGreen : HCColorRed;
+        HCRasterDrawEllipse(raster, intersectionPointT.x, intersectionPointT.y, 2.5, 2.5, 0, color, color);
+        HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, color, color);
     }
     
 //    for (HCInteger pCurveIndex = 0; pCurveIndex < HCContourCurveCount(pContour); pCurveIndex++) {
@@ -1448,7 +1449,7 @@ CTEST(HCRaster, DrawContourIntersections) {
 //        HCPoint p = HCContourValue(pContour, ct);
 //        HCRasterDrawEllipse(raster, p.x, p.y, 2.5, 2.5, 0, HCColorCyan, HCColorCyan);
 //    }
-//    
+//
 //    for (HCInteger qCurveIndex = 0; qCurveIndex < HCContourCurveCount(qContour); qCurveIndex++) {
 //        HCReal cu = HCContourParameterForCurveParameter(qContour, qCurveIndex, 0.25);
 //        HCPoint q = HCContourValue(qContour, cu);
