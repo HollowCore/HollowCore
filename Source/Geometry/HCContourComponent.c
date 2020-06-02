@@ -212,6 +212,10 @@ HCReal HCContourComponentCurvature(HCPoint p0, HCContourComponent component, HCR
     return HCCurveCurvature(HCCurveMakeWithContourComponent(p0, component), t);
 }
 
+HCContourComponent HCContourComponentCurvatureNormal(HCPoint p0, HCContourComponent component, HCReal t) {
+    return HCContourComponentMakeWithCurve(HCCurveCurvatureNormal(HCCurveMakeWithContourComponent(p0, component), t));
+}
+
 HCReal HCContourComponentParameterAtLength(HCPoint p0, HCContourComponent component, HCReal d) {
     return HCCurveParameterAtLength(HCCurveMakeWithContourComponent(p0, component), d);
 }

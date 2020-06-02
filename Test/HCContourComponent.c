@@ -473,6 +473,110 @@ CTEST(HCContourComponent, CubicDerivative) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Tangent
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourComponent, LinearTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCReal t = 0.75;
+    HCContourComponent tangent = HCContourComponentTangent(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(tangent.p.x - p.x, 2.0);
+    ASSERT_DBL_NEAR(tangent.p.y - p.y, 2.0);
+}
+
+CTEST(HCContourComponent, QuadraticTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCReal t = 0.75;
+    HCContourComponent tangent = HCContourComponentTangent(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(tangent.p.x - p.x, 4.0);
+    ASSERT_DBL_NEAR(tangent.p.y - p.y, -2.0);
+}
+
+CTEST(HCContourComponent, CubicTangent) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal t = 0.75;
+    HCContourComponent tangent = HCContourComponentTangent(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(tangent.p.x - p.x, 4.125);
+    ASSERT_DBL_NEAR(tangent.p.y - p.y, -3.0);
+}
+
+CTEST(HCContourComponent, TangentUnit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal t = 0.75;
+    HCContourComponent tangentUnit = HCContourComponentTangentUnit(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(HCContourComponentLength(p, tangentUnit), 1.0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Normal
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContourComponent, LinearNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint p1 = HCPointMake(3.0, 4.0);
+    HCContourComponent component = HCContourComponentMakeLinear(p1);
+    HCReal t = 0.75;
+    HCContourComponent normal = HCContourComponentNormal(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(normal.p.x - p.x, -2.0);
+    ASSERT_DBL_NEAR(normal.p.y - p.y, 2.0);
+}
+
+CTEST(HCContourComponent, QuadraticNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint  c = HCPointMake(3.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeQuadratic(c, p1);
+    HCReal t = 0.75;
+    HCContourComponent normal = HCContourComponentNormal(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(normal.p.x - p.x, 2.0);
+    ASSERT_DBL_NEAR(normal.p.y - p.y, 4.0);
+}
+
+CTEST(HCContourComponent, CubicNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal t = 0.75;
+    HCContourComponent normal = HCContourComponentNormal(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(normal.p.x - p.x, 3.0);
+    ASSERT_DBL_NEAR(normal.p.y - p.y, 4.125);
+}
+
+CTEST(HCContourComponent, NormalUnit) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal t = 0.75;
+    HCContourComponent normalUnit = HCContourComponentNormalUnit(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(HCContourComponentLength(p, normalUnit), 1.0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Curvature
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -504,6 +608,18 @@ CTEST(HCContourComponent, CubicCurvature) {
     HCReal t = 0.75;
     HCReal k = HCContourComponentCurvature(p0, component, t);
     ASSERT_DBL_NEAR(k, -0.4409);
+}
+
+CTEST(HCContourComponent, CurvatureNormal) {
+    HCPoint p0 = HCPointMake(1.0, 2.0);
+    HCPoint c0 = HCPointMake(2.0, 4.0);
+    HCPoint c1 = HCPointMake(4.0, 4.0);
+    HCPoint p1 = HCPointMake(5.0, 2.0);
+    HCContourComponent component = HCContourComponentMakeCubic(c0, c1, p1);
+    HCReal t = 0.75;
+    HCContourComponent kNormal = HCContourComponentCurvatureNormal(p0, component, t);
+    HCPoint p = HCContourComponentValue(p0, component, t);
+    ASSERT_DBL_NEAR(HCContourComponentLength(p, kNormal), fabs(HCContourComponentCurvature(p0, component, t)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -82,6 +82,7 @@ HCContourComponent HCContourComponentTangentUnit(HCPoint p0, HCContourComponent 
 HCContourComponent HCContourComponentNormal(HCPoint p0, HCContourComponent component, HCReal t);
 HCContourComponent HCContourComponentNormalUnit(HCPoint p0, HCContourComponent component, HCReal t);
 HCReal HCContourComponentCurvature(HCPoint p0, HCContourComponent component, HCReal t);
+HCContourComponent HCContourComponentCurvatureNormal(HCPoint p0, HCContourComponent component, HCReal t);
 HCReal HCContourComponentParameterAtLength(HCPoint p0, HCContourComponent component, HCReal d);
 HCReal HCContourComponentParameterNearestPoint(HCPoint p0, HCContourComponent component, HCPoint p);
 HCReal HCContourComponentDistanceFromPoint(HCPoint p0, HCContourComponent component, HCPoint p);
