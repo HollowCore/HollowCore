@@ -1400,10 +1400,18 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
 CTEST(HCRaster, DrawContourIntersections) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     
-    HCPathRef pPath = HCPathCreateWithSVGPathData(dinosaur);
+//    HCPathRef pPath = HCPathCreateWithSVGPathData(
 //        "M 800 500 "
 //        "A 300 200 0 1 1 799.95 495.0 "
 //    );
+//    const HCContour* pContour = HCPathContourAt(pPath, 0);
+//    HCPathRef qPath = HCPathCreateWithSVGPathData(
+//        "M 750 500 "
+//        "A 250 250 0 1 1 749.95 495.0 "
+//    );
+//    const HCContour* qContour = HCPathContourAt(qPath, 0);
+    
+    HCPathRef pPath = HCPathCreateWithSVGPathData(dinosaur);
     const HCContour* pContour = HCPathContourAt(pPath, 1);
     HCPathRef qPath = HCPathCreateWithSVGPathData(
         "M 750 500 "
@@ -1423,7 +1431,7 @@ CTEST(HCRaster, DrawContourIntersections) {
     HCRasterDrawContour(raster, pContour, HCColorGreen);
     HCRasterDrawContour(raster, qContour, HCColorBlue);
     
-    HCInteger count = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 90;
+    HCInteger count = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
     HCReal t[count];
     HCReal u[count];
     HCContourIntersection(qContour, pContour, &count, u, t);
@@ -1435,13 +1443,15 @@ CTEST(HCRaster, DrawContourIntersections) {
         HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, HCColorRed, HCColorRed);
     }
     
-//    for (HCInteger pComponentIndex = 1; pComponentIndex < HCContourComponentCount(pContour); pComponentIndex++) {
-//        HCPoint p = HCContourValue(pContour, HCContourParameterForComponentParameter(pContour, pComponentIndex, 0.5));
+//    for (HCInteger pCurveIndex = 0; pCurveIndex < HCContourCurveCount(pContour); pCurveIndex++) {
+//        HCReal ct = HCContourParameterForCurveParameter(pContour, pCurveIndex, 0.25);
+//        HCPoint p = HCContourValue(pContour, ct);
 //        HCRasterDrawEllipse(raster, p.x, p.y, 2.5, 2.5, 0, HCColorCyan, HCColorCyan);
 //    }
-//
-//    for (HCInteger qComponentIndex = 1; qComponentIndex < HCContourComponentCount(qContour); qComponentIndex++) {
-//        HCPoint q = HCContourValue(qContour, HCContourParameterForComponentParameter(qContour, qComponentIndex, 0.5));
+//    
+//    for (HCInteger qCurveIndex = 0; qCurveIndex < HCContourCurveCount(qContour); qCurveIndex++) {
+//        HCReal cu = HCContourParameterForCurveParameter(qContour, qCurveIndex, 0.25);
+//        HCPoint q = HCContourValue(qContour, cu);
 //        HCRasterDrawEllipse(raster, q.x, q.y, 2.5, 2.5, 0, HCColorMagenta, HCColorMagenta);
 //    }
     

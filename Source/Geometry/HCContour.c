@@ -247,15 +247,15 @@ HCContourComponent HCContourComponentContainingParameter(const HCContour* contou
 }
 
 HCInteger HCContourComponentIndexContainingParameter(const HCContour* contour, HCReal t) {
-    return (HCInteger)floor(fmax(1.0, fmin((HCReal)(HCContourComponentCount(contour) - 1), t * (HCReal)contour->count)));
+    return (HCInteger)floor(fmax(1.0, fmin((HCReal)(HCContourComponentCount(contour) - 1), t * (HCReal)(HCContourComponentCount(contour) + 1)) + 1.0));
 }
 
 HCReal HCContourComponentParameterForParameter(const HCContour* contour, HCInteger componentIndex, HCReal t) {
-    return fmax(0.0, fmin(1.0, t * (HCReal)(HCContourComponentCount(contour) - 1) - (HCReal)(componentIndex - 1)));
+    return fmax(0.0, fmin(1.0, t * (HCReal)(HCContourComponentCount(contour) + 1) - (HCReal)(componentIndex - 1)));
 }
 
 HCReal HCContourParameterForComponentParameter(const HCContour* contour, HCInteger componentIndex, HCReal t) {
-    return fmax(0.0, fmin(1.0, ((HCReal)(componentIndex - 1) + t) / (HCReal)(HCContourComponentCount(contour) - 1)));
+    return fmax(0.0, fmin(1.0, ((HCReal)(componentIndex - 1) + t) / (HCReal)(HCContourComponentCount(contour) + 1)));
 }
 
 const HCContourComponent* HCContourComponents(const HCContour* contour) {
