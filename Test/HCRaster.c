@@ -1066,6 +1066,34 @@ CTEST(HCRaster, DrawCurveNearestParameterCubic) {
     }
 }
 
+CTEST(HCRaster, DrawCurveDistanceIsomap) {
+    HCRectangle r = HCRectangleMake(HCPointZero, HCSizeMake(192.0, 108.0));
+    HCReal distanceMax = fmin(r.size.width, r.size.height) * 0.5;
+    HCRasterRef raster = HCRasterCreate((HCInteger)HCRectangleWidth(r), (HCInteger)HCRectangleHeight(r));
+    
+    HCPoint p0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.1, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.2);
+    HCPoint c0 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.2, HCRectangleMinY(r) + HCRectangleHeight(r) * 1.2);
+    HCPoint c1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.7, HCRectangleMinY(r) + HCRectangleHeight(r) * -0.3);
+    HCPoint p1 = HCPointMake(HCRectangleMinX(r) + HCRectangleWidth(r) * 0.9, HCRectangleMinY(r) + HCRectangleHeight(r) * 0.9);
+    HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
+    
+    for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
+        for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
+            HCPoint p = HCPointMake(
+                HCRectangleMinX(r) + HCRectangleWidth(r) * ((HCReal)x + 0.5) / (HCReal)(HCRasterWidth(raster)),
+                HCRectangleMinY(r) + HCRectangleHeight(r) * ((HCReal)y + 0.5) / (HCReal)(HCRasterHeight(raster)));
+            
+            HCReal distance = HCCurveDistanceFromPoint(curve, p);
+            HCRasterSetPixelAt(raster, x, y, HCColorScale(HCColorGreen, distance / distanceMax));
+        }
+    }
+    
+    HCRasterDrawCurves(raster, &curve, 1, HCColorYellow, HCColorYellow);
+    
+    HCRasterSaveBMP(raster, "curve_distance_isomap.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawMouldLinear) {
     HCInteger countX = 5;
     HCInteger countY = 5;
