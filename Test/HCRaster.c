@@ -1460,6 +1460,41 @@ CTEST(HCRaster, DrawContourIntersections) {
     HCRelease(raster);
 }
 
+CTEST(HCRaster, DrawTestCurveIntersections) {
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
+    
+    HCCurve pCurve = HCCurveMakeCubic(
+        HCPointMake(499.99975000012154, 749.99974999987148),
+        HCPointMake(361.92856254249222, 749.99961192868204),
+        HCPointMake(249.99986192906064, 638.07068745762240),
+        HCPointMake(250.00000000025005, 499.99949999999296));
+    
+    HCCurve qCurve = HCCurveMakeCubic(
+        HCPointMake(296.58778000000001, 500.0),
+        HCPointMake(NAN, NAN),
+        HCPointMake(NAN, NAN),
+        HCPointMake(329.71762999999999, 500.0));
+    
+    HCRasterDrawCurves(raster, &pCurve, 1, HCColorGreen, HCColorGreen);
+    HCRasterDrawCurves(raster, &qCurve, 1, HCColorBlue, HCColorBlue);
+    
+    HCInteger count = 9;
+    HCReal t[count];
+    HCReal u[count];
+    HCCurveIntersection(pCurve, qCurve, &count, u, t);
+    
+    for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
+        HCPoint intersectionPointT = HCCurveValue(pCurve, t[intersectionIndex]);
+        HCPoint intersectionPointU = HCCurveValue(qCurve, u[intersectionIndex]);
+        HCColor color = HCPointIsSimilar(intersectionPointT, intersectionPointU, 1.0) ? HCColorGreen : HCColorRed;
+        HCRasterDrawEllipse(raster, intersectionPointT.x, intersectionPointT.y, 2.5, 2.5, 0, color, color);
+        HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, color, color);
+    }
+    
+    HCRasterSaveBMP(raster, "curve_intersections.bmp");
+    HCRelease(raster);
+}
+
 CTEST(HCRaster, DrawPathIntersection) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(

@@ -430,6 +430,21 @@ void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* 
     }
 }
 
+void HCRasterDrawCurves(HCRasterRef self, HCCurve* curves, HCInteger curveCount, HCColor c0, HCColor c1) {
+    for (HCInteger curveIndex = 0; curveIndex < curveCount; curveIndex++) {
+        HCCurve curve = curves[curveIndex];
+        if (HCCurveIsLinear(curve)) {
+            HCRasterDrawLine(self, curve.p0.x, curve.p0.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+        else if (HCCurveIsQuadratic(curve)) {
+            HCRasterDrawQuadraticCurve(self, curve.p0.x, curve.p0.y, curve.c0.x, curve.c0.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+        else if (HCCurveIsCubic(curve)) {
+            HCRasterDrawCubicCurve(self, curve.p0.x, curve.p0.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+    }
+}
+
 void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
     // Drawing empty contours does nothing
     if (contour == NULL) {

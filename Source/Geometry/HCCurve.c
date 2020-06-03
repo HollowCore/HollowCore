@@ -1803,7 +1803,15 @@ void HCCurveIntersection(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCRea
         }
     }
     else {
-        return HCCurveIntersectionCubicCubic(pCurve.p0, pCurve.c0, pCurve.c1, pCurve.p1, qCurve.p0, qCurve.c0, qCurve.c1, qCurve.p1, count, t, u);
+        if (HCCurveIsLinear(qCurve)) {
+            HCCurveIntersectionLinearCubic(qCurve.p0, qCurve.p1, pCurve.p0, pCurve.c0, pCurve.c1, pCurve.p1, count, u, t);
+        }
+        else if (HCCurveIsQuadratic(qCurve)) {
+            HCCurveIntersectionQuadraticCubic(qCurve.p0, qCurve.c0, qCurve.p1, pCurve.p0, pCurve.c0, pCurve.c1, pCurve.p1, count, u, t);
+        }
+        else {
+            return HCCurveIntersectionCubicCubic(pCurve.p0, pCurve.c0, pCurve.c1, pCurve.p1, qCurve.p0, qCurve.c0, qCurve.c1, qCurve.p1, count, t, u);
+        }
     }
 }
 

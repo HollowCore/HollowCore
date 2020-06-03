@@ -47,6 +47,7 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 void HCRasterDrawPolyline(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed, HCColor color);
 void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed, HCColor color);
 void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed, HCColor color);
+void HCRasterDrawCurves(HCRasterRef self, HCCurve* curves, HCInteger curveCount, HCColor c0, HCColor c1);
 void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------

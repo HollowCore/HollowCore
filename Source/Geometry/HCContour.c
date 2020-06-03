@@ -406,29 +406,48 @@ HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p) {
 }
 
 void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u) {
-    // Compare each component of each contour against one another for intersections
+    // Compare each component curve of each contour against one another for intersections
     HCInteger possibleIntersections = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
     HCReal contourIntersectionTs[possibleIntersections];
     HCReal contourIntersectionUs[possibleIntersections];
     HCInteger contourIntersectionCount = 0;
     HCInteger requestedCount = count == NULL ? HCIntegerMaximum : *count;
     for (HCInteger pComponentIndex = 1; pComponentIndex < HCContourComponentCount(pContour); pComponentIndex++) {
+        // Extract the curve associated with this component
         const HCCurve* pCurve = (HCCurve*)&HCContourComponents(pContour)[pComponentIndex - 1].p;
+        
+        // Compare this component curve against all component curves of the other contour
         for (HCInteger qComponentIndex = 1; qComponentIndex < HCContourComponentCount(qContour); qComponentIndex++) {
+            // Extract the curve associated with this component
             const HCCurve* qCurve = (HCCurve*)&HCContourComponents(qContour)[qComponentIndex - 1].p;
-            HCInteger componentIntersectionCount = 9;
-            HCReal componentIntersectionTs[9];
-            HCReal componentIntersectionUs[9];
-            HCCurveIntersection(*pCurve, *qCurve, &componentIntersectionCount, componentIntersectionTs, componentIntersectionUs);
-            for (HCInteger componentIntersectionIndex = 0; componentIntersectionIndex < componentIntersectionCount; componentIntersectionIndex++) {
-                contourIntersectionTs[contourIntersectionCount] = HCContourParameterForComponentParameter(pContour, pComponentIndex, componentIntersectionTs[componentIntersectionIndex]);
-                contourIntersectionUs[contourIntersectionCount] = HCContourParameterForComponentParameter(qContour, qComponentIndex, componentIntersectionUs[componentIntersectionIndex]);
+            
+            // Determine how many more intersections have been requested to be found
+            HCInteger remaining = requestedCount - contourIntersectionCount;
+            
+            // Find intersections between component curves
+            HCInteger curveIntersectionCount = remaining < 9 ? remaining : 9;
+            HCReal curveIntersectionTs[curveIntersectionCount];
+            HCReal curveIntersectionUs[curveIntersectionCount];
+            HCCurveIntersection(*pCurve, *qCurve, &curveIntersectionCount, curveIntersectionTs, curveIntersectionUs);
+            
+            // Convert intersection parameters from curve-relative 0...1 to contour-relative 0...1
+            for (HCInteger curveIntersectionIndex = 0; curveIntersectionIndex < curveIntersectionCount; curveIntersectionIndex++) {
+                HCReal curveT = curveIntersectionTs[curveIntersectionIndex];
+                HCReal contourT = HCContourParameterForComponentParameter(pContour, pComponentIndex, curveT);
+                contourIntersectionTs[contourIntersectionCount] = contourT;
+                HCReal curveU = curveIntersectionUs[curveIntersectionIndex];
+                HCReal contourU = HCContourParameterForComponentParameter(qContour, qComponentIndex, curveU);
+                contourIntersectionUs[contourIntersectionCount] = contourU;
                 contourIntersectionCount++;
             }
+            
+            // Quit searching other contour if enough intersections have been found
             if (contourIntersectionCount >= requestedCount) {
                 break;
             }
         }
+        
+        // Quit searching contour if enough intersections have been found
         if (contourIntersectionCount >= requestedCount) {
             break;
         }
