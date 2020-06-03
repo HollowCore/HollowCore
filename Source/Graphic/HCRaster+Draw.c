@@ -231,8 +231,8 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
 }
 
 void HCRasterDrawEllipse(HCRasterRef self, HCReal cx, HCReal cy, HCReal xr, HCReal yr, HCReal rotation, HCColor c0, HCColor c1) {
-    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, 0.0, false, false, c0, c1);
-    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, 0.0, false, true, c0, c1);
+    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, rotation, false, false, c0, c1);
+    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, rotation, false, true, c0, c1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

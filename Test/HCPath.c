@@ -789,7 +789,7 @@ CTEST(HCPath, DegenerateCubic) {
 
 CTEST(HCPath, SVGConversion) {
 void HCPathPrintSVGPathData(HCPathRef self, FILE* stream);
-    HCPathRef path = HCPathCreateWithSVGPathData(dinosaur);
+    HCPathRef path = HCPathCreateWithSVGPathData("M 10 10 L 30 10 30 20 10 20 Z");
     HCPathPrintSVGPathData(path, stdout); // TODO: Not to stdout
     HCRelease(path);
 }

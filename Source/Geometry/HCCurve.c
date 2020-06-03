@@ -331,6 +331,10 @@ void HCCurveExtrema(HCCurve curve, HCInteger* count, HCReal* extrema) {
 }
 
 void HCCurveExtremaLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* extrema) {
+    (void)p0; // Unused
+    (void)p1; // Unused
+    (void)extrema; // Unused
+    
     // Linear curve has no extrema
     if (count != NULL) {
         *count = 0;
@@ -451,6 +455,10 @@ void HCCurveInflections(HCCurve curve, HCInteger* count, HCReal* inflections) {
 }
 
 void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    (void)p0; // Unused
+    (void)p1; // Unused
+    (void)inflections; // Unused
+    
     // Linear curves have no inflections
     if (count != NULL) {
         *count = 0;
@@ -458,6 +466,11 @@ void HCCurveInflectionsLinear(HCPoint p0, HCPoint p1, HCInteger* count, HCReal* 
 }
 
 void HCCurveInflectionsQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCInteger* count, HCReal* inflections) {
+    (void)p0; // Unused
+    (void)c; // Unused
+    (void)p1; // Unused
+    (void)inflections; // Unused
+    
     // Quadratic curves have no inflections
     if (count != NULL) {
         *count = 0;
@@ -838,6 +851,8 @@ HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
 }
 
 void HCCurveTangentLinear(HCPoint p0, HCPoint p1, HCReal t, HCReal* tx, HCReal* ty) {
+    (void)t; // Unused
+    
     // Calculate linear derivative weight
     HCPoint dp = HCPointInvalid;
     HCCurveDerivativeLinear(p0, p1, &dp);
@@ -1034,6 +1049,10 @@ HCReal HCCurveCurvature(HCCurve curve, HCReal t) {
 }
 
 HCReal HCCurveCurvatureLinear(HCPoint p0, HCPoint p1, HCReal t) {
+    (void)p0; // Unused
+    (void)p1; // Unused
+    (void)t; // Unused
+    
     // Linear curve has zero curvature
     return 0.0;
 }
@@ -1434,10 +1453,17 @@ HCCurve HCCurveMould(HCCurve curve, HCReal t, HCPoint p) {
 }
 
 void HCCurveMouldLinear(HCPoint p0, HCPoint p1, HCReal t, HCPoint p) {
+    (void)p0; // Unused
+    (void)p1; // Unused
+    (void)t; // Unused
+    (void)p; // Unused
+    
     // Linear curve cannot be moulded since its anchor points are the only contributing elements to its form
 }
 
 void HCCurveMouldQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCReal t, HCPoint p, HCPoint* rc) {
+    (void)c; // Unused
+    
     // Calculate the interpolating quadratic with the desired on-curve point and associatted t value
     HCCurveInterpolatingPointQuadratic(p0, p1, p, t, rc);
 }

@@ -104,6 +104,7 @@ HCBoolean HCContourComponentIsLinear(HCPoint p0, HCContourComponent component) {
 }
 
 HCContourComponent HCContourComponentAsLinear(HCPoint p0, HCContourComponent component) {
+    (void)p0; // Unused
     return HCContourComponentMakeLinear(component.p);
 }
 

@@ -31,6 +31,24 @@ CTEST(HCContourComponent, Creation) {
     ASSERT_DBL_NEAR(cubic.c1.y, 4.0);
     ASSERT_DBL_NEAR(cubic.p.x, -5.0);
     ASSERT_DBL_NEAR(cubic.p.y, 6.0);
+    
+    HCContourComponent component = HCContourComponentMakeWithCurve(HCCurveMakeCubic(HCPointMake(-1.0, 2.0), HCPointMake(-3.0, 4.0), HCPointMake(-5.0, 6.0), HCPointMake(-7.0, 8.0)));
+    ASSERT_DBL_NEAR(component.c0.x, -3.0);
+    ASSERT_DBL_NEAR(component.c0.y, 4.0);
+    ASSERT_DBL_NEAR(component.c1.x, -5.0);
+    ASSERT_DBL_NEAR(component.c1.y, 6.0);
+    ASSERT_DBL_NEAR(component.p.x, -7.0);
+    ASSERT_DBL_NEAR(component.p.y, 8.0);
+    
+    HCCurve curve = HCCurveMakeWithContourComponent(HCPointMake(-1.0, 2.0), component);
+    ASSERT_DBL_NEAR(curve.p0.x, -1.0);
+    ASSERT_DBL_NEAR(curve.p0.y, 2.0);
+    ASSERT_DBL_NEAR(curve.c0.x, -3.0);
+    ASSERT_DBL_NEAR(curve.c0.y, 4.0);
+    ASSERT_DBL_NEAR(curve.c1.x, -5.0);
+    ASSERT_DBL_NEAR(curve.c1.y, 6.0);
+    ASSERT_DBL_NEAR(curve.p1.x, -7.0);
+    ASSERT_DBL_NEAR(curve.p1.y, 8.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
