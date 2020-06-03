@@ -1486,6 +1486,8 @@ CTEST(HCRaster, DrawContourIntersections) {
     
     HCRasterSaveBMP(raster, "contour_intersections.bmp");
     HCRelease(raster);
+    HCRelease(pPath);
+    HCRelease(qPath);
 }
 
 CTEST(HCRaster, DrawTestCurveIntersections) {
