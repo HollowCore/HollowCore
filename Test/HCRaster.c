@@ -1462,7 +1462,7 @@ CTEST(HCRaster, DrawContourIntersections) {
     HCInteger count = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
     HCReal t[count];
     HCReal u[count];
-    HCContourIntersection(qContour, pContour, &count, u, t);
+    HCContourIntersections(qContour, pContour, &count, u, t);
     
     for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
         HCPoint intersectionPointT = HCContourValue(pContour, t[intersectionIndex]);

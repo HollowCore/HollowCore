@@ -90,6 +90,6 @@ HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t);
 HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d);
 HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p);
 HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p);
-void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u);
+void HCContourIntersections(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u);
 
 #endif /* HCContour_h */

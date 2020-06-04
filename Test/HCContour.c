@@ -327,7 +327,7 @@ CTEST(HCContour, Operations) {
     HCInteger intersectionCount = HCContourComponentCount(contour) * 9;
     HCReal t[intersectionCount];
     HCReal u[intersectionCount];
-    HCContourIntersection(contour, qContour, &intersectionCount, t, u);
+    HCContourIntersections(contour, qContour, &intersectionCount, t, u);
     ASSERT_TRUE(intersectionCount == 2);
     ASSERT_TRUE(HCRealIsSimilar(t[0], 0.25801, 0.00001));
     ASSERT_TRUE(HCRealIsSimilar(t[1], 0.89020, 0.00001));

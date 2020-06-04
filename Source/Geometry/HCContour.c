@@ -401,7 +401,7 @@ HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p) {
     return HCPointDistance(p, tp);
 }
 
-void HCContourIntersection(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u) {
+void HCContourIntersections(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u) {
     // Compare each component curve of each contour against one another for intersections
     HCInteger possibleIntersections = (HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
     HCReal contourIntersectionTs[possibleIntersections];

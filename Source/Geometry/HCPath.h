@@ -69,6 +69,19 @@ HCPathElement HCPathElementAt(HCPathRef self, HCInteger elementIndex);
 HCRectangle HCPathBounds(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polylines
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathPolylineCount(HCPathRef self);
+HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex);
+HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex);
+const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polyline / Path Element Correspondence
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex);
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathContourCount(HCPathRef self);
@@ -90,20 +103,29 @@ HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self);
 HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Polylines
+// MARK: - Contour / Path Parameter Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCPathPolylineCount(HCPathRef self);
-HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex);
-HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex);
-const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex);
+const HCContour* HCPathContourContainingParameter(HCPathRef self, HCReal t);
+HCInteger HCPathContourIndexContainingParameter(HCPathRef self, HCReal t);
+HCReal HCPathContourParameterForParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
+HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Polyline / Path Element Correspondence
+// MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex);
+HCPoint HCPathValue(HCPathRef self, HCReal t);
+HCCurve HCPathTangent(HCPathRef self, HCReal t);
+HCCurve HCPathTangentUnit(HCPathRef self, HCReal t);
+HCCurve HCPathNormal(HCPathRef self, HCReal t);
+HCCurve HCPathNormalUnit(HCPathRef self, HCReal t);
+HCReal HCPathCurvature(HCPathRef self, HCReal t);
+HCCurve HCPathCurvatureNormal(HCPathRef self, HCReal t);
+HCReal HCPathParameterAtLength(HCPathRef self, HCReal d);
+HCReal HCPathParameterNearestPoint(HCPathRef self, HCPoint p);
+HCReal HCPathDistanceFromPoint(HCPathRef self, HCPoint p);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Intersection
+// MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point);
 HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point);
