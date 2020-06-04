@@ -207,7 +207,7 @@ HCInteger HCPathHashValue(HCPathRef self) {
 }
 
 void HCPathPrint(HCPathRef self, FILE* stream) {
-    fprintf(stream, "<%s@%p>,path:", self->base.type->name, self);
+    fprintf(stream, "<%s@%p>", self->base.type->name, self);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

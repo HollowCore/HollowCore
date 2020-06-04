@@ -288,8 +288,8 @@ CTEST(HCCurve, LinearApproximateBounds) {
     HCRectangle bounds = HCCurveApproximateBoundsLinear(p0, p1);
     ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
         fmin(p0.x, p1.x),
-        fmin(p0.y, p1.y),
         fmax(p0.x, p1.x),
+        fmin(p0.y, p1.y),
         fmax(p0.y, p1.y))));
 }
 
@@ -300,8 +300,8 @@ CTEST(HCCurve, QuadraticApproximateBounds) {
     HCRectangle bounds = HCCurveApproximateBoundsQuadratic(p0, c, p1);
     ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
         fmin(p0.x, fmin(c.x, p1.x)),
-        fmin(p0.y, fmin(c.y, p1.y)),
         fmax(p0.x, fmax(c.x, p1.x)),
+        fmin(p0.y, fmin(c.y, p1.y)),
         fmax(p0.y, fmax(c.y, p1.y)))));
 }
 
@@ -313,8 +313,8 @@ CTEST(HCCurve, CubicApproximateBounds) {
     HCRectangle bounds = HCCurveApproximateBoundsCubic(p0, c0, c1, p1);
     ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
         fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
-        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))))));
 }
 
@@ -327,8 +327,8 @@ CTEST(HCCurve, ApproximateBounds) {
     HCRectangle bounds = HCCurveApproximateBounds(curve);
     ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(
         fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
-        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))))));
 }
 
@@ -341,7 +341,7 @@ CTEST(HCCurve, LinearBounds) {
     HCPoint p1 = HCPointMake(3.0, -4.0);
     HCRectangle bounds = HCCurveBoundsLinear(p0, p1);
     ASSERT_TRUE(HCRectangleContainsRectangle(HCCurveApproximateBoundsLinear(p0, p1), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(fmin(p0.x, p1.x), fmin(p0.y, p1.y), fmax(p0.x, p1.x), fmax(p0.y, p1.y))));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(fmin(p0.x, p1.x), fmax(p0.x, p1.x), fmin(p0.y, p1.y), fmax(p0.y, p1.y))));
 }
 
 CTEST(HCCurve, QuadraticBounds) {
@@ -350,7 +350,7 @@ CTEST(HCCurve, QuadraticBounds) {
     HCPoint p1 = HCPointMake(5.0, 2.0);
     HCRectangle bounds = HCCurveBoundsQuadratic(p0, c, p1);
     ASSERT_TRUE(HCRectangleContainsRectangle(HCCurveApproximateBoundsQuadratic(p0, c, p1), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.0)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 5.0, 2.0, 3.0)));
 }
 
 CTEST(HCCurve, CubicBounds) {
@@ -360,7 +360,7 @@ CTEST(HCCurve, CubicBounds) {
     HCPoint p1 = HCPointMake(5.0, 2.0);
     HCRectangle bounds = HCCurveBoundsCubic(p0, c0, c1, p1);
     ASSERT_TRUE(HCRectangleContainsRectangle(HCCurveApproximateBoundsCubic(p0, c0, c1, p1), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 5.0, 2.0, 3.5)));
 }
 
 CTEST(HCCurve, Bounds) {
@@ -371,7 +371,7 @@ CTEST(HCCurve, Bounds) {
     HCCurve curve = HCCurveMakeCubic(p0, c0, c1, p1);
     HCRectangle bounds = HCCurveBounds(curve);
     ASSERT_TRUE(HCRectangleContainsRectangle(HCCurveApproximateBounds(curve), bounds));
-    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 2.0, 5.0, 3.5)));
+    ASSERT_TRUE(HCRectangleIsEqual(bounds, HCRectangleMakeWithEdges(1.0, 5.0, 2.0, 3.5)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

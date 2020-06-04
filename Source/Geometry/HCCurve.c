@@ -541,24 +541,24 @@ HCRectangle HCCurveApproximateBounds(HCCurve curve) {
 HCRectangle HCCurveApproximateBoundsLinear(HCPoint p0, HCPoint p1) {
     return HCRectangleMakeWithEdges(
         fmin(p0.x, p1.x),
-        fmin(p0.y, p1.y),
         fmax(p0.x, p1.x),
+        fmin(p0.y, p1.y),
         fmax(p0.y, p1.y));
 }
 
 HCRectangle HCCurveApproximateBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
     return HCRectangleMakeWithEdges(
         fmin(p0.x, fmin(c.x, p1.x)),
-        fmin(p0.y, fmin(c.y, p1.y)),
         fmax(p0.x, fmax(c.x, p1.x)),
+        fmin(p0.y, fmin(c.y, p1.y)),
         fmax(p0.y, fmax(c.y, p1.y)));
 }
 
 HCRectangle HCCurveApproximateBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     return HCRectangleMakeWithEdges(
         fmin(p0.x, fmin(c0.x, fmin(c1.x, p1.x))),
-        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.x, fmax(c0.x, fmax(c1.x, p1.x))),
+        fmin(p0.y, fmin(c0.y, fmin(c1.y, p1.y))),
         fmax(p0.y, fmax(c0.y, fmax(c1.y, p1.y))));
 }
 
@@ -587,7 +587,7 @@ HCRectangle HCCurveBoundsLinear(HCPoint p0, HCPoint p1) {
     HCReal maxY = fmax(p0.y, p1.y);
     
     // Calculate bounding rectangle from min/max of end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+    return HCRectangleMakeWithEdges(minX, maxX, minY, maxY);
 }
 
 HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
@@ -611,7 +611,7 @@ HCRectangle HCCurveBoundsQuadratic(HCPoint p0, HCPoint c, HCPoint p1) {
     }
     
     // Calculate bounding rectangle from min/max of extrema and end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+    return HCRectangleMakeWithEdges(minX, maxX, minY, maxY);
 }
 
 HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
@@ -635,7 +635,7 @@ HCRectangle HCCurveBoundsCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1) {
     }
     
     // Calculate bounding rectangle from min/max of extrema and end points
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+    return HCRectangleMakeWithEdges(minX, maxX, minY, maxY);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

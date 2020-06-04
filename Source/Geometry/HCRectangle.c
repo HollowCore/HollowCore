@@ -20,8 +20,8 @@ HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCRe
     return HCRectangleMake(HCPointMake(x, y), HCSizeMake(width, height));
 }
 
-HCRectangle HCRectangleMakeWithEdges(HCReal minX, HCReal minY, HCReal maxX, HCReal maxY) {
-    return HCRectangleMake(HCPointMake(fmin(minX, maxX), fmin(minY, maxY)), HCSizeMake(fabs(maxX - minX), fabs(maxY - minY)));
+HCRectangle HCRectangleMakeWithEdges(HCReal xEdgeA, HCReal xEdgeB, HCReal yEdgeA, HCReal yEdgeB) {
+    return HCRectangleMake(HCPointMake(fmin(xEdgeA, xEdgeB), fmin(yEdgeA, yEdgeB)), HCSizeMake(fabs(xEdgeA - xEdgeB), fabs(yEdgeA - yEdgeB)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -196,10 +196,10 @@ HCRectangle HCContourApproximateBounds(const HCContour* contour) {
     for (const HCContourComponent* component = componentsStart + 1; component != componentsEnd; component++) {
         minX = fmin(minX, fmin(component->c0.x, fmin(component->c1.x, component->p.x)));
         maxX = fmax(maxX, fmax(component->c0.x, fmax(component->c1.x, component->p.x)));
-        minY = fmax(maxY, fmax(component->c0.y, fmax(component->c1.y, component->p.y)));
+        minY = fmin(minY, fmin(component->c0.y, fmin(component->c1.y, component->p.y)));
         maxY = fmax(maxY, fmax(component->c0.y, fmax(component->c1.y, component->p.y)));
     }
-    return HCRectangleMakeWithEdges(minX, minY, maxX, maxY);
+    return HCRectangleMakeWithEdges(minX, maxX, minY, maxY);
 }
 
 HCRectangle HCContourBounds(const HCContour* contour) {
