@@ -228,31 +228,44 @@ CTEST(HCContour, Attributes) {
     ASSERT_TRUE(inflectionCount == 0);
 }
 
-// TODO: Test these!
-//HCBoolean HCContourIsClosed(const HCContour* contour);
-//HCPoint HCContourStartPoint(const HCContour* contour);
-//HCPoint HCContourEndPoint(const HCContour* contour);
-//void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrema);
-//void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* inflections);
-//HCRectangle HCContourApproximateBounds(const HCContour* contour);
-//HCRectangle HCContourBounds(const HCContour* contour);
-//HCReal HCContourLength(const HCContour* contour);
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Components
 //----------------------------------------------------------------------------------------------------------------------------------
-// TODO: Test these!
-//HCInteger HCContourComponentCount(const HCContour* contour);
-//HCContourComponent HCContourComponentAt(const HCContour* contour, HCInteger componentIndex);
-//HCContourComponent HCContourComponentContaining(const HCContour* contour, HCReal t);
-//HCInteger HCContourComponentIndexContaining(const HCContour* contour, HCReal t);
-//HCReal HCContourComponentParameterFor(const HCContour* contour, HCReal t);
-//const HCContourComponent* HCContourComponents(const HCContour* contour);
-//HCInteger HCContourCurveCount(const HCContour* contour);
-//HCCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex);
-//HCCurve HCContourCurveContaining(const HCContour* contour, HCReal t);
-//HCInteger HCContourCurveIndexContaining(const HCContour* contour, HCReal t);
-//HCReal HCContourCurveParameterFor(const HCContour* contour, HCReal t);
+
+CTEST(HCContour, Components) {
+    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCContourComponent contourComponents[contourComponentCount];
+    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
+    
+    ASSERT_TRUE(HCContourComponentCount(contour) == contourComponentCount);
+    ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentAt(contour, 30), contourComponents[30]));
+    ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentContainingParameter(contour, 0.5), contourComponents[contourComponentCount / 2 + 1 + 1]));
+    ASSERT_TRUE(HCContourComponentIndexContainingParameter(contour, 0.5) == contourComponentCount / 2 + 1 + 1);
+    ASSERT_TRUE(HCContourComponentParameterForParameter(contour, contourComponentCount / 2 + 1 + 1, 0.5) == 0.0);
+    ASSERT_TRUE(HCContourParameterForComponentParameter(contour, contourComponentCount / 2 + 1 + 1, 0.0) == 0.5);
+    ASSERT_TRUE(HCContourComponents(contour) == contourComponents);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Components as Curves
+//----------------------------------------------------------------------------------------------------------------------------------
+
+CTEST(HCContour, ComponentsAsCurves) {
+    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCContourComponent contourComponents[contourComponentCount];
+    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
+    
+    ASSERT_TRUE(HCContourCurveCount(contour) == contourComponentCount - 1);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 30), HCCurveMakeCubic(contourComponents[30].p, contourComponents[31].c0, contourComponents[31].c1, contourComponents[31].p)));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveContainingParameter(contour, 0.5), HCCurveMakeCubic(contourComponents[21].p, contourComponents[22].c0, contourComponents[22].c1, contourComponents[22].p)));
+    ASSERT_TRUE(HCContourCurveIndexContainingParameter(contour, 0.5) == contourComponentCount / 2 + 1);
+    ASSERT_TRUE(HCContourCurveParameterForParameter(contour, contourComponentCount / 2 + 1, 0.51190476190476186) == 0.5);
+    ASSERT_TRUE(HCContourParameterForCurveParameter(contour, contourComponentCount / 2 + 1, 0.5) == 0.51190476190476186);
+    ASSERT_TRUE(HCContourCurveIndexForComponentIndex(contour, 30) == 29);
+    ASSERT_TRUE(HCContourComponentIndexForCurveIndex(contour, 29) == 30);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
