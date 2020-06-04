@@ -105,10 +105,6 @@ void HCContourPrint(const HCContour* contour, FILE* stream) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCBoolean HCContourIsEmpty(const HCContour* contour) {
-    return HCContourComponentCount(contour) == 0;
-}
-
 HCBoolean HCContourIsClosed(const HCContour* contour) {
     return contour->closed;
 }
