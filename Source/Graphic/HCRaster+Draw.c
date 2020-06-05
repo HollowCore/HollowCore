@@ -203,7 +203,7 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
         HCReal px1p = xr * (cosAngle * x1Rotated - sinAngle * y1Rotated);
         HCReal py1p = yr * (sinAngle * x1Rotated + cosAngle * y1Rotated);
         
-        // Rotate the ellipse by the desired rotation angle
+        // Rotate the ellipse by the desired rotation angle and translate to center
         HCReal px0 = cosRotation * px0p - sinRotation * py0p + cx;
         HCReal py0 = sinRotation * px0p + cosRotation * py0p + cy;
         HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;

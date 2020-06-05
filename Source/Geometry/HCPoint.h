@@ -53,8 +53,9 @@ HCBoolean HCPointIsInfinite(HCPoint point);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCPointOffset(HCPoint point, HCReal dx, HCReal dy);
+HCPoint HCPointTranslate(HCPoint point, HCReal tx, HCReal ty);
 HCPoint HCPointScale(HCPoint point, HCReal sx, HCReal sy);
+HCPoint HCPointRotate(HCPoint point, HCReal cosAngle, HCReal sinAngle);
 HCPoint HCPointInterpolate(HCPoint point, HCPoint other, HCReal t);
 HCReal HCPointDistance(HCPoint point, HCPoint other);
 

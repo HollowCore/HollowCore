@@ -50,7 +50,7 @@ CTEST(HCPoint, Operations) {
     HCPoint p = HCPointMake(10.0, -20.0);
     
     // Point offset checks
-    HCPoint pOffset = HCPointOffset(p, -2.0, 3.0);
+    HCPoint pOffset = HCPointTranslate(p, -2.0, 3.0);
     ASSERT_TRUE(HCPointIsSimilar(pOffset, HCPointMake(p.x + -2.0, p.y + 3.0), 0.000001));
     
     // Point scale checks

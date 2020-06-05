@@ -122,6 +122,53 @@ HCPathRef HCPathCreateByTranslatingPath(HCPathRef path, HCReal tx, HCReal ty) {
     return self;
 }
 
+HCPathRef HCPathCreateByScalingPath(HCPathRef path, HCReal sx, HCReal sy) {
+    HCPathRef self = HCPathCreate();
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(path); elementIndex++) {
+        HCPathElement element = HCPathElementAt(path, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: HCPathMove(self, element.points[0].x * sx, element.points[0].y * sy); break;
+            case HCPathCommandAddLine: HCPathAddLine(self, element.points[0].x * sx, element.points[0].y * sy); break;
+            case HCPathCommandAddQuadraticCurve: HCPathAddQuadraticCurve(self, element.points[0].x * sx, element.points[0].y * sy, element.points[1].x * sx, element.points[1].y * sy); break;
+            case HCPathCommandAddCubicCurve: HCPathAddCubicCurve(self, element.points[0].x * sx, element.points[0].y * sy, element.points[1].x * sx, element.points[1].y * sy, element.points[2].x * sx, element.points[2].y * sy); break;
+            case HCPathCommandCloseContour: HCPathClose(self); break;
+        }
+    }
+    return self;
+}
+
+HCPathRef HCPathCreateByRotatingPath(HCPathRef path, HCReal angle) {
+    HCPathRef self = HCPathCreate();
+    HCReal cosAngle = cos(angle);
+    HCReal sinAngle = sin(angle);
+    for (HCInteger elementIndex = 0; elementIndex < HCPathElementCount(path); elementIndex++) {
+        HCPathElement element = HCPathElementAt(path, elementIndex);
+        switch (element.command) {
+            case HCPathCommandMove: {
+                HCPoint p = HCPointRotate(element.points[0], cosAngle, sinAngle);
+                HCPathMove(self, p.x, p.y);
+            } break;
+            case HCPathCommandAddLine: {
+                HCPoint p = HCPointRotate(element.points[0], cosAngle, sinAngle);
+                HCPathAddLine(self, p.x, p.y);
+            } break;
+            case HCPathCommandAddQuadraticCurve: {
+                HCPoint c = HCPointRotate(element.points[0], cosAngle, sinAngle);
+                HCPoint p = HCPointRotate(element.points[1], cosAngle, sinAngle);
+                HCPathAddQuadraticCurve(self, c.x, c.y, p.x, p.y);
+            } break;
+            case HCPathCommandAddCubicCurve: {
+                HCPoint c0 = HCPointRotate(element.points[0], cosAngle, sinAngle);
+                HCPoint c1 = HCPointRotate(element.points[1], cosAngle, sinAngle);
+                HCPoint p = HCPointRotate(element.points[2], cosAngle, sinAngle);
+                HCPathAddCubicCurve(self, c0.x, c0.y, c1.x, c1.y, p.x, p.y);
+            } break;
+            case HCPathCommandCloseContour: HCPathClose(self); break;
+        }
+    }
+    return self;
+}
+
 void HCPathInit(void* memory) {
     // Construct path object
     HCObjectInit(memory);
@@ -589,7 +636,7 @@ HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
             HCPoint p1 = HCPathPolylinePointAt(self, elementIndex, pointIndex);
             
             // Determine if they intersect within the bounds of the segments
-            HCInteger count = 0;
+            HCInteger count = 1;
             HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, NULL, NULL);
             if (count > 0) {
                 intersectionCount++;
@@ -713,7 +760,7 @@ void HCPathForEachIntersection(HCPathRef self, HCPathRef other, HCPathIntersecti
                     HCPoint q1 = HCPathPolylinePointAt(other, otherElementIndex, otherPointIndex);
                     
                     // Determine if they intersect within the bounds of the segments
-                    HCInteger count = 0;
+                    HCInteger count = 1;
                     HCReal t = NAN;
                     HCCurveIntersectionLinearLinear(p0, p1, q0, q1, &count, &t, NULL);
                     if (count > 0) {
@@ -736,15 +783,6 @@ void HCPathForEachIntersection(HCPathRef self, HCPathRef other, HCPathIntersecti
             p0 = p1;
         }
     }
-}
-
-void HCPathIntersects(void* context, HCBoolean* stopSearching, HCPathRef path, HCPathRef otherPath, HCPoint point) {
-    (void)path; // unused
-    (void)otherPath; // unused
-    (void)point; // unused
-    
-    *((HCBoolean*)context) = true;
-    *stopSearching = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

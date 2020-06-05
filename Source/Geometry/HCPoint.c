@@ -60,12 +60,18 @@ HCBoolean HCPointIsInfinite(HCPoint point) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCPoint HCPointOffset(HCPoint point, HCReal dx, HCReal dy) {
-    return HCPointMake(point.x + dx, point.y + dy);
+HCPoint HCPointTranslate(HCPoint point, HCReal tx, HCReal ty) {
+    return HCPointMake(point.x + tx, point.y + ty);
 }
 
 HCPoint HCPointScale(HCPoint point, HCReal sx, HCReal sy) {
     return HCPointMake(point.x * sx, point.y * sy);
+}
+
+HCPoint HCPointRotate(HCPoint point, HCReal cosAngle, HCReal sinAngle) {
+    HCReal x = cosAngle * point.x - sinAngle * point.y;
+    HCReal y = sinAngle * point.x + cosAngle * point.y;
+    return HCPointMake(x, y);
 }
 
 HCPoint HCPointInterpolate(HCPoint point, HCPoint other, HCReal t) {

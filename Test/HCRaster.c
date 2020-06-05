@@ -950,11 +950,11 @@ CTEST(HCRaster, DrawCurveTangentNormalFrame) {
         HCReal t = (HCReal)tIndex * tStep;
         
         HCCurve tangent = HCCurveTangentUnit(curve, t);
-        tangent.p1 = HCPointOffset(tangent.p0, (tangent.p1.x - tangent.p0.x) * length, (tangent.p1.y - tangent.p0.y) * length);
+        tangent.p1 = HCPointTranslate(tangent.p0, (tangent.p1.x - tangent.p0.x) * length, (tangent.p1.y - tangent.p0.y) * length);
         HCRasterDrawLine(raster, tangent.p0.x, tangent.p0.y, tangent.p1.x, tangent.p1.y, HCColorGreen, HCColorWithAlpha(HCColorBlue, 0.9));
         
         HCCurve normal = HCCurveNormalUnit(curve, t);
-        normal.p1 = HCPointOffset(normal.p0, (normal.p1.x - normal.p0.x) * length, (normal.p1.y - normal.p0.y) * length);
+        normal.p1 = HCPointTranslate(normal.p0, (normal.p1.x - normal.p0.x) * length, (normal.p1.y - normal.p0.y) * length);
         HCRasterDrawLine(raster, normal.p0.x, normal.p0.y, normal.p1.x, normal.p1.y, HCColorGreen, HCColorWithAlpha(HCColorRed, 0.9));
     }
     
@@ -980,7 +980,7 @@ CTEST(HCRaster, DrawCurveCurvature) {
         HCReal t = (HCReal)tIndex * tStep;
         
         HCCurve curvature = HCCurveCurvatureNormal(curve, t);
-        curvature.p1 = HCPointOffset(curvature.p0, (curvature.p1.x - curvature.p0.x) * length, (curvature.p1.y - curvature.p0.y) * length);
+        curvature.p1 = HCPointTranslate(curvature.p0, (curvature.p1.x - curvature.p0.x) * length, (curvature.p1.y - curvature.p0.y) * length);
         HCRasterDrawLine(raster, curvature.p0.x, curvature.p0.y, curvature.p1.x, curvature.p1.y, HCColorGreen, HCColorWithAlpha(HCColorRed, 0.9));
     }
     
@@ -1528,13 +1528,19 @@ CTEST(HCRaster, DrawTestCurveIntersections) {
 CTEST(HCRaster, DrawPathIntersections) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     
-    HCPathRef pPath = HCPathCreateWithSVGPathData(dinosaur);
-    HCPathRef qPath = HCPathCreateWithSVGPathData(maze);
+    HCPathRef pPathOriginal = HCPathCreateWithSVGPathData(dinosaur);
+    HCRectangle pPathBounds = HCPathBounds(pPathOriginal);
+    HCPathRef pPathTranslated = HCPathCreateByTranslatingPath(pPathOriginal, -HCRectangleMinX(pPathBounds), -HCRectangleMinY(pPathBounds));
+    HCPathRef pPath = HCPathCreateByScalingPath(pPathTranslated, HCRasterWidth(raster) / HCRectangleWidth(pPathBounds), HCRasterHeight(raster) / HCRectangleHeight(pPathBounds));
+    HCPathRef qPathOriginal = HCPathCreateWithSVGPathData(maze);
+    HCRectangle qPathBounds = HCPathBounds(qPathOriginal);
+    HCPathRef qPathTranslated = HCPathCreateByTranslatingPath(qPathOriginal, -HCRectangleMinX(qPathBounds), -HCRectangleMinY(qPathBounds));
+    HCPathRef qPath = HCPathCreateByScalingPath(qPathTranslated, HCRasterWidth(raster) / HCRectangleWidth(qPathBounds), HCRasterHeight(raster) / HCRectangleHeight(qPathBounds));
     
     HCRasterDrawPath(raster, pPath, HCRasterColorRotating);
     HCRasterDrawPath(raster, qPath, HCRasterColorRotating);
     
-    HCInteger count = 100;
+    HCInteger count = 1000;
     HCReal t[count];
     HCReal u[count];
     HCPathIntersections(pPath, qPath, &count, t, u);
@@ -1549,7 +1555,11 @@ CTEST(HCRaster, DrawPathIntersections) {
     
     HCRasterSaveBMP(raster, "path_intersections.bmp");
     HCRelease(raster);
+    HCRelease(pPathOriginal);
+    HCRelease(pPathTranslated);
     HCRelease(pPath);
+    HCRelease(qPathOriginal);
+    HCRelease(qPathTranslated);
     HCRelease(qPath);
 }
 

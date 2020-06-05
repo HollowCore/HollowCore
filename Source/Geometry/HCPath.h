@@ -52,6 +52,8 @@ HCPathRef HCPathCreateWithElements(const HCPathElement* elements, HCInteger elem
 HCPathRef HCPathCreateWithSubpaths(HCListRef subpaths);
 HCPathRef HCPathCreateWithContour(const HCContour* contour);
 HCPathRef HCPathCreateByTranslatingPath(HCPathRef path, HCReal tx, HCReal ty);
+HCPathRef HCPathCreateByScalingPath(HCPathRef path, HCReal sx, HCReal sy);
+HCPathRef HCPathCreateByRotatingPath(HCPathRef path, HCReal angle);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Object Polymorphic Functions

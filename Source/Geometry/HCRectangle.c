@@ -78,7 +78,7 @@ HCBoolean HCRectangleContainsPoint(HCRectangle rectangle, HCPoint point) {
 }
 
 HCBoolean HCRectangleContainsRectangle(HCRectangle rectangle, HCRectangle other) {
-    return HCRectangleContainsPoint(rectangle, other.origin) && HCRectangleContainsPoint(rectangle, HCPointOffset(other.origin, other.size.width, other.size.height));
+    return HCRectangleContainsPoint(rectangle, other.origin) && HCRectangleContainsPoint(rectangle, HCPointTranslate(other.origin, other.size.width, other.size.height));
 }
 
 HCBoolean HCRectangleOverlapsRectangle(HCRectangle rectangle, HCRectangle other) {
@@ -160,7 +160,7 @@ HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy) {
 }
 
 HCRectangle HCRectangleOffset(HCRectangle rectangle, HCReal dx, HCReal dy) {
-    rectangle.origin = HCPointOffset(rectangle.origin, dx, dy);
+    rectangle.origin = HCPointTranslate(rectangle.origin, dx, dy);
     return rectangle;
 }
 

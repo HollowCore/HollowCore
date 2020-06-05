@@ -846,7 +846,7 @@ HCCurve HCCurveTangent(HCCurve curve, HCReal t) {
         HCCurveTangentCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &tx, &ty);
     }
     HCPoint p = HCCurveValue(curve, t);
-    HCPoint tp = HCPointOffset(p, tx, ty);
+    HCPoint tp = HCPointTranslate(p, tx, ty);
     return HCCurveMakeLinear(p, tp);
 }
 
@@ -951,7 +951,7 @@ HCCurve HCCurveTangentUnit(HCCurve curve, HCReal t) {
     tangentY *= lengthInverse;
     
     // Package result as a linear curve starting at the on-curve point at t and ending one unit distance away in the direction of the curve tangent at t
-    return HCCurveMakeLinear(p, HCPointOffset(p, tangentX, tangentY));
+    return HCCurveMakeLinear(p, HCPointTranslate(p, tangentX, tangentY));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -972,7 +972,7 @@ HCCurve HCCurveNormal(HCCurve curve, HCReal t) {
         HCCurveNormalCubic(curve.p0, curve.c0, curve.c1, curve.p1, t, &nx, &ny);
     }
     HCPoint p = HCCurveValue(curve, t);
-    HCPoint np = HCPointOffset(p, nx, ny);
+    HCPoint np = HCPointTranslate(p, nx, ny);
     return HCCurveMakeLinear(p, np);
 }
 
@@ -1028,7 +1028,7 @@ HCCurve HCCurveNormalUnit(HCCurve curve, HCReal t) {
     // Rotate by pi/2 and deliver result as unit normal vector
     HCReal tx = tangent.p1.x - tangent.p0.x;
     HCReal ty = tangent.p1.y - tangent.p0.y;
-    return HCCurveMakeLinear(tangent.p0, HCPointOffset(tangent.p0, -ty, +tx));
+    return HCCurveMakeLinear(tangent.p0, HCPointTranslate(tangent.p0, -ty, +tx));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1098,7 +1098,7 @@ HCReal HCCurveCurvatureCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HCR
 HCCurve HCCurveCurvatureNormal(HCCurve curve, HCReal t) {
     HCReal curvature = HCCurveCurvature(curve, t);
     HCCurve normal = HCCurveNormalUnit(curve, t);
-    return HCCurveMakeLinear(normal.p0, HCPointOffset(normal.p0, (normal.p1.x - normal.p0.x) * curvature, (normal.p1.y - normal.p0.y) * curvature));
+    return HCCurveMakeLinear(normal.p0, HCPointTranslate(normal.p0, (normal.p1.x - normal.p0.x) * curvature, (normal.p1.y - normal.p0.y) * curvature));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1410,8 +1410,8 @@ void HCCurveInterpolatingPointCubic(HCPoint p0, HCPoint p1, HCPoint p, HCReal t,
     HCReal apy = p.y + (p.y - b.y) / ratio;
     
     // Calculate the points on the curve bezier sub-control polygon of the desired curve just above the on-curve point according to the desired dx/dy
-    HCPoint rpp0 = HCPointOffset(p, -t * dx / 3.0, -t * dy / 3.0);
-    HCPoint rpp1 = HCPointOffset(rpp0, dx / 3.0, dy / 3.0);
+    HCPoint rpp0 = HCPointTranslate(p, -t * dx / 3.0, -t * dy / 3.0);
+    HCPoint rpp1 = HCPointTranslate(rpp0, dx / 3.0, dy / 3.0);
     
     // Calculate the bezier sub-control polygon points leading to control points that make the desired on-curve point be on-curve at t
     HCReal qpp0x = (rpp0.x - t * apx) / tc;
@@ -1631,15 +1631,14 @@ void HCCurveXAxisAlignedLinear(HCPoint p0, HCPoint p1, HCPoint* ap0, HCPoint* ap
     HCReal sinAngle = sin(angle);
     
     // Rotate curve by angle to align the end point to the x-axis
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    p1 = HCPointRotate(p1, cosAngle, sinAngle);
     
     // Deliver result
     if (ap0 != NULL) {
         *ap0 = HCPointZero;
     }
     if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
+        *ap1 = p1;
     }
 }
 
@@ -1656,20 +1655,18 @@ void HCCurveXAxisAlignedQuadratic(HCPoint p0, HCPoint c, HCPoint p1, HCPoint* ap
     HCReal sinAngle = sin(angle);
     
     // Rotate curve by angle to align the end point to the x-axis
-    HCReal cx = cosAngle * c.x - sinAngle * c.y;
-    HCReal cy = sinAngle * c.x + cosAngle * c.y;
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    c = HCPointRotate(c, cosAngle, sinAngle);
+    p1 = HCPointRotate(p1, cosAngle, sinAngle);
     
     // Deliver result
     if (ap0 != NULL) {
         *ap0 = HCPointZero;
     }
     if (ac != NULL) {
-        *ac = HCPointMake(cx, cy);
+        *ac = c;
     }
     if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
+        *ap1 = p1;
     }
 }
 
@@ -1688,25 +1685,22 @@ void HCCurveXAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HC
     HCReal sinAngle = sin(angle);
     
     // Rotate curve by angle to align the end point to the x-axis
-    HCReal c0x = cosAngle * c0.x - sinAngle * c0.y;
-    HCReal c0y = sinAngle * c0.x + cosAngle * c0.y;
-    HCReal c1x = cosAngle * c1.x - sinAngle * c1.y;
-    HCReal c1y = sinAngle * c1.x + cosAngle * c1.y;
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
+    c0 = HCPointRotate(c0, cosAngle, sinAngle);
+    c1 = HCPointRotate(c1, cosAngle, sinAngle);
+    p1 = HCPointRotate(p1, cosAngle, sinAngle);
     
     // Deliver result
     if (ap0 != NULL) {
         *ap0 = HCPointZero;
     }
     if (ac0 != NULL) {
-        *ac0 = HCPointMake(c0x, c0y);
+        *ac0 = c0;
     }
     if (ac1 != NULL) {
-        *ac1 = HCPointMake(c1x, c1y);
+        *ac1 = c1;
     }
     if (ap1 != NULL) {
-        *ap1 = HCPointMake(p1x, p1y);
+        *ap1 = p1;
     }
 }
 
@@ -1869,16 +1863,16 @@ void HCCurveIntersectionLinearLinear(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint
         *u = intersectionU;
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
 
 void HCCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Translate points so the linear curve t0 anchor point is at the origin
-    q0 = HCPointOffset(q0, -p0.x, -p0.y);
-    qc = HCPointOffset(qc, -p0.x, -p0.y);
-    q1 = HCPointOffset(q1, -p0.x, -p0.y);
-    p1 = HCPointOffset(p1, -p0.x, -p0.y);
+    q0 = HCPointTranslate(q0, -p0.x, -p0.y);
+    qc = HCPointTranslate(qc, -p0.x, -p0.y);
+    q1 = HCPointTranslate(q1, -p0.x, -p0.y);
+    p1 = HCPointTranslate(p1, -p0.x, -p0.y);
     p0 = HCPointZero;
     
     // Find the angle that rotates the linear curve to the x-axis
@@ -1887,18 +1881,10 @@ void HCCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q0, HCPo
     HCReal sinAngle = sin(angle);
     
     // Rotate the quadratic curve by the angle to align it to the linear curve
-    HCReal q0x = cosAngle * q0.x - sinAngle * q0.y;
-    HCReal q0y = sinAngle * q0.x + cosAngle * q0.y;
-    q0 = HCPointMake(q0x, q0y);
-    HCReal qcx = cosAngle * qc.x - sinAngle * qc.y;
-    HCReal qcy = sinAngle * qc.x + cosAngle * qc.y;
-    qc = HCPointMake(qcx, qcy);
-    HCReal q1x = cosAngle * q1.x - sinAngle * q1.y;
-    HCReal q1y = sinAngle * q1.x + cosAngle * q1.y;
-    q1 = HCPointMake(q1x, q1y);
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
-    p1 = HCPointMake(p1x, p1y);
+    q0 = HCPointRotate(q0, cosAngle, sinAngle);
+    qc = HCPointRotate(qc, cosAngle, sinAngle);
+    q1 = HCPointRotate(q1, cosAngle, sinAngle);
+    p1 = HCPointRotate(p1, cosAngle, sinAngle);
     
     // Calculate zero crossing of the quadratic's y component function, as these are the intersection points with the curves aligned to the x-axis
     HCReal a = +1.0 * q0.y - 2.0 * qc.y + 1.0 * q1.y;
@@ -1944,17 +1930,17 @@ void HCCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q0, HCPo
         memcpy(u, us, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
 
 void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u) {
     // Translate points so the linear curve t0 anchor point is at the origin
-    q0 = HCPointOffset(q0, -p0.x, -p0.y);
-    qc0 = HCPointOffset(qc0, -p0.x, -p0.y);
-    qc1 = HCPointOffset(qc1, -p0.x, -p0.y);
-    q1 = HCPointOffset(q1, -p0.x, -p0.y);
-    p1 = HCPointOffset(p1, -p0.x, -p0.y);
+    q0 = HCPointTranslate(q0, -p0.x, -p0.y);
+    qc0 = HCPointTranslate(qc0, -p0.x, -p0.y);
+    qc1 = HCPointTranslate(qc1, -p0.x, -p0.y);
+    q1 = HCPointTranslate(q1, -p0.x, -p0.y);
+    p1 = HCPointTranslate(p1, -p0.x, -p0.y);
     p0 = HCPointZero;
     
     // Find the angle that rotates the linear curve to the x-axis
@@ -1963,27 +1949,13 @@ void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint 
     HCReal sinAngle = sin(angle);
     
     // Rotate the cubic curve by the angle to align it to the linear curve
-    HCReal q0x = cosAngle * q0.x - sinAngle * q0.y;
-    HCReal q0y = sinAngle * q0.x + cosAngle * q0.y;
-    q0 = HCPointMake(q0x, q0y);
-    HCReal qc0x = cosAngle * qc0.x - sinAngle * qc0.y;
-    HCReal qc0y = sinAngle * qc0.x + cosAngle * qc0.y;
-    qc0 = HCPointMake(qc0x, qc0y);
-    HCReal qc1x = cosAngle * qc1.x - sinAngle * qc1.y;
-    HCReal qc1y = sinAngle * qc1.x + cosAngle * qc1.y;
-    qc1 = HCPointMake(qc1x, qc1y);
-    HCReal q1x = cosAngle * q1.x - sinAngle * q1.y;
-    HCReal q1y = sinAngle * q1.x + cosAngle * q1.y;
-    q1 = HCPointMake(q1x, q1y);
-    HCReal p1x = cosAngle * p1.x - sinAngle * p1.y;
-    HCReal p1y = sinAngle * p1.x + cosAngle * p1.y;
-    p1 = HCPointMake(p1x, p1y);
+    q0 = HCPointRotate(q0, cosAngle, sinAngle);
+    qc0 = HCPointRotate(qc0, cosAngle, sinAngle);
+    qc1 = HCPointRotate(qc1, cosAngle, sinAngle);
+    q1 = HCPointRotate(q1, cosAngle, sinAngle);
+    p1 = HCPointRotate(p1, cosAngle, sinAngle);
     
     // Calculate zero crossing of the cubic's y component function, as these are the intersection points with the curves aligned to the x-axis
-//    HCReal a = -1.0 * q0.y + 1.0 * qc0.y - 1.0 * qc1.y + 1.0 * q1.y;
-//    HCReal b = +3.0 * q0.y - 2.0 * qc0.y + 1.0 * qc1.y;
-//    HCReal c = -3.0 * q0.y + 1.0 * qc0.y;
-//    HCReal d = +1.0 * q0.y;
     HCReal a = +3.0 * q0.y - 6.0 * qc0.y + 3.0 * qc1.y;
     HCReal b = -3.0 * q0.y + 3.0 * qc0.y;
     HCReal c = +1.0 * q0.y;
@@ -2073,7 +2045,7 @@ void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint 
         memcpy(u, us, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
 
@@ -2160,7 +2132,7 @@ void HCCurveIntersectionQuadraticQuadratic(HCPoint p0, HCPoint pc, HCPoint p1, H
         memcpy(u, us, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
 
@@ -2249,7 +2221,7 @@ void HCCurveIntersectionQuadraticCubic(HCPoint p0, HCPoint pc, HCPoint p1, HCPoi
         memcpy(u, us, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
 
@@ -2340,6 +2312,6 @@ void HCCurveIntersectionCubicCubic(HCPoint p0, HCPoint pc0, HCPoint pc1, HCPoint
         memcpy(u, us, copyCount * sizeof(HCReal));
     }
     if (count != NULL) {
-        *count = rCount;
+        *count = copyCount;
     }
 }
