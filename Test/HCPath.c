@@ -1251,11 +1251,27 @@ CTEST(HCPath, ContourStrangePaths) {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour / Path Parameter Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
-// TODO: Test these!
-//const HCContour* HCPathContourContainingParameter(HCPathRef self, HCReal t);
-//HCInteger HCPathContourIndexContainingParameter(HCPathRef self, HCReal t);
-//HCReal HCPathContourParameterForParameter(HCPathRef self, HCReal t);
-//HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
+
+CTEST(HCPath, ParameterCorrespondence) {
+    HCPathRef path = HCPathCreateWithSVGPathData(dinosaur);
+    
+    ASSERT_TRUE(HCPathContourCount(path) == 5);
+    ASSERT_TRUE(HCContourIsEqual(HCPathContourContainingParameter(path, 0.25), HCPathContourAt(path, 1)));
+    ASSERT_TRUE(HCPathContourIndexContainingParameter(path, 0.30) == 1);
+    ASSERT_TRUE(HCPathContourParameterForParameter(path, 0.30) == 0.5);
+    ASSERT_TRUE(HCPathParameterForContourParameter(path, 1, 0.5) == 0.30);
+    
+    for (HCInteger contourIndex = 0; contourIndex < HCPathContourCount(path); contourIndex++) {
+        for (HCReal t = 0; t <= 1.0; t += 0.01) {
+            if (HCPathContourIndexContainingParameter(path, t) == contourIndex) {
+                HCReal ct = HCPathParameterForContourParameter(path, contourIndex, HCPathContourParameterForParameter(path, t));
+                ASSERT_TRUE(HCRealIsSimilar(ct, t, 0.000001));
+            }
+        }
+    }
+    
+    HCRelease(path);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations
