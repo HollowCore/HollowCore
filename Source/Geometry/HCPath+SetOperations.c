@@ -20,7 +20,7 @@ void HCPathCombineIntersectionFunction(void* context, HCBoolean* continueSearchi
 HCPathRef HCPathCombine(HCPathRef self, HCPathRef other, HCPathCombineOperation operation) {
     // Find intersections between paths
     HCListRef intersections = HCListCreate();
-    HCPathIntersections(self, other, HCPathCombineIntersectionFunction, (void*)intersections);
+    HCPathForEachIntersection(self, other, HCPathCombineIntersectionFunction, (void*)intersections);
     
     // TODO: Segment paths at intersection points
     // TODO: Discard path segments according to containment in the overlaps according to the operation

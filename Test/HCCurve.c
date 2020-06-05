@@ -1337,7 +1337,7 @@ CTEST(HCCurve, Intersection) {
     HCInteger count = 9;
     HCReal t[count];
     HCReal u[count];
-    HCCurveIntersection(curveP, curveQ, &count, t, u);
+    HCCurveIntersections(curveP, curveQ, &count, t, u);
     ASSERT_TRUE(count == 3);
     ASSERT_DBL_NEAR(t[0], 0.1724);
     ASSERT_DBL_NEAR(t[1], 0.4995);

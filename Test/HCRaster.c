@@ -1511,7 +1511,7 @@ CTEST(HCRaster, DrawTestCurveIntersections) {
     HCInteger count = 9;
     HCReal t[count];
     HCReal u[count];
-    HCCurveIntersection(pCurve, qCurve, &count, u, t);
+    HCCurveIntersections(pCurve, qCurve, &count, u, t);
     
     for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
         HCPoint intersectionPointT = HCCurveValue(pCurve, t[intersectionIndex]);
@@ -1525,7 +1525,36 @@ CTEST(HCRaster, DrawTestCurveIntersections) {
     HCRelease(raster);
 }
 
-CTEST(HCRaster, DrawPathIntersection) {
+CTEST(HCRaster, DrawPathIntersections) {
+    HCRasterRef raster = HCRasterCreate(1000, 1000);
+    
+    HCPathRef pPath = HCPathCreateWithSVGPathData(dinosaur);
+    HCPathRef qPath = HCPathCreateWithSVGPathData(maze);
+    
+    HCRasterDrawPath(raster, pPath, HCRasterColorRotating);
+    HCRasterDrawPath(raster, qPath, HCRasterColorRotating);
+    
+    HCInteger count = 100;
+    HCReal t[count];
+    HCReal u[count];
+    HCPathIntersections(pPath, qPath, &count, t, u);
+    
+    for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
+        HCPoint intersectionPointT = HCPathValue(pPath, t[intersectionIndex]);
+        HCPoint intersectionPointU = HCPathValue(qPath, u[intersectionIndex]);
+        HCColor color = HCPointIsSimilar(intersectionPointT, intersectionPointU, 1.0) ? HCColorGreen : HCColorRed;
+        HCRasterDrawEllipse(raster, intersectionPointT.x, intersectionPointT.y, 2.5, 2.5, 0, color, color);
+        HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, color, color);
+    }
+    
+    HCRasterSaveBMP(raster, "path_intersections.bmp");
+    HCRelease(raster);
+    HCRelease(pPath);
+    HCRelease(qPath);
+}
+
+// TODO: Use true union set operation
+CTEST(HCRaster, DrawPathUnion) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     HCPathRef path = HCPathCreateWithSVGPathData(
         "M 200 500 C 500  1000 500  1000 800 500 Z "
@@ -1540,28 +1569,7 @@ CTEST(HCRaster, DrawPathIntersection) {
             HCRasterSetPixelAt(raster, x, y, pathContainsPoint ? (rectangleContainsPoint ? HCColorGreen : HCColorBlue) : (rectangleContainsPoint ? HCColorYellow : HCColorBlack));
         }
     }
-    HCRasterSaveBMP(raster, "path_intersection.bmp");
-    HCRelease(rectangle);
-    HCRelease(path);
-    HCRelease(raster);
-}
-
-CTEST(HCRaster, DrawPathIntersectionNonZero) {
-    HCRasterRef raster = HCRasterCreate(1000, 1000);
-    HCPathRef path = HCPathCreateWithSVGPathData(
-        "M 200 500 C 500  1000 500  1000 800 500 Z "
-        "M 200 500 C 500     0 500     0 800 500 Z "
-    );
-    HCPathRef rectangle = HCPathCreateWithSVGPathData("M 100 300 L 900 300 900 700 100 700 Z");
-    for (HCInteger y = 0; y < HCRasterHeight(raster); y++) {
-        for (HCInteger x = 0; x < HCRasterWidth(raster); x++) {
-            HCPoint point = HCPointMake(x + 0.5, y + 0.5);
-            HCBoolean pathContainsPoint = HCPathContainsPointNonZero(path, point);
-            HCBoolean rectangleContainsPoint = HCPathContainsPointNonZero(rectangle, point);
-            HCRasterSetPixelAt(raster, x, y, pathContainsPoint ? (rectangleContainsPoint ? HCColorGreen : HCColorBlue) : (rectangleContainsPoint ? HCColorYellow : HCColorBlack));
-        }
-    }
-    HCRasterSaveBMP(raster, "path_intersection.bmp");
+    HCRasterSaveBMP(raster, "path_union.bmp");
     HCRelease(rectangle);
     HCRelease(path);
     HCRelease(raster);

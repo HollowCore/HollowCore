@@ -95,7 +95,7 @@ const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathIndexOfContourContainingElement(HCPathRef self, HCInteger elementIndex);
 HCBoolean HCPathContourContainingElementIsClosed(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex);
-HCPathRef HCPathContourPathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* isOpen);
+HCPathRef HCPathContourPathContaingElementRetained(HCPathRef self, HCInteger elementIndex, HCInteger* startIndex, HCInteger* endIndex, HCBoolean* closed);
 HCListRef HCPathContourPathsRetained(HCPathRef self);
 HCListRef HCPathOpenContourPathsRetained(HCPathRef self);
 HCListRef HCPathClosedContourPathsRetained(HCPathRef self);
@@ -107,7 +107,7 @@ HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self);
 //----------------------------------------------------------------------------------------------------------------------------------
 const HCContour* HCPathContourContainingParameter(HCPathRef self, HCReal t);
 HCInteger HCPathContourIndexContainingParameter(HCPathRef self, HCReal t);
-HCReal HCPathContourParameterForParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
+HCReal HCPathContourParameterForParameter(HCPathRef self, HCReal t);
 HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -130,7 +130,8 @@ HCReal HCPathDistanceFromPoint(HCPathRef self, HCPoint p);
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point);
 HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point);
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other);
-void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
+void HCPathIntersections(HCPathRef self, HCPathRef other, HCInteger* count, HCReal* t, HCReal* u);
+void HCPathForEachIntersection(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Path Manipulation

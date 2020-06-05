@@ -1805,7 +1805,7 @@ void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HC
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveIntersection(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u) {
+void HCCurveIntersections(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u) {
     if (HCCurveIsLinear(pCurve)) {
         if (HCCurveIsLinear(qCurve)) {
             HCCurveIntersectionLinearLinear(pCurve.p0, pCurve.p1, qCurve.p0, qCurve.p1, count, t, u);

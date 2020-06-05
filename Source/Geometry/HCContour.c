@@ -246,7 +246,8 @@ HCInteger HCContourComponentIndexContainingParameter(const HCContour* contour, H
     return (HCInteger)floor(fmax(1.0, fmin((HCReal)(HCContourComponentCount(contour) - 1), t * (HCReal)(HCContourComponentCount(contour) + 1)) + 1.0));
 }
 
-HCReal HCContourComponentParameterForParameter(const HCContour* contour, HCInteger componentIndex, HCReal t) {
+HCReal HCContourComponentParameterForParameter(const HCContour* contour, HCReal t) {
+    HCInteger componentIndex = HCContourComponentIndexContainingParameter(contour, t);
     return fmax(0.0, fmin(1.0, t * (HCReal)(HCContourComponentCount(contour) + 1) - (HCReal)(componentIndex - 1)));
 }
 
@@ -279,9 +280,8 @@ HCInteger HCContourCurveIndexContainingParameter(const HCContour* contour, HCRea
     return HCContourCurveIndexForComponentIndex(contour, componentIndex);
 }
 
-HCReal HCContourCurveParameterForParameter(const HCContour* contour, HCInteger curveIndex, HCReal t) {
-    HCInteger componentIndex = HCContourComponentIndexForCurveIndex(contour, curveIndex);
-    return HCContourComponentParameterForParameter(contour, componentIndex, t);
+HCReal HCContourCurveParameterForParameter(const HCContour* contour, HCReal t) {
+    return HCContourComponentParameterForParameter(contour, t);
 }
 
 HCReal HCContourParameterForCurveParameter(const HCContour* contour, HCInteger curveIndex, HCReal t) {
@@ -304,49 +304,49 @@ HCInteger HCContourComponentIndexForCurveIndex(const HCContour* contour, HCInteg
 //----------------------------------------------------------------------------------------------------------------------------------
 HCPoint HCContourValue(const HCContour* contour, HCReal t) {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveValue(curve, ct);
 }
 
 HCCurve HCContourTangent(const HCContour* contour, HCReal t) {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveTangent(curve, ct);
 }
 
 HCCurve HCContourTangentUnit(const HCContour* contour, HCReal t) {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveTangentUnit(curve, ct);
 }
 
 HCCurve HCContourNormal(const HCContour* contour, HCReal t) {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveNormal(curve, ct);
 }
 
 HCCurve HCContourNormalUnit(const HCContour* contour, HCReal t)  {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveNormalUnit(curve, ct);
 }
 
 HCReal HCContourCurvature(const HCContour* contour, HCReal t) {
     HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
     return HCCurveCurvature(curve, ct);
 }
 
 HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t) {
    HCInteger curveIndex = HCContourCurveIndexContainingParameter(contour, t);
-    HCReal ct = HCContourCurveParameterForParameter(contour, curveIndex, t);
+    HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
      return HCCurveCurvatureNormal(curve, ct);
 }
@@ -407,7 +407,7 @@ void HCContourIntersections(const HCContour* pContour, const HCContour* qContour
     HCReal contourIntersectionTs[possibleIntersections];
     HCReal contourIntersectionUs[possibleIntersections];
     HCInteger contourIntersectionCount = 0;
-    HCInteger requestedCount = count == NULL ? HCIntegerMaximum : *count;
+    HCInteger requestedCount = count == NULL ? possibleIntersections : *count;
     for (HCInteger pComponentIndex = 1; pComponentIndex < HCContourComponentCount(pContour); pComponentIndex++) {
         // Extract the curve associated with this component
         const HCCurve* pCurve = (HCCurve*)&HCContourComponents(pContour)[pComponentIndex - 1].p;
@@ -424,7 +424,7 @@ void HCContourIntersections(const HCContour* pContour, const HCContour* qContour
             HCInteger curveIntersectionCount = remaining < 9 ? remaining : 9;
             HCReal curveIntersectionTs[curveIntersectionCount];
             HCReal curveIntersectionUs[curveIntersectionCount];
-            HCCurveIntersection(*pCurve, *qCurve, &curveIntersectionCount, curveIntersectionTs, curveIntersectionUs);
+            HCCurveIntersections(*pCurve, *qCurve, &curveIntersectionCount, curveIntersectionTs, curveIntersectionUs);
             
             // Convert intersection parameters from curve-relative 0...1 to contour-relative 0...1
             for (HCInteger curveIntersectionIndex = 0; curveIntersectionIndex < curveIntersectionCount; curveIntersectionIndex++) {

@@ -242,7 +242,7 @@ void HCCurveYAxisAlignedCubic(HCPoint p0, HCPoint c0, HCPoint c1, HCPoint p1, HC
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
-void HCCurveIntersection(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);
+void HCCurveIntersections(HCCurve pCurve, HCCurve qCurve, HCInteger* count, HCReal* t, HCReal* u);
 void HCCurveIntersectionLinearLinear(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);
 void HCCurveIntersectionLinearQuadratic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);
 void HCCurveIntersectionLinearCubic(HCPoint p0, HCPoint p1, HCPoint q0, HCPoint qc0, HCPoint qc1, HCPoint q1, HCInteger* count, HCReal* t, HCReal* u);

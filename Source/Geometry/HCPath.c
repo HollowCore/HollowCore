@@ -230,6 +230,40 @@ HCRectangle HCPathBounds(HCPathRef self) {
     return self->bounds;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polylines
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathPolylineCount(HCPathRef self) {
+    return HCPathElementCount(self);
+}
+
+HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex) {
+    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
+    return HCDataSize(polylineData) / sizeof(HCPoint);
+}
+
+HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex) {
+    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
+    HCPoint* points = (HCPoint*)HCDataBytes(polylineData);
+    return points[pointIndex];
+}
+
+const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex) {
+    return (HCPoint*)HCDataBytes(HCListObjectAtIndex(self->polylines, polylineIndex));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Polyline / Path Element Correspondence
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex) {
+    (void)self; // unused
+    
+    // Polyline indices and element indices are currently equivalent, as empty polylines are stored for move commands
+    // TODO: Remove empty polylines representing moves
+    return elementIndex;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -403,40 +437,123 @@ HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Polylines
+// MARK: - Contour / Path Parameter Correspondence
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCPathPolylineCount(HCPathRef self) {
-    return HCPathElementCount(self);
+const HCContour* HCPathContourContainingParameter(HCPathRef self, HCReal t) {
+    HCInteger contourIndex = HCPathContourIndexContainingParameter(self, t);
+    return HCPathContourAt(self, contourIndex);
 }
 
-HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex) {
-    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
-    return HCDataSize(polylineData) / sizeof(HCPoint);
+HCInteger HCPathContourIndexContainingParameter(HCPathRef self, HCReal t) {
+    return (HCInteger)floor(fmax(0.0, fmin((HCReal)(HCPathContourCount(self) - 1), t * (HCReal)HCPathContourCount(self))));
 }
 
-HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex) {
-    HCDataRef polylineData = HCListObjectAtIndex(self->polylines, polylineIndex);
-    HCPoint* points = (HCPoint*)HCDataBytes(polylineData);
-    return points[pointIndex];
+HCReal HCPathContourParameterForParameter(HCPathRef self, HCReal t) {
+    HCInteger contourIndex = HCPathContourIndexContainingParameter(self, t);
+    return fmax(0.0, fmin(1.0, t * (HCReal)HCPathContourCount(self) - (HCReal)contourIndex));
 }
 
-const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex) {
-    return (HCPoint*)HCDataBytes(HCListObjectAtIndex(self->polylines, polylineIndex));
+HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t) {
+    return fmax(0.0, fmin(1.0, ((HCReal)contourIndex + t) / (HCReal)HCPathContourCount(self)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Polyline / Path Element Correspondence
+// MARK: - Operations
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger elementIndex) {
-    (void)self; // unused
+HCPoint HCPathValue(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourValue(contour, contourT);
+}
+
+HCCurve HCPathTangent(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourTangent(contour, contourT);
+}
+
+HCCurve HCPathTangentUnit(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourTangentUnit(contour, contourT);
+}
+
+HCCurve HCPathNormal(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourNormal(contour, contourT);
+}
+
+HCCurve HCPathNormalUnit(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourNormalUnit(contour, contourT);
+}
+
+HCReal HCPathCurvature(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourCurvature(contour, contourT);
+}
+
+HCCurve HCPathCurvatureNormal(HCPathRef self, HCReal t) {
+    const HCContour* contour = HCPathContourContainingParameter(self, t);
+    HCReal contourT = HCPathContourParameterForParameter(self, t);
+    return HCContourCurvatureNormal(contour, contourT);
+}
+
+HCReal HCPathParameterAtLength(HCPathRef self, HCReal d) {
+    // Walk contours until the contour containing the desired length is reached
+    HCReal length = 0.0;
+    HCInteger contourIndex;
+    for (contourIndex = 0; contourIndex < HCPathContourCount(self); contourIndex++) {
+        const HCContour* contour = HCPathContourAt(self, contourIndex);
+        HCReal contourLength = HCContourLength(contour);
+        if (length + contourLength > d) {
+            break;
+        }
+        length += contourLength;
+    }
     
-    // Polyline indices and element indices are currently equivalent, as empty polylines are stored for move commands
-    // TODO: Remove empty polylines representing moves
-    return elementIndex;
+    // When the desired length is longer than the path, return the end parameter
+    if (contourIndex >= HCPathContourCount(self)) {
+        return 1.0;
+    }
+    
+    // Calculate the remaining length, query the component for the component-relative parameter corresponding to that length, then convert it to be contour-relative
+    HCReal remaining = d - length;
+    const HCContour* contour = HCPathContourAt(self, contourIndex);
+    HCReal contourT = HCContourParameterAtLength(contour, remaining);
+    HCReal t = HCPathParameterForContourParameter(self, contourIndex, contourT);
+    return t;
+}
+
+HCReal HCPathParameterNearestPoint(HCPathRef self, HCPoint p)  {
+    // Find the nearest parameter for all contours
+    HCReal nearestDistance = HCRealMaximumPositive;
+    HCReal nearestPathParameter = 0.0;
+    HCInteger contourIndex;
+    for (contourIndex = 0; contourIndex < HCPathContourCount(self); contourIndex++) {
+        const HCContour* contour = HCPathContourAt(self, contourIndex);
+        HCReal nearestContourParameter = HCContourParameterNearestPoint(contour, p);
+        HCPoint nearestContourPoint = HCContourValue(contour, nearestContourParameter);
+        HCReal distance = HCPointDistance(p, nearestContourPoint);
+        if (nearestDistance > distance) {
+            nearestDistance = distance;
+            nearestPathParameter = HCPathParameterForContourParameter(self, contourIndex, nearestContourParameter);
+        }
+    }
+    return nearestPathParameter;
+}
+
+HCReal HCPathDistanceFromPoint(HCPathRef self, HCPoint p) {
+    HCReal t = HCPathParameterNearestPoint(self, p);
+    HCPoint pp = HCPathValue(self, t);
+    return HCPointDistance(p, pp);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Path Intersection
+// MARK: - Intersection
 //----------------------------------------------------------------------------------------------------------------------------------
 HCBoolean HCPathContainsPoint(HCPathRef self, HCPoint point) {
     // Determine how many crossings there are for a ray from the point going in the +x direction
@@ -499,12 +616,74 @@ HCBoolean HCPathContainsPointNonZero(HCPathRef self, HCPoint point) {\
 }
 
 HCBoolean HCPathIntersectsPath(HCPathRef self, HCPathRef other) {
-    HCBoolean intersects = false;
-    HCPathIntersections(self, other, HCPathIntersects, &intersects);
-    return intersects;
+    HCInteger count = 1;
+    HCPathIntersections(self, other, &count, NULL, NULL);
+    return count != 0;
 }
 
-void HCPathIntersections(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context) {
+void HCPathIntersections(HCPathRef self, HCPathRef other, HCInteger* count, HCReal* t, HCReal* u) {
+    // Compare each contour against one another for intersections
+    HCInteger pathPossibleIntersections = 10000;//(HCContourComponentCount(pContour) + HCContourComponentCount(qContour)) * 9;
+    HCReal pathIntersectionTs[pathPossibleIntersections];
+    HCReal pathIntersectionUs[pathPossibleIntersections];
+    HCInteger pathIntersectionCount = 0;
+    HCInteger requestedCount = count == NULL ? pathPossibleIntersections : *count;
+    for (HCInteger contourIndex = 0; contourIndex < HCPathContourCount(self); contourIndex++) {
+        // Extract the contour associated with this index
+        const HCContour* contour = HCPathContourAt(self, contourIndex);
+        
+        // Compare this contour against contours of the other path
+        for (HCInteger otherContourIndex = 0; otherContourIndex < HCPathContourCount(other); otherContourIndex++) {
+            // Extract the contour associated with this index
+            const HCContour* otherContour = HCPathContourAt(other, otherContourIndex);
+            
+            // Determine how many more intersections have been requested to be found
+            HCInteger remaining = requestedCount - pathIntersectionCount;
+            
+            // Find intersections between contours
+            HCInteger contourPossibleIntersections = (HCContourComponentCount(contour) + HCContourComponentCount(otherContour)) * 9;
+            HCInteger contourIntersectionCount = remaining < contourPossibleIntersections ? remaining : contourPossibleIntersections;
+            HCReal contourIntersectionTs[contourIntersectionCount];
+            HCReal contourIntersectionUs[contourIntersectionCount];
+            HCContourIntersections(contour, otherContour, &contourIntersectionCount, contourIntersectionTs, contourIntersectionUs);
+            
+            // Convert intersection parameters from contour-relative 0...1 to path-relative 0...1
+            for (HCInteger contourIntersectionIndex = 0; contourIntersectionIndex < contourIntersectionCount; contourIntersectionIndex++) {
+                HCReal contourT = contourIntersectionTs[contourIntersectionIndex];
+                HCReal pathT = HCPathParameterForContourParameter(self, contourIndex, contourT);
+                pathIntersectionTs[pathIntersectionCount] = pathT;
+                HCReal contourU = contourIntersectionUs[contourIntersectionIndex];
+                HCReal pathU = HCPathParameterForContourParameter(other, otherContourIndex, contourU);
+                pathIntersectionUs[pathIntersectionCount] = pathU;
+                pathIntersectionCount++;
+            }
+            
+            // Quit searching other path if enough intersections have been found
+            if (pathIntersectionCount >= requestedCount) {
+                break;
+            }
+        }
+        
+        // Quit searching path if enough intersections have been found
+        if (pathIntersectionCount >= requestedCount) {
+            break;
+        }
+    }
+    
+    // Deliver results
+    HCInteger copyCount = pathIntersectionCount < requestedCount ? pathIntersectionCount : requestedCount;
+    if (t != NULL) {
+        memcpy(t, pathIntersectionTs, sizeof(HCReal) * copyCount);
+    }
+    if (u != NULL) {
+        memcpy(u, pathIntersectionUs, sizeof(HCReal) * copyCount);
+    }
+    if (count != NULL) {
+        *count = copyCount;
+    }
+}
+
+void HCPathForEachIntersection(HCPathRef self, HCPathRef other, HCPathIntersectionFunction intersection, void* context) {
     // Compare each polyline segment in the path against those in the other path
     HCInteger elementCount = HCPathElementCount(self);
     for (HCInteger elementIndex = 0; elementIndex < elementCount; elementIndex++) {
