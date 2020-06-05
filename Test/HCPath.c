@@ -82,6 +82,66 @@ CTEST(HCPath, CreateWithElements) {
     HCRelease(path);
 }
 
+CTEST(HCPath, CreateTranslate) {
+    HCPoint points[] = {
+        {.x = 1.0, .y = 2.0},
+        {.x = 3.0, .y = 4.0},
+        {.x = 5.0, .y = 6.0},
+    };
+    HCPathElement elements[] = {
+        {.command = HCPathCommandMove, .points = points},
+        {.command = HCPathCommandAddLine, .points = points},
+        {.command = HCPathCommandAddQuadraticCurve, .points = points},
+        {.command = HCPathCommandAddCubicCurve, .points = points},
+        {.command = HCPathCommandCloseContour, .points = NULL},
+    };
+    HCPathRef path = HCPathCreateWithElements(elements, sizeof(elements) / sizeof(HCPathElement));
+    HCPathRef translatedPath = HCPathCreateByTranslatingPath(path, 10.0, -5.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(translatedPath, 0).points[0], HCPointTranslate(points[0], 10.0, -5.0)));
+    HCRelease(path);
+    HCRelease(translatedPath);
+}
+
+CTEST(HCPath, CreateScale) {
+    HCPoint points[] = {
+        {.x = 1.0, .y = 2.0},
+        {.x = 3.0, .y = 4.0},
+        {.x = 5.0, .y = 6.0},
+    };
+    HCPathElement elements[] = {
+        {.command = HCPathCommandMove, .points = points},
+        {.command = HCPathCommandAddLine, .points = points},
+        {.command = HCPathCommandAddQuadraticCurve, .points = points},
+        {.command = HCPathCommandAddCubicCurve, .points = points},
+        {.command = HCPathCommandCloseContour, .points = NULL},
+    };
+    HCPathRef path = HCPathCreateWithElements(elements, sizeof(elements) / sizeof(HCPathElement));
+    HCPathRef scaledPath = HCPathCreateByScalingPath(path, 10.0, -5.0);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(scaledPath, 0).points[0], HCPointScale(points[0], 10.0, -5.0)));
+    HCRelease(path);
+    HCRelease(scaledPath);
+}
+
+CTEST(HCPath, CreateRotate) {
+    HCPoint points[] = {
+        {.x = 1.0, .y = 2.0},
+        {.x = 3.0, .y = 4.0},
+        {.x = 5.0, .y = 6.0},
+    };
+    HCPathElement elements[] = {
+        {.command = HCPathCommandMove, .points = points},
+        {.command = HCPathCommandAddLine, .points = points},
+        {.command = HCPathCommandAddQuadraticCurve, .points = points},
+        {.command = HCPathCommandAddCubicCurve, .points = points},
+        {.command = HCPathCommandCloseContour, .points = NULL},
+    };
+    HCPathRef path = HCPathCreateWithElements(elements, sizeof(elements) / sizeof(HCPathElement));
+    HCPathRef rotatedPath = HCPathCreateByRotatingPath(path, M_PI_2);
+    ASSERT_TRUE(HCPointIsEqual(HCPathElementAt(rotatedPath, 0).points[0], HCPointRotate(points[0], cos(M_PI_2), sin(M_PI_2))));
+    HCRelease(path);
+    HCRelease(rotatedPath);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Construction
 // HCPath+Shapes.h

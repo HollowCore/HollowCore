@@ -1428,31 +1428,14 @@ CTEST(HCRaster, DrawCurveIntersectionsCubicCubic) {
 CTEST(HCRaster, DrawContourIntersections) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     
-//    HCPathRef pPath = HCPathCreateWithSVGPathData(
-//        "M 800 500 "
-//        "A 300 200 0 1 1 799.95 495.0 "
-//    );
-//    const HCContour* pContour = HCPathContourAt(pPath, 0);
-//    HCPathRef qPath = HCPathCreateWithSVGPathData(
-//        "M 750 500 "
-//        "A 250 250 0 1 1 749.95 495.0 "
-//    );
-//    const HCContour* qContour = HCPathContourAt(qPath, 0);
-    
-    HCPathRef pPath = HCPathCreateWithSVGPathData(dinosaur);
-    const HCContour* pContour = HCPathContourAt(pPath, 1);
+    HCPathRef pPath = HCPathCreateWithSVGPathData(
+        "M 800 500 "
+        "A 300 200 0 1 1 799.95 495.0 "
+    );
+    const HCContour* pContour = HCPathContourAt(pPath, 0);
     HCPathRef qPath = HCPathCreateWithSVGPathData(
         "M 750 500 "
         "A 250 250 0 1 1 749.95 495.0 "
-        "L 700 500 "
-        "A 200 200 0 1 1 699.95 495.0 "
-        "L 650 500 "
-        "A 150 150 0 1 1 649.95 495.0 "
-        "L 600 500 "
-        "A 100 100 0 1 1 599.95 495.0 "
-        "L 550 500 "
-        "A  50  50 0 1 1 549.95 495.0 "
-        "L 500 500 "
     );
     const HCContour* qContour = HCPathContourAt(qPath, 0);
     
@@ -1472,67 +1455,21 @@ CTEST(HCRaster, DrawContourIntersections) {
         HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, color, color);
     }
     
-//    for (HCInteger pCurveIndex = 0; pCurveIndex < HCContourCurveCount(pContour); pCurveIndex++) {
-//        HCReal ct = HCContourParameterForCurveParameter(pContour, pCurveIndex, 0.25);
-//        HCPoint p = HCContourValue(pContour, ct);
-//        HCRasterDrawEllipse(raster, p.x, p.y, 2.5, 2.5, 0, HCColorCyan, HCColorCyan);
-//    }
-//
-//    for (HCInteger qCurveIndex = 0; qCurveIndex < HCContourCurveCount(qContour); qCurveIndex++) {
-//        HCReal cu = HCContourParameterForCurveParameter(qContour, qCurveIndex, 0.25);
-//        HCPoint q = HCContourValue(qContour, cu);
-//        HCRasterDrawEllipse(raster, q.x, q.y, 2.5, 2.5, 0, HCColorMagenta, HCColorMagenta);
-//    }
-    
     HCRasterSaveBMP(raster, "contour_intersections.bmp");
     HCRelease(raster);
     HCRelease(pPath);
     HCRelease(qPath);
 }
 
-CTEST(HCRaster, DrawTestCurveIntersections) {
-    HCRasterRef raster = HCRasterCreate(1000, 1000);
-    
-    HCCurve pCurve = HCCurveMakeCubic(
-        HCPointMake(499.99975000012154, 749.99974999987148),
-        HCPointMake(361.92856254249222, 749.99961192868204),
-        HCPointMake(249.99986192906064, 638.07068745762240),
-        HCPointMake(250.00000000025005, 499.99949999999296));
-    
-    HCCurve qCurve = HCCurveMakeCubic(
-        HCPointMake(296.58778000000001, 500.0),
-        HCPointMake(NAN, NAN),
-        HCPointMake(NAN, NAN),
-        HCPointMake(329.71762999999999, 500.0));
-    
-    HCRasterDrawCurves(raster, &pCurve, 1, HCColorGreen, HCColorGreen);
-    HCRasterDrawCurves(raster, &qCurve, 1, HCColorBlue, HCColorBlue);
-    
-    HCInteger count = 9;
-    HCReal t[count];
-    HCReal u[count];
-    HCCurveIntersections(pCurve, qCurve, &count, u, t);
-    
-    for (HCInteger intersectionIndex = 0; intersectionIndex < count; intersectionIndex++) {
-        HCPoint intersectionPointT = HCCurveValue(pCurve, t[intersectionIndex]);
-        HCPoint intersectionPointU = HCCurveValue(qCurve, u[intersectionIndex]);
-        HCColor color = HCPointIsSimilar(intersectionPointT, intersectionPointU, 1.0) ? HCColorGreen : HCColorRed;
-        HCRasterDrawEllipse(raster, intersectionPointT.x, intersectionPointT.y, 2.5, 2.5, 0, color, color);
-        HCRasterDrawEllipse(raster, intersectionPointU.x, intersectionPointU.y, 2.5, 2.5, 0, color, color);
-    }
-    
-    HCRasterSaveBMP(raster, "curve_intersections.bmp");
-    HCRelease(raster);
-}
-
 CTEST(HCRaster, DrawPathIntersections) {
     HCRasterRef raster = HCRasterCreate(1000, 1000);
     
     HCPathRef pPathOriginal = HCPathCreateWithSVGPathData(dinosaur);
+    HCPathRef qPathOriginal = HCPathCreateWithSVGPathData(maze);
+    
     HCRectangle pPathBounds = HCPathBounds(pPathOriginal);
     HCPathRef pPathTranslated = HCPathCreateByTranslatingPath(pPathOriginal, -HCRectangleMinX(pPathBounds), -HCRectangleMinY(pPathBounds));
     HCPathRef pPath = HCPathCreateByScalingPath(pPathTranslated, HCRasterWidth(raster) / HCRectangleWidth(pPathBounds), HCRasterHeight(raster) / HCRectangleHeight(pPathBounds));
-    HCPathRef qPathOriginal = HCPathCreateWithSVGPathData(maze);
     HCRectangle qPathBounds = HCPathBounds(qPathOriginal);
     HCPathRef qPathTranslated = HCPathCreateByTranslatingPath(qPathOriginal, -HCRectangleMinX(qPathBounds), -HCRectangleMinY(qPathBounds));
     HCPathRef qPath = HCPathCreateByScalingPath(qPathTranslated, HCRasterWidth(raster) / HCRectangleWidth(qPathBounds), HCRasterHeight(raster) / HCRectangleHeight(qPathBounds));
