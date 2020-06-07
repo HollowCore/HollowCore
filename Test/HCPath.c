@@ -1309,6 +1309,7 @@ CTEST(HCPath, Operations) {
     ASSERT_TRUE(intersectionCount == 74);
     
     HCRelease(path);
+    HCRelease(otherPath);
 }
 
 // TODO: Test these!
