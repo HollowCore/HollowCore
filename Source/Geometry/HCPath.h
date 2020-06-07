@@ -74,9 +74,9 @@ HCRectangle HCPathBounds(HCPathRef self);
 // MARK: - Polylines
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathPolylineCount(HCPathRef self);
+const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex);
 HCInteger HCPathPolylinePointCount(HCPathRef self, HCInteger polylineIndex);
 HCPoint HCPathPolylinePointAt(HCPathRef self, HCInteger polylineIndex, HCInteger pointIndex);
-const HCPoint* HCPathPolylineAt(HCPathRef self, HCInteger polylineIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Polyline / Path Element Correspondence
@@ -87,10 +87,13 @@ HCInteger HCPathIndexOfPolylineContainingElement(HCPathRef self, HCInteger eleme
 // MARK: - Contours
 //----------------------------------------------------------------------------------------------------------------------------------
 HCInteger HCPathContourCount(HCPathRef self);
-HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex);
+const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
 HCInteger HCPathContourCurveCount(HCPathRef self, HCInteger contourIndex);
 HCCurve HCPathContourCurveAt(HCPathRef self, HCInteger contourIndex, HCInteger curveIndex);
-const HCContour* HCPathContourAt(HCPathRef self, HCInteger contourIndex);
+HCInteger HCPathContourContainingParameter(HCPathRef self, HCReal t);
+HCReal HCPathContourParameterForParameter(HCPathRef self, HCReal t);
+HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
+HCBoolean HCPathContourIsClosed(HCPathRef self, HCInteger contourIndex);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Contour / Path Element Correspondence
@@ -103,14 +106,6 @@ HCListRef HCPathOpenContourPathsRetained(HCPathRef self);
 HCListRef HCPathClosedContourPathsRetained(HCPathRef self);
 HCPathRef HCPathOpenContoursAsPathRetained(HCPathRef self);
 HCPathRef HCPathClosedContoursAsPathRetained(HCPathRef self);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Contour / Path Parameter Correspondence
-//----------------------------------------------------------------------------------------------------------------------------------
-const HCContour* HCPathContourContainingParameter(HCPathRef self, HCReal t);
-HCInteger HCPathContourIndexContainingParameter(HCPathRef self, HCReal t);
-HCReal HCPathContourParameterForParameter(HCPathRef self, HCReal t);
-HCReal HCPathParameterForContourParameter(HCPathRef self, HCInteger contourIndex, HCReal t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Operations

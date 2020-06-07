@@ -240,15 +240,14 @@ CTEST(HCContour, Components) {
     
     ASSERT_TRUE(HCContourComponentCount(contour) == contourComponentCount);
     ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentAt(contour, 30), contourComponents[30]));
-    ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentContainingParameter(contour, 0.5), contourComponents[contourComponentCount / 2 + 1 + 1]));
-    ASSERT_TRUE(HCContourComponentIndexContainingParameter(contour, 0.5) == contourComponentCount / 2 + 1 + 1);
-    ASSERT_TRUE(HCContourComponentParameterForParameter(contour, 0.5) == 0.0);
-    ASSERT_TRUE(HCContourParameterForComponentParameter(contour, contourComponentCount / 2 + 1 + 1, 0.0) == 0.5);
+    ASSERT_TRUE(HCContourComponentContainingParameter(contour, 0.25) == contourComponentCount / 4 + 1);
+    ASSERT_TRUE(HCContourComponentParameterForParameter(contour, 0.25) == 0.0);
+    ASSERT_TRUE(HCContourParameterForComponentParameter(contour, contourComponentCount / 4 + 1, 0.0) == 0.25);
     ASSERT_TRUE(HCContourComponents(contour) == contourComponents);
     
     for (HCInteger componentIndex = 0; componentIndex < HCContourComponentCount(contour); componentIndex++) {
-        for (HCReal t = 0; t <= 1.0; t += 0.01) {
-            if (HCContourComponentIndexContainingParameter(contour, t) == componentIndex) {
+        for (HCReal t = 0.0; t != 1.0; t = t + 0.001 < 1.0 ? t + 0.001 : 1.0) {
+            if (HCContourComponentContainingParameter(contour, t) == componentIndex) {
                 HCReal ct = HCContourParameterForComponentParameter(contour, componentIndex, HCContourComponentParameterForParameter(contour, t));
                 ASSERT_TRUE(HCRealIsSimilar(ct, t, 0.000001));
             }
@@ -261,6 +260,17 @@ CTEST(HCContour, Components) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCContour, ComponentsAsCurves) {
+    HCContourComponent singleCurveContourComponents[] = {
+        {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 10.0, .y = 20.0}},
+        {.c0 = {.x = 20.0, .y = 10.0}, .c1 = {.x = 40.0, .y = 5.0}, .p = {.x = 50.0, .y = 25.0}}
+    };
+    HCContour* singleCurveContour = HCContourInitInComponents(singleCurveContourComponents, sizeof(singleCurveContourComponents) / sizeof(HCContourComponent), false);
+    ASSERT_TRUE(HCContourCurveCount(singleCurveContour) == 1);
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(singleCurveContour, 0), HCCurveMakeCubic(singleCurveContourComponents[0].p, singleCurveContourComponents[1].c0, singleCurveContourComponents[1].c1, singleCurveContourComponents[1].p)));
+    ASSERT_TRUE(HCContourCurveContainingParameter(singleCurveContour, 0.25) == 0);
+    ASSERT_TRUE(HCContourCurveParameterForParameter(singleCurveContour, 0.25) == 0.25);
+    ASSERT_TRUE(HCContourParameterForCurveParameter(singleCurveContour, 0, 0.25) == 0.25);
+    
     HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
     memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
@@ -268,16 +278,15 @@ CTEST(HCContour, ComponentsAsCurves) {
     
     ASSERT_TRUE(HCContourCurveCount(contour) == contourComponentCount - 1);
     ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 30), HCCurveMakeCubic(contourComponents[30].p, contourComponents[31].c0, contourComponents[31].c1, contourComponents[31].p)));
-    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveContainingParameter(contour, 0.5), HCCurveMakeCubic(contourComponents[21].p, contourComponents[22].c0, contourComponents[22].c1, contourComponents[22].p)));
-    ASSERT_TRUE(HCContourCurveIndexContainingParameter(contour, 0.5) == contourComponentCount / 2 + 1);
-    ASSERT_TRUE(HCContourCurveParameterForParameter(contour, 0.51190476190476186) == 0.5);
-    ASSERT_TRUE(HCContourParameterForCurveParameter(contour, contourComponentCount / 2 + 1, 0.5) == 0.51190476190476186);
+    ASSERT_TRUE(HCContourCurveContainingParameter(contour, 0.25) == contourComponentCount / 4);
+    ASSERT_TRUE(HCContourCurveParameterForParameter(contour, 0.25) == 0.0);
+    ASSERT_TRUE(HCContourParameterForCurveParameter(contour, contourComponentCount / 4, 0.0) == 0.25);
     ASSERT_TRUE(HCContourCurveIndexForComponentIndex(contour, 30) == 29);
     ASSERT_TRUE(HCContourComponentIndexForCurveIndex(contour, 29) == 30);
     
     for (HCInteger curveIndex = 0; curveIndex < HCContourCurveCount(contour); curveIndex++) {
-        for (HCReal t = 0; t <= 1.0; t += 0.01) {
-            if (HCContourCurveIndexContainingParameter(contour, t) == curveIndex) {
+        for (HCReal t = 0.0; t != 1.0; t = t + 0.001 < 1.0 ? t + 0.001 : 1.0) {
+            if (HCContourCurveContainingParameter(contour, t) == curveIndex) {
                 HCReal ct = HCContourParameterForCurveParameter(contour, curveIndex, HCContourCurveParameterForParameter(contour, t));
                 ASSERT_TRUE(HCRealIsSimilar(ct, t, 0.000001));
             }
@@ -290,20 +299,22 @@ CTEST(HCContour, ComponentsAsCurves) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCContour, Operations) {
+    // NOTE: These tests provide only detection of a change in functionality, as the values were obtained by running the test itself
+    
     HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
     memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
     HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
     
-    ASSERT_TRUE(HCPointIsSimilar(HCContourValue(contour, 0.25), HCPointMake(47.2, 17.8), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangent(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(-19.9, 28.9)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangentUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(46.2, 18.0)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(36.1, -49.2)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormalUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(47.1, 16.8)), 0.1));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourCurvature(contour, 0.25), -0.01102, 0.00001));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourCurvatureNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(47.2, 17.8)), 0.1));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterAtLength(contour, 1000.0), 0.36457, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterNearestPoint(contour, HCPointMake(100.0, 100.0)), 0.33333, 0.00001));
+    ASSERT_TRUE(HCPointIsSimilar(HCContourValue(contour, 0.25), HCPointMake(76.9, 17.1), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangent(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(31.1, 12.7)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangentUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(75.9, 17.0)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(81.3, -28.7)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormalUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(77.0, 16.1)), 0.1));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourCurvature(contour, 0.25), -0.00759, 0.00001));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourCurvatureNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(76.9, 17.1)), 0.1));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterAtLength(contour, 1000.0), 0.38280, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterNearestPoint(contour, HCPointMake(100.0, 100.0)), 0.35, 0.00001));
     ASSERT_TRUE(HCRealIsSimilar(HCContourDistanceFromPoint(contour, HCPointMake(100.0, 100.0)), 39.91411, 0.00001));
     
     HCContourComponent qComponents[] = {
@@ -317,8 +328,8 @@ CTEST(HCContour, Operations) {
     HCReal u[intersectionCount];
     HCContourIntersections(contour, qContour, &intersectionCount, t, u);
     ASSERT_TRUE(intersectionCount == 2);
-    ASSERT_TRUE(HCRealIsSimilar(t[0], 0.25801, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(t[1], 0.89020, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(u[0], 0.02251, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(u[1], 0.27837, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(t[0], 0.27091, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(t[1], 0.93471, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[0], 0.06754, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[1], 0.83512, 0.00001));
 }
