@@ -15,48 +15,29 @@
 // MARK: - Test Data
 //----------------------------------------------------------------------------------------------------------------------------------
 
-HCContourComponent dinosaurComponents[] = {
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 495.720860, .y = 350.609350}},
-    {.c0 = {.x = 492.189980, .y = 349.434380}, .c1 = {.x = 486.623580, .y = 349.342830}, .p = {.x = 476.461240, .y = 349.342830}},
-    {.c0 = {.x = 475.963790, .y = 349.339830}, .c1 = {.x = 475.451110, .y = 349.339830}, .p = {.x = 474.923160, .y = 349.342830}},
-    {.c0 = {.x = 435.494490, .y = 349.342830}, .c1 = {.x = 393.358920, .y = 346.498520}, .p = {.x = 390.594030, .y = 313.547790}},
-    {.c0 = {.x = 379.259810, .y = 178.488580}, .c1 = {.x = 273.611130, .y = 166.391080}, .p = {.x = 228.835790, .y = 167.523320}},
-    {.c0 = {.x = 218.331650, .y = 167.672870}, .c1 = {.x = 208.764410, .y = 162.841790}, .p = {.x = 202.834850, .y = 154.336310}},
-    {.c0 = {.x = 196.899180, .y = 145.821680}, .c1 = {.x = 195.678490, .y = 135.433210}, .p = {.x = 199.389420, .y = 126.027440}},
-    {.c0 = {.x = 199.792220, .y = 125.185130}, .c1 = {.x = 209.356450, .y = 105.155900}, .p = {.x = 212.295290, .y = 81.2081090}},
-    {.c0 = {.x = 216.363280, .y = 48.0651200}, .c1 = {.x = 205.718760, .y = 23.7358470}, .p = {.x = 181.518350, .y = 10.8479220}},
-    {.c0 = {.x = 152.493110, .y = -4.6035480}, .c1 = {.x = 121.148540, .y = -3.5323510}, .p = {.x = 90.8812480, .y = 13.9577500}},
-    {.c0 = {.x = 86.5599580, .y = 16.4510990}, .c1 = {.x = 81.7015680, .y = 17.5070400}, .p = {.x = 76.9225190, .y = 17.0736780}},
-    {.c0 = {.x = 61.6606990, .y = 15.6240520}, .c1 = {.x = 33.4411240, .y = 15.6332080}, .p = {.x = 15.6371880, .y = 31.8445860}},
-    {.c0 = {.x = 5.26122500, .y = 41.2869800}, .c1 = {.x = 0.00000000, .y = 54.6509940}, .p = {.x = 0.00000000, .y = 71.5642890}},
-    {.c0 = {.x = 0.00000000, .y = 88.6729090}, .c1 = {.x = 5.78612500, .y = 102.876180}, .p = {.x = 17.1996860, .y = 113.774300}},
-    {.c0 = {.x = 37.5640440, .y = 133.226730}, .c1 = {.x = 70.3307340, .y = 136.641740}, .p = {.x = 85.3697780, .y = 137.136140}},
-    {.c0 = {.x = 77.9357040, .y = 175.448950}, .c1 = {.x = 78.1615290, .y = 207.221660}, .p = {.x = 78.1767940, .y = 208.579730}},
-    {.c0 = {.x = 78.1767940, .y = 241.108540}, .c1 = {.x = 85.6001830, .y = 291.351000}, .p = {.x = 101.114160, .y = 331.910720}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 89.6941080, .y = 437.479990}},
-    {.c0 = {.x = 89.2546580, .y = 443.702700}, .c1 = {.x = 91.4458230, .y = 449.891830}, .p = {.x = 95.6999680, .y = 454.457380}},
-    {.c0 = {.x = 99.9541130, .y = 459.022940}, .c1 = {.x = 105.975220, .y = 461.641410}, .p = {.x = 112.216060, .y = 461.641410}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 123.227170, .y = 461.641410}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 122.253270, .y = 475.841630}},
-    {.c0 = {.x = 121.816870, .y = 482.067390}, .c1 = {.x = 124.008030, .y = 488.256520}, .p = {.x = 128.262180, .y = 492.819020}},
-    {.c0 = {.x = 132.516330, .y = 497.381520}, .c1 = {.x = 138.534380, .y = 500.000000}, .p = {.x = 144.775220, .y = 500.000000}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 191.015400, .y = 500.000000}},
-    {.c0 = {.x = 197.256240, .y = 500.000000}, .c1 = {.x = 203.274300, .y = 497.381520}, .p = {.x = 207.528450, .y = 492.815970}},
-    {.c0 = {.x = 211.782590, .y = 488.253460}, .c1 = {.x = 213.973750, .y = 482.064330}, .p = {.x = 213.546500, .y = 476.094930}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 211.233270, .y = 397.384910}},
-    {.c0 = {.x = 218.518960, .y = 399.243480}, .c1 = {.x = 226.402400, .y = 400.332990}, .p = {.x = 234.482300, .y = 400.736210}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 235.363500, .y = 438.233800}},
-    {.c0 = {.x = 236.312600, .y = 451.140030}, .c1 = {.x = 247.195150, .y = 461.641410}, .p = {.x = 259.624950, .y = 461.641410}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 268.870230, .y = 461.641410}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 269.317280, .y = 475.417420}},
-    {.c0 = {.x = 270.785200, .y = 491.268680}, .c1 = {.x = 280.471460, .y = 500.000000}, .p = {.x = 296.587780, .y = 500.000000}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 329.717630, .y = 500.000000}},
-    {.c0 = {.x = 338.344940, .y = 500.000000}, .c1 = {.x = 345.336500, .y = 497.289960}, .p = {.x = 349.935490, .y = 492.159820}},
-    {.c0 = {.x = 354.229310, .y = 487.374530}, .c1 = {.x = 356.060370, .y = 480.846650}, .p = {.x = 355.236390, .y = 473.314710}},
-    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 350.112490, .y = 424.088510}},
-    {.c0 = {.x = 418.392450, .y = 447.908130}, .c1 = {.x = 478.893480, .y = 400.912840}, .p = {.x = 499.358540, .y = 359.297930}},
-    {.c0 = {.x = 500.155090, .y = 357.677410}, .c1 = {.x = 500.213040, .y = 355.791370}, .p = {.x = 499.514190, .y = 354.125070}},
-    {.c0 = {.x = 498.818400, .y = 352.461810}, .c1 = {.x = 497.435950, .y = 351.176990}, .p = {.x = 495.720860, .y = 350.609350}},
+HCContourComponent knightComponents[] = {
+    {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = 233.154600, .y = 499.852390}},
+    {.c0 = {.x = 186.489170, .y = 501.367520}, .c1 = {.x = 133.293860, .y = 490.730200}, .p = {.x = 105.279900, .y = 449.572540}},
+    {.c0 = {.x = 83.6968540, .y = 420.308090}, .c1 = {.x = 72.9051260, .y = 367.924030}, .p = {.x = 74.3015010, .y = 332.517340}},
+    {.c0 = {.x = 76.6691650, .y = 301.304880}, .c1 = {.x = 80.6249430, .y = 290.258840}, .p = {.x = 67.2347780, .y = 262.220580}},
+    {.c0 = {.x = 53.8446150, .y = 234.182350}, .c1 = {.x = 23.1085100, .y = 189.151850}, .p = {.x = 22.7831810, .y = 154.980470}},
+    {.c0 = {.x = 17.9141250, .y = 106.842320}, .c1 = {.x = 35.8156740, .y = 56.2028360}, .p = {.x = 74.6059450, .y = 26.0201730}},
+    {.c0 = {.x = 93.8922300, .y = 10.7554500}, .c1 = {.x = 118.685370, .y = -1.5968120}, .p = {.x = 143.583580, .y = 0.16838000}},
+    {.c0 = {.x = 162.484450, .y = 17.7334020}, .c1 = {.x = 111.534780, .y = 37.5494450}, .p = {.x = 140.507960, .y = 55.3881820}},
+    {.c0 = {.x = 167.929270, .y = 75.6283860}, .c1 = {.x = 119.280470, .y = 83.3483890}, .p = {.x = 111.148800, .y = 102.004320}},
+    {.c0 = {.x = 97.8493080, .y = 135.719660}, .c1 = {.x = 103.128640, .y = 176.962640}, .p = {.x = 127.610230, .y = 203.287770}},
+    {.c0 = {.x = 148.579160, .y = 204.778680}, .c1 = {.x = 170.410970, .y = 198.778690}, .p = {.x = 191.843170, .y = 199.116140}},
+    {.c0 = {.x = 245.221480, .y = 197.320660}, .c1 = {.x = 298.853700, .y = 200.737710}, .p = {.x = 351.215720, .y = 211.576010}},
+    {.c0 = {.x = 375.277380, .y = 208.701460}, .c1 = {.x = 391.074880, .y = 183.856510}, .p = {.x = 398.801620, .y = 162.525660}},
+    {.c0 = {.x = 409.364100, .y = 127.539670}, .c1 = {.x = 392.664200, .y = 87.6439140}, .p = {.x = 361.152360, .y = 69.5992160}},
+    {.c0 = {.x = 344.987860, .y = 55.6752770}, .c1 = {.x = 387.746510, .y = 47.0575200}, .p = {.x = 360.248120, .y = 37.2588500}},
+    {.c0 = {.x = 349.114390, .y = 30.2493240}, .c1 = {.x = 314.230410, .y = 4.10334300}, .p = {.x = 344.266730, .y = 0.21714800}},
+    {.c0 = {.x = 397.339550, .y = -1.4695750}, .c1 = {.x = 450.817850, .y = 30.5818080}, .p = {.x = 469.250340, .y = 81.3076420}},
+    {.c0 = {.x = 487.654610, .y = 128.981080}, .c1 = {.x = 487.199280, .y = 189.073470}, .p = {.x = 451.990250, .y = 229.155830}},
+    {.c0 = {.x = 435.906060, .y = 250.001960}, .c1 = {.x = 413.686260, .y = 259.468610}, .p = {.x = 411.293310, .y = 289.643950}},
+    {.c0 = {.x = 411.871870, .y = 335.016970}, .c1 = {.x = 414.729530, .y = 382.326870}, .p = {.x = 398.285710, .y = 425.518010}},
+    {.c0 = {.x = 383.534280, .y = 466.355220}, .c1 = {.x = 343.074130, .y = 492.433840}, .p = {.x = 300.962290, .y = 496.869800}},
+    {.c0 = {.x = 278.519200, .y = 500.323760}, .c1 = {.x = 255.792960, .y = 500.155080}, .p = {.x = 233.154600, .y = 499.852390}},
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -205,27 +186,27 @@ CTEST(HCContour, Print) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCContour, Attributes) {
-    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCInteger contourComponentCount = sizeof(knightComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
-    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    memcpy(contourComponents, knightComponents, contourComponentCount * sizeof(HCContourComponent));
     HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
     
     ASSERT_TRUE(HCContourIsClosed(contour));
     ASSERT_TRUE(HCPointIsEqual(HCContourStartPoint(contour), contourComponents[0].p));
     ASSERT_TRUE(HCPointIsEqual(HCContourEndPoint(contour), contourComponents[contourComponentCount - 1].p));
-    ASSERT_TRUE(HCRectangleIsSimilar(HCContourApproximateBounds(contour), HCRectangleMakeWithComponents(0.0, -5.0, 500.0, 505.0), 1.0));
-    ASSERT_TRUE(HCRectangleIsSimilar(HCContourBounds(contour), HCRectangleMakeWithComponents(0.0, 0.0, 500.0, 500.0), 1.0));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourLength(contour), 1935.0, 1.0));
+    ASSERT_TRUE(HCRectangleIsSimilar(HCContourApproximateBounds(contour), HCRectangleMakeWithComponents(17.914124999999999, -1.5968119999999999, 469.74048499999998, 502.96433200000001), 1.0));
+    ASSERT_TRUE(HCRectangleIsSimilar(HCContourBounds(contour), HCRectangleMakeWithComponents(22.000000204429124, 1.6939553126871232E-7, 459.28337246819666, 500.00000040638099), 1.0));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourLength(contour), 2142.6, 1.0));
     
     HCInteger extremaCount = contourComponentCount * 6;
     HCReal extrema[extremaCount];
     HCContourExtrema(contour, &extremaCount, extrema);
-    ASSERT_TRUE(extremaCount == 38);
+    ASSERT_TRUE(extremaCount == 48);
     
     HCInteger inflectionCount = contourComponentCount * 2;
     HCReal inflections[inflectionCount];
     HCContourInflections(contour, &inflectionCount, inflections);
-    ASSERT_TRUE(inflectionCount == 0);
+    ASSERT_TRUE(inflectionCount == 8);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -233,16 +214,16 @@ CTEST(HCContour, Attributes) {
 //----------------------------------------------------------------------------------------------------------------------------------
 
 CTEST(HCContour, Components) {
-    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCInteger contourComponentCount = sizeof(knightComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
-    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    memcpy(contourComponents, knightComponents, contourComponentCount * sizeof(HCContourComponent));
     HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
     
     ASSERT_TRUE(HCContourComponentCount(contour) == contourComponentCount);
-    ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentAt(contour, 30), contourComponents[30]));
+    ASSERT_TRUE(HCContourComponentIsEqual(HCContourComponentAt(contour, 10), contourComponents[10]));
     ASSERT_TRUE(HCContourComponentContainingParameter(contour, 0.25) == contourComponentCount / 4 + 1);
-    ASSERT_TRUE(HCContourComponentParameterForParameter(contour, 0.25) == 0.0);
-    ASSERT_TRUE(HCContourParameterForComponentParameter(contour, contourComponentCount / 4 + 1, 0.0) == 0.25);
+    ASSERT_TRUE(HCContourComponentParameterForParameter(contour, 0.25) == 0.25);
+    ASSERT_TRUE(HCContourParameterForComponentParameter(contour, contourComponentCount / 4 + 1, 0.25) == 0.25);
     ASSERT_TRUE(HCContourComponents(contour) == contourComponents);
     
     for (HCInteger componentIndex = 0; componentIndex < HCContourComponentCount(contour); componentIndex++) {
@@ -271,18 +252,18 @@ CTEST(HCContour, ComponentsAsCurves) {
     ASSERT_TRUE(HCContourCurveParameterForParameter(singleCurveContour, 0.25) == 0.25);
     ASSERT_TRUE(HCContourParameterForCurveParameter(singleCurveContour, 0, 0.25) == 0.25);
     
-    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCInteger contourComponentCount = sizeof(knightComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
-    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    memcpy(contourComponents, knightComponents, contourComponentCount * sizeof(HCContourComponent));
     HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
     
     ASSERT_TRUE(HCContourCurveCount(contour) == contourComponentCount - 1);
-    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 30), HCCurveMakeCubic(contourComponents[30].p, contourComponents[31].c0, contourComponents[31].c1, contourComponents[31].p)));
+    ASSERT_TRUE(HCCurveIsEqual(HCContourCurveAt(contour, 10), HCCurveMakeCubic(contourComponents[10].p, contourComponents[11].c0, contourComponents[11].c1, contourComponents[11].p)));
     ASSERT_TRUE(HCContourCurveContainingParameter(contour, 0.25) == contourComponentCount / 4);
-    ASSERT_TRUE(HCContourCurveParameterForParameter(contour, 0.25) == 0.0);
-    ASSERT_TRUE(HCContourParameterForCurveParameter(contour, contourComponentCount / 4, 0.0) == 0.25);
-    ASSERT_TRUE(HCContourCurveIndexForComponentIndex(contour, 30) == 29);
-    ASSERT_TRUE(HCContourComponentIndexForCurveIndex(contour, 29) == 30);
+    ASSERT_TRUE(HCContourCurveParameterForParameter(contour, 0.25) == 0.25);
+    ASSERT_TRUE(HCContourParameterForCurveParameter(contour, contourComponentCount / 4, 0.25) == 0.25);
+    ASSERT_TRUE(HCContourCurveIndexForComponentIndex(contour, 10) == 9);
+    ASSERT_TRUE(HCContourComponentIndexForCurveIndex(contour, 9) == 10);
     
     for (HCInteger curveIndex = 0; curveIndex < HCContourCurveCount(contour); curveIndex++) {
         for (HCReal t = 0.0; t != 1.0; t = t + 0.001 < 1.0 ? t + 0.001 : 1.0) {
@@ -301,21 +282,21 @@ CTEST(HCContour, ComponentsAsCurves) {
 CTEST(HCContour, Operations) {
     // NOTE: These tests provide only detection of a change in functionality, as the values were obtained by running the test itself
     
-    HCInteger contourComponentCount = sizeof(dinosaurComponents) / sizeof(HCContourComponent);
+    HCInteger contourComponentCount = sizeof(knightComponents) / sizeof(HCContourComponent);
     HCContourComponent contourComponents[contourComponentCount];
-    memcpy(contourComponents, dinosaurComponents, contourComponentCount * sizeof(HCContourComponent));
+    memcpy(contourComponents, knightComponents, contourComponentCount * sizeof(HCContourComponent));
     HCContour* contour = HCContourInitInComponents(contourComponents, contourComponentCount, true);
     
-    ASSERT_TRUE(HCPointIsSimilar(HCContourValue(contour, 0.25), HCPointMake(76.9, 17.1), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangent(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(31.1, 12.7)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangentUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(75.9, 17.0)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(81.3, -28.7)), 0.1));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormalUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(77.0, 16.1)), 0.1));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourCurvature(contour, 0.25), -0.00759, 0.00001));
-    ASSERT_TRUE(HCCurveIsSimilar(HCContourCurvatureNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(76.9, 17.1)), 0.1));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterAtLength(contour, 1000.0), 0.38280, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterNearestPoint(contour, HCPointMake(100.0, 100.0)), 0.35, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(HCContourDistanceFromPoint(contour, HCPointMake(100.0, 100.0)), 39.91411, 0.00001));
+    ASSERT_TRUE(HCPointIsSimilar(HCContourValue(contour, 0.25), HCPointMake(90.0, 15.3), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangent(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(155.1, -24.0)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourTangentUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(90.9, 14.8)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(129.3, 80.4)), 0.1));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourNormalUnit(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(90.5, 16.1)), 0.1));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourCurvature(contour, 0.25), 0.00730, 0.00001));
+    ASSERT_TRUE(HCCurveIsSimilar(HCContourCurvatureNormal(contour, 0.25), HCCurveMakeLinear(HCContourValue(contour, 0.25), HCPointMake(90.0, 15.3)), 0.1));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterAtLength(contour, 1000.0), 0.48253, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourParameterNearestPoint(contour, HCPointMake(100.0, 100.0)), 0.38190, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(HCContourDistanceFromPoint(contour, HCPointMake(100.0, 100.0)), 11.13067, 0.00001));
     
     HCContourComponent qComponents[] = {
         {.c0 = HCPointInvalidStatic, .c1 = HCPointInvalidStatic, .p = {.x = -10.0, .y = -10.0}},
@@ -327,9 +308,13 @@ CTEST(HCContour, Operations) {
     HCReal t[intersectionCount];
     HCReal u[intersectionCount];
     HCContourIntersections(contour, qContour, &intersectionCount, t, u);
-    ASSERT_TRUE(intersectionCount == 2);
-    ASSERT_TRUE(HCRealIsSimilar(t[0], 0.27091, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(t[1], 0.93471, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(u[0], 0.06754, 0.00001));
-    ASSERT_TRUE(HCRealIsSimilar(u[1], 0.83512, 0.00001));
+    ASSERT_TRUE(intersectionCount == 4);
+    ASSERT_TRUE(HCRealIsSimilar(t[0], 0.22682, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(t[1], 0.38409, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(t[2], 0.47829, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(t[3], 0.89722, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[0], 0.11652, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[1], 0.22838, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[2], 0.40174, 0.00001));
+    ASSERT_TRUE(HCRealIsSimilar(u[3], 0.79755, 0.00001));
 }
