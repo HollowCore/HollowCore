@@ -336,10 +336,10 @@ HCReal HCContourCurvature(const HCContour* contour, HCReal t) {
 }
 
 HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t) {
-   HCInteger curveIndex = HCContourCurveContainingParameter(contour, t);
+    HCInteger curveIndex = HCContourCurveContainingParameter(contour, t);
     HCReal ct = HCContourCurveParameterForParameter(contour, t);
     HCCurve curve = HCContourCurveAt(contour, curveIndex);
-     return HCCurveCurvatureNormal(curve, ct);
+    return HCCurveCurvatureNormal(curve, ct);
 }
 
 HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d) {
