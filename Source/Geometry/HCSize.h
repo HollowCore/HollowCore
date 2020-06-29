@@ -31,7 +31,7 @@ static const HCSize HCSizeInvalid = HCSizeInvalidStatic;
 static const HCSize HCSizeZero = HCSizeZeroStatic;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCSize HCSizeMake(HCReal width, HCReal height);
 

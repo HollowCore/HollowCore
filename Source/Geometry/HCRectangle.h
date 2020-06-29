@@ -24,8 +24,8 @@ typedef struct HCRectangle {
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Special Values
 //----------------------------------------------------------------------------------------------------------------------------------
-#define HCRectangleInvalidStatic   ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
-#define HCRectangleZeroStatic      ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
+#define HCRectangleInvalidStatic ((HCRectangle){.origin = HCPointInvalidStatic, .size = HCSizeInvalidStatic})
+#define HCRectangleZeroStatic ((HCRectangle){.origin = HCPointZeroStatic, .size = HCSizeZeroStatic})
 
 static const HCRectangle HCRectangleInvalid = HCRectangleInvalidStatic;
 static const HCRectangle HCRectangleZero = HCRectangleZeroStatic;
@@ -41,10 +41,11 @@ typedef enum HCRectangleEdge {
 } HCRectangleEdge;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleMake(HCPoint origin, HCSize size);
 HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height);
+HCRectangle HCRectangleMakeWithEdges(HCReal xEdgeA, HCReal xEdgeB, HCReal yEdgeA, HCReal yEdgeB);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
@@ -63,6 +64,7 @@ HCBoolean HCRectangleIsInfinite(HCRectangle rectangle);
 HCBoolean HCRectangleIsEmpty(HCRectangle rectangle);
 HCBoolean HCRectangleContainsPoint(HCRectangle rectangle, HCPoint point);
 HCBoolean HCRectangleContainsRectangle(HCRectangle rectangle, HCRectangle other);
+HCBoolean HCRectangleOverlapsRectangle(HCRectangle rectangle, HCRectangle other);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Calculated Properties

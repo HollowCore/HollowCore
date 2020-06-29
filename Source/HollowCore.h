@@ -34,6 +34,7 @@
 #include "Geometry/HCContour.h"
 #include "Geometry/HCPath.h"
 #include "Geometry/HCPath+Shapes.h"
+#include "Geometry/HCPath+SetOperations.h"
 #include "Geometry/HCPath+SVG.h"
 
 #include "Graphic/HCColor.h"

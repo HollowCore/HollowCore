@@ -11,7 +11,7 @@
 #include <math.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCColor HCColorMake(HCReal a, HCReal r, HCReal g, HCReal b) {
     HCColor color = {.a = a, .r = r, .g = g, .b = b};
@@ -54,6 +54,10 @@ HCColor HCColorMakeWithARGB(uint32_t color) {
         .g = (HCReal)((0x0000FF00 & color) >>  8) / 255.0,
         .b = (HCReal)((0x000000FF & color) >>  0) / 255.0,
     };
+}
+
+HCColor HCColorWithAlpha(HCColor color, HCReal a) {
+    return HCColorMake(a, color.r, color.g, color.b);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

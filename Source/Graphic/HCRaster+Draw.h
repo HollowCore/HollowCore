@@ -28,7 +28,8 @@ void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color);
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1);
-void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal theta, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1);
+void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCReal xr, HCReal yr, HCReal rotation, HCBoolean largeArc, HCBoolean sweep, HCColor c0, HCColor c1);
+void HCRasterDrawEllipse(HCRasterRef self, HCReal cx, HCReal cy, HCReal xr, HCReal yr, HCReal rotation, HCColor c0, HCColor c1);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Shape Drawing Operations
@@ -46,7 +47,7 @@ void HCRasterFillTexturedQuad(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx,
 void HCRasterDrawPolyline(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed, HCColor color);
 void HCRasterDrawPolyquadratic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed, HCColor color);
 void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed, HCColor color);
-void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, HCInteger count, HCBoolean closed, HCColor color);
+void HCRasterDrawCurves(HCRasterRef self, HCCurve* curves, HCInteger curveCount, HCColor c0, HCColor c1);
 void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color);
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -13,10 +13,18 @@
 // MARK: - Curve Drawing Operations
 //----------------------------------------------------------------------------------------------------------------------------------
 void HCRasterDrawPoint(HCRasterRef self, HCReal x, HCReal y, HCColor color) {
-    HCRasterSetPixelAt(self, round(x), round(y), color);
+    HCInteger xIndex = round(x);
+    HCInteger yIndex = round(y);
+    HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+    pixel = HCColorCombine(pixel, color, color.a);
+    HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
 }
 
 void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
+    if (!isfinite(x0) || !isfinite(y0) || !isfinite(x1) || !isfinite(y1)) {
+        return;
+    }
+    
     // Draw using Bresenham's Algorithm with color interpolation
     HCInteger ix0 = round(x0);
     HCInteger iy0 = round(y0);
@@ -31,7 +39,10 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
         HCReal tx = isfinite(xspaninv) ? ((double)ix0 - x0) * xspaninv : NAN;
         HCReal ty = isfinite(yspaninv) ? ((double)iy0 - y0) * yspaninv : NAN;
         HCReal t = (!isnan(tx) && !isnan(ty)) ? ((tx + ty) * 0.5) : !isnan(tx) ? tx : !isnan(ty) ? ty : 0.0;
-        HCRasterSetPixelAt(self, ix0, iy0, HCColorCombine(c0, c1, t));
+        HCColor color = HCColorCombine(c0, c1, t);
+        HCColor pixel = HCRasterPixelAt(self, ix0, iy0);
+        pixel = HCColorCombine(pixel, color, color.a);
+        HCRasterSetPixelAt(self, ix0, iy0, pixel);
         if (ix0==ix1 && iy0==iy1) break;
         e2 = err;
         if (e2 >-dx) { err -= dy; ix0 += sx; }
@@ -41,12 +52,19 @@ void HCRasterDrawLine(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal 
 
 void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx, HCReal cy, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0)) +
-        sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy))) /
-        sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-    if (flatness < 1.0001) {
-        HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
+    // Determine quadratic curve flatness
+    HCReal p0cDistance = sqrt((cx - x0) * (cx - x0) + (cy - y0) * (cy - y0));
+    HCReal cp1Distance = sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
+    HCReal p0p1Distance = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    if (HCRealIsSimilar(p0cDistance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(cp1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+        return;
+    }
+    HCReal flatness = (p0cDistance + cp1Distance) / p0p1Distance;
+    HCReal flatnessThreshold = HCPathFlatnessNormal;
+    if (flatness < flatnessThreshold) {
+         HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }
 
@@ -63,12 +81,20 @@ void HCRasterDrawQuadraticCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal c
 
 void HCRasterDrawCubicCurve(HCRasterRef self, HCReal x0, HCReal y0, HCReal cx0, HCReal cy0, HCReal cx1, HCReal cy1, HCReal x1, HCReal y1, HCColor c0, HCColor c1) {
     // Draw using De Casteljau's Algorithm
-    HCReal flatness =
-       (sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0)) +
-        sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0)) +
-        sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1))) /
-        sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
-    if (flatness < 1.0001) {
+    // Determine cubic curve flatness
+    HCReal p0c0Distance = sqrt((cx0 -  x0) * (cx0 -  x0) + (cy0 -  y0) * (cy0 -  y0));
+    HCReal c0c1Distance = sqrt((cx1 - cx0) * (cx1 - cx0) + (cy1 - cy0) * (cy1 - cy0));
+    HCReal c1p1Distance = sqrt(( x1 - cx1) * ( x1 - cx1) + ( y1 - cy1) * ( y1 - cy1));
+    HCReal p0p1Distance = sqrt(( x1 -  x0) * ( x1 -  x0) + ( y1 -  y0) * ( y1 -  y0));
+    if (HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0c0Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(c0c1Distance, 0.0, FLT_EPSILON) &&
+        HCRealIsSimilar(p0p1Distance, 0.0, FLT_EPSILON)) {
+        return;
+    }
+    HCReal flatness = (p0c0Distance + c0c1Distance + c1p1Distance) / p0p1Distance;
+    HCReal flatnessThreshold = HCPathFlatnessNormal;
+    if (flatness < flatnessThreshold) {
         HCRasterDrawLine(self, x0, y0, x1, y1, c0, c1);
         return;
     }
@@ -177,7 +203,7 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
         HCReal px1p = xr * (cosAngle * x1Rotated - sinAngle * y1Rotated);
         HCReal py1p = yr * (sinAngle * x1Rotated + cosAngle * y1Rotated);
         
-        // Rotate the ellipse by the desired rotation angle
+        // Rotate the ellipse by the desired rotation angle and translate to center
         HCReal px0 = cosRotation * px0p - sinRotation * py0p + cx;
         HCReal py0 = sinRotation * px0p + cosRotation * py0p + cy;
         HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;
@@ -202,6 +228,11 @@ void HCRasterDrawArc(HCRasterRef self, HCReal x0, HCReal y0, HCReal x1, HCReal y
         HCColor c1p = HCColorInterpolate(c0, c1, (angleSpan - angleSpanRemaining) / angleSpan);
         HCRasterDrawCubicCurve(self, px0, py0, cx0, cy0, cx1, cy1, px1, py1, c0p, c1p);
     }
+}
+
+void HCRasterDrawEllipse(HCRasterRef self, HCReal cx, HCReal cy, HCReal xr, HCReal yr, HCReal rotation, HCColor c0, HCColor c1) {
+    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, rotation, false, false, c0, c1);
+    HCRasterDrawArc(self, cx - xr, cy, cx + xr, cy, xr, yr, rotation, false, true, c0, c1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -239,7 +270,9 @@ void HCRasterFillTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal bx, HCR
             // Fill the pixel if it is covered
             if (lambdaA >= 0.0 && lambdaB >= 0.0 && lambdaC >= 0.0) {
                 HCColor color = HCColorCombine3(ca, lambdaA, cb, lambdaB, cc, lambdaC);
-                HCRasterSetPixelAt(self, xIndex, yIndex, color);
+                HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+                pixel = HCColorCombine(pixel, color, color.a);
+                HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
             }
         }
     }
@@ -273,7 +306,9 @@ void HCRasterFillTexturedTriangle(HCRasterRef self, HCReal ax, HCReal ay, HCReal
                 HCReal tx = lambdaA * tax + lambdaB * tbx + lambdaC * tcx;
                 HCReal ty = lambdaA * tay + lambdaB * tby + lambdaC * tcy;
                 HCColor color = HCRasterPixelFiltered(texture, tx, ty);
-                HCRasterSetPixelAt(self, xIndex, yIndex, color);
+                HCColor pixel = HCRasterPixelAt(self, xIndex, yIndex);
+                pixel = HCColorCombine(pixel, color, color.a);
+                HCRasterSetPixelAt(self, xIndex, yIndex, pixel);
             }
         }
     }
@@ -395,34 +430,55 @@ void HCRasterDrawPolycubic(HCRasterRef self, HCPoint startPoint, const HCPoint* 
     }
 }
 
-void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed, HCColor color) {
+void HCRasterDrawCurves(HCRasterRef self, HCCurve* curves, HCInteger curveCount, HCColor c0, HCColor c1) {
+    for (HCInteger curveIndex = 0; curveIndex < curveCount; curveIndex++) {
+        HCCurve curve = curves[curveIndex];
+        if (HCCurveIsLinear(curve)) {
+            HCRasterDrawLine(self, curve.p0.x, curve.p0.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+        else if (HCCurveIsQuadratic(curve)) {
+            HCRasterDrawQuadraticCurve(self, curve.p0.x, curve.p0.y, curve.c0.x, curve.c0.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+        else if (HCCurveIsCubic(curve)) {
+            HCRasterDrawCubicCurve(self, curve.p0.x, curve.p0.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p1.x, curve.p1.y, c0, c1);
+        }
+    }
+}
+
+void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
     // Drawing empty contours does nothing
-    if (curves == NULL || curveCount <= 0) {
+    if (contour == NULL) {
         return;
     }
     
+    // Extract contour attributes
+    const HCContourComponent* components = HCContourComponents(contour);
+    HCInteger componentCount = HCContourComponentCount(contour);
+    HCBoolean closed = HCContourIsClosed(contour);
+    
     // Draw each contour curve
     HCBoolean rotatingColor = HCColorIsEqual(color, HCRasterColorRotating);
-    HCPoint startPoint = curves[0].p;
+    HCPoint startPoint = components[0].p;
     HCPoint currentPoint = startPoint;
-    for (HCInteger curveIndex = 1; curveIndex < curveCount; curveIndex++) {
+    for (HCInteger curveIndex = 1; curveIndex < componentCount; curveIndex++) {
         // When the rotating color is requested, change the color with each curve
         if (rotatingColor) {
             color = HCColorMake(1.0, 0.25 + fmod(color.r + 0.1, 0.75), 0.25 + fmod(color.g + 0.2, 0.75), 0.25 + fmod(color.b + 0.3, 0.75));
         }
         
         // Draw the curve
-        HCContourCurve curve = curves[curveIndex];
-        if (HCContourCurveIsLinear(curve)) {
-            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, curve.p.x, curve.p.y, color, color);
+        HCPoint p0 = components[curveIndex - 1].p;
+        HCContourComponent component = components[curveIndex];
+        if (HCContourComponentIsLinear(p0, component)) {
+            HCRasterDrawLine(self, currentPoint.x, currentPoint.y, component.p.x, component.p.y, color, color);
         }
-        else if (HCContourCurveIsQuadratic(curve)) {
-            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.p.x, curve.p.y, color, color);
+        else if (HCContourComponentIsQuadratic(p0, component)) {
+            HCRasterDrawQuadraticCurve(self, currentPoint.x, currentPoint.y, component.c0.x, component.c0.y, component.p.x, component.p.y, color, color);
         }
-        else if (HCContourCurveIsCubic(curve)) {
-            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, curve.c0.x, curve.c0.y, curve.c1.x, curve.c1.y, curve.p.x, curve.p.y, color, color);
+        else if (HCContourComponentIsCubic(p0, component)) {
+            HCRasterDrawCubicCurve(self, currentPoint.x, currentPoint.y, component.c0.x, component.c0.y, component.c1.x, component.c1.y, component.p.x, component.p.y, color, color);
         }
-        currentPoint = curve.p;
+        currentPoint = component.p;
     }
     
     // Close the curve, if requested and required
@@ -430,10 +486,6 @@ void HCRasterDrawContourCurves(HCRasterRef self, const HCContourCurve* curves, H
     if (closed && !HCPointIsEqual(endPoint, startPoint)) {
         HCRasterDrawLine(self, endPoint.x, endPoint.y, startPoint.x, startPoint.y, color, color);
     }
-}
-
-void HCRasterDrawContour(HCRasterRef self, const HCContour* contour, HCColor color) {
-    HCRasterDrawContourCurves(self, HCContourCurves(contour), HCContourCurveCount(contour), HCContourIsClosed(contour), color);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

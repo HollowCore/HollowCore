@@ -10,7 +10,7 @@
 #include "HCRectangle.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
 HCRectangle HCRectangleMake(HCPoint origin, HCSize size) {
     return (HCRectangle){.origin = origin, .size = size};
@@ -18,6 +18,10 @@ HCRectangle HCRectangleMake(HCPoint origin, HCSize size) {
 
 HCRectangle HCRectangleMakeWithComponents(HCReal x, HCReal y, HCReal width, HCReal height) {
     return HCRectangleMake(HCPointMake(x, y), HCSizeMake(width, height));
+}
+
+HCRectangle HCRectangleMakeWithEdges(HCReal xEdgeA, HCReal xEdgeB, HCReal yEdgeA, HCReal yEdgeB) {
+    return HCRectangleMake(HCPointMake(fmin(xEdgeA, xEdgeB), fmin(yEdgeA, yEdgeB)), HCSizeMake(fabs(xEdgeA - xEdgeB), fabs(yEdgeA - yEdgeB)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -74,7 +78,15 @@ HCBoolean HCRectangleContainsPoint(HCRectangle rectangle, HCPoint point) {
 }
 
 HCBoolean HCRectangleContainsRectangle(HCRectangle rectangle, HCRectangle other) {
-    return HCRectangleContainsPoint(rectangle, other.origin) && HCRectangleContainsPoint(rectangle, HCPointOffset(other.origin, other.size.width, other.size.height));
+    return HCRectangleContainsPoint(rectangle, other.origin) && HCRectangleContainsPoint(rectangle, HCPointTranslate(other.origin, other.size.width, other.size.height));
+}
+
+HCBoolean HCRectangleOverlapsRectangle(HCRectangle rectangle, HCRectangle other) {
+    HCReal maxMinX = fmax(HCRectangleMinX(rectangle), HCRectangleMinX(other));
+    HCReal maxMinY = fmax(HCRectangleMinY(rectangle), HCRectangleMinY(other));
+    HCReal minMaxX = fmin(HCRectangleMaxX(rectangle), HCRectangleMaxX(other));
+    HCReal minMaxY = fmin(HCRectangleMaxY(rectangle), HCRectangleMaxY(other));
+    return minMaxX >= maxMinX && minMaxY >= maxMinY;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -148,7 +160,7 @@ HCRectangle HCRectangleInset(HCRectangle rectangle, HCReal dx, HCReal dy) {
 }
 
 HCRectangle HCRectangleOffset(HCRectangle rectangle, HCReal dx, HCReal dy) {
-    rectangle.origin = HCPointOffset(rectangle.origin, dx, dy);
+    rectangle.origin = HCPointTranslate(rectangle.origin, dx, dy);
     return rectangle;
 }
 
@@ -165,9 +177,9 @@ HCRectangle HCRectangleIntersection(HCRectangle rectangle, HCRectangle other) {
     HCReal maxMinY = fmax(HCRectangleMinY(rectangle), HCRectangleMinY(other));
     HCReal minMaxX = fmin(HCRectangleMaxX(rectangle), HCRectangleMaxX(other));
     HCReal minMaxY = fmin(HCRectangleMaxY(rectangle), HCRectangleMaxY(other));
-    return (minMaxX < maxMinX || minMaxY < maxMinY) ?
-        HCRectangleMake(HCPointMake((maxMinX - minMaxX) * 0.5, (maxMinY - minMaxY) * 0.5), HCSizeZero) :
-        HCRectangleMake(HCPointMake(maxMinX, maxMinY), HCSizeMake(minMaxX - maxMinX, minMaxY - maxMinY));
+    return minMaxX >= maxMinX && minMaxY >= maxMinY ?
+        HCRectangleMake(HCPointMake(maxMinX, maxMinY), HCSizeMake(minMaxX - maxMinX, minMaxY - maxMinY)) :
+        HCRectangleMake(HCPointMake((maxMinX - minMaxX) * 0.5, (maxMinY - minMaxY) * 0.5), HCSizeZero);
 }
 
 HCRectangle HCRectangleIncludingPoint(HCRectangle rectangle, HCPoint point) {

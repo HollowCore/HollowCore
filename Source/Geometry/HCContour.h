@@ -10,13 +10,13 @@
 #ifndef HCContour_h
 #define HCContour_h
 
-#include "HCContourCurve.h"
+#include "HCContourComponent.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Type
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef union HCContour {
-    HCContourCurve curve;
+    HCContourComponent component;
     struct {
         HCInteger count;
         HCReal invalidMarker1;
@@ -27,13 +27,13 @@ typedef union HCContour {
 } HCContour;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// MARK: - Constructors
+// MARK: - Construction
 //----------------------------------------------------------------------------------------------------------------------------------
-HCContour* HCContourInitInCurves(HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
+HCContour* HCContourInitInComponents(HCContourComponent* components, HCInteger componentCount, HCBoolean closed);
 void HCContourInitWithPolyline(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger pointCount, HCBoolean closed);
 void HCContourInitWithPolyquadratic(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger quadraticCount, HCBoolean closed);
 void HCContourInitWithPolycubic(void* memory, HCPoint startPoint, const HCPoint* points, HCInteger cubicCount, HCBoolean closed);
-void HCContourInitWithCurves(void* memory, const HCContourCurve* curves, HCInteger curveCount, HCBoolean closed);
+void HCContourInitWithComponents(void* memory, const HCContourComponent* curves, HCInteger curveCount, HCBoolean closed);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Equality
@@ -45,11 +45,49 @@ void HCContourPrint(const HCContour* contour, FILE* stream);
 //----------------------------------------------------------------------------------------------------------------------------------
 // MARK: - Attributes
 //----------------------------------------------------------------------------------------------------------------------------------
-HCInteger HCContourCurveCount(const HCContour* contour);
 HCBoolean HCContourIsClosed(const HCContour* contour);
 HCPoint HCContourStartPoint(const HCContour* contour);
 HCPoint HCContourEndPoint(const HCContour* contour);
-HCContourCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex);
-const HCContourCurve* HCContourCurves(const HCContour* contour);
+void HCContourExtrema(const HCContour* contour, HCInteger* count, HCReal* extrema);
+void HCContourInflections(const HCContour* contour, HCInteger* count, HCReal* inflections);
+HCRectangle HCContourApproximateBounds(const HCContour* contour);
+HCRectangle HCContourBounds(const HCContour* contour);
+HCReal HCContourLength(const HCContour* contour);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Components
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCContourComponentCount(const HCContour* contour);
+HCContourComponent HCContourComponentAt(const HCContour* contour, HCInteger componentIndex);
+const HCContourComponent* HCContourComponents(const HCContour* contour);
+HCInteger HCContourComponentContainingParameter(const HCContour* contour, HCReal t);
+HCReal HCContourComponentParameterForParameter(const HCContour* contour, HCReal t);
+HCReal HCContourParameterForComponentParameter(const HCContour* contour, HCInteger componentIndex, HCReal t);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Components as Curves
+//----------------------------------------------------------------------------------------------------------------------------------
+HCInteger HCContourCurveCount(const HCContour* contour);
+HCCurve HCContourCurveAt(const HCContour* contour, HCInteger curveIndex);
+HCInteger HCContourCurveContainingParameter(const HCContour* contour, HCReal t);
+HCReal HCContourCurveParameterForParameter(const HCContour* contour, HCReal t);
+HCReal HCContourParameterForCurveParameter(const HCContour* contour, HCInteger curveIndex, HCReal t);
+HCInteger HCContourCurveIndexForComponentIndex(const HCContour* contour, HCInteger componentIndex);
+HCInteger HCContourComponentIndexForCurveIndex(const HCContour* contour, HCInteger curveIndex);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// MARK: - Operations
+//----------------------------------------------------------------------------------------------------------------------------------
+HCPoint HCContourValue(const HCContour* contour, HCReal t);
+HCCurve HCContourTangent(const HCContour* contour, HCReal t);
+HCCurve HCContourTangentUnit(const HCContour* contour, HCReal t);
+HCCurve HCContourNormal(const HCContour* contour, HCReal t);
+HCCurve HCContourNormalUnit(const HCContour* contour, HCReal t);
+HCReal HCContourCurvature(const HCContour* contour, HCReal t);
+HCCurve HCContourCurvatureNormal(const HCContour* contour, HCReal t);
+HCReal HCContourParameterAtLength(const HCContour* contour, HCReal d);
+HCReal HCContourParameterNearestPoint(const HCContour* contour, HCPoint p);
+HCReal HCContourDistanceFromPoint(const HCContour* contour, HCPoint p);
+void HCContourIntersections(const HCContour* pContour, const HCContour* qContour, HCInteger* count, HCReal* t, HCReal* u);
 
 #endif /* HCContour_h */

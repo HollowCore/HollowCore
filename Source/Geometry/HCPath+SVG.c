@@ -336,20 +336,14 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         // Rotate and scale the unit circle approximation curve to fix the desired ellipse size and eccentricity
         HCReal cosAngle = cos(angle);
         HCReal sinAngle = sin(angle);
-        HCReal cx0p = xr * (cosAngle * cx0Rotated - sinAngle * cy0Rotated);
-        HCReal cy0p = yr * (sinAngle * cx0Rotated + cosAngle * cy0Rotated);
-        HCReal cx1p = xr * (cosAngle * cx1Rotated - sinAngle * cy1Rotated);
-        HCReal cy1p = yr * (sinAngle * cx1Rotated + cosAngle * cy1Rotated);
-        HCReal px1p = xr * (cosAngle * xRotated - sinAngle * yRotated);
-        HCReal py1p = yr * (sinAngle * xRotated + cosAngle * yRotated);
+        HCPoint c0p = HCPointScale(HCPointRotate(HCPointMake(cx0Rotated, cy0Rotated), cosAngle, sinAngle), xr, yr);
+        HCPoint c1p = HCPointScale(HCPointRotate(HCPointMake(cx1Rotated, cy1Rotated), cosAngle, sinAngle), xr, yr);
+        HCPoint p1p = HCPointScale(HCPointRotate(HCPointMake(xRotated, yRotated), cosAngle, sinAngle), xr, yr);
         
-        // Rotate the ellipse by the desired rotation angle
-        HCReal cx0 = cosRotation * cx0p - sinRotation * cy0p + cx;
-        HCReal cy0 = sinRotation * cx0p + cosRotation * cy0p + cy;
-        HCReal cx1 = cosRotation * cx1p - sinRotation * cy1p + cx;
-        HCReal cy1 = sinRotation * cx1p + cosRotation * cy1p + cy;
-        HCReal px1 = cosRotation * px1p - sinRotation * py1p + cx;
-        HCReal py1 = sinRotation * px1p + cosRotation * py1p + cy;
+        // Rotate the ellipse by the desired rotation angle then translate to center
+        HCPoint c0 = HCPointTranslate(HCPointRotate(c0p, cosRotation, sinRotation), cx, cy);
+        HCPoint c1 = HCPointTranslate(HCPointRotate(c1p, cosRotation, sinRotation), cx, cy);
+        HCPoint p1 = HCPointTranslate(HCPointRotate(p1p, cosRotation, sinRotation), cx, cy);
 
         // Determine how much more of the arc needs to be approximated
         angleSpanRemaining -= angleSliceSpan;
@@ -357,70 +351,10 @@ void HCPathAddCubicCurvesApproximatingArc(HCPathRef self, HCReal xr, HCReal yr, 
         
         // Where this is the last slice of the arc, ensure the final point is exactly as requested
         if (angleSpanRemaining <= 0.0) {
-            px1 = x;
-            py1 = y;
+            p1 = HCPointMake(x, y);
         }
         
         // Add the completed approximation curve for the angle slice to the path
-        HCPathAddCubicCurve(self, cx0, cy0, cx1, cy1, px1, py1);
-        
-#define VISUALIZE_ARC false
-#if (VISUALIZE_ARC)
-        {
-            // Plot + marks to visualize the control points of the completed approximation curve
-            HCPoint current = HCPathCurrentPoint(self);
-            HCReal px0 = current.x;
-            HCReal py0 = current.y;
-            HCPathMove(self, px0 - 5.0, py0);
-            HCPathAddLine(self, px0 + 5.0, py0);
-            HCPathMove(self, px0, py0 - 5.0);
-            HCPathAddLine(self, px0, py0 + 5.0);
-            HCPathMove(self, cx0 - 5.0, cy0);
-            HCPathAddLine(self, cx0 + 5.0, cy0);
-            HCPathMove(self, cx0, cy0 - 5.0);
-            HCPathAddLine(self, cx0, cy0 + 5.0);
-            HCPathMove(self, cx1 - 5.0, cy1);
-            HCPathAddLine(self, cx1 + 5.0, cy1);
-            HCPathMove(self, cx1, cy1 - 5.0);
-            HCPathAddLine(self, cx1, cy1 + 5.0);
-            HCPathMove(self, px1 - 5.0, py1);
-            HCPathAddLine(self, px1 + 5.0, py1);
-            HCPathMove(self, px1, py1 - 5.0);
-            HCPathAddLine(self, px1, py1 + 5.0);
-            HCPathMove(self, current.x, current.y);
-        }
+        HCPathAddCubicCurve(self, c0.x, c0.y, c1.x, c1.y, p1.x, p1.y);
     }
-    
-    {
-        // Plot ellipse center using x marker
-        HCPoint current = HCPathCurrentPoint(self);
-        HCPathMove(self, cx - 5.0, cy - 5.0);
-        HCPathAddLine(self, cx + 5.0, cy + 5.0);
-        HCPathMove(self, cx - 5.0, cy + 5.0);
-        HCPathAddLine(self, cx + 5.0, cy - 5.0);
-        HCPathMove(self, current.x, current.y);
-    }
-    
-    {
-        // Plot points of actual ellipse
-        HCPoint current = HCPathCurrentPoint(self);
-        HCInteger stepCount = 100;
-        HCReal angleStep = angleSpan / (HCReal)stepCount;
-        angleStep *= (sweep ? 1.0 : -1.0);
-        HCReal angle = angleStart;
-        HCPathMove(self, p0.x, p0.y);
-        for (HCInteger step = 0; step < stepCount; step++) {
-            HCReal tx = xr * cos(angle);
-            HCReal ty = yr * sin(angle);
-            HCReal x = cosPhi * tx - sinPhi * ty + cx;
-            HCReal y = sinPhi * tx + cosPhi * ty + cy;
-            HCPathAddLine(self, x, y);
-            angle = fmod(angle + angleStep, 2.0 * M_PI);
-        }
-        HCPathAddLine(self, p1.x, p1.y);
-        HCPathMove(self, current.x, current.y);
-    }
-#else
-    }
-#endif
 }
