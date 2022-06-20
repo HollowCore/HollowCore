@@ -15,7 +15,7 @@
 // This is work in progress research for having system threads that fully cleanup their memory at exit of the application.
 
 HCThreadRef atExitRef = NULL;
-void HCThreadFunctionAtExitClean() {
+void HCThreadFunctionAtExitClean(void) {
     HCRelease(atExitRef);
 };
 
